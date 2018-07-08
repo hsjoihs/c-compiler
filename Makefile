@@ -13,3 +13,9 @@ test_task001:
 	echo '123' | ./compiler > test.s
 	gcc test.s -o task001
 	@	./task001; res=$$?; if [ $$res -ne 123 ]; then { echo FAIL; exit 1; }; else echo PASS; fi
+
+print_assembly_check:
+	gcc print_assembly_check.c print_assembly.c -o pac
+	./pac > testing.s
+	gcc testing.s -o pa
+	@	./pa; res=$$?; if [ $$res -ne 174 ]; then { echo FAIL; exit 1; }; else echo PASS; fi
