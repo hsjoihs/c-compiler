@@ -3,4 +3,4 @@
 foo:
 	gcc generator.c -o generator.out
 	./generator.out vector_template.c ../vector.c vector_template_head.c
-	./generator.out vector_template.h ../vector.h /dev/null
+	./generator.out vector_template.h ../vector.h vector_template_head.h
