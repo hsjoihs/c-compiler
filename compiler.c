@@ -11,16 +11,7 @@
 
 int main()
 {
-	const char* str = "123+456-789";
-	struct Token tok;
-	do{
-		tok = get_token(&str);
-		print_token(tok);
-		printf("\n");
-		if(tok.kind == END) {
-			break;
-		}
-	}while(1);
+	foo();
 }
 
 int foo(){
