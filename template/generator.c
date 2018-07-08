@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
 
 	foo(output, argv[3], "T");
 
-	for(int i = 0; i < sizeof(typelist) / sizeof(typelist[0]); i++){
+	for(int i = 0; i < sizeof(typelist) / sizeof(typelist[0]); ++i){
 		foo(output, argv[1], typelist[i]);
 	}
 }

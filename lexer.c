@@ -30,11 +30,11 @@ struct Token get_token(const char** ptr_to_str)
 
 	if(*str == '+') {
 		t.kind = OP_PLUS;
-		(*ptr_to_str)++;
+		++*ptr_to_str;
 		return t;
 	} else if(*str == '-') {
 		t.kind = OP_MINUS;
-		(*ptr_to_str)++;
+		++*ptr_to_str;
 		return t;
 	}
 
@@ -48,7 +48,7 @@ struct Token get_token(const char** ptr_to_str)
 		if(*str >= '0' && *str <= '9'){ /* portable, since it is guaranteed that '0' - '9' are consecutive */
 			t.int_value *= 10;
 			t.int_value += *str - '0'; /* portable */
-			str++;
+			++str;
 		} else {
 			*ptr_to_str = str;
 			return t;
