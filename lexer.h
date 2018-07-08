@@ -1,3 +1,5 @@
+#pragma once
+
 #define GARBAGE_INT 0xCCCCCCCC
 #define BOOL int
 
