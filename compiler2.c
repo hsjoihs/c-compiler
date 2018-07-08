@@ -23,10 +23,11 @@ void read_all_and_write_code(const char* str)
 			push_int(tok.int_value);
 		} else { /* operators */
 			while(op_stack.length > 0) {
+				struct Token last_tok = op_stack.vector[op_stack.length-1];
 				--op_stack.length;
-				if(op_stack.vector[op_stack.length].kind == OP_PLUS) {
+				if(last_tok.kind == OP_PLUS) {
 					op_ints("addl");
-				} else if(op_stack.vector[op_stack.length].kind == OP_MINUS) {
+				} else if(last_tok.kind == OP_MINUS) {
 					op_ints("subl");
 				} else {
 					assert("gfjaekd;sx" && 0);
@@ -37,10 +38,11 @@ void read_all_and_write_code(const char* str)
 	}while(1);
 
 	while(op_stack.length > 0) {
+		struct Token last_tok = op_stack.vector[op_stack.length-1];
 		--op_stack.length;
-		if(op_stack.vector[op_stack.length].kind == OP_PLUS) {
+		if(last_tok.kind == OP_PLUS) {
 			op_ints("addl");
-		} else if(op_stack.vector[op_stack.length].kind == OP_MINUS) {
+		} else if(last_tok.kind == OP_MINUS) {
 			op_ints("subl");
 		} else {
 			assert("gfdagaws" && 0);
