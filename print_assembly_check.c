@@ -12,9 +12,9 @@ int main()
 	print_header();
 	push_int(123);
 	push_int(56);
-	add_ints();
+	op_ints("addl");
 	push_int(5);
-	sub_ints();
+	op_ints("subl");
 	print_footer();
 	return 0;
 }

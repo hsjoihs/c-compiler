@@ -27,22 +27,13 @@ void push_int(int num)
 	, num);
 }
 
-void add_ints()
+void op_ints(const char* str)
 {
 	printf(
 		"  movl -0(%%rbp), %%eax\n"
-		"  addl %%eax, +4(%%rbp)\n"
+		"  %s %%eax, +4(%%rbp)\n"
 		"  addq $4, %%rbp\n"
-	);
-}
-
-void sub_ints()
-{
-	printf(
-		"  movl -0(%%rbp), %%eax\n"
-		"  subl %%eax, +4(%%rbp)\n"
-		"  addq $4, %%rbp\n"
-	);
+	, str);
 }
 
 void print_footer()
