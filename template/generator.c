@@ -14,7 +14,7 @@ void foo(FILE* output, const char* path, const char* replacer)
 	file = fopen(path, "r");
 	if (file) {
 		while ((c = getc(file)) != EOF){
-			if(c == 'T') {
+			if (c == 'T') {
 				fprintf(output, "%s", replacer);
 			} else {
 				fputc(c, output);
@@ -26,7 +26,7 @@ void foo(FILE* output, const char* path, const char* replacer)
 
 int main(int argc, char *argv[])
 {
-	if(argc < 4) {
+	if (argc < 4) {
 		fprintf(stderr, 
 			"first argument: path of the template.\n"
 			"second argument: path for output.\n"
@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
 
 	foo(output, argv[3], "T");
 
-	for(int i = 0; i < sizeof(typelist) / sizeof(typelist[0]); ++i){
+	for (int i = 0; i < sizeof(typelist) / sizeof(typelist[0]); ++i){
 		foo(output, argv[1], typelist[i]);
 	}
 }

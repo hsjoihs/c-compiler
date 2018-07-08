@@ -29,7 +29,7 @@ void push_vector_T(struct vector_T* ptr, struct T tok)
 
 struct T pop_vector_T(struct vector_T* ptr)
 {
-	if(ptr->length == 0) {
+	if (ptr->length == 0) {
 		assert("tried to pop an empty vector of type T" && 0);
 	}
 	--(ptr->length); 

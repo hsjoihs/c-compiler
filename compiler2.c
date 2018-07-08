@@ -7,11 +7,11 @@
 
 int get_precedence(enum TokenKind k)
 {
-	if(k == OP_PLUS || k == OP_MINUS) {
+	if (k == OP_PLUS || k == OP_MINUS) {
 		return -4;
-	} else if(k == OP_ASTERISK) {
+	} else if (k == OP_ASTERISK) {
 		return -3;
-	} else if(k == LEFT_PAREN) {
+	} else if (k == LEFT_PAREN) {
 		return 123;
 	} else {
 		assert("NOT AN OPERATOR" && 0);
@@ -25,38 +25,38 @@ void read_all_and_write_code(const char* str)
 	print_header();
 
 	struct Token tok;
-	do{
+	do {
 		tok = get_token(&str);
 
-		if(tok.kind == END) {
+		if (tok.kind == END) {
 			break;
 		}
 
-		if(tok.kind == LIT_DEC_INTEGER) {
+		if (tok.kind == LIT_DEC_INTEGER) {
 			push_int(tok.int_value);
-		} else if(tok.kind == LEFT_PAREN) {
+		} else if (tok.kind == LEFT_PAREN) {
 			push_vector_Token(&op_stack, tok);
-		} else if(tok.kind == RIGHT_PAREN) {
+		} else if (tok.kind == RIGHT_PAREN) {
 			while(op_stack.length > 0 && op_stack.vector[op_stack.length-1].kind != LEFT_PAREN){
 				struct Token last_tok = pop_vector_Token(&op_stack);
-				if(last_tok.kind == OP_PLUS) {
+				if (last_tok.kind == OP_PLUS) {
 					op_ints("addl");
-				} else if(last_tok.kind == OP_MINUS) {
+				} else if (last_tok.kind == OP_MINUS) {
 					op_ints("subl");
-				} else if(last_tok.kind == OP_ASTERISK){
+				} else if (last_tok.kind == OP_ASTERISK){
 					mul_ints();
 				} else {
 					assert("gfdagaws" && 0);
 				}
 			}
-			if(op_stack.length == 0){
+			if (op_stack.length == 0){
 				fprintf(stderr, "UNMATCHED BRACKET");
 				abort();
 			} else {
 				pop_vector_Token(&op_stack);
 			}
 		} else { /* operators */
-			while(op_stack.length > 0 && 
+			while (op_stack.length > 0 && 
 				(
 					get_precedence(op_stack.vector[op_stack.length-1].kind) >
 					get_precedence(tok.kind) 
@@ -70,11 +70,11 @@ void read_all_and_write_code(const char* str)
 			) {
 				struct Token last_tok = op_stack.vector[op_stack.length-1];
 				--op_stack.length;
-				if(last_tok.kind == OP_PLUS) {
+				if (last_tok.kind == OP_PLUS) {
 					op_ints("addl");
-				} else if(last_tok.kind == OP_MINUS) {
+				} else if (last_tok.kind == OP_MINUS) {
 					op_ints("subl");
-				} else if(last_tok.kind == OP_ASTERISK){
+				} else if (last_tok.kind == OP_ASTERISK){
 					mul_ints();
 				} else {
 					assert("gfjaekd;sx" && 0);
@@ -86,11 +86,11 @@ void read_all_and_write_code(const char* str)
 
 	while(op_stack.length > 0) {
 		struct Token last_tok = pop_vector_Token(&op_stack);
-		if(last_tok.kind == OP_PLUS) {
+		if (last_tok.kind == OP_PLUS) {
 			op_ints("addl");
-		} else if(last_tok.kind == OP_MINUS) {
+		} else if (last_tok.kind == OP_MINUS) {
 			op_ints("subl");
-		} else if(last_tok.kind == OP_ASTERISK){
+		} else if (last_tok.kind == OP_ASTERISK){
 			mul_ints();
 		} else {
 			assert("gfdagaws" && 0);

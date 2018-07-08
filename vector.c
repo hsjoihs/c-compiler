@@ -33,7 +33,7 @@ void push_vector_Token(struct vector_Token* ptr, struct Token tok)
 
 struct Token pop_vector_Token(struct vector_Token* ptr)
 {
-	if(ptr->length == 0) {
+	if (ptr->length == 0) {
 		assert("tried to pop an empty vector of type Token" && 0);
 	}
 	--(ptr->length); 

@@ -4,14 +4,14 @@
 void read_all_tokens(const char* str)
 {
 	struct Token tok;
-	do{
+	do {
 		tok = get_token(&str);
 		print_token(tok);
 		printf("\n");
-		if(tok.kind == END) {
+		if (tok.kind == END) {
 			break;
 		}
-	}while(1);
+	} while (1);
 }
 
 int main()
