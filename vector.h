@@ -1,4 +1,5 @@
 /* AUTOMATICALLY GENERATED. DO NOT EDIT. */
+#include "lexer.h"
 struct vector_Token {
 	int length;
 	int _allocated_length;

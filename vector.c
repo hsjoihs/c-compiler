@@ -1,5 +1,5 @@
 /* AUTOMATICALLY GENERATED. DO NOT EDIT. */
-#include <cstdlib.h>
+#include <stdlib.h>
 #include "vector.h"
 struct vector_Token init_vector_Token(int initial_length)
 {
