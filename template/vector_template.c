@@ -15,3 +15,9 @@ void extend_vector_T(struct vector_T* ptr)
 	}
 }
 
+void push_vector_T(struct vector_T* ptr, struct T tok)
+{
+	extend_vector_T(ptr);
+	ptr->vector[ptr->length] = tok;
+	ptr->length++; 
+}

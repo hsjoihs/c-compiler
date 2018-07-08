@@ -5,13 +5,13 @@
 void print_token(struct Token tok)
 {
 	if(tok.kind == OP_PLUS) {
-		printf("+");
+		fprintf(stderr,"+");
 	} else if(tok.kind == OP_MINUS) {
-		printf("-");
+		fprintf(stderr,"-");
 	} else if(tok.kind == END) {
-		printf("DUMMY: END");
+		fprintf(stderr,"DUMMY: END");
 	} else if(tok.kind == LIT_DEC_INTEGER) {
-		printf("%d", tok.int_value);
+		fprintf(stderr,"%d", tok.int_value);
 	} else {
 		assert("TOKEN KIND UNHANDLED" && 0);
 	}
@@ -23,6 +23,11 @@ struct Token get_token(const char** ptr_to_str)
 	struct Token t;
 	t.int_value = GARBAGE_INT;
 
+	if(*str == 0) { /* '\0' is 0 in C */
+		t.kind = END;
+		return t;
+	}
+
 	if(*str == '+') {
 		t.kind = OP_PLUS;
 		(*ptr_to_str)++;
@@ -30,9 +35,6 @@ struct Token get_token(const char** ptr_to_str)
 	} else if(*str == '-') {
 		t.kind = OP_MINUS;
 		(*ptr_to_str)++;
-		return t;
-	} else if(*str == 0) { /* '\0' is 0 in C */
-		t.kind = END;
 		return t;
 	}
 
