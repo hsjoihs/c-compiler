@@ -23,6 +23,11 @@ struct Token get_token(const char** ptr_to_str)
 	struct Token t;
 	t.int_value = GARBAGE_INT;
 
+	if(*str == 0) { /* '\0' is 0 in C */
+		t.kind = END;
+		return t;
+	}
+
 	if(*str == '+') {
 		t.kind = OP_PLUS;
 		(*ptr_to_str)++;
@@ -30,9 +35,6 @@ struct Token get_token(const char** ptr_to_str)
 	} else if(*str == '-') {
 		t.kind = OP_MINUS;
 		(*ptr_to_str)++;
-		return t;
-	} else if(*str == 0) { /* '\0' is 0 in C */
-		t.kind = END;
 		return t;
 	}
 
