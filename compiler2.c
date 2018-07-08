@@ -23,7 +23,7 @@ void read_all_and_write_code(const char* str)
 			push_int(tok.int_value);
 		} else { /* operators */
 			while(op_stack.length > 0) {
-				op_stack.length--;
+				--op_stack.length;
 				if(op_stack.vector[op_stack.length].kind == OP_PLUS) {
 					op_ints("addl");
 				} else if(op_stack.vector[op_stack.length].kind == OP_MINUS) {
@@ -37,7 +37,7 @@ void read_all_and_write_code(const char* str)
 	}while(1);
 
 	while(op_stack.length > 0) {
-		op_stack.length--;
+		--op_stack.length;
 		if(op_stack.vector[op_stack.length].kind == OP_PLUS) {
 			op_ints("addl");
 		} else if(op_stack.vector[op_stack.length].kind == OP_MINUS) {
