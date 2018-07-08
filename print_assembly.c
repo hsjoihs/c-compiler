@@ -36,6 +36,16 @@ void op_ints(const char* str)
 	, str);
 }
 
+void mul_ints()
+{
+	printf(
+		"  movl +4(%%rbp), %%eax\n"
+		"  imull -0(%%rbp), %%eax\n"
+		"  movl %%eax, +4(%%rbp)\n"
+		"  addq $4, %%rbp\n"
+	);
+}
+
 void print_footer()
 {
 	printf(
