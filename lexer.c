@@ -1,5 +1,23 @@
 #include "lexer.h"
 #include <assert.h>
+#include <stdio.h>
+
+void print_token(struct Token tok)
+{
+	if(tok.kind == OP_PLUS) {
+		printf("+");
+	} else if(tok.kind == OP_MINUS) {
+		printf("-");
+	} else if(tok.kind == END) {
+		printf("DUMMY: END");
+	} else if(tok.kind == LIT_DEC_INTEGER) {
+		printf("%d", tok.int_value);
+	} else {
+		assert(
+			("TOKEN KIND UNHANDLED", 0)
+		);
+	}
+}
 
 struct Token get_token(const char** ptr_to_str)
 {

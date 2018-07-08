@@ -12,11 +12,15 @@
 int main()
 {
 	const char* str = "123+456-789";
-	get_token(&str);
-	get_token(&str);
-	get_token(&str);
-	get_token(&str);
-	printf("%s", str);
+	struct Token tok;
+	do{
+		tok = get_token(&str);
+		print_token(tok);
+		printf("\n");
+		if(tok.kind == END) {
+			break;
+		}
+	}while(1);
 }
 
 int foo(){

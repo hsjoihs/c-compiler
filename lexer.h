@@ -13,3 +13,5 @@ struct Token{
 	int int_value;
 };
 
+void print_token(struct Token tok);
+struct Token get_token(const char** ptr_to_str);
