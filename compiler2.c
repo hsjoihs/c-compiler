@@ -38,8 +38,7 @@ void read_all_and_write_code(const char* str)
 	}while(1);
 
 	while(op_stack.length > 0) {
-		struct Token last_tok = op_stack.vector[op_stack.length-1];
-		--op_stack.length;
+		struct Token last_tok = pop_vector_Token(&op_stack);
 		if(last_tok.kind == OP_PLUS) {
 			op_ints("addl");
 		} else if(last_tok.kind == OP_MINUS) {
