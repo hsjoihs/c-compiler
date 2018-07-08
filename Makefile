@@ -19,3 +19,9 @@ print_assembly_check:
 	./pac > testing.s
 	gcc testing.s -o pa
 	@	./pa; res=$$?; if [ $$res -ne 174 ]; then { echo FAIL; exit 1; }; else echo PASS; fi
+
+test_task002:
+	gcc parse.c print_assembly.c lexer.c -o parse_and_dump.out
+	echo '123+56-5' | ./parse_and_dump.out > parse_and_dump.s
+	gcc parse_and_dump.s -o task002.out
+	@	./task002.out; res=$$?; if [ $$res -ne 174 ]; then { echo FAIL; exit 1; }; else echo PASS; fi
