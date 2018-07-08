@@ -1,23 +1,14 @@
 #include <stdio.h>
 #include "lexer.h"
-
-#define MACOS
-
-#ifdef MACOS
-#define PREFIX "_"
-#else
-#define PREFIX ""
-#endif
+#include "print_assembly.h"
 
 int main()
 {
 	int num;
 	scanf("%d", &num);
-	printf(
-		".global " PREFIX "main\n"
-		PREFIX "main:\n" 
-		"  movl $%d, %%eax\n"
-		"  ret\n"
-	, num);
+
+	print_header();
+	push_int(num);
+	print_footer();
 	return 0;
 }
