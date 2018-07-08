@@ -1,5 +1,7 @@
-.PHONY: test_task001
+.PHONY: test_all_
 
+test_all_:
+	./test_all.sh
 
 lexer_check:
 	gcc lexer_check.c lexer.c -o lexer_check
@@ -13,10 +15,10 @@ test_task001:
 	@	./task001.out; res=$$?; if [ $$res -ne 123 ]; then { echo FAIL; exit 1; }; else echo PASS; fi
 
 print_assembly_check:
-	gcc print_assembly_check.c print_assembly.c -o pac
-	./pac > testing.s
-	gcc testing.s -o pa
-	@	./pa; res=$$?; if [ $$res -ne 174 ]; then { echo FAIL; exit 1; }; else echo PASS; fi
+	gcc print_assembly_check.c print_assembly.c -o pac.out
+	./pac.out > testing.s
+	gcc testing.s -o pa.out
+	@	./pa.out; res=$$?; if [ $$res -ne 174 ]; then { echo FAIL; exit 1; }; else echo PASS; fi
 
 test_task002:
 	gcc compiler2.c vector.c print_assembly.c lexer.c -o compiler.out
