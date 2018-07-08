@@ -10,23 +10,17 @@ lexer_check:
 
 test_task001:
 	gcc compiler2.c vector.c print_assembly.c lexer.c -o compiler.out
-	./test_ret.sh '123' test_task001.s task001.out 123
+	./test_ret.sh '123' test_task001.s task001.out 123 compiler.out
 
 print_assembly_check:
 	gcc print_assembly_check.c print_assembly.c -o pac.out
-	echo '' | ./pac.out > testing.s
-	gcc testing.s -o pa.out
-	@	./pa.out; res=$$?; if [ $$res -ne 174 ]; then { echo FAIL; exit 1; }; else echo PASS; fi
+	./test_ret.sh '' testing.s pa.out 174 pac.out
 
 test_task002:
 	gcc compiler2.c vector.c print_assembly.c lexer.c -o compiler.out
-	echo '123+56-5' | ./compiler.out > test_task002.s
-	gcc test_task002.s -o task002.out
-	@	./task002.out; res=$$?; if [ $$res -ne 174 ]; then { echo FAIL; exit 1; }; else echo PASS; fi
+	./test_ret.sh '123+56-5' test_task002.s task002.out 174 compiler.out
 
 test_task003:
 	gcc compiler2.c vector.c print_assembly.c lexer.c -o compiler.out
-	echo '41*3+7*8-5*1' | ./compiler.out > test_task003.s
-	gcc test_task003.s -o task003.out
-	@	./task003.out; res=$$?; if [ $$res -ne 174 ]; then { echo FAIL; exit 1; }; else echo PASS; fi
+	./test_ret.sh '41*3+7*8-5*1' test_task003.s task003.out 174 compiler.out
 	diff test_task003.s testing.s

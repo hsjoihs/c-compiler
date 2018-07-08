@@ -1,5 +1,5 @@
 #!/bin/bash
-echo $1 | ./compiler.out > $2
+echo $1 | ./$5 > $2
 gcc $2 -o $3
 ./$3
 res=$?
