@@ -25,3 +25,10 @@ test_task002:
 	echo '123+56-5' | ./compiler.out > test_task002.s
 	gcc test_task002.s -o task002.out
 	@	./task002.out; res=$$?; if [ $$res -ne 174 ]; then { echo FAIL; exit 1; }; else echo PASS; fi
+
+test_task003:
+	gcc compiler2.c vector.c print_assembly.c lexer.c -o compiler.out
+	echo '41*3+7*8-5*1' | ./compiler.out > test_task003.s
+	gcc test_task003.s -o task003.out
+	@	./task003.out; res=$$?; if [ $$res -ne 174 ]; then { echo FAIL; exit 1; }; else echo PASS; fi
+	diff test_task003.s testing.s

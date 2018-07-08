@@ -7,7 +7,8 @@ enum TokenKind {
 	OP_PLUS,
 	OP_MINUS,
 	END,
-	LIT_DEC_INTEGER
+	LIT_DEC_INTEGER,
+	OP_ASTERISK
 };
 
 struct Token{
