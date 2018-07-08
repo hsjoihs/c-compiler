@@ -29,7 +29,7 @@ void read_all_and_write_code(const char* str)
 				} else if(op_stack.vector[op_stack.length].kind == OP_MINUS) {
 					op_ints("subl");
 				} else {
-					assert(("gfjaekd;sx",0));
+					assert("gfjaekd;sx" && 0);
 				}
 			}
 			extend_vector_Token(&op_stack);
@@ -45,7 +45,7 @@ void read_all_and_write_code(const char* str)
 		} else if(op_stack.vector[op_stack.length].kind == OP_MINUS) {
 			op_ints("subl");
 		} else {
-			assert(("gfjaekd;sx",0));
+			assert("gfdagaws" && 0);
 		}
 	}
 

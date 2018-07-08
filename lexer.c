@@ -13,9 +13,7 @@ void print_token(struct Token tok)
 	} else if(tok.kind == LIT_DEC_INTEGER) {
 		printf("%d", tok.int_value);
 	} else {
-		assert(
-			("TOKEN KIND UNHANDLED", 0)
-		);
+		assert("TOKEN KIND UNHANDLED" && 0);
 	}
 }
 
@@ -39,9 +37,7 @@ struct Token get_token(const char** ptr_to_str)
 	}
 
 	if(!(*str >= '0' && *str <= '9')) {
-		assert(
-			("Expected a numeral, but found something else", 0)
-		);
+		assert("Expected a numeral, but found something else" && 0);
 	}
 
 	t.kind = LIT_DEC_INTEGER;
