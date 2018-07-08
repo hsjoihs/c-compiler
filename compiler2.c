@@ -2,12 +2,12 @@
 #include <assert.h>
 #include "lexer.h"
 #include "print_assembly.h"
+#include "vector.h"
 
 
 void read_all_and_write_code(const char* str)
 {
-	struct Token op_stack[3]; /* hasn't implemented any higher-order operator; thus, it suffices */
-	int stack_len = 0;
+	struct vector_Token op_stack = init_vector_Token(0);
 
 	print_header();
 
@@ -22,26 +22,27 @@ void read_all_and_write_code(const char* str)
 		if(tok.kind == LIT_DEC_INTEGER) {
 			push_int(tok.int_value);
 		} else { /* operators */
-			while(stack_len > 0) {
-				stack_len--;
-				if(op_stack[stack_len].kind == OP_PLUS) {
+			while(op_stack.length > 0) {
+				op_stack.length--;
+				if(op_stack.vector[op_stack.length].kind == OP_PLUS) {
 					op_ints("addl");
-				} else if(op_stack[stack_len].kind == OP_MINUS) {
+				} else if(op_stack.vector[op_stack.length].kind == OP_MINUS) {
 					op_ints("subl");
 				} else {
 					assert(("gfjaekd;sx",0));
 				}
 			}
-			op_stack[stack_len] = tok;
-			stack_len++; 
+			extend_vector_Token(&op_stack);
+			op_stack.vector[op_stack.length] = tok;
+			op_stack.length++; 
 		}
 	}while(1);
 
-	while(stack_len > 0) {
-		stack_len--;
-		if(op_stack[stack_len].kind == OP_PLUS) {
+	while(op_stack.length > 0) {
+		op_stack.length--;
+		if(op_stack.vector[op_stack.length].kind == OP_PLUS) {
 			op_ints("addl");
-		} else if(op_stack[stack_len].kind == OP_MINUS) {
+		} else if(op_stack.vector[op_stack.length].kind == OP_MINUS) {
 			op_ints("subl");
 		} else {
 			assert(("gfjaekd;sx",0));
