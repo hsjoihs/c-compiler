@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "lexer.h"
 
 #define MACOS
 
@@ -10,6 +11,10 @@
 
 int main()
 {
+	foo();
+}
+
+int foo(){
 	int num;
 	scanf("%d", &num);
 	printf(
