@@ -18,3 +18,9 @@ void extend_vector_Token(struct vector_Token* ptr)
 	}
 }
 
+void push_vector_Token(struct vector_Token* ptr, struct Token tok)
+{
+	extend_vector_Token(ptr);
+	ptr->vector[ptr->length] = tok;
+	ptr->length++; 
+}

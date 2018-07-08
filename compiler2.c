@@ -32,9 +32,7 @@ void read_all_and_write_code(const char* str)
 					assert("gfjaekd;sx" && 0);
 				}
 			}
-			extend_vector_Token(&op_stack);
-			op_stack.vector[op_stack.length] = tok;
-			op_stack.length++; 
+			push_vector_Token(&op_stack, tok);
 		}
 	}while(1);
 

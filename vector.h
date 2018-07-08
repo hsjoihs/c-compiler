@@ -7,3 +7,4 @@ struct vector_Token {
 };
 struct vector_Token init_vector_Token(int initial_length);
 void extend_vector_Token(struct vector_Token* ptr);
+void push_vector_Token(struct vector_Token* ptr, struct Token tok);
