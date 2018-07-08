@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "lexer.h"
 
 #define MACOS
 
@@ -10,6 +11,15 @@
 
 int main()
 {
+	const char* str = "123+456-789";
+	get_token(&str);
+	get_token(&str);
+	get_token(&str);
+	get_token(&str);
+	printf("%s", str);
+}
+
+int foo(){
 	int num;
 	scanf("%d", &num);
 	printf(
