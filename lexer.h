@@ -8,7 +8,9 @@ enum TokenKind {
 	OP_MINUS,
 	END,
 	LIT_DEC_INTEGER,
-	OP_ASTERISK
+	OP_ASTERISK,
+	LEFT_PAREN,
+	RIGHT_PAREN
 };
 
 struct Token{

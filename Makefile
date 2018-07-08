@@ -24,3 +24,7 @@ test_task003:
 	gcc compiler2.c vector.c print_assembly.c lexer.c -o compiler.out
 	./test_ret.sh '41*3+7*8-5*1' test_task003.s task003.out 174 compiler.out
 	diff test_task003.s testing.s
+
+test_task004:
+	gcc compiler2.c vector.c print_assembly.c lexer.c -o compiler.out
+	./test_ret.sh '6*(3+7)-5*1' test_task004.s task004.out 55 compiler.out

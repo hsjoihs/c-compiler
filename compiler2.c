@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <assert.h>
+#include <stdlib.h>
 #include "lexer.h"
 #include "print_assembly.h"
 #include "vector.h"
@@ -10,6 +11,8 @@ int get_precedence(enum TokenKind k)
 		return -4;
 	} else if(k == OP_ASTERISK) {
 		return -3;
+	} else if(k == LEFT_PAREN) {
+		return 123;
 	} else {
 		assert("NOT AN OPERATOR" && 0);
 	}
@@ -31,6 +34,27 @@ void read_all_and_write_code(const char* str)
 
 		if(tok.kind == LIT_DEC_INTEGER) {
 			push_int(tok.int_value);
+		} else if(tok.kind == LEFT_PAREN) {
+			push_vector_Token(&op_stack, tok);
+		} else if(tok.kind == RIGHT_PAREN) {
+			while(op_stack.length > 0 && op_stack.vector[op_stack.length-1].kind != LEFT_PAREN){
+				struct Token last_tok = pop_vector_Token(&op_stack);
+				if(last_tok.kind == OP_PLUS) {
+					op_ints("addl");
+				} else if(last_tok.kind == OP_MINUS) {
+					op_ints("subl");
+				} else if(last_tok.kind == OP_ASTERISK){
+					mul_ints();
+				} else {
+					assert("gfdagaws" && 0);
+				}
+			}
+			if(op_stack.length == 0){
+				fprintf(stderr, "UNMATCHED BRACKET");
+				abort();
+			} else {
+				pop_vector_Token(&op_stack);
+			}
 		} else { /* operators */
 			while(op_stack.length > 0 && 
 				(
@@ -41,7 +65,8 @@ void read_all_and_write_code(const char* str)
 						get_precedence(tok.kind)
 						&& 1 /* is left-associative */ 
 					)
-				) && 1 /* the operator at the top of the operator stack is not a left bracket */
+				) && op_stack.vector[op_stack.length-1].kind != LEFT_PAREN
+				/* the operator at the top of the operator stack is not a left bracket */
 			) {
 				struct Token last_tok = op_stack.vector[op_stack.length-1];
 				--op_stack.length;

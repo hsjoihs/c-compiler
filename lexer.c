@@ -10,6 +10,10 @@ void print_token(struct Token tok)
 		fprintf(stderr,"-");
 	} else if(tok.kind == OP_ASTERISK) {
 		fprintf(stderr,"*");
+	} else if(tok.kind == LEFT_PAREN) {
+		fprintf(stderr,"(");
+	} else if(tok.kind == RIGHT_PAREN) {
+		fprintf(stderr,")");
 	} else if(tok.kind == END) {
 		fprintf(stderr,"DUMMY: END");
 	} else if(tok.kind == LIT_DEC_INTEGER) {
@@ -40,6 +44,14 @@ struct Token get_token(const char** ptr_to_str)
 		return t;
 	} else if(*str == '*') {
 		t.kind = OP_ASTERISK;
+		++*ptr_to_str;
+		return t;
+	} else if(*str == '(') {
+		t.kind = LEFT_PAREN;
+		++*ptr_to_str;
+		return t;
+	} else if(*str == ')') {
+		t.kind = RIGHT_PAREN;
 		++*ptr_to_str;
 		return t;
 	}
