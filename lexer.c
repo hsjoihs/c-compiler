@@ -5,13 +5,13 @@
 void print_token(struct Token tok)
 {
 	if(tok.kind == OP_PLUS) {
-		printf("+");
+		fprintf(stderr,"+");
 	} else if(tok.kind == OP_MINUS) {
-		printf("-");
+		fprintf(stderr,"-");
 	} else if(tok.kind == END) {
-		printf("DUMMY: END");
+		fprintf(stderr,"DUMMY: END");
 	} else if(tok.kind == LIT_DEC_INTEGER) {
-		printf("%d", tok.int_value);
+		fprintf(stderr,"%d", tok.int_value);
 	} else {
 		assert("TOKEN KIND UNHANDLED" && 0);
 	}
