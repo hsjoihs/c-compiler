@@ -7,14 +7,17 @@
 
 int get_precedence(enum TokenKind k)
 {
-	if (k == OP_PLUS || k == OP_MINUS) {
-		return -4;
-	} else if (k == OP_ASTERISK) {
-		return -3;
-	} else if (k == LEFT_PAREN) {
-		return 123;
-	} else {
-		assert("NOT AN OPERATOR" && 0);
+	switch (k) {
+		case OP_PLUS:
+		case OP_MINUS:
+			return -4;
+		case OP_ASTERISK:
+			return -3;
+		case LEFT_PAREN:
+			return 123;
+		default:
+			assert("NOT AN OPERATOR" && 0);
+			break;
 	}
 }
 

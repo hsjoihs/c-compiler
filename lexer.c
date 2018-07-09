@@ -4,22 +4,14 @@
 
 void print_token(struct Token tok)
 {
-	if (tok.kind == OP_PLUS) {
-		fprintf(stderr,"+");
-	} else if (tok.kind == OP_MINUS) {
-		fprintf(stderr,"-");
-	} else if (tok.kind == OP_ASTERISK) {
-		fprintf(stderr,"*");
-	} else if (tok.kind == LEFT_PAREN) {
-		fprintf(stderr,"(");
-	} else if (tok.kind == RIGHT_PAREN) {
-		fprintf(stderr,")");
-	} else if (tok.kind == END) {
-		fprintf(stderr,"DUMMY: END");
-	} else if (tok.kind == LIT_DEC_INTEGER) {
-		fprintf(stderr,"%d", tok.int_value);
-	} else {
-		assert("TOKEN KIND UNHANDLED" && 0);
+	switch (tok.kind) {
+		case OP_PLUS: fprintf(stderr,"+"); break;
+		case OP_MINUS: fprintf(stderr,"-"); break;
+		case OP_ASTERISK: fprintf(stderr,"*"); break;
+		case LEFT_PAREN: fprintf(stderr,"("); break;
+		case RIGHT_PAREN: fprintf(stderr,")"); break;
+		case END: fprintf(stderr,"DUMMY: END"); break;
+		case LIT_DEC_INTEGER: fprintf(stderr,"%d", tok.int_value); break;
 	}
 }
 
