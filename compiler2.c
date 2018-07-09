@@ -21,6 +21,19 @@ int get_precedence(enum TokenKind k)
 	}
 }
 
+void print_op(struct Token tok)
+{
+	if (tok.kind == OP_PLUS) {
+		op_ints("addl");
+	} else if (tok.kind == OP_MINUS) {
+		op_ints("subl");
+	} else if (tok.kind == OP_ASTERISK){
+		mul_ints();
+	} else {
+		assert("gfdagaws" && 0);
+	}
+}
+
 void read_all_and_write_code(const char* str)
 {
 	struct vector_Token op_stack = init_vector_Token(0);
@@ -41,16 +54,7 @@ void read_all_and_write_code(const char* str)
 			push_vector_Token(&op_stack, tok);
 		} else if (tok.kind == RIGHT_PAREN) {
 			while(op_stack.length > 0 && op_stack.vector[op_stack.length-1].kind != LEFT_PAREN){
-				struct Token last_tok = pop_vector_Token(&op_stack);
-				if (last_tok.kind == OP_PLUS) {
-					op_ints("addl");
-				} else if (last_tok.kind == OP_MINUS) {
-					op_ints("subl");
-				} else if (last_tok.kind == OP_ASTERISK){
-					mul_ints();
-				} else {
-					assert("gfdagaws" && 0);
-				}
+				print_op(pop_vector_Token(&op_stack));
 			}
 			if (op_stack.length == 0){
 				fprintf(stderr, "UNMATCHED BRACKET");
@@ -71,33 +75,14 @@ void read_all_and_write_code(const char* str)
 				) && op_stack.vector[op_stack.length-1].kind != LEFT_PAREN
 				/* the operator at the top of the operator stack is not a left bracket */
 			) {
-				struct Token last_tok = op_stack.vector[op_stack.length-1];
-				--op_stack.length;
-				if (last_tok.kind == OP_PLUS) {
-					op_ints("addl");
-				} else if (last_tok.kind == OP_MINUS) {
-					op_ints("subl");
-				} else if (last_tok.kind == OP_ASTERISK){
-					mul_ints();
-				} else {
-					assert("gfjaekd;sx" && 0);
-				}
+				print_op(pop_vector_Token(&op_stack));
 			}
 			push_vector_Token(&op_stack, tok);
 		}
 	}while(1);
 
 	while(op_stack.length > 0) {
-		struct Token last_tok = pop_vector_Token(&op_stack);
-		if (last_tok.kind == OP_PLUS) {
-			op_ints("addl");
-		} else if (last_tok.kind == OP_MINUS) {
-			op_ints("subl");
-		} else if (last_tok.kind == OP_ASTERISK){
-			mul_ints();
-		} else {
-			assert("gfdagaws" && 0);
-		}
+		print_op(pop_vector_Token(&op_stack));
 	}
 
 	print_footer();
