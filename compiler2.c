@@ -50,6 +50,7 @@ int get_precedence(enum TokenKind k)
 		case OP_EQ:
 			return -13;
 
+		case IDENT_OR_RESERVED:
 		case EMPTY:
 		case RIGHT_PAREN:
 		case END:
@@ -100,6 +101,12 @@ void print_op(struct Token tok)
 		case OP_TILDA:
 			unary_bitnot(); return;
 
+		case OP_EQ: {
+			assert("= is unimplemented!!!!" && 0);
+			return;
+		}
+
+		case IDENT_OR_RESERVED:
 		case EMPTY:
 		case LEFT_PAREN:
 		case RIGHT_PAREN:
@@ -144,6 +151,8 @@ void read_all_and_write_code(const char* str)
 			} else {
 				pop_vector_Token(&op_stack);
 			}
+		} else if (tok.kind == IDENT_OR_RESERVED) {
+			assert("ident pushing unimplemented" && 0);
 		} else { /* operators */
 			while (op_stack.length > 0 && 
 				(
