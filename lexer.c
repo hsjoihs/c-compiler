@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 void print_token(struct Token tok)
 {
@@ -24,6 +25,8 @@ void print_token(struct Token tok)
 		case OP_AND: fprintf(stderr,"&"); break;
 		case OP_OR: fprintf(stderr,"|"); break;
 		case EMPTY: fprintf(stderr,"(whitespace)"); break;
+		case OP_EQ_EQ: fprintf(stderr,"=="); break;
+		case OP_NOT_EQ: fprintf(stderr,"!="); break;
 		case LIT_DEC_INTEGER: fprintf(stderr,"%d", tok.int_value); break;
 	}
 }
@@ -83,7 +86,7 @@ struct Token get_token(const char** ptr_to_str)
 		++*ptr_to_str;
 		return t;
 	} else if (*str == '<') {
-		switch(str[1]) {
+		switch (str[1]) {
 			case '<':
 				t.kind = OP_LSHIFT;
 				*ptr_to_str += 2;
@@ -98,7 +101,7 @@ struct Token get_token(const char** ptr_to_str)
 				return t;
 		}
 	} else if (*str == '>') {
-		switch(str[1]) {
+		switch (str[1]) {
 			case '>':
 				t.kind = OP_RSHIFT;
 				*ptr_to_str += 2;
@@ -113,7 +116,7 @@ struct Token get_token(const char** ptr_to_str)
 				return t;
 		}
 	} else if (*str == '&') {
-		switch(str[1]) {
+		switch (str[1]) {
 			/*case '&':
 				t.kind = OP_AND_AND;
 				*ptr_to_str += 2;
@@ -128,7 +131,7 @@ struct Token get_token(const char** ptr_to_str)
 				return t;
 		}
 	} else if (*str == '|') {
-		switch(str[1]) {
+		switch (str[1]) {
 			/*case '|':
 				t.kind = OP_OR_OR;
 				*ptr_to_str += 2;
@@ -142,11 +145,35 @@ struct Token get_token(const char** ptr_to_str)
 				++*ptr_to_str;
 				return t;
 		}
+	} else if (*str == '=') {
+		switch (str[1]) {
+			case '=':
+				t.kind = OP_EQ_EQ;
+				*ptr_to_str += 2;
+				return t;
+			default:
+				assert("= unimplemented!!!" && 0);
+
+		}
+	} else if (*str == '!') {
+		switch (str[1]) {
+			case '=':
+				t.kind = OP_NOT_EQ;
+				*ptr_to_str += 2;
+				return t;
+			default:
+				assert("! unimplemented!!!" && 0);
+
+		}
 	}
 
 	if (!(*str >= '0' && *str <= '9')) {
-		fprintf(stderr, "%c %d", *str, (int)*str);
-		assert("Expected a numeral, but found something else" && 0);
+		fprintf(stderr, 
+			"Expected a numeral, but found something else: '%c' %d", 
+			*str, 
+			(int)*str
+		);
+		abort();
 	}
 
 	t.kind = LIT_DEC_INTEGER;

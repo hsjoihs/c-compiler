@@ -39,6 +39,10 @@ int get_precedence(enum TokenKind k)
 		case OP_OR:
 			return -9;
 
+		case OP_EQ_EQ:
+		case OP_NOT_EQ:
+			return -7;
+
 		case EMPTY:
 		case RIGHT_PAREN:
 		case END:
@@ -80,6 +84,10 @@ void print_op(struct Token tok)
 			op_ints("andl"); return;
 		case OP_OR:
 			op_ints("orl"); return;
+		case OP_EQ_EQ:
+			compare_ints("sete"); return;
+		case OP_NOT_EQ:
+			compare_ints("setne"); return;
 
 		case EMPTY:
 		case LEFT_PAREN:

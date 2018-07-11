@@ -9,7 +9,7 @@
 | -4 | `+ -` | binary, left | yes |
 | -5 | `<< >>` | binary, left | yes |
 | -6 | `< <= > >=` | binary, left | yes |
-| -7 | `== !=` | binary, left | no |
+| -7 | `== !=` | binary, left | yes |
 | -8 | `&` | binary, left | yes |
 | -9 | `|` | binary, left| yes |
 | -10 | `&&` | binary, left | no |
@@ -28,9 +28,7 @@
 | -4 | `+ -` | binary, left | yes |
 | -5 | `<< >>` | binary, left | yes |
 | -6 | `< <= > >=` | binary, left | yes |
-| -7 | `== !=` | binary, left | no |
+| -7 | `== !=` | binary, left | yes |
 | -8 | `&` | binary, left | yes |
 | -9 | `|` | binary, left| yes |
-| -10 | `&&` | binary, left | no |
-| -11 | `||` | binary, left | no |
 | -14 | `,` | binary, left | yes |
