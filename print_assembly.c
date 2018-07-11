@@ -77,11 +77,11 @@ setge: greater than or eq
 void compare_ints(const char* str)
 {
 	printf(
-		"  movl -4(%%rbp), %%eax\n"
-		"  cmpl -8(%%rbp), %%eax\n"
+		"  movl +4(%%rbp), %%eax\n"
+		"  cmpl -0(%%rbp), %%eax\n"
 		"  %s %%al\n"
 		"  movzbl %%al, %%eax\n"
-		"  movl %%eax, -4(%%rbp)\n"
+		"  movl %%eax, +4(%%rbp)\n"
 		"  addq $4, %%rbp\n"
 	,str);
 }

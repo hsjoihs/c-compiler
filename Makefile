@@ -27,6 +27,10 @@ print_assembly_check3:
 	gcc -Wall print_assembly_check3.c print_assembly.c -o pac3.out
 	./test_ret.sh '' testing3.s pa3.out 174 pac3.out
 
+print_assembly_check4:
+	gcc -Wall print_assembly_check4.c print_assembly.c -o pac4.out
+	./test_ret.sh '' testing4.s pa4.out 174 pac4.out
+
 test_task002:
 	gcc -Wall compiler2.c vector.c print_assembly.c lexer.c -o compiler.out
 	./test_ret.sh '123+56-5' test_task002.s task002.out 174 compiler.out
@@ -49,4 +53,11 @@ test_task006:
 	gcc -Wall compiler2.c vector.c print_assembly.c lexer.c -o compiler.out
 	./test_ret.sh '7*5,(12,41*3)+7*16/(9,2)-10/(8%3)' test_task006.s task006.out 174 compiler.out
 	diff test_task006.s testing3.s
+
+test_task007:
+	gcc -Wall compiler2.c vector.c print_assembly.c lexer.c -o compiler.out
+	./test_ret.sh '7*5,(12,41*3)+7*16/(9,2+(3<3))-10/((1<<3)%3)' test_task007.s task007.out 174 compiler.out
+	diff test_task007.s testing4.s
+
+	
 
