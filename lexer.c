@@ -29,8 +29,10 @@ void print_token(struct Token tok)
 		case EMPTY: fprintf(stderr,"(whitespace)"); break;
 		case OP_EQ_EQ: fprintf(stderr,"=="); break;
 		case OP_NOT_EQ: fprintf(stderr,"!="); break;
+		case OP_EQ: fprintf(stderr,"="); break;
 		case OP_NOT: fprintf(stderr,"!"); break;
 		case OP_TILDA: fprintf(stderr,"~"); break;
+		case IDENT_OR_RESERVED: fprintf(stderr, "%s", tok.ident_str); break;
 		case LIT_DEC_INTEGER: fprintf(stderr,"%d", tok.int_value); break;
 	}
 }
@@ -40,6 +42,7 @@ struct Token get_token(const char** ptr_to_str)
 	const char* str = *ptr_to_str;
 	struct Token t;
 	t.int_value = GARBAGE_INT;
+	t.ident_str = 0;
 
 	if (*str == 0) { /* '\0' is 0 in C */
 		t.kind = END;
@@ -156,7 +159,9 @@ struct Token get_token(const char** ptr_to_str)
 				*ptr_to_str += 2;
 				return t;
 			default:
-				assert("= unimplemented!!!" && 0);
+				t.kind = OP_EQ;
+				++*ptr_to_str;
+				return t;
 
 		}
 	} else if (*str == '!') {
@@ -222,6 +227,38 @@ struct Token get_token(const char** ptr_to_str)
 				return t;
 			}
 		} while (1);
+	}
+
+	if (*str == '_' 
+	|| (*str >= 'a' && *str <= 'z') 
+	|| (*str >= 'A' && *str <= 'Z')) { /* no one uses EBCDIC */ 
+		t.kind = IDENT_OR_RESERVED;
+		int i = 1;
+
+		for(; ;++i) {
+			if (str[i] != '_' 
+			&& !(str[i] >= 'a' && str[i] <= 'z') 
+			&& !(str[i] >= 'A' && str[i] <= 'Z')
+			&& !(str[i] >= '0' && str[i] <= '9')) {
+				break;
+			}
+		}
+		/* 
+			identifier: str[0] ~ str[i-1] 
+		*/
+		char* new_str = malloc(i+1); /* memory leak is much better than use after free */
+		if (!new_str) {
+			fprintf(stderr, "memory ran out\n");
+			abort();
+		}
+
+		for(int j = 0; j < i; j++) {
+			new_str[j] = str[j];
+		}
+		new_str[i] = '\0';
+		t.ident_str = new_str;
+		*ptr_to_str = str + i;
+		return t;
 	}
 
 	fprintf(stderr, 

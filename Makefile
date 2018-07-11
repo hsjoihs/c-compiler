@@ -16,7 +16,10 @@ lexer_check2:
 	echo '7*5 	,	(0xC,(41   )*(4-(011>8)))+7*(((1-~1)>=3)<<4)/(9,(4>>(10<=10))+(3<3))-10/(	  ( 	!0  <<3)	%3)' | ./out/lexer_check.out 2> res2.txt
 	diff res2.txt expected2.txt
 
-
+lexer_check3:
+	gcc -Wall lexer_check.c lexer.c -o out/lexer_check.out
+	echo '_1qw12_er345ty = 123, 51 + _1qw12_er345ty' | ./out/lexer_check.out 2> expected3.txt
+	diff res3.txt expected3.txt
 
 test_task001:
 	gcc -Wall compiler2.c intmap.c vector.c print_assembly.c lexer.c -o out/compiler.out

@@ -3,6 +3,7 @@ cd template/; make; cd ../
 make intmap_check
 make test_task001
 make test_task002
+make test_task003
 make lexer_check
 make lexer_check2
 make print_assembly_check

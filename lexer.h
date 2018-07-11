@@ -26,12 +26,15 @@ enum TokenKind {
 	OP_EQ_EQ,
 	OP_NOT_EQ,
 	OP_NOT,
-	OP_TILDA
+	OP_TILDA,
+	OP_EQ,
+	IDENT_OR_RESERVED
 };
 
 struct Token{
 	enum TokenKind kind;
 	int int_value;
+	const char* ident_str;
 };
 
 void print_token(struct Token tok);

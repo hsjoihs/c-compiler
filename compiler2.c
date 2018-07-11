@@ -47,6 +47,9 @@ int get_precedence(enum TokenKind k)
 		case OP_TILDA:
 			return -1;
 
+		case OP_EQ:
+			return -13;
+
 		case EMPTY:
 		case RIGHT_PAREN:
 		case END:
