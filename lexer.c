@@ -4,6 +4,8 @@
 #include <string.h>
 #include <stdlib.h>
 
+int from_hex(char c);
+
 void print_token(struct Token tok)
 {
 	switch (tok.kind) {
@@ -178,7 +180,19 @@ struct Token get_token(const char** ptr_to_str)
 	if (*str >= '0' && *str <= '9') {
 		t.kind = LIT_DEC_INTEGER;
 		t.int_value = 0;
-		do {
+		if (str[1] == 'x' || str[1] == 'X') {
+			/* hexadecimal */
+			do {
+				if (from_hex(*str) != -1){ 
+					t.int_value *= 16;
+					t.int_value += from_hex(*str);
+					++str;
+				} else {
+					*ptr_to_str = str;
+					return t;
+				}
+			} while (1);
+		} else do {
 			if (*str >= '0' && *str <= '9'){ /* portable, since it is guaranteed that '0' - '9' are consecutive */
 				t.int_value *= 10;
 				t.int_value += *str - '0'; /* portable */
@@ -196,4 +210,40 @@ struct Token get_token(const char** ptr_to_str)
 		(int)*str
 	);
 	abort();
+}
+
+int from_hex(char c)
+{
+	switch(c) {
+		case '0':
+		case '1':
+		case '2':
+		case '3':
+		case '4':
+		case '5':
+		case '6':
+		case '7':
+		case '8':
+		case '9':
+			return c - '0';
+
+		/* you know, no one uses EBCDIC */
+		case 'a':
+		case 'b':
+		case 'c':
+		case 'd':
+		case 'e':
+		case 'f':
+			return c - 'a' + 10;
+
+		case 'A':
+		case 'B':
+		case 'C':
+		case 'D':
+		case 'E':
+		case 'F':
+			return c - 'A' + 10;
+
+		default: return -1;
+	}
 }
