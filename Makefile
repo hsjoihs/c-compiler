@@ -11,6 +11,13 @@ lexer_check:
 	echo '123+456-789' | ./lexer_check.out 2> res.txt
 	diff res.txt expected.txt
 
+lexer_check2:
+	gcc -Wall lexer_check.c lexer.c -o lexer_check.out
+	echo '7*5 	,	(0xC,(41   )*(4-(011>8)))+7*(((1-~1)>=3)<<4)/(9,(4>>(10<=10))+(3<3))-10/(	  ( 	!0  <<3)	%3)' | ./lexer_check.out 2> res2.txt
+	diff res2.txt expected2.txt
+
+
+
 test_task001:
 	gcc -Wall compiler2.c intmap.c vector.c print_assembly.c lexer.c -o compiler.out
 	./test_ret.sh '123' test_task001.s task001.out 123 compiler.out
@@ -68,7 +75,7 @@ test_task006:
 
 test_task007:
 	gcc -Wall compiler2.c intmap.c vector.c print_assembly.c lexer.c -o compiler.out
-	./test_ret.sh '7*5 	,	(12,(41   )*(4-(9>8)))+7*(((1-~1)>=3)<<4)/(9,(4>>(10<=10))+(3<3))-10/(	  ( 	!0  <<3)	%3)' test_task007.s task007.out 174 compiler.out
+	./test_ret.sh '7*5 	,	(0xC,(41   )*(4-(011>8)))+7*(((1-~1)>=3)<<4)/(9,(4>>(10<=10))+(3<3))-10/(	  ( 	!0  <<3)	%3)' test_task007.s task007.out 174 compiler.out
 	diff test_task007.s testing4.s
 
 test_task008:
