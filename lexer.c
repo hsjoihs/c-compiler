@@ -193,17 +193,20 @@ struct Token get_token(const char** ptr_to_str)
 					return t;
 				}
 			} while (1);
-		} else do {
+		} else {
 			++str;
-			if (*str >= '0' && *str <= '7'){ /* portable, since it is guaranteed that '0' - '9' are consecutive */
-				t.int_value *= 8;
-				t.int_value += *str - '0'; /* portable */
-				++str;
-			} else {
-				*ptr_to_str = str;
-				return t;
-			}
-		} while (1);
+
+			do {
+				if (*str >= '0' && *str <= '7'){ /* portable, since it is guaranteed that '0' - '9' are consecutive */
+					t.int_value *= 8;
+					t.int_value += *str - '0'; /* portable */
+					++str;
+				} else {
+					*ptr_to_str = str;
+					return t;
+				}
+			} while (1);
+		}
 	}
 
 	if (*str >= '1' && *str <= '9') {
@@ -222,7 +225,7 @@ struct Token get_token(const char** ptr_to_str)
 	}
 
 	fprintf(stderr, 
-		"Found unexpected character: '%c' (%d)", 
+		"Found unexpected character: '%c' (%d)\n", 
 		*str, 
 		(int)*str
 	);
