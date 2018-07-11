@@ -11,40 +11,65 @@ int get_precedence(enum TokenKind k)
 		case OP_PLUS:
 		case OP_MINUS:
 			return -4;
+
 		case OP_ASTERISK:
 		case OP_SLASH:
 		case OP_PERCENT:
 			return -3;
+
 		case LEFT_PAREN:
 			return 123;
+
 		case OP_COMMA:
 			return -14;
-		default:
+
+		case OP_LT:
+		case OP_LT_EQ:
+			return -6;
+
+		case OP_LSHIFT:
+			return -5;
+
+		case RIGHT_PAREN:
+		case END:
+		case LIT_DEC_INTEGER:
 			assert("NOT AN OPERATOR" && 0);
 			break;
 	}
+	assert("unimplemented!!!!" && 0);
 }
 
 void print_op(struct Token tok)
 {
-	if (tok.kind == OP_PLUS) {
-		op_ints("addl");
-	} else if (tok.kind == OP_MINUS) {
-		op_ints("subl");
-	} else if (tok.kind == OP_ASTERISK){
-		mul_ints();
-	} else if (tok.kind == OP_SLASH) {
-		div_ints();
-	} else if (tok.kind == OP_PERCENT) {
-		rem_ints();
-	} else if (tok.kind == OP_COMMA) {
-		op_ints("movl");
-	/*} else if (tok.kind == OP_SLASH) {
-	} else if (tok.kind == OP_SLASH) {*/
+	switch (tok.kind) {
+		case OP_PLUS:
+			op_ints("addl"); return;
+		case OP_MINUS:
+			op_ints("subl"); return;
+		case OP_ASTERISK:
+			mul_ints(); return;
+		case OP_SLASH:
+			div_ints(); return;
+		case OP_PERCENT:
+			rem_ints(); return;
+		case OP_COMMA:
+			op_ints("movl"); return;
+		case OP_LT:
+			compare_ints("setl"); return;
+		case OP_LT_EQ:
+			compare_ints("setle"); return;
+		case OP_LSHIFT:
+			shift_ints("sall"); return;
 
-	} else {
-		assert("gfdagaws" && 0);
+		case LEFT_PAREN:
+		case RIGHT_PAREN:
+		case END:
+		case LIT_DEC_INTEGER:
+			assert("failure!!! not an op!!!!" && 0);
 	}
+	 
+	assert("unimplemented!!!!" && 0);
+	
 }
 
 void read_all_and_write_code(const char* str)

@@ -68,6 +68,37 @@ void rem_ints(void)
 	);
 }
 
+/*
+setl: less than
+setle: less than or eq
+setg: greater than
+setge: greater than or eq
+*/
+void compare_ints(const char* str)
+{
+	printf(
+		"  movl -4(%%rbp), %%eax\n"
+		"  cmpl -8(%%rbp), %%eax\n"
+		"  %s %%al\n"
+		"  movzbl %%al, %%eax\n"
+		"  movl %%eax, -4(%%rbp)\n"
+		"  addq $4, %%rbp\n"
+	,str);
+}
+
+/*
+sall: left shift
+sarl: right shift
+*/
+void shift_ints(const char* str)
+{
+	printf(
+		"  movl -0(%%rbp), %%eax\n"
+		"  movl %%eax, %%ecx\n"
+		"  %s %%cl, +4(%%rbp)\n"
+		"  addq $4, %%rbp\n"
+	,str);
+}
 
 void print_footer(void)
 {

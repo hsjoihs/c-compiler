@@ -13,7 +13,10 @@ enum TokenKind {
 	RIGHT_PAREN,
 	OP_SLASH,
 	OP_PERCENT,
-	OP_COMMA
+	OP_COMMA,
+	OP_LSHIFT,
+	OP_LT_EQ,
+	OP_LT
 };
 
 struct Token{

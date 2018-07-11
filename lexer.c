@@ -14,6 +14,9 @@ void print_token(struct Token tok)
 		case OP_SLASH: fprintf(stderr,"/"); break;
 		case OP_PERCENT: fprintf(stderr,"%%"); break;
 		case OP_COMMA: fprintf(stderr,","); break;
+		case OP_LT: fprintf(stderr,"<"); break;
+		case OP_LT_EQ: fprintf(stderr,"<="); break;
+		case OP_LSHIFT: fprintf(stderr,"<<"); break;
 		case LIT_DEC_INTEGER: fprintf(stderr,"%d", tok.int_value); break;
 	}
 }
@@ -61,6 +64,21 @@ struct Token get_token(const char** ptr_to_str)
 		t.kind = OP_COMMA;
 		++*ptr_to_str;
 		return t;
+	} else if (*str == '<') {
+		switch(str[1]) {
+			case '<':
+				t.kind = OP_LSHIFT;
+				*ptr_to_str += 2;
+				return t;
+			case '=':
+				t.kind = OP_LT_EQ;
+				*ptr_to_str += 2;
+				return t;
+			default:
+				t.kind = OP_LT;
+				++*ptr_to_str;
+				return t;
+		}
 	}
 
 	if (!(*str >= '0' && *str <= '9')) {
