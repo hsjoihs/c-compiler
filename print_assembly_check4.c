@@ -5,7 +5,7 @@
 int main()
 {
 	/* 
-		7*5,(12,(41)*(4-(9>8)))+7*((3>=3)<<4)/(9,(4>>(10<=10))+(3<3))-10/((!0<<3)%3)
+		7*5,(12,(41)*(4-(9>8)))+7*(((1-~1)>=3)<<4)/(9,(4>>(10<=10))+(3<3))-10/((!0<<3)%3)
 	*/
 	print_header();
 	push_int(7);
@@ -21,7 +21,10 @@ int main()
 	mul_ints();
 	op_ints("movl");
 	push_int(7);
-	push_int(3);
+	push_int(1);
+	push_int(1);
+	unary_bitnot();
+	op_ints("subl");
 	push_int(3);
 	compare_ints("setge");
 	push_int(4);

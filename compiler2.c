@@ -44,6 +44,7 @@ int get_precedence(enum TokenKind k)
 			return -7;
 
 		case OP_NOT:
+		case OP_TILDA:
 			return -1;
 
 		case EMPTY:
@@ -93,6 +94,8 @@ void print_op(struct Token tok)
 			compare_ints("setne"); return;
 		case OP_NOT:
 			unary_not(); return;
+		case OP_TILDA:
+			unary_bitnot(); return;
 
 		case EMPTY:
 		case LEFT_PAREN:

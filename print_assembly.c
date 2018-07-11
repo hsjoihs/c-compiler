@@ -96,6 +96,11 @@ void unary_not(void)
 	);
 }
 
+void unary_bitnot(void)
+{
+	printf("  notl -0(%%rbp)\n");
+}
+
 /*
 sall: left shift
 sarl: right shift

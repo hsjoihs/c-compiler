@@ -28,6 +28,7 @@ void print_token(struct Token tok)
 		case OP_EQ_EQ: fprintf(stderr,"=="); break;
 		case OP_NOT_EQ: fprintf(stderr,"!="); break;
 		case OP_NOT: fprintf(stderr,"!"); break;
+		case OP_TILDA: fprintf(stderr,"~"); break;
 		case LIT_DEC_INTEGER: fprintf(stderr,"%d", tok.int_value); break;
 	}
 }
@@ -168,6 +169,10 @@ struct Token get_token(const char** ptr_to_str)
 				return t;
 
 		}
+	} else if (*str == '~') {
+		t.kind = OP_TILDA;
+		++*ptr_to_str;
+		return t;
 	}
 
 	if (!(*str >= '0' && *str <= '9')) {

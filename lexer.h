@@ -25,7 +25,8 @@ enum TokenKind {
 	OP_OR,
 	OP_EQ_EQ,
 	OP_NOT_EQ,
-	OP_NOT
+	OP_NOT,
+	OP_TILDA
 };
 
 struct Token{
