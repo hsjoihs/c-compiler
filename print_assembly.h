@@ -1,6 +1,6 @@
-void print_header(void);
+void print_header(int alloc_size);
 void push_int(int num);
-void print_footer(void);
+void print_footer(int alloc_size);
 void op_ints(const char* str);
 void compare_ints(const char* str);
 void mul_ints(void);
@@ -9,3 +9,5 @@ void rem_ints(void);
 void shift_ints(const char* str);
 void unary_not(void);
 void unary_bitnot(void);
+void push_from_local(int offset);
+void write_to_local(int offset);

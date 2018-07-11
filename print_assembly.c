@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <assert.h>
 #include "print_assembly.h"
 
 #define MACOS
@@ -10,13 +11,36 @@
 #endif
 
 
-void print_header(void)
+void print_header(int alloc_size)
 {
 	printf(
 		".global " PREFIX "main\n"
 		PREFIX "main:\n"
 		"  pushq %%rbp\n"
-		"  movq %%rsp, %%rbp\n");
+		"  movq %%rsp, %%rbp\n"
+	);
+	if (alloc_size) { 
+		printf("  subq $%d, %%rsp\n", alloc_size);
+	}
+}
+
+/* write to local mem what's at the top of the stack. does not consume stack. */
+void write_to_local(int offset)
+{
+	assert(offset < 0);
+	printf("  movl -0(%%rsp), %%eax\n");
+	printf("  movl %%eax, %d(%%rbp)\n", offset);
+}
+
+/* push what's on local mem */
+void push_from_local(int offset)
+{
+	assert(offset < 0);
+	printf(
+		"  subq $4, %%rsp\n"
+		"  movl %d(%%rbp), %%eax\n"
+		"  movl %%eax, -0(%%rsp)\n"
+	, offset);
 }
 
 void push_int(int num)
@@ -115,12 +139,12 @@ void shift_ints(const char* str)
 	,str);
 }
 
-void print_footer(void)
+void print_footer(int alloc_size)
 {
 	printf(
 		"  movl -0(%%rsp), %%eax\n"
-		"  addq $4, %%rsp\n"
-		"  popq %%rbp\n"
+		"  addq $%d, %%rsp\n"
+		"  movq (%%rbp), %%rbp\n"
 		"  ret\n"
-	);
+	, 12+alloc_size);
 }

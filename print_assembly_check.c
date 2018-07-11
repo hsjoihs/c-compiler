@@ -7,7 +7,7 @@ int main()
 	/* 
 		(41*3) + (7*8) - (5*1) 
 	*/
-	print_header();
+	print_header(0);
 	push_int(41);
 	push_int(3);
 	mul_ints();
@@ -19,6 +19,6 @@ int main()
 	push_int(1);
 	mul_ints();
 	op_ints("subl");
-	print_footer();
+	print_footer(0);
 	return 0;
 }

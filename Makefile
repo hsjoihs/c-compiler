@@ -33,7 +33,11 @@ print_assembly_check4:
 
 print_assembly_check5:
 	gcc -Wall print_assembly_check5.c print_assembly.c -o pac5.out
-	./test_ret.sh '' testing5.s pa4.out 174 pac5.out
+	./test_ret.sh '' testing5.s pa5.out 174 pac5.out
+
+print_assembly_check6:
+	gcc -Wall print_assembly_check6.c print_assembly.c -o pac6.out
+	./test_ret.sh '' testing6.s pa6.out 174 pac6.out
 
 intmap_check:
 	gcc -Wall intmap.c intmap_check.c vector.c -o intmap_check.out

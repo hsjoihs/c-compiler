@@ -9,6 +9,7 @@ make print_assembly_check2
 make print_assembly_check3
 make print_assembly_check4
 make print_assembly_check5
+make print_assembly_check6
 make test_task003
 make test_task004
 make test_task005

@@ -139,6 +139,6 @@ _main:
   movl %eax, +4(%rsp)
   addq $4, %rsp
   movl -0(%rsp), %eax
-  addq $4, %rsp
-  popq %rbp
+  addq $12, %rsp
+  movq (%rbp), %rbp
   ret
