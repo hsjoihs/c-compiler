@@ -10,7 +10,7 @@
 #endif
 
 
-void print_header()
+void print_header(void)
 {
 	printf(
 		".global " PREFIX "main\n"
@@ -36,7 +36,7 @@ void op_ints(const char* str)
 	, str);
 }
 
-void mul_ints()
+void mul_ints(void)
 {
 	printf(
 		"  movl +4(%%rbp), %%eax\n"
@@ -46,7 +46,7 @@ void mul_ints()
 	);
 }
 
-void div_ints()
+void div_ints(void)
 {
 	printf(
 		"  movl +4(%%rbp), %%eax\n"
@@ -57,7 +57,7 @@ void div_ints()
 	);
 }
 
-void rem_ints()
+void rem_ints(void)
 {
 	printf(
 		"  movl +4(%%rbp), %%eax\n"
@@ -68,7 +68,7 @@ void rem_ints()
 	);
 }
 
-void comma_ints()
+void comma_ints(void)
 {
 	printf(
 		"  movl -0(%%rbp), %%eax\n"
@@ -76,7 +76,7 @@ void comma_ints()
 	);
 }
 
-void print_footer()
+void print_footer(void)
 {
 	printf(
 		"  movl -0(%%rbp), %%eax\n"

@@ -1,8 +1,8 @@
-void print_header();
+void print_header(void);
 void push_int(int num);
-void print_footer();
-void op_ints();
-void mul_ints();
-void div_ints();
-void rem_ints();
-void comma_ints();
+void print_footer(void);
+void op_ints(const char* str);
+void mul_ints(void);
+void div_ints(void);
+void rem_ints(void);
+void comma_ints(void);
