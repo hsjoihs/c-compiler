@@ -7,7 +7,7 @@ void read_all_tokens(const char* str)
 	do {
 		tok = get_token(&str);
 		print_token(tok);
-		printf("\n");
+		fprintf(stderr, "\n");
 		if (tok.kind == END) {
 			break;
 		}
@@ -18,6 +18,6 @@ int main()
 {
 	char str[1000];
 	/* const char* str = "123+456-789"; */
-	scanf("%s", str); /* VULNERABLE!!! */
+	scanf("%[^\n]s", str); /* VULNERABLE!!! */
 	read_all_tokens(str);
 }

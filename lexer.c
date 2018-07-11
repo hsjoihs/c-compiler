@@ -1,6 +1,7 @@
 #include "lexer.h"
 #include <assert.h>
 #include <stdio.h>
+#include <string.h>
 
 void print_token(struct Token tok)
 {
@@ -20,6 +21,8 @@ void print_token(struct Token tok)
 		case OP_GT: fprintf(stderr,">"); break;
 		case OP_GT_EQ: fprintf(stderr,">="); break;
 		case OP_RSHIFT: fprintf(stderr,">>"); break;
+		case OP_AND: fprintf(stderr,"&"); break;
+		case EMPTY: fprintf(stderr,"(whitespace)"); break;
 		case LIT_DEC_INTEGER: fprintf(stderr,"%d", tok.int_value); break;
 	}
 }
@@ -34,6 +37,17 @@ struct Token get_token(const char** ptr_to_str)
 		t.kind = END;
 		return t;
 	}
+
+	if (*str == ' ' 
+	 || *str == '\t'
+	 || *str == '\n'
+	 || *str == '\v'
+	 || *str == '\f'
+	 || *str == '\r') {
+		t.kind = EMPTY;
+		++*ptr_to_str;
+		return t;
+	} 
 
 	if (*str == '+') {
 		t.kind = OP_PLUS;
@@ -97,9 +111,25 @@ struct Token get_token(const char** ptr_to_str)
 				++*ptr_to_str;
 				return t;
 		}
+	} else if (*str == '&') {
+		switch(str[1]) {
+			/*case '&':
+				t.kind = OP_AND_AND;
+				*ptr_to_str += 2;
+				return t;
+			case '=':
+				t.kind = OP_AND_EQ;
+				*ptr_to_str += 2;
+				return t;*/
+			default:
+				t.kind = OP_AND;
+				++*ptr_to_str;
+				return t;
+		}
 	}
 
 	if (!(*str >= '0' && *str <= '9')) {
+		fprintf(stderr, "%c %d", *str, (int)*str);
 		assert("Expected a numeral, but found something else" && 0);
 	}
 

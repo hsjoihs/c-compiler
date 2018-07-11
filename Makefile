@@ -7,8 +7,8 @@ clean:
 	rm *.out *.s
 
 lexer_check:
-	gcc -Wall lexer_check.c lexer.c -o lexer_check
-	echo '123+456-789' | ./lexer_check > res.txt
+	gcc -Wall lexer_check.c lexer.c -o lexer_check.out
+	echo '123+456-789' | ./lexer_check.out 2> res.txt
 	diff res.txt expected.txt
 
 test_task001:
@@ -56,7 +56,7 @@ test_task006:
 
 test_task007:
 	gcc -Wall compiler2.c vector.c print_assembly.c lexer.c -o compiler.out
-	./test_ret.sh '7*5,(12,(41)*(4-(9>8)))+7*((3>=3)<<4)/(9,(4>>(10<=10))+(3<3))-10/((1<<3)%3)' test_task007.s task007.out 174 compiler.out
+	./test_ret.sh '7*5 	,	(12,(41   )*(4-(9>8)))+7*((3>=3)<<4)/(9,(4>>(10<=10))+(3<3))-10/(	  ( 	1  <<3)	%3)' test_task007.s task007.out 174 compiler.out
 	diff test_task007.s testing4.s
 
 	

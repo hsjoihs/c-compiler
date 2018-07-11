@@ -1,5 +1,5 @@
 #!/bin/bash
-echo $1 | ./$5 > $2
+echo -e $1 | ./$5 > $2
 gcc $2 -o $3
 ./$3
 res=$?

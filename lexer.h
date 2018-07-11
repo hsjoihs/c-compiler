@@ -19,7 +19,9 @@ enum TokenKind {
 	OP_LT,
 	OP_RSHIFT,
 	OP_GT_EQ,
-	OP_GT
+	OP_GT,
+	OP_AND,
+	EMPTY
 };
 
 struct Token{
