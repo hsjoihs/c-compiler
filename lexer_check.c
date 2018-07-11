@@ -7,7 +7,7 @@ void read_all_tokens(const char* str)
 	do {
 		tok = get_token(&str);
 		print_token(tok);
-		printf("\n");
+		fprintf(stderr, "\n");
 		if (tok.kind == END) {
 			break;
 		}
