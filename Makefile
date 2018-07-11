@@ -37,6 +37,7 @@ print_assembly_check5:
 
 intmap_check:
 	gcc -Wall intmap.c intmap_check.c vector.c -o intmap_check.out
+	./intmap_check.out
 
 test_task002:
 	gcc -Wall compiler2.c intmap.c vector.c print_assembly.c lexer.c -o compiler.out
