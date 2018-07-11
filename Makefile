@@ -25,29 +25,29 @@ full_compile001:
 	gcc -Wall compiler2.c intmap.c vector.c print_assembly.c lexer.c -o out/compiler.out
 	./test_ret.sh '123' s/full_compile001.s out/task001.out 123 out/compiler.out
 
-print_assembly_check:
-	gcc -Wall print_assembly_check.c print_assembly.c -o out/pac.out
-	./test_ret.sh '' s/print_assembly_check003.s out/pa.out 174 out/pac.out
+print_assembly_check003:
+	gcc -Wall print_assembly_check003.c print_assembly.c -o out/pac003.out
+	./test_ret.sh '' s/print_assembly_check003.s out/pa003.out 174 out/pac003.out
 
-print_assembly_check2:
-	gcc -Wall print_assembly_check2.c print_assembly.c -o out/pac2.out
-	./test_ret.sh '' s/print_assembly_check005.s out/pa2.out 174 out/pac2.out
+print_assembly_check005:
+	gcc -Wall print_assembly_check005.c print_assembly.c -o out/pac005.out
+	./test_ret.sh '' s/print_assembly_check005.s out/pa005.out 174 out/pac005.out
 
-print_assembly_check3:
-	gcc -Wall print_assembly_check3.c print_assembly.c -o out/pac3.out
-	./test_ret.sh '' s/print_assembly_check006.s out/pa3.out 174 out/pac3.out
+print_assembly_check006:
+	gcc -Wall print_assembly_check006.c print_assembly.c -o out/pac006.out
+	./test_ret.sh '' s/print_assembly_check006.s out/pa006.out 174 out/pac006.out
 
-print_assembly_check4:
-	gcc -Wall print_assembly_check4.c print_assembly.c -o out/pac4.out
-	./test_ret.sh '' s/print_assembly_check007.s out/pa4.out 174 out/pac4.out
+print_assembly_check007:
+	gcc -Wall print_assembly_check007.c print_assembly.c -o out/pac007.out
+	./test_ret.sh '' s/print_assembly_check007.s out/pa007.out 174 out/pac007.out
 
-print_assembly_check5:
-	gcc -Wall print_assembly_check5.c print_assembly.c -o out/pac5.out
-	./test_ret.sh '' s/print_assembly_check008.s out/pa5.out 174 out/pac5.out
+print_assembly_check008:
+	gcc -Wall print_assembly_check008.c print_assembly.c -o out/pac008.out
+	./test_ret.sh '' s/print_assembly_check008.s out/pa008.out 174 out/pac008.out
 
-print_assembly_check6:
-	gcc -Wall print_assembly_check6.c print_assembly.c -o out/pac6.out
-	./test_ret.sh '' s/print_assembly_check009.s out/pa6.out 174 out/pac6.out
+print_assembly_check009:
+	gcc -Wall print_assembly_check009.c print_assembly.c -o out/pac009.out
+	./test_ret.sh '' s/print_assembly_check009.s out/pa009.out 174 out/pac009.out
 
 intmap_check:
 	gcc -Wall intmap.c intmap_check.c vector.c -o out/intmap_check.out
