@@ -1,6 +1,6 @@
 #include "lexer.h"
 
 struct charptANDint {
-	char* ptr;
+	const char* ptr;
 	int value;
 };

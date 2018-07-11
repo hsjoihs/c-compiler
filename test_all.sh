@@ -1,5 +1,6 @@
 #!/bin/bash
 cd template/; make; cd ../
+make intmap_check
 make test_task001
 make test_task002
 make lexer_check
