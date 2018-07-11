@@ -4,7 +4,8 @@
 #define bufSize 1024
 
 const char* typelist[] = {
-	"Token"
+	"Token",
+	"charptANDint"
 };
 
 void foo(FILE* output, const char* path, const char* replacer)
