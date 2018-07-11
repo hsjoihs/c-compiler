@@ -21,7 +21,8 @@ enum TokenKind {
 	OP_GT_EQ,
 	OP_GT,
 	OP_AND,
-	EMPTY
+	EMPTY,
+	OP_OR
 };
 
 struct Token{
