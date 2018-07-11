@@ -44,6 +44,7 @@ _main:
   addq $4, %rbp
   movl -0(%rbp), %eax
   movl %eax, +4(%rbp)
+  addq $4, %rbp
   movl -0(%rbp), %eax
   addq $4, %rbp
   popq %rbp

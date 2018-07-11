@@ -22,7 +22,7 @@ int main()
 	rem_ints();
 	div_ints();
 	op_ints("subl");
-	comma_ints();
+	op_ints("movl");
 	print_footer();
 	return 0;
 }

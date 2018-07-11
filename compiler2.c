@@ -38,7 +38,7 @@ void print_op(struct Token tok)
 	} else if (tok.kind == OP_PERCENT) {
 		rem_ints();
 	} else if (tok.kind == OP_COMMA) {
-		comma_ints();
+		op_ints("movl");
 	/*} else if (tok.kind == OP_SLASH) {
 	} else if (tok.kind == OP_SLASH) {*/
 

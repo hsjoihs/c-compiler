@@ -5,4 +5,3 @@ void op_ints(const char* str);
 void mul_ints(void);
 void div_ints(void);
 void rem_ints(void);
-void comma_ints(void);
