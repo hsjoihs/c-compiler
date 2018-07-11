@@ -1,7 +1,7 @@
 ## full list
 
 | precedence | operator | fixity | finished? |
- --- | --- | ---
+ --- | --- | --- | ---
 | 0 | `() [] . -> ++ --` | unary postfix | no |
 | -1 | `! ~ ++ -- + - * & sizeof` | unary prefix | no |
 | -2 | `(type name)` | unary, right | no |
