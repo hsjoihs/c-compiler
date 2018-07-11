@@ -16,7 +16,10 @@ enum TokenKind {
 	OP_COMMA,
 	OP_LSHIFT,
 	OP_LT_EQ,
-	OP_LT
+	OP_LT,
+	OP_RSHIFT,
+	OP_GT_EQ,
+	OP_GT
 };
 
 struct Token{

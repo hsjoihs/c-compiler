@@ -24,10 +24,13 @@ int get_precedence(enum TokenKind k)
 			return -14;
 
 		case OP_LT:
+		case OP_GT:
 		case OP_LT_EQ:
+		case OP_GT_EQ:
 			return -6;
 
 		case OP_LSHIFT:
+		case OP_RSHIFT:
 			return -5;
 
 		case RIGHT_PAREN:
@@ -60,6 +63,12 @@ void print_op(struct Token tok)
 			compare_ints("setle"); return;
 		case OP_LSHIFT:
 			shift_ints("sall"); return;
+		case OP_GT:
+			compare_ints("setg"); return;
+		case OP_GT_EQ:
+			compare_ints("setge"); return;
+		case OP_RSHIFT:
+			shift_ints("sarl"); return;
 
 		case LEFT_PAREN:
 		case RIGHT_PAREN:

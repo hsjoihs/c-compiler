@@ -17,6 +17,9 @@ void print_token(struct Token tok)
 		case OP_LT: fprintf(stderr,"<"); break;
 		case OP_LT_EQ: fprintf(stderr,"<="); break;
 		case OP_LSHIFT: fprintf(stderr,"<<"); break;
+		case OP_GT: fprintf(stderr,">"); break;
+		case OP_GT_EQ: fprintf(stderr,">="); break;
+		case OP_RSHIFT: fprintf(stderr,">>"); break;
 		case LIT_DEC_INTEGER: fprintf(stderr,"%d", tok.int_value); break;
 	}
 }
@@ -76,6 +79,21 @@ struct Token get_token(const char** ptr_to_str)
 				return t;
 			default:
 				t.kind = OP_LT;
+				++*ptr_to_str;
+				return t;
+		}
+	} else if (*str == '>') {
+		switch(str[1]) {
+			case '>':
+				t.kind = OP_RSHIFT;
+				*ptr_to_str += 2;
+				return t;
+			case '=':
+				t.kind = OP_GT_EQ;
+				*ptr_to_str += 2;
+				return t;
+			default:
+				t.kind = OP_GT;
 				++*ptr_to_str;
 				return t;
 		}
