@@ -36,6 +36,7 @@ int get_precedence(enum TokenKind k)
 		case OP_AND:
 			return -8;
 
+		case EMPTY:
 		case RIGHT_PAREN:
 		case END:
 		case LIT_DEC_INTEGER:
@@ -75,6 +76,7 @@ void print_op(struct Token tok)
 		case OP_AND:
 			op_ints("andl"); return;
 
+		case EMPTY:
 		case LEFT_PAREN:
 		case RIGHT_PAREN:
 		case END:
@@ -98,6 +100,10 @@ void read_all_and_write_code(const char* str)
 
 		if (tok.kind == END) {
 			break;
+		}
+
+		if (tok.kind == EMPTY) {
+			continue;
 		}
 
 		if (tok.kind == LIT_DEC_INTEGER) {
@@ -144,6 +150,6 @@ int main()
 {
 	char str[1000];
 	/* const char* str = "123+456-789"; */
-	scanf("%s", str); /* VULNERABLE!!! */
+	scanf("%[^\n]s", str); /* VULNERABLE!!! */
 	read_all_and_write_code(str);
 }

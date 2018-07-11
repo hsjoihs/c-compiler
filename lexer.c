@@ -22,6 +22,7 @@ void print_token(struct Token tok)
 		case OP_GT_EQ: fprintf(stderr,">="); break;
 		case OP_RSHIFT: fprintf(stderr,">>"); break;
 		case OP_AND: fprintf(stderr,"&"); break;
+		case EMPTY: fprintf(stderr,"(whitespace)"); break;
 		case LIT_DEC_INTEGER: fprintf(stderr,"%d", tok.int_value); break;
 	}
 }
@@ -37,10 +38,16 @@ struct Token get_token(const char** ptr_to_str)
 		return t;
 	}
 
-	if (strchr(" \t\n\v\f\r", *str)) {
+	if (*str == ' ' 
+	 || *str == '\t'
+	 || *str == '\n'
+	 || *str == '\v'
+	 || *str == '\f'
+	 || *str == '\r') {
+		t.kind = EMPTY;
 		++*ptr_to_str;
-		return get_token(ptr_to_str);
-	}
+		return t;
+	} 
 
 	if (*str == '+') {
 		t.kind = OP_PLUS;

@@ -7,8 +7,8 @@ clean:
 	rm *.out *.s
 
 lexer_check:
-	gcc -Wall lexer_check.c lexer.c -o lexer_check
-	echo '123+456-789' | ./lexer_check > res.txt
+	gcc -Wall lexer_check.c lexer.c -o lexer_check.out
+	echo '123+456-789' | ./lexer_check.out > res.txt
 	diff res.txt expected.txt
 
 test_task001:
