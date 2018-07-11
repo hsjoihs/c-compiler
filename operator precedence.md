@@ -3,7 +3,7 @@
 | precedence | operator | fixity | finished? |
  --- | --- | --- | ---
 | 0 | `() [] . -> ++ --` | unary postfix | no |
-| -1 | `! ~ ++ -- + - * & sizeof` | unary prefix | no |
+| -1 | `! ~ ++ -- + - * & sizeof` | unary prefix | no (`!` and `~` finished) |
 | -2 | `(type name)` | unary, right | no |
 | -3 | `* / %` | binary, left | yes |
 | -4 | `+ -` | binary, left | yes |
@@ -23,7 +23,7 @@
 
 | precedence | operator | fixity | finished? |
  --- | --- | --- | ---
-| -1 | `! ~ ` | unary prefix | no |
+| -1 | `! ~ ` | unary prefix | yes |
 | -3 | `* / %` | binary, left | yes |
 | -4 | `+ -` | binary, left | yes |
 | -5 | `<< >>` | binary, left | yes |
