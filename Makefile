@@ -56,7 +56,7 @@ test_task006:
 
 test_task007:
 	gcc -Wall compiler2.c vector.c print_assembly.c lexer.c -o compiler.out
-	./test_ret.sh '7*5,(12,41*3)+7*16/(9,2+(3<3))-10/((1<<3)%3)' test_task007.s task007.out 174 compiler.out
+	./test_ret.sh '7*5,(12,(41)*(4-(9>8)))+7*((3>=3)<<4)/(9,(4>>(10<=10))+(3<3))-10/((1<<3)%3)' test_task007.s task007.out 174 compiler.out
 	diff test_task007.s testing4.s
 
 	

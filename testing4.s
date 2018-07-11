@@ -15,7 +15,20 @@ _main:
   subq $4, %rbp
   movl $41, -0(%rbp)
   subq $4, %rbp
-  movl $3, -0(%rbp)
+  movl $4, -0(%rbp)
+  subq $4, %rbp
+  movl $9, -0(%rbp)
+  subq $4, %rbp
+  movl $8, -0(%rbp)
+  movl +4(%rbp), %eax
+  cmpl -0(%rbp), %eax
+  setg %al
+  movzbl %al, %eax
+  movl %eax, +4(%rbp)
+  addq $4, %rbp
+  movl -0(%rbp), %eax
+  subl %eax, +4(%rbp)
+  addq $4, %rbp
   movl +4(%rbp), %eax
   imull -0(%rbp), %eax
   movl %eax, +4(%rbp)
@@ -26,7 +39,21 @@ _main:
   subq $4, %rbp
   movl $7, -0(%rbp)
   subq $4, %rbp
-  movl $16, -0(%rbp)
+  movl $3, -0(%rbp)
+  subq $4, %rbp
+  movl $3, -0(%rbp)
+  movl +4(%rbp), %eax
+  cmpl -0(%rbp), %eax
+  setge %al
+  movzbl %al, %eax
+  movl %eax, +4(%rbp)
+  addq $4, %rbp
+  subq $4, %rbp
+  movl $4, -0(%rbp)
+  movl -0(%rbp), %eax
+  movl %eax, %ecx
+  sall %cl, +4(%rbp)
+  addq $4, %rbp
   movl +4(%rbp), %eax
   imull -0(%rbp), %eax
   movl %eax, +4(%rbp)
@@ -34,7 +61,21 @@ _main:
   subq $4, %rbp
   movl $9, -0(%rbp)
   subq $4, %rbp
-  movl $2, -0(%rbp)
+  movl $4, -0(%rbp)
+  subq $4, %rbp
+  movl $10, -0(%rbp)
+  subq $4, %rbp
+  movl $10, -0(%rbp)
+  movl +4(%rbp), %eax
+  cmpl -0(%rbp), %eax
+  setle %al
+  movzbl %al, %eax
+  movl %eax, +4(%rbp)
+  addq $4, %rbp
+  movl -0(%rbp), %eax
+  movl %eax, %ecx
+  sarl %cl, +4(%rbp)
+  addq $4, %rbp
   subq $4, %rbp
   movl $3, -0(%rbp)
   subq $4, %rbp
