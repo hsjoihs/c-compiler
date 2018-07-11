@@ -175,25 +175,25 @@ struct Token get_token(const char** ptr_to_str)
 		return t;
 	}
 
-	if (!(*str >= '0' && *str <= '9')) {
-		fprintf(stderr, 
-			"Expected a numeral, but found something else: '%c' %d", 
-			*str, 
-			(int)*str
-		);
-		abort();
+	if (*str >= '0' && *str <= '9') {
+		t.kind = LIT_DEC_INTEGER;
+		t.int_value = 0;
+		do {
+			if (*str >= '0' && *str <= '9'){ /* portable, since it is guaranteed that '0' - '9' are consecutive */
+				t.int_value *= 10;
+				t.int_value += *str - '0'; /* portable */
+				++str;
+			} else {
+				*ptr_to_str = str;
+				return t;
+			}
+		} while (1);
 	}
 
-	t.kind = LIT_DEC_INTEGER;
-	t.int_value = 0;
-	do {
-		if (*str >= '0' && *str <= '9'){ /* portable, since it is guaranteed that '0' - '9' are consecutive */
-			t.int_value *= 10;
-			t.int_value += *str - '0'; /* portable */
-			++str;
-		} else {
-			*ptr_to_str = str;
-			return t;
-		}
-	} while (1);
+	fprintf(stderr, 
+		"Found unexpected character: '%c' (%d)", 
+		*str, 
+		(int)*str
+	);
+	abort();
 }
