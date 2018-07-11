@@ -2,73 +2,73 @@
 _main:
   pushq %rbp
   movq %rsp, %rbp
-  subq $4, %rbp
-  movl $7, -0(%rbp)
-  subq $4, %rbp
-  movl $5, -0(%rbp)
-  movl +4(%rbp), %eax
-  imull -0(%rbp), %eax
-  movl %eax, +4(%rbp)
-  addq $4, %rbp
-  subq $4, %rbp
-  movl $12, -0(%rbp)
-  subq $4, %rbp
-  movl $41, -0(%rbp)
-  subq $4, %rbp
-  movl $3, -0(%rbp)
-  movl +4(%rbp), %eax
-  imull -0(%rbp), %eax
-  movl %eax, +4(%rbp)
-  addq $4, %rbp
-  movl -0(%rbp), %eax
-  movl %eax, +4(%rbp)
-  addq $4, %rbp
-  subq $4, %rbp
-  movl $7, -0(%rbp)
-  subq $4, %rbp
-  movl $16, -0(%rbp)
-  movl +4(%rbp), %eax
-  imull -0(%rbp), %eax
-  movl %eax, +4(%rbp)
-  addq $4, %rbp
-  subq $4, %rbp
-  movl $9, -0(%rbp)
-  subq $4, %rbp
-  movl $2, -0(%rbp)
-  movl -0(%rbp), %eax
-  movl %eax, +4(%rbp)
-  addq $4, %rbp
-  movl +4(%rbp), %eax
+  subq $4, %rsp
+  movl $7, -0(%rsp)
+  subq $4, %rsp
+  movl $5, -0(%rsp)
+  movl +4(%rsp), %eax
+  imull -0(%rsp), %eax
+  movl %eax, +4(%rsp)
+  addq $4, %rsp
+  subq $4, %rsp
+  movl $12, -0(%rsp)
+  subq $4, %rsp
+  movl $41, -0(%rsp)
+  subq $4, %rsp
+  movl $3, -0(%rsp)
+  movl +4(%rsp), %eax
+  imull -0(%rsp), %eax
+  movl %eax, +4(%rsp)
+  addq $4, %rsp
+  movl -0(%rsp), %eax
+  movl %eax, +4(%rsp)
+  addq $4, %rsp
+  subq $4, %rsp
+  movl $7, -0(%rsp)
+  subq $4, %rsp
+  movl $16, -0(%rsp)
+  movl +4(%rsp), %eax
+  imull -0(%rsp), %eax
+  movl %eax, +4(%rsp)
+  addq $4, %rsp
+  subq $4, %rsp
+  movl $9, -0(%rsp)
+  subq $4, %rsp
+  movl $2, -0(%rsp)
+  movl -0(%rsp), %eax
+  movl %eax, +4(%rsp)
+  addq $4, %rsp
+  movl +4(%rsp), %eax
   cltd
-  idivl -0(%rbp)
-  movl %eax, +4(%rbp)
-  addq $4, %rbp
-  movl -0(%rbp), %eax
-  addl %eax, +4(%rbp)
-  addq $4, %rbp
-  subq $4, %rbp
-  movl $10, -0(%rbp)
-  subq $4, %rbp
-  movl $8, -0(%rbp)
-  subq $4, %rbp
-  movl $3, -0(%rbp)
-  movl +4(%rbp), %eax
+  idivl -0(%rsp)
+  movl %eax, +4(%rsp)
+  addq $4, %rsp
+  movl -0(%rsp), %eax
+  addl %eax, +4(%rsp)
+  addq $4, %rsp
+  subq $4, %rsp
+  movl $10, -0(%rsp)
+  subq $4, %rsp
+  movl $8, -0(%rsp)
+  subq $4, %rsp
+  movl $3, -0(%rsp)
+  movl +4(%rsp), %eax
   cltd
-  idivl -0(%rbp)
-  movl %edx, +4(%rbp)
-  addq $4, %rbp
-  movl +4(%rbp), %eax
+  idivl -0(%rsp)
+  movl %edx, +4(%rsp)
+  addq $4, %rsp
+  movl +4(%rsp), %eax
   cltd
-  idivl -0(%rbp)
-  movl %eax, +4(%rbp)
-  addq $4, %rbp
-  movl -0(%rbp), %eax
-  subl %eax, +4(%rbp)
-  addq $4, %rbp
-  movl -0(%rbp), %eax
-  movl %eax, +4(%rbp)
-  addq $4, %rbp
-  movl -0(%rbp), %eax
-  addq $4, %rbp
+  idivl -0(%rsp)
+  movl %eax, +4(%rsp)
+  addq $4, %rsp
+  movl -0(%rsp), %eax
+  subl %eax, +4(%rsp)
+  addq $4, %rsp
+  movl -0(%rsp), %eax
+  movl %eax, +4(%rsp)
+  addq $4, %rsp
+  movl -0(%rsp), %eax
+  addq $4, %rsp
   popq %rbp
   ret

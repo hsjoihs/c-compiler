@@ -2,9 +2,9 @@
 _main:
   pushq %rbp
   movq %rsp, %rbp
-  subq $4, %rbp
-  movl $123, -0(%rbp)
-  movl -0(%rbp), %eax
-  addq $4, %rbp
+  subq $4, %rsp
+  movl $123, -0(%rsp)
+  movl -0(%rsp), %eax
+  addq $4, %rsp
   popq %rbp
   ret
