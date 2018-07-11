@@ -68,6 +68,14 @@ void rem_ints()
 	);
 }
 
+void comma_ints()
+{
+	printf(
+		"  movl -0(%%rbp), %%eax\n"
+		"  movl %%eax, +4(%%rbp)\n"
+	);
+}
+
 void print_footer()
 {
 	printf(

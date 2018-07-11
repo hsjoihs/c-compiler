@@ -5,9 +5,10 @@
 int main()
 {
 	/* 
-		(41*3) + (7*8) - (10/(8%3)) 
+		35,(41*3) + (7*8) - (10/(8%3)) 
 	*/
 	print_header();
+	push_int(35);
 	push_int(41);
 	push_int(3);
 	mul_ints();
@@ -21,6 +22,7 @@ int main()
 	rem_ints();
 	div_ints();
 	op_ints("subl");
+	comma_ints();
 	print_footer();
 	return 0;
 }

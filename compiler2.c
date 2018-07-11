@@ -17,6 +17,8 @@ int get_precedence(enum TokenKind k)
 			return -3;
 		case LEFT_PAREN:
 			return 123;
+		case OP_COMMA:
+			return -14;
 		default:
 			assert("NOT AN OPERATOR" && 0);
 			break;
@@ -35,8 +37,9 @@ void print_op(struct Token tok)
 		div_ints();
 	} else if (tok.kind == OP_PERCENT) {
 		rem_ints();
+	} else if (tok.kind == OP_COMMA) {
+		comma_ints();
 	/*} else if (tok.kind == OP_SLASH) {
-	} else if (tok.kind == OP_SLASH) {
 	} else if (tok.kind == OP_SLASH) {*/
 
 	} else {

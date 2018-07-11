@@ -13,6 +13,7 @@ void print_token(struct Token tok)
 		case END: fprintf(stderr,"DUMMY: END"); break;
 		case OP_SLASH: fprintf(stderr,"/"); break;
 		case OP_PERCENT: fprintf(stderr,"%%"); break;
+		case OP_COMMA: fprintf(stderr,","); break;
 		case LIT_DEC_INTEGER: fprintf(stderr,"%d", tok.int_value); break;
 	}
 }
@@ -54,6 +55,10 @@ struct Token get_token(const char** ptr_to_str)
 		return t;
 	} else if (*str == '%') {
 		t.kind = OP_PERCENT;
+		++*ptr_to_str;
+		return t;
+	} else if (*str == ',') {
+		t.kind = OP_COMMA;
 		++*ptr_to_str;
 		return t;
 	}

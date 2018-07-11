@@ -3,6 +3,8 @@ _main:
   pushq %rbp
   movq %rsp, %rbp
   subq $4, %rbp
+  movl $35, -0(%rbp)
+  subq $4, %rbp
   movl $41, -0(%rbp)
   subq $4, %rbp
   movl $3, -0(%rbp)
@@ -40,6 +42,8 @@ _main:
   movl -0(%rbp), %eax
   subl %eax, +4(%rbp)
   addq $4, %rbp
+  movl -0(%rbp), %eax
+  movl %eax, +4(%rbp)
   movl -0(%rbp), %eax
   addq $4, %rbp
   popq %rbp
