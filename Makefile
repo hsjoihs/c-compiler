@@ -3,6 +3,9 @@
 test_all_:
 	./test_all.sh
 
+clean:
+	rm *.out *.s
+
 lexer_check:
 	gcc -Wall lexer_check.c lexer.c -o lexer_check
 	echo '123+456-789' | ./lexer_check > res.txt
