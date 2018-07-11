@@ -43,6 +43,9 @@ int get_precedence(enum TokenKind k)
 		case OP_NOT_EQ:
 			return -7;
 
+		case OP_NOT:
+			return -1;
+
 		case EMPTY:
 		case RIGHT_PAREN:
 		case END:
@@ -88,6 +91,8 @@ void print_op(struct Token tok)
 			compare_ints("sete"); return;
 		case OP_NOT_EQ:
 			compare_ints("setne"); return;
+		case OP_NOT:
+			unary_not(); return;
 
 		case EMPTY:
 		case LEFT_PAREN:
@@ -141,7 +146,10 @@ void read_all_and_write_code(const char* str)
 					|| (
 						get_precedence(op_stack.vector[op_stack.length-1].kind) ==
 						get_precedence(tok.kind)
-						&& 1 /* is left-associative */ 
+						&& get_precedence(tok.kind) != -1 
+						&& get_precedence(tok.kind) != -2 
+						&& get_precedence(tok.kind) != -13 
+						 /* is left-associative */ 
 					)
 				) && op_stack.vector[op_stack.length-1].kind != LEFT_PAREN
 				/* the operator at the top of the operator stack is not a left bracket */

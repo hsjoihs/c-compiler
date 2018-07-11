@@ -103,7 +103,11 @@ _main:
   subq $4, %rbp
   movl $10, -0(%rbp)
   subq $4, %rbp
-  movl $1, -0(%rbp)
+  movl $0, -0(%rbp)
+  cmpl $0, -0(%rbp)
+  sete %al
+  movzbl %al, %eax
+  movl %eax, -0(%rbp)
   subq $4, %rbp
   movl $3, -0(%rbp)
   movl -0(%rbp), %eax

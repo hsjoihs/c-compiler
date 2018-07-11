@@ -50,7 +50,7 @@ test_task004:
 
 test_task005:
 	gcc -Wall compiler2.c vector.c print_assembly.c lexer.c -o compiler.out
-	./test_ret.sh '35,41*3+7*8-10/(8%3)' test_task005.s task005.out 174 compiler.out
+	./test_ret.sh '35,41*3+7*8-10/(8%(!!1+2))' test_task005.s task005.out 174 compiler.out
 	diff test_task005.s testing2.s
 
 test_task006:
@@ -60,7 +60,7 @@ test_task006:
 
 test_task007:
 	gcc -Wall compiler2.c vector.c print_assembly.c lexer.c -o compiler.out
-	./test_ret.sh '7*5 	,	(12,(41   )*(4-(9>8)))+7*((3>=3)<<4)/(9,(4>>(10<=10))+(3<3))-10/(	  ( 	1  <<3)	%3)' test_task007.s task007.out 174 compiler.out
+	./test_ret.sh '7*5 	,	(12,(41   )*(4-(9>8)))+7*((3>=3)<<4)/(9,(4>>(10<=10))+(3<3))-10/(	  ( 	!0  <<3)	%3)' test_task007.s task007.out 174 compiler.out
 	diff test_task007.s testing4.s
 
 test_task008:

@@ -27,6 +27,7 @@ void print_token(struct Token tok)
 		case EMPTY: fprintf(stderr,"(whitespace)"); break;
 		case OP_EQ_EQ: fprintf(stderr,"=="); break;
 		case OP_NOT_EQ: fprintf(stderr,"!="); break;
+		case OP_NOT: fprintf(stderr,"!"); break;
 		case LIT_DEC_INTEGER: fprintf(stderr,"%d", tok.int_value); break;
 	}
 }
@@ -162,7 +163,9 @@ struct Token get_token(const char** ptr_to_str)
 				*ptr_to_str += 2;
 				return t;
 			default:
-				assert("! unimplemented!!!" && 0);
+				t.kind = OP_NOT;
+				++*ptr_to_str;
+				return t;
 
 		}
 	}

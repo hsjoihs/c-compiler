@@ -28,7 +28,20 @@ _main:
   subq $4, %rbp
   movl $8, -0(%rbp)
   subq $4, %rbp
-  movl $3, -0(%rbp)
+  movl $1, -0(%rbp)
+  cmpl $0, -0(%rbp)
+  sete %al
+  movzbl %al, %eax
+  movl %eax, -0(%rbp)
+  cmpl $0, -0(%rbp)
+  sete %al
+  movzbl %al, %eax
+  movl %eax, -0(%rbp)
+  subq $4, %rbp
+  movl $2, -0(%rbp)
+  movl -0(%rbp), %eax
+  addl %eax, +4(%rbp)
+  addq $4, %rbp
   movl +4(%rbp), %eax
   cltd
   idivl -0(%rbp)

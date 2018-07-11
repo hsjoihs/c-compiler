@@ -86,6 +86,16 @@ void compare_ints(const char* str)
 	,str);
 }
 
+void unary_not(void)
+{
+	printf(
+		"  cmpl $0, -0(%%rbp)\n"
+		"  sete %%al\n"
+		"  movzbl %%al, %%eax\n"
+		"  movl %%eax, -0(%%rbp)\n"
+	);
+}
+
 /*
 sall: left shift
 sarl: right shift

@@ -7,3 +7,4 @@ void mul_ints(void);
 void div_ints(void);
 void rem_ints(void);
 void shift_ints(const char* str);
+void unary_not(void);
