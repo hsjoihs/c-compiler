@@ -31,6 +31,10 @@ print_assembly_check4:
 	gcc -Wall print_assembly_check4.c print_assembly.c -o pac4.out
 	./test_ret.sh '' testing4.s pa4.out 174 pac4.out
 
+print_assembly_check5:
+	gcc -Wall print_assembly_check5.c print_assembly.c -o pac5.out
+	./test_ret.sh '' testing5.s pa4.out 174 pac5.out
+
 test_task002:
 	gcc -Wall compiler2.c vector.c print_assembly.c lexer.c -o compiler.out
 	./test_ret.sh '123+56-5' test_task002.s task002.out 174 compiler.out
@@ -59,5 +63,8 @@ test_task007:
 	./test_ret.sh '7*5 	,	(12,(41   )*(4-(9>8)))+7*((3>=3)<<4)/(9,(4>>(10<=10))+(3<3))-10/(	  ( 	1  <<3)	%3)' test_task007.s task007.out 174 compiler.out
 	diff test_task007.s testing4.s
 
-	
+test_task008:
+	gcc -Wall compiler2.c vector.c print_assembly.c lexer.c -o compiler.out
+	./test_ret.sh '35,	((	41|	(8   !=     15))*  ((3==3)+2))+((5|2)*(9&10))   -   (10/(8%3))' test_task008.s task008.out 174 compiler.out
+	diff test_task008.s testing5.s
 
