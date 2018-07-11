@@ -23,7 +23,7 @@ lexer_check3:
 
 full_compile001:
 	gcc -Wall compiler2.c intmap.c vector.c print_assembly.c lexer.c -o out/compiler.out
-	./test_ret.sh '123' s/full_compile001.s out/task001.out 123 out/compiler.out
+	./test_ret2.sh input001.txt s/full_compile001.s out/task001.out 123 out/compiler.out
 
 print_assembly_check003:
 	gcc -Wall print_assembly_check003.c print_assembly.c -o out/pac003.out
