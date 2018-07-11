@@ -26,8 +26,8 @@
 | -1 | `! ~ ` | unary prefix | no |
 | -3 | `* / %` | binary, left | yes |
 | -4 | `+ -` | binary, left | yes |
-| -5 | `<< >>` | binary, left | no |
-| -6 | `< <= > >=` | binary, left | no |
+| -5 | `<< >>` | binary, left | yes |
+| -6 | `< <= > >=` | binary, left | yes |
 | -7 | `== !=` | binary, left | no |
 | -8 | `&` | binary, left | no |
 | -9 | `|` | binary, left| no |
