@@ -46,7 +46,7 @@ print_assembly_check008:
 	./test_ret.sh s/print_assembly_check008.s out/pa008.out 174 out/pac008.out
 
 print_assembly_check009:
-	gcc -Wall print_assembly_check009.c print_assembly.c -o out/pac009.out
+	gcc -Wall print_assembly_check009.c vector.c print_assembly.c -o out/pac009.out
 	./test_ret.sh s/print_assembly_check009.s out/pa009.out 174 out/pac009.out
 
 intmap_check:

@@ -5,7 +5,8 @@
 
 const char* typelist[] = {
 	"Token",
-	"charptANDint"
+	"charptANDint",
+	"Int"
 };
 
 void foo(FILE* output, const char* path, const char* replacer)
