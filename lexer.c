@@ -129,6 +129,7 @@ struct Token get_token(const char** ptr_to_str)
 	}
 
 	if (!(*str >= '0' && *str <= '9')) {
+		fprintf(stderr, "%c %d", *str, (int)*str);
 		assert("Expected a numeral, but found something else" && 0);
 	}
 
