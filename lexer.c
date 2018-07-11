@@ -11,6 +11,8 @@ void print_token(struct Token tok)
 		case LEFT_PAREN: fprintf(stderr,"("); break;
 		case RIGHT_PAREN: fprintf(stderr,")"); break;
 		case END: fprintf(stderr,"DUMMY: END"); break;
+		case OP_SLASH: fprintf(stderr,"/"); break;
+		case OP_PERCENT: fprintf(stderr,"%%"); break;
 		case LIT_DEC_INTEGER: fprintf(stderr,"%d", tok.int_value); break;
 	}
 }
@@ -44,6 +46,14 @@ struct Token get_token(const char** ptr_to_str)
 		return t;
 	} else if (*str == ')') {
 		t.kind = RIGHT_PAREN;
+		++*ptr_to_str;
+		return t;
+	} else if (*str == '/') {
+		t.kind = OP_SLASH;
+		++*ptr_to_str;
+		return t;
+	} else if (*str == '%') {
+		t.kind = OP_PERCENT;
 		++*ptr_to_str;
 		return t;
 	}

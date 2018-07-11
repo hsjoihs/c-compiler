@@ -12,6 +12,8 @@ int get_precedence(enum TokenKind k)
 		case OP_MINUS:
 			return -4;
 		case OP_ASTERISK:
+		case OP_SLASH:
+		case OP_PERCENT:
 			return -3;
 		case LEFT_PAREN:
 			return 123;
@@ -29,6 +31,13 @@ void print_op(struct Token tok)
 		op_ints("subl");
 	} else if (tok.kind == OP_ASTERISK){
 		mul_ints();
+	} else if (tok.kind == OP_SLASH) {
+		div_ints();
+	} else if (tok.kind == OP_PERCENT) {
+	/*} else if (tok.kind == OP_SLASH) {
+	} else if (tok.kind == OP_SLASH) {
+	} else if (tok.kind == OP_SLASH) {*/
+
 	} else {
 		assert("gfdagaws" && 0);
 	}

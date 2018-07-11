@@ -10,7 +10,9 @@ enum TokenKind {
 	LIT_DEC_INTEGER,
 	OP_ASTERISK,
 	LEFT_PAREN,
-	RIGHT_PAREN
+	RIGHT_PAREN,
+	OP_SLASH,
+	OP_PERCENT
 };
 
 struct Token{
