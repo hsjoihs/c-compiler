@@ -1,6 +1,7 @@
 #include "lexer.h"
 #include <assert.h>
 #include <stdio.h>
+#include <string.h>
 
 void print_token(struct Token tok)
 {
@@ -20,6 +21,7 @@ void print_token(struct Token tok)
 		case OP_GT: fprintf(stderr,">"); break;
 		case OP_GT_EQ: fprintf(stderr,">="); break;
 		case OP_RSHIFT: fprintf(stderr,">>"); break;
+		case OP_AND: fprintf(stderr,"&"); break;
 		case LIT_DEC_INTEGER: fprintf(stderr,"%d", tok.int_value); break;
 	}
 }
@@ -33,6 +35,11 @@ struct Token get_token(const char** ptr_to_str)
 	if (*str == 0) { /* '\0' is 0 in C */
 		t.kind = END;
 		return t;
+	}
+
+	if (strchr(" \t\n\v\f\r", *str)) {
+		++*ptr_to_str;
+		return get_token(ptr_to_str);
 	}
 
 	if (*str == '+') {
@@ -94,6 +101,21 @@ struct Token get_token(const char** ptr_to_str)
 				return t;
 			default:
 				t.kind = OP_GT;
+				++*ptr_to_str;
+				return t;
+		}
+	} else if (*str == '&') {
+		switch(str[1]) {
+			/*case '&':
+				t.kind = OP_AND_AND;
+				*ptr_to_str += 2;
+				return t;
+			case '=':
+				t.kind = OP_AND_EQ;
+				*ptr_to_str += 2;
+				return t;*/
+			default:
+				t.kind = OP_AND;
 				++*ptr_to_str;
 				return t;
 		}

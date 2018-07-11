@@ -33,6 +33,9 @@ int get_precedence(enum TokenKind k)
 		case OP_RSHIFT:
 			return -5;
 
+		case OP_AND:
+			return -8;
+
 		case RIGHT_PAREN:
 		case END:
 		case LIT_DEC_INTEGER:
@@ -69,6 +72,8 @@ void print_op(struct Token tok)
 			compare_ints("setge"); return;
 		case OP_RSHIFT:
 			shift_ints("sarl"); return;
+		case OP_AND:
+			op_ints("andl"); return;
 
 		case LEFT_PAREN:
 		case RIGHT_PAREN:
