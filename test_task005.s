@@ -24,7 +24,14 @@ _main:
   subq $4, %rbp
   movl $10, -0(%rbp)
   subq $4, %rbp
-  movl $2, -0(%rbp)
+  movl $8, -0(%rbp)
+  subq $4, %rbp
+  movl $3, -0(%rbp)
+  movl +4(%rbp), %eax
+  cltd
+  idivl -0(%rbp)
+  movl %edx, +4(%rbp)
+  addq $4, %rbp
   movl +4(%rbp), %eax
   cltd
   idivl -0(%rbp)

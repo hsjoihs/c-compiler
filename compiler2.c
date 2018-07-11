@@ -34,6 +34,7 @@ void print_op(struct Token tok)
 	} else if (tok.kind == OP_SLASH) {
 		div_ints();
 	} else if (tok.kind == OP_PERCENT) {
+		rem_ints();
 	/*} else if (tok.kind == OP_SLASH) {
 	} else if (tok.kind == OP_SLASH) {
 	} else if (tok.kind == OP_SLASH) {*/

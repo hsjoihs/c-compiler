@@ -5,7 +5,7 @@
 int main()
 {
 	/* 
-		(41*3) + (7*8) - (10/2) 
+		(41*3) + (7*8) - (10/(8%3)) 
 	*/
 	print_header();
 	push_int(41);
@@ -16,7 +16,9 @@ int main()
 	mul_ints();
 	op_ints("addl");
 	push_int(10);
-	push_int(2);
+	push_int(8);
+	push_int(3);
+	rem_ints();
 	div_ints();
 	op_ints("subl");
 	print_footer();

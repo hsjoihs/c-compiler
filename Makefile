@@ -35,5 +35,5 @@ test_task004:
 
 test_task005:
 	gcc -Wall compiler2.c vector.c print_assembly.c lexer.c -o compiler.out
-	./test_ret.sh '41*3+7*8-10/2' test_task005.s task005.out 174 compiler.out
+	./test_ret.sh '41*3+7*8-10/(8%3)' test_task005.s task005.out 174 compiler.out
 	diff test_task005.s testing2.s

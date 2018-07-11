@@ -57,6 +57,17 @@ void div_ints()
 	);
 }
 
+void rem_ints()
+{
+	printf(
+		"  movl +4(%%rbp), %%eax\n"
+  		"  cltd\n"
+  		"  idivl -0(%%rbp)\n"
+  		"  movl %%edx, +4(%%rbp)\n"
+  		"  addq $4, %%rbp\n"
+	);
+}
+
 void print_footer()
 {
 	printf(
