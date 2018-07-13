@@ -86,3 +86,5 @@
 	* それによって不要になったテストを削除。`print_assembly_check009` はcheckではなくsandboxなので、そう改名。
 
 - clang-formatを使用。
+
+- 再帰下降で全部書き直すことに成功。
