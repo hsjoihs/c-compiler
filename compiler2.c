@@ -167,9 +167,9 @@ void read_all_and_write_code(const char* str)
 			}
 			push_vector_Token(&op_stack, tok);
 		}
-	}while(1);
+	} while (1);
 
-	while(op_stack.length > 0) {
+	while (op_stack.length > 0) {
 		print_op(pop_vector_Token(&op_stack));
 	}
 
@@ -194,7 +194,7 @@ int main(int argc, char const *argv[])
 	char str[1000];
 	/* const char* str = "123+456-789"; */
 	scanf("%[^\n]s", str); /* VULNERABLE!!! */
-	if(argc == 2) {
+	if (argc == 2) {
 		if(strcmp(argv[1], "--lexer-debug") == 0) {
 			read_all_tokens(str);
 		}
