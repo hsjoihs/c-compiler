@@ -151,15 +151,29 @@ void parse_expression(const struct Token **ptr_to_tokvec)
 	*ptr_to_tokvec = tokvec;
 }
 
+/* FIXME */
+int from_name(const char *str)
+{
+	if (strcmp(str, "a") == 0) {
+		return -4;
+	} else if (strcmp(str, "b") == 0) {
+		return -8;
+	} else {
+		return GARBAGE_INT;
+	}
+}
+
 void parse_assignment_expression(const struct Token **ptr_to_tokvec)
 {
 	const struct Token *tokvec = *ptr_to_tokvec;
 	if (tokvec[0].kind == IDENT_OR_RESERVED && tokvec[1].kind == OP_EQ) {
-		printf("// FIXME: `%s as lvalue`\n", tokvec[0].ident_str);
+		const char *name = tokvec[0].ident_str;
 		tokvec += 2;
 		*ptr_to_tokvec = tokvec;
 		parse_assignment_expression(&tokvec);
-		printf("// FIXME: `=`\n");
+
+		printf("//assign to `%s`\n", name);
+		write_to_local(from_name(name));
 	} else {
 		parse_conditional_expression(&tokvec);
 	}
@@ -319,6 +333,11 @@ void parse_primary_expression(const struct Token **ptr_to_tokvec)
 		++*ptr_to_tokvec;
 		push_int(tokvec[0].int_value);
 		return;
+	} else if (tokvec[0].kind == IDENT_OR_RESERVED) {
+		++*ptr_to_tokvec;
+		printf("//`%s` as rvalue\n", tokvec[0].ident_str);
+		push_from_local(from_name(tokvec[0].ident_str));
+		return;
 	} else if (tokvec[0].kind == LEFT_PAREN) {
 		++tokvec;
 		*ptr_to_tokvec = tokvec;
@@ -358,8 +377,8 @@ void parse_statement(const struct Token **ptr_to_tokvec)
 				++tokvec;
 				*ptr_to_tokvec = tokvec;
 
-				printf("//return \n"
-				       "  jmp .FIXME\n");
+				return_with_label("FIXME");
+
 				return;
 			} else {
 				error_unexpected_token(
@@ -382,11 +401,11 @@ void parse_statement(const struct Token **ptr_to_tokvec)
 	*ptr_to_tokvec = tokvec;
 }
 
-void parse_final(const struct Token **ptr_to_tokvec)
+void parse_final(const struct Token **ptr_to_tokvec, int offset)
 {
 	const struct Token *tokvec = *ptr_to_tokvec;
 	if (tokvec[0].kind == END) {
-		print_epilogue(0);
+		print_epilogue("FIXME", offset);
 	}
 }
 
@@ -416,10 +435,12 @@ int main(int argc, char const *argv[])
 	} else {
 		struct vector_Token tokvec_ = read_all_tokens(str);
 		const struct Token *tokvec = tokvec_.vector;
-		print_prologue(0);
+
+		int offset = 8;
+		print_prologue(offset);
 		while (1) {
 			if (tokvec[0].kind == END) {
-				parse_final(&tokvec);
+				parse_final(&tokvec, offset);
 				return 0;
 			} else {
 				parse_statement(&tokvec);

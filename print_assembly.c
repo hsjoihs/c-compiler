@@ -67,6 +67,13 @@ void mul_ints(void)
 	       "  addq $4, %%rsp\n");
 }
 
+void return_with_label(const char *str)
+{
+	printf("//return \n"
+	       "  jmp .%s\n",
+	       str);
+}
+
 void div_ints(void)
 {
 	printf("//div_ints()\n");
@@ -138,13 +145,13 @@ void shift_ints(const char *str)
 	       str);
 }
 
-void print_epilogue(int alloc_size)
+void print_epilogue(const char *label, int alloc_size)
 {
 	printf("//print_epilogue(%d)\n", alloc_size);
-	printf(".FIXME:"
+	printf(".%s:"
 	       "  movl (%%rsp), %%eax\n"
 	       "  addq $%d, %%rsp\n"
 	       "  movq (%%rbp), %%rbp\n"
 	       "  ret\n",
-	       12 + alloc_size);
+	       label, 12 + alloc_size);
 }

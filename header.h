@@ -1,6 +1,5 @@
 void print_prologue(int alloc_size);
 void push_int(int num);
-void print_epilogue(int alloc_size);
 void op_ints(const char* str);
 void compare_ints(const char* str);
 void mul_ints(void);
@@ -11,6 +10,8 @@ void unary_not(void);
 void unary(const char* str);
 void push_from_local(int offset);
 void write_to_local(int offset);
+void return_with_label(const char *str);
+void print_epilogue(const char *label, int alloc_size);
 
 #pragma once
 

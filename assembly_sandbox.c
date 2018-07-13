@@ -5,7 +5,7 @@
 int main()
 {
 	/*
-	    a = b = 9, a = 41*3, 55 - (b = 4) + a
+	    return (a = b = 9, a = 41*3, 55 - (b = 4) + a);
 	*/
 
 	struct vector_Int offsets = init_vector_Int(0);
@@ -36,6 +36,7 @@ int main()
 	op_ints("addl");                            /* + */
 
 	op_ints("movl"); /* , */
-	print_epilogue(8);
+	return_with_label("FIXME");
+	print_epilogue("FIXME", 8);
 	return 0;
 }
