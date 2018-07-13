@@ -141,7 +141,8 @@ void shift_ints(const char *str)
 void print_epilogue(int alloc_size)
 {
 	printf("//print_epilogue(%d)\n", alloc_size);
-	printf("  movl (%%rsp), %%eax\n"
+	printf(".FIXME:"
+	       "  movl (%%rsp), %%eax\n"
 	       "  addq $%d, %%rsp\n"
 	       "  movq (%%rbp), %%rbp\n"
 	       "  ret\n",

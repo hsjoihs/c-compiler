@@ -340,6 +340,9 @@ void parse_statement(const struct Token **ptr_to_tokvec)
 			if (tokvec[0].kind == SEMICOLON) {
 				++tokvec;
 				*ptr_to_tokvec = tokvec;
+
+				printf("//return \n"
+				       "  jmp .FIXME\n");
 				return;
 			} else {
 				error_unexpected_token(
