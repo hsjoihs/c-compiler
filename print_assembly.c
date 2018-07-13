@@ -65,6 +65,12 @@ void push_eax(void)
 	       "  movl %%eax, (%%rsp)\n");
 }
 
+void pop_to_reg(const char *str)
+{
+	printf("  movl (%%rsp), %%%s\n",str);
+	printf("  addq $4, %%rsp\n");
+}
+
 void op_ints(const char *str)
 {
 	printf("//op_ints(\"%s\")\n", str);

@@ -17,6 +17,7 @@ void return_with_label(int label);
 void print_epilogue(int label, int alloc_size);
 void push_eax(void);
 void push_ret_of(const char* fname);
+void pop_to_reg(const char *str);
 
 #define GARBAGE_INT 0xCCCCCCCC
 #define BOOL int

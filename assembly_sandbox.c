@@ -1,20 +1,52 @@
 #include "header.h"
 #include "vector.h"
 #include <stdio.h>
-
 /*
-    return (3, always87() + always87());
-*/
+int always87_(int x, int y) { return 87; }
 
 int main()
 {
-	print_prologue(0);
-	push_int(3);
-	push_ret_of("always87");
-	push_ret_of("always87");
+    int b = 3;
+    b = always87_(13 + 6, 30 + 5) + 87;
+    return b;
+}
+*/
+int main()
+{
+
+	puts("_foo:\n"
+	     "  pushq %rbp\n"
+	     "  movq %rsp, %rbp\n"
+	     "  movl %edi, -4(%rbp)\n"
+	     "  movl %esi, -8(%rbp)\n"
+	     "  movl -4(%rbp), %eax\n"
+	     "  addl $103, %eax\n"
+	     "  subl -8(%rbp), %eax\n"
+	     "  popq %rbp\n"
+	     "  ret\n");
+
+	print_prologue(16);
+
+	push_int(6);
+
+	push_int(30);
+	push_int(5);
 	op_ints("addl");
-	op_ints("movl");
-	return_with_label(2);
-	print_epilogue(2, 0);
-	return 0;
+	pop_to_reg("esi");
+
+	push_int(13);
+	op_ints("addl");
+	pop_to_reg("edi");
+
+	push_ret_of("foo");
+
+	push_int(87);
+	op_ints("addl");
+
+	puts("  movl (%rsp),%eax\n"
+	     "  addq $4, %rsp\n"
+	     "  movl %eax, -4(%rsp)\n"
+	     "  movl -4(%rsp), %eax\n"
+	     "  leave\n"
+	     "  ret\n");
 }
