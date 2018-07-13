@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include <stdlib.h>
+#include <string.h>
 #include "header.h"
 #include "vector.h"
 
@@ -175,10 +176,30 @@ void read_all_and_write_code(const char* str)
 	print_epilogue(0);
 }
 
-int main()
+void read_all_tokens(const char* str)
+{
+	struct Token tok;
+	do {
+		tok = get_token(&str);
+		print_token(tok);
+		fprintf(stderr, "\n");
+		if (tok.kind == END) {
+			break;
+		}
+	} while (1);
+}
+
+int main(int argc, char const *argv[])
 {
 	char str[1000];
 	/* const char* str = "123+456-789"; */
 	scanf("%[^\n]s", str); /* VULNERABLE!!! */
-	read_all_and_write_code(str);
+	if(argc == 2) {
+		if(strcmp(argv[1], "--lexer-debug") == 0) {
+			read_all_tokens(str);
+		}
+	} else {
+		read_all_and_write_code(str);
+	}
+	return 0;
 }
