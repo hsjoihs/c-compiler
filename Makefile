@@ -3,6 +3,9 @@
 test_all_:
 	./test_all.sh
 
+format:
+	clang-format -i *.c -style=file
+
 clean:
 	rm out/*.out s/*.s
 
