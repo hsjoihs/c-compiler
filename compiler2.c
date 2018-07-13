@@ -92,6 +92,9 @@ void print_op(enum TokenKind kind)
 		case OP_NOT_EQ:
 			compare_ints("setne");
 			return;
+		case OP_HAT:
+			op_ints("xorl");
+			return;
 
 		case OP_EQ: {
 			assert("= is unimplemented!!!!" && 0);
@@ -137,6 +140,8 @@ void parse_multiplicative_expression(struct ParserState *ptr_ps,
 void parse_primary_expression(struct ParserState *ptr_ps,
                               const struct Token **ptr_to_tokvec);
 void parse_inclusive_OR_expression(struct ParserState *ptr_ps,
+                                   const struct Token **ptr_to_tokvec);
+void parse_exclusive_OR_expression(struct ParserState *ptr_ps,
                                    const struct Token **ptr_to_tokvec);
 void parse_AND_expression(struct ParserState *ptr_ps,
                           const struct Token **ptr_to_tokvec);
@@ -208,10 +213,27 @@ void parse_inclusive_OR_expression(struct ParserState *ptr_ps,
                                    const struct Token **ptr_to_tokvec)
 {
 	const struct Token *tokvec = *ptr_to_tokvec;
-	parse_AND_expression(ptr_ps, &tokvec);
+	parse_exclusive_OR_expression(ptr_ps, &tokvec);
 	while (1) {
 		enum TokenKind kind = tokvec[0].kind;
 		if (kind != OP_OR) {
+			break;
+		}
+		++tokvec;
+		parse_exclusive_OR_expression(ptr_ps, &tokvec);
+		print_op(kind);
+	}
+	*ptr_to_tokvec = tokvec;
+}
+
+void parse_exclusive_OR_expression(struct ParserState *ptr_ps,
+                                   const struct Token **ptr_to_tokvec)
+{
+	const struct Token *tokvec = *ptr_to_tokvec;
+	parse_AND_expression(ptr_ps, &tokvec);
+	while (1) {
+		enum TokenKind kind = tokvec[0].kind;
+		if (kind != OP_HAT) {
 			break;
 		}
 		++tokvec;

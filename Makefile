@@ -44,4 +44,5 @@ full_compile:
 	./test_ret3.sh '23; 45+37; return -(1-175); ((12-1)*75);' s/full_compile021.s out/task021.out 174 out/compiler.out
 	./test_ret3.sh 'return (a = b = 9, a = 41*3, 55 - (b = 4) + a);' s/full_compile022.s out/task022.out 174 out/compiler.out
 	./test_ret3.sh 'a = b = c = 9; d = 5; a = 41*3; return (c, _q432 = 8, d = 11*5) - (b = 4) + a;' s/full_compile023.s out/task023.out 174 out/compiler.out
+	./test_ret3.sh 'return 175^1;' s/full_compile024.s out/task024.out 174 out/compiler.out
 

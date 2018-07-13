@@ -39,6 +39,9 @@ void print_token(struct Token tok)
 		case OP_LT:
 			fprintf(stderr, "<");
 			break;
+		case OP_HAT:
+			fprintf(stderr, "^");
+			break;
 		case OP_LT_EQ:
 			fprintf(stderr, "<=");
 			break;
@@ -138,6 +141,10 @@ struct Token get_token(const char **ptr_to_str)
 		return t;
 	} else if (*str == ',') {
 		t.kind = OP_COMMA;
+		++*ptr_to_str;
+		return t;
+	} else if (*str == '^') {
+		t.kind = OP_HAT;
 		++*ptr_to_str;
 		return t;
 	} else if (*str == ';') {
