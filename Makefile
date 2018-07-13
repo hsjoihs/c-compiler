@@ -22,6 +22,8 @@ intmap_check:
 full_compile:
 	gcc -Wall compiler2.c intmap.c vector.c print_assembly.c lexer.c -o out/compiler.out
 	./test_ret3.sh '123' s/full_compile001.s out/task001.out 123 out/compiler.out
+	./test_ret3.sh '(123)' s/full_compile010.s out/task010.out 123 out/compiler.out
+	./test_ret3.sh '((((123))))' s/full_compile011.s out/task011.out 123 out/compiler.out
 	#./test_ret3.sh '123+56-5' s/full_compile002.s out/task002.out 174 out/compiler.out
 	#./test_ret3.sh '0x29*3+7*8-5*1' s/full_compile003.s out/task003.out 174 out/compiler.out
 	#./test_ret3.sh '6*(3+7)-5*1' s/full_compile004.s out/task004.out 55 out/compiler.out

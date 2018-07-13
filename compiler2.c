@@ -207,6 +207,13 @@ void read_all_tokens_debug(const char *str)
 	} while (1);
 }
 
+void parse_primary_expression(const struct Token **ptr_to_tokvec);
+
+void parse_expression(const struct Token **ptr_to_tokvec)
+{
+	parse_primary_expression(ptr_to_tokvec);
+}
+
 void parse_primary_expression(const struct Token **ptr_to_tokvec)
 {
 	const struct Token *tokvec = *ptr_to_tokvec;
@@ -214,9 +221,21 @@ void parse_primary_expression(const struct Token **ptr_to_tokvec)
 		++*ptr_to_tokvec;
 		push_int(tokvec[0].int_value);
 		return;
+	} else if (tokvec[0].kind == LEFT_PAREN) {
+		++tokvec;
+		*ptr_to_tokvec = tokvec;
+		parse_expression(&tokvec);
+		if (tokvec[0].kind == RIGHT_PAREN) {
+			++tokvec;
+			*ptr_to_tokvec = tokvec;
+			return;
+		}
 	}
 
-	assert("cannot be here" && 0);
+	fprintf(stderr, "Unexpected token: `");
+	print_token(tokvec[0]);
+	fprintf(stderr, "`. Aborting.\n");
+	abort();
 }
 
 void parse_final(const struct Token **ptr_to_tokvec)
