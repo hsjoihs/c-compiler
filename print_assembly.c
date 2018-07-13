@@ -114,10 +114,14 @@ void unary_not(void)
 	       "  movl %%eax, (%%rsp)\n");
 }
 
-void unary_bitnot(void)
+/*
+notl: bitnot
+negl: integer negation
+*/
+void unary(const char *str)
 {
-	printf("//unary_bitnot()\n");
-	printf("  notl (%%rsp)\n");
+	printf("//unary(\"%s\")\n", str);
+	printf("  %s (%%rsp)\n", str);
 }
 
 /*

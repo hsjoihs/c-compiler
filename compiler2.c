@@ -5,6 +5,33 @@
 #include <stdlib.h>
 #include <string.h>
 
+void print_unary_prefix_op(enum TokenKind kind)
+{
+	switch (kind) {
+		case OP_NOT:
+			unary_not();
+			return;
+		case OP_TILDA:
+			unary("notl");
+			return;
+		case OP_PLUS:
+			/* do nothing */
+			return;
+		case OP_MINUS:
+			unary("negl");
+			return;
+		case IDENT_OR_RESERVED:
+		case LEFT_PAREN:
+		case RIGHT_PAREN:
+		case END:
+		case LIT_DEC_INTEGER:
+			assert("failure!!! not an op!!!!" && 0);
+		default:
+			assert("failure!!! not a unary prefix op!!!!" && 0);
+	}
+	assert("unimplemented!!!!" && 0);
+}
+
 void print_op(enum TokenKind kind)
 {
 	switch (kind) {
@@ -56,24 +83,20 @@ void print_op(enum TokenKind kind)
 		case OP_NOT_EQ:
 			compare_ints("setne");
 			return;
-		case OP_NOT:
-			unary_not();
-			return;
-		case OP_TILDA:
-			unary_bitnot();
-			return;
 
 		case OP_EQ: {
 			assert("= is unimplemented!!!!" && 0);
 			return;
 		}
 
+		case OP_NOT:
+		case OP_TILDA:
 		case IDENT_OR_RESERVED:
 		case LEFT_PAREN:
 		case RIGHT_PAREN:
 		case END:
 		case LIT_DEC_INTEGER:
-			assert("failure!!! not an op!!!!" && 0);
+			assert("failure!!! not a binary op!!!!" && 0);
 	}
 
 	assert("unimplemented!!!!" && 0);
@@ -251,11 +274,12 @@ void parse_unary_expression(const struct Token **ptr_to_tokvec)
 	const struct Token *tokvec = *ptr_to_tokvec;
 
 	/* unary-operator cast-expression */
-	if (tokvec[0].kind == OP_NOT || tokvec[0].kind == OP_TILDA) {
+	if (tokvec[0].kind == OP_NOT || tokvec[0].kind == OP_TILDA ||
+	    tokvec[0].kind == OP_PLUS || tokvec[0].kind == OP_MINUS) {
 		enum TokenKind kind = tokvec[0].kind;
 		++tokvec;
 		parse_cast_expression(&tokvec);
-		print_op(kind);
+		print_unary_prefix_op(kind);
 	} else {
 		parse_postfix_expression(&tokvec);
 	}

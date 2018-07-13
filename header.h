@@ -8,7 +8,7 @@ void div_ints(void);
 void rem_ints(void);
 void shift_ints(const char* str);
 void unary_not(void);
-void unary_bitnot(void);
+void unary(const char* str);
 void push_from_local(int offset);
 void write_to_local(int offset);
 
