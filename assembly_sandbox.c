@@ -8,24 +8,35 @@ int main()
 	    return 2 + (1 ? 100 + 72 : 17);
 	*/
 
+	int label1 = 2;
+	int label2 = 3;
+
 	print_prologue(0);
 
 	push_int(2);
+
 	push_int(1);
 	printf("  cmpl $0, (%%rsp)\n"
-	       "  je .L2\n");
+	       "  je .L%d\n",
+	       label1);
+
 	push_int(100);
 	push_int(72);
 	op_ints("addl");
+
 	printf("  movl (%%rsp), %%eax\n"
 	       "  addq $4, %%rsp\n"
-	       "  jmp .L3\n"
-	       ".L2:\n");
+	       "  jmp .L%d\n"
+	       ".L%d:\n",
+	       label2, label1);
+
 	push_int(17);
+
 	printf("  movl (%%rsp), %%eax\n"
 	       "  addq $4, %%rsp\n"
-	       ".L3:\n"
-	       "  movl %%eax, (%%rsp)\n");
+	       ".L%d:\n"
+	       "  movl %%eax, (%%rsp)\n",
+	       label2);
 
 	op_ints("addl");
 
