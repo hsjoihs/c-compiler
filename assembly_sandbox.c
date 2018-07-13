@@ -12,22 +12,20 @@ int main()
 
 	push_int(2);
 	push_int(1);
-	printf(
-	       "  cmpl $0, (%%rsp)\n"
+	printf("  cmpl $0, (%%rsp)\n"
 	       "  je .L2\n");
 	push_int(100);
 	push_int(72);
 	op_ints("addl");
 	printf("  movl (%%rsp), %%eax\n"
-		   "  addq $4, %%rsp\n"
+	       "  addq $4, %%rsp\n"
 	       "  jmp .L3\n"
 	       ".L2:\n");
 	push_int(17);
 	printf("  movl (%%rsp), %%eax\n"
 	       "  addq $4, %%rsp\n"
 	       ".L3:\n"
-	       "  movl %%eax, (%%rsp)\n"
-	       );
+	       "  movl %%eax, (%%rsp)\n");
 
 	op_ints("addl");
 
