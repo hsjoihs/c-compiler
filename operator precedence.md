@@ -11,6 +11,7 @@
 | -6 | `< <= > >=` | binary, left | yes |
 | -7 | `== !=` | binary, left | yes |
 | -8 | `&` | binary, left | yes |
+| -8.5 | `^` | binary, left | no |
 | -9 | `|` | binary, left| yes |
 | -10 | `&&` | binary, left | no |
 | -11 | `||` | binary, left | no |
@@ -30,5 +31,6 @@
 | -6 | `< <= > >=` | binary, left | yes |
 | -7 | `== !=` | binary, left | yes |
 | -8 | `&` | binary, left | yes |
+| -8.5 | `^` | binary, left | no |
 | -9 | `|` | binary, left| yes |
 | -14 | `,` | binary, left | yes |
