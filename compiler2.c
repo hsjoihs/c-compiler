@@ -414,12 +414,47 @@ void parse_postfix_expression(struct ParserState *ptr_ps,
 {
 	const struct Token *tokvec = *ptr_to_tokvec;
 	if (tokvec[0].kind == IDENT_OR_RESERVED && tokvec[1].kind == LEFT_PAREN) {
+		const char *ident_str = tokvec[0].ident_str;
 		if (tokvec[2].kind == RIGHT_PAREN) {
-			push_ret_of(tokvec[0].ident_str);
+			push_ret_of(ident_str);
+			tokvec += 3;
 		} else {
-			fprintf(stderr, "calling with arguments is unimplemented!\n");
+			const char *regs[] = {"edi", "esi", "edx", "ecx", "r8d", "r9d"};
+			tokvec += 2;
+			int counter = 0;
+
+			parse_assignment_expression(ptr_ps, &tokvec);
+			pop_to_reg(regs[counter]);
+			counter++;
+			while (1) {
+				enum TokenKind kind = tokvec[0].kind;
+				if (kind != OP_COMMA) {
+					break;
+				}
+				++tokvec;
+				parse_assignment_expression(ptr_ps, &tokvec);
+				if (counter > 5) {
+					fprintf(
+					    stderr,
+					    "calling with 7 or more arguments is unimplemented!\n");
+					abort();
+				}
+				pop_to_reg(regs[counter]);
+				counter++;
+			}
+
+			push_ret_of(ident_str);
+			*ptr_to_tokvec = tokvec;
+
+			if (tokvec[0].kind == RIGHT_PAREN) {
+				++tokvec;
+				*ptr_to_tokvec = tokvec;
+			} else {
+				error_unexpected_token(tokvec[0],
+				                       "closing parenthesis of function call");
+			}
 		}
-		tokvec += 3;
+
 	} else {
 		parse_primary_expression(ptr_ps, &tokvec);
 	}

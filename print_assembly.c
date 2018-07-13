@@ -55,7 +55,8 @@ void push_ret_of(const char *fname)
 	printf("  movl $0, %%eax\n"
 	       "  call " PREFIX "%s\n",
 	       fname);
-	push_eax();
+	printf("  subq $4, %%rsp\n"
+	       "  movl %%eax, (%%rsp)\n");
 }
 
 void push_eax(void)
@@ -67,7 +68,8 @@ void push_eax(void)
 
 void pop_to_reg(const char *str)
 {
-	printf("  movl (%%rsp), %%%s\n",str);
+	printf("//pop_to_reg(%s)\n", str);
+	printf("  movl (%%rsp), %%%s\n", str);
 	printf("  addq $4, %%rsp\n");
 }
 
