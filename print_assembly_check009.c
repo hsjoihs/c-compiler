@@ -1,6 +1,5 @@
 #include <stdio.h>
-#include "lexer.h"
-#include "print_assembly.h"
+#include "header.h"
 #include "vector.h"
 
 int main()

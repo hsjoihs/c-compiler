@@ -1,14 +1,5 @@
 /* AUTOMATICALLY GENERATED. DO NOT EDIT. */
-#include "lexer.h"
-
-struct charptANDint {
-	const char* ptr;
-	int value;
-};
-
-struct Int {
-	int i;
-};
+#include "header.h"
 struct vector_Token {
 	int length;
 	int _allocated_length;

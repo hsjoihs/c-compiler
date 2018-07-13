@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "lexer.h"
+#include "header.h"
 
 void read_all_tokens(const char* str)
 {
