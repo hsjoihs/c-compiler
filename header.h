@@ -47,7 +47,9 @@ enum TokenKind {
 	IDENT_OR_RESERVED,
 	RES_RETURN,
 	SEMICOLON,
-	OP_HAT
+	OP_HAT,
+	QUESTION,
+	COLON
 };
 
 struct Token{

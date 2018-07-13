@@ -13,6 +13,7 @@ struct ParserState {
 };
 
 void error_unexpected_token(struct Token token, const char *str);
+int get_label_name(struct ParserState *ptr_ps);
 
 void print_unary_prefix_op(enum TokenKind kind)
 {
@@ -101,6 +102,8 @@ void print_op(enum TokenKind kind)
 			return;
 		}
 
+		case QUESTION:
+		case COLON:
 		case OP_NOT:
 		case OP_TILDA:
 		case IDENT_OR_RESERVED:
@@ -206,7 +209,43 @@ void parse_assignment_expression(struct ParserState *ptr_ps,
 void parse_conditional_expression(struct ParserState *ptr_ps,
                                   const struct Token **ptr_to_tokvec)
 {
-	parse_inclusive_OR_expression(ptr_ps, ptr_to_tokvec);
+	const struct Token *tokvec = *ptr_to_tokvec;
+	parse_inclusive_OR_expression(ptr_ps, &tokvec);
+	if (tokvec[0].kind == QUESTION) {
+		int label1 = get_label_name(ptr_ps);
+		int label2 = get_label_name(ptr_ps);
+
+		printf("//ternary: part1\n"
+		       "  cmpl $0, (%%rsp)\n"
+		       "  je .L%d\n",
+		       label1);
+		++tokvec;
+		*ptr_to_tokvec = tokvec;
+		parse_expression(ptr_ps, &tokvec);
+
+		printf("//ternary: part2\n"
+		       "  movl (%%rsp), %%eax\n"
+		       "  addq $4, %%rsp\n"
+		       "  jmp .L%d\n"
+		       ".L%d:\n",
+		       label2, label1);
+
+		if (tokvec[0].kind == COLON) {
+			++tokvec;
+			*ptr_to_tokvec = tokvec;
+			parse_conditional_expression(ptr_ps, &tokvec);
+			printf("//ternary: part3\n"
+			       "  movl (%%rsp), %%eax\n"
+			       "  addq $4, %%rsp\n"
+			       ".L%d:\n"
+			       "  movl %%eax, (%%rsp)\n",
+			       label2);
+		} else {
+			error_unexpected_token(tokvec[0],
+			                       "colon of the conditional operator");
+		}
+	}
+	*ptr_to_tokvec = tokvec;
 }
 
 void parse_inclusive_OR_expression(struct ParserState *ptr_ps,

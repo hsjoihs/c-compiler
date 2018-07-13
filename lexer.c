@@ -81,6 +81,12 @@ void print_token(struct Token tok)
 		case SEMICOLON:
 			fprintf(stderr, ";");
 			break;
+		case COLON:
+			fprintf(stderr, ":");
+			break;
+		case QUESTION:
+			fprintf(stderr, "?");
+			break;
 		case IDENT_OR_RESERVED:
 			fprintf(stderr, "%s", tok.ident_str);
 			break;
@@ -149,6 +155,14 @@ struct Token get_token(const char **ptr_to_str)
 		return t;
 	} else if (*str == ';') {
 		t.kind = SEMICOLON;
+		++*ptr_to_str;
+		return t;
+	} else if (*str == '?') {
+		t.kind = QUESTION;
+		++*ptr_to_str;
+		return t;
+	} else if (*str == ':') {
+		t.kind = COLON;
 		++*ptr_to_str;
 		return t;
 	} else if (*str == '<') {
