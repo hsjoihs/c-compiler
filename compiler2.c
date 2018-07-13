@@ -8,6 +8,8 @@
 
 struct ParserState {
 	struct int_map var_table;
+	int final_label_name;
+	int return_label_name;
 };
 
 void error_unexpected_token(struct Token token, const char *str);
@@ -124,48 +126,49 @@ void read_all_tokens_debug(const char *str)
 	} while (1);
 }
 
-void parse_expression(struct ParserState ps,
+void parse_expression(struct ParserState *ptr_ps,
                       const struct Token **ptr_to_tokvec);
-void parse_assignment_expression(struct ParserState ps,
+void parse_assignment_expression(struct ParserState *ptr_ps,
                                  const struct Token **ptr_to_tokvec);
-void parse_additive_expression(struct ParserState ps,
+void parse_additive_expression(struct ParserState *ptr_ps,
                                const struct Token **ptr_to_tokvec);
-void parse_multiplicative_expression(struct ParserState ps,
+void parse_multiplicative_expression(struct ParserState *ptr_ps,
                                      const struct Token **ptr_to_tokvec);
-void parse_primary_expression(struct ParserState ps,
+void parse_primary_expression(struct ParserState *ptr_ps,
                               const struct Token **ptr_to_tokvec);
-void parse_inclusive_OR_expression(struct ParserState ps,
+void parse_inclusive_OR_expression(struct ParserState *ptr_ps,
                                    const struct Token **ptr_to_tokvec);
-void parse_AND_expression(struct ParserState ps,
+void parse_AND_expression(struct ParserState *ptr_ps,
                           const struct Token **ptr_to_tokvec);
-void parse_AND_expression(struct ParserState ps,
+void parse_AND_expression(struct ParserState *ptr_ps,
                           const struct Token **ptr_to_tokvec);
-void parse_equality_expression(struct ParserState ps,
+void parse_equality_expression(struct ParserState *ptr_ps,
                                const struct Token **ptr_to_tokvec);
-void parse_relational_expression(struct ParserState ps,
+void parse_relational_expression(struct ParserState *ptr_ps,
                                  const struct Token **ptr_to_tokvec);
-void parse_shift_expression(struct ParserState ps,
+void parse_shift_expression(struct ParserState *ptr_ps,
                             const struct Token **ptr_to_tokvec);
-void parse_cast_expression(struct ParserState ps,
+void parse_cast_expression(struct ParserState *ptr_ps,
                            const struct Token **ptr_to_tokvec);
-void parse_unary_expression(struct ParserState ps,
+void parse_unary_expression(struct ParserState *ptr_ps,
                             const struct Token **ptr_to_tokvec);
-void parse_postfix_expression(struct ParserState ps,
+void parse_postfix_expression(struct ParserState *ptr_ps,
                               const struct Token **ptr_to_tokvec);
-void parse_conditional_expression(struct ParserState ps,
+void parse_conditional_expression(struct ParserState *ptr_ps,
                                   const struct Token **ptr_to_tokvec);
 
-void parse_expression(struct ParserState ps, const struct Token **ptr_to_tokvec)
+void parse_expression(struct ParserState *ptr_ps,
+                      const struct Token **ptr_to_tokvec)
 {
 	const struct Token *tokvec = *ptr_to_tokvec;
-	parse_assignment_expression(ps, &tokvec);
+	parse_assignment_expression(ptr_ps, &tokvec);
 	while (1) {
 		enum TokenKind kind = tokvec[0].kind;
 		if (kind != OP_COMMA) {
 			break;
 		}
 		++tokvec;
-		parse_assignment_expression(ps, &tokvec);
+		parse_assignment_expression(ptr_ps, &tokvec);
 		print_op(OP_COMMA);
 	}
 	*ptr_to_tokvec = tokvec;
@@ -176,7 +179,7 @@ int from_name(struct ParserState ps, const char *str)
 	return lookup(ps.var_table, str);
 }
 
-void parse_assignment_expression(struct ParserState ps,
+void parse_assignment_expression(struct ParserState *ptr_ps,
                                  const struct Token **ptr_to_tokvec)
 {
 	const struct Token *tokvec = *ptr_to_tokvec;
@@ -184,79 +187,79 @@ void parse_assignment_expression(struct ParserState ps,
 		const char *name = tokvec[0].ident_str;
 		tokvec += 2;
 		*ptr_to_tokvec = tokvec;
-		parse_assignment_expression(ps, &tokvec);
+		parse_assignment_expression(ptr_ps, &tokvec);
 
 		printf("//assign to `%s`\n", name);
-		write_to_local(from_name(ps, name));
+		write_to_local(from_name(*ptr_ps, name));
 	} else {
-		parse_conditional_expression(ps, &tokvec);
+		parse_conditional_expression(ptr_ps, &tokvec);
 	}
 	*ptr_to_tokvec = tokvec;
 }
 
 /* FIXME */
-void parse_conditional_expression(struct ParserState ps,
+void parse_conditional_expression(struct ParserState *ptr_ps,
                                   const struct Token **ptr_to_tokvec)
 {
-	parse_inclusive_OR_expression(ps, ptr_to_tokvec);
+	parse_inclusive_OR_expression(ptr_ps, ptr_to_tokvec);
 }
 
-void parse_inclusive_OR_expression(struct ParserState ps,
+void parse_inclusive_OR_expression(struct ParserState *ptr_ps,
                                    const struct Token **ptr_to_tokvec)
 {
 	const struct Token *tokvec = *ptr_to_tokvec;
-	parse_AND_expression(ps, &tokvec);
+	parse_AND_expression(ptr_ps, &tokvec);
 	while (1) {
 		enum TokenKind kind = tokvec[0].kind;
 		if (kind != OP_OR) {
 			break;
 		}
 		++tokvec;
-		parse_AND_expression(ps, &tokvec);
+		parse_AND_expression(ptr_ps, &tokvec);
 		print_op(kind);
 	}
 	*ptr_to_tokvec = tokvec;
 }
 
-void parse_AND_expression(struct ParserState ps,
+void parse_AND_expression(struct ParserState *ptr_ps,
                           const struct Token **ptr_to_tokvec)
 {
 	const struct Token *tokvec = *ptr_to_tokvec;
-	parse_equality_expression(ps, &tokvec);
+	parse_equality_expression(ptr_ps, &tokvec);
 	while (1) {
 		enum TokenKind kind = tokvec[0].kind;
 		if (kind != OP_AND) {
 			break;
 		}
 		++tokvec;
-		parse_equality_expression(ps, &tokvec);
+		parse_equality_expression(ptr_ps, &tokvec);
 		print_op(kind);
 	}
 	*ptr_to_tokvec = tokvec;
 }
 
-void parse_equality_expression(struct ParserState ps,
+void parse_equality_expression(struct ParserState *ptr_ps,
                                const struct Token **ptr_to_tokvec)
 {
 	const struct Token *tokvec = *ptr_to_tokvec;
-	parse_relational_expression(ps, &tokvec);
+	parse_relational_expression(ptr_ps, &tokvec);
 	while (1) {
 		enum TokenKind kind = tokvec[0].kind;
 		if (kind != OP_EQ_EQ && kind != OP_NOT_EQ) {
 			break;
 		}
 		++tokvec;
-		parse_relational_expression(ps, &tokvec);
+		parse_relational_expression(ptr_ps, &tokvec);
 		print_op(kind);
 	}
 	*ptr_to_tokvec = tokvec;
 }
 
-void parse_relational_expression(struct ParserState ps,
+void parse_relational_expression(struct ParserState *ptr_ps,
                                  const struct Token **ptr_to_tokvec)
 {
 	const struct Token *tokvec = *ptr_to_tokvec;
-	parse_shift_expression(ps, &tokvec);
+	parse_shift_expression(ptr_ps, &tokvec);
 	while (1) {
 		enum TokenKind kind = tokvec[0].kind;
 		if (kind != OP_GT && kind != OP_GT_EQ && kind != OP_LT &&
@@ -264,70 +267,70 @@ void parse_relational_expression(struct ParserState ps,
 			break;
 		}
 		++tokvec;
-		parse_shift_expression(ps, &tokvec);
+		parse_shift_expression(ptr_ps, &tokvec);
 		print_op(kind);
 	}
 	*ptr_to_tokvec = tokvec;
 }
 
-void parse_shift_expression(struct ParserState ps,
+void parse_shift_expression(struct ParserState *ptr_ps,
                             const struct Token **ptr_to_tokvec)
 {
 	const struct Token *tokvec = *ptr_to_tokvec;
-	parse_additive_expression(ps, &tokvec);
+	parse_additive_expression(ptr_ps, &tokvec);
 	while (1) {
 		enum TokenKind kind = tokvec[0].kind;
 		if (kind != OP_LSHIFT && kind != OP_RSHIFT) {
 			break;
 		}
 		++tokvec;
-		parse_additive_expression(ps, &tokvec);
+		parse_additive_expression(ptr_ps, &tokvec);
 		print_op(kind);
 	}
 	*ptr_to_tokvec = tokvec;
 }
 
-void parse_additive_expression(struct ParserState ps,
+void parse_additive_expression(struct ParserState *ptr_ps,
                                const struct Token **ptr_to_tokvec)
 {
 	const struct Token *tokvec = *ptr_to_tokvec;
-	parse_multiplicative_expression(ps, &tokvec);
+	parse_multiplicative_expression(ptr_ps, &tokvec);
 	while (1) {
 		enum TokenKind kind = tokvec[0].kind;
 		if (kind != OP_PLUS && kind != OP_MINUS) {
 			break;
 		}
 		++tokvec;
-		parse_multiplicative_expression(ps, &tokvec);
+		parse_multiplicative_expression(ptr_ps, &tokvec);
 		print_op(kind);
 	}
 	*ptr_to_tokvec = tokvec;
 }
 
-void parse_multiplicative_expression(struct ParserState ps,
+void parse_multiplicative_expression(struct ParserState *ptr_ps,
                                      const struct Token **ptr_to_tokvec)
 {
 	const struct Token *tokvec = *ptr_to_tokvec;
-	parse_cast_expression(ps, &tokvec);
+	parse_cast_expression(ptr_ps, &tokvec);
 	while (1) {
 		enum TokenKind kind = tokvec[0].kind;
 		if (kind != OP_ASTERISK && kind != OP_SLASH && kind != OP_PERCENT) {
 			break;
 		}
 		++tokvec;
-		parse_cast_expression(ps, &tokvec);
+		parse_cast_expression(ptr_ps, &tokvec);
 		print_op(kind);
 	}
 	*ptr_to_tokvec = tokvec;
 }
 
-void parse_cast_expression(struct ParserState ps,
+void parse_cast_expression(struct ParserState *ptr_ps,
                            const struct Token **ptr_to_tokvec)
 {
-	parse_unary_expression(ps, ptr_to_tokvec);
+	parse_unary_expression(ptr_ps, ptr_to_tokvec);
 }
 
-void parse_unary_expression(struct ParserState ps,
+void parse_unary_expression(struct ParserState *ptr_ps,
                             const struct Token **ptr_to_tokvec)
 {
 	const struct Token *tokvec = *ptr_to_tokvec;
@@ -337,21 +340,21 @@ void parse_unary_expression(struct ParserState ps,
 	    tokvec[0].kind == OP_PLUS || tokvec[0].kind == OP_MINUS) {
 		enum TokenKind kind = tokvec[0].kind;
 		++tokvec;
-		parse_cast_expression(ps, &tokvec);
+		parse_cast_expression(ptr_ps, &tokvec);
 		print_unary_prefix_op(kind);
 	} else {
-		parse_postfix_expression(ps, &tokvec);
+		parse_postfix_expression(ptr_ps, &tokvec);
 	}
 	*ptr_to_tokvec = tokvec;
 }
 
-void parse_postfix_expression(struct ParserState ps,
+void parse_postfix_expression(struct ParserState *ptr_ps,
                               const struct Token **ptr_to_tokvec)
 {
-	parse_primary_expression(ps, ptr_to_tokvec);
+	parse_primary_expression(ptr_ps, ptr_to_tokvec);
 }
 
-void parse_primary_expression(struct ParserState ps,
+void parse_primary_expression(struct ParserState *ptr_ps,
                               const struct Token **ptr_to_tokvec)
 {
 	const struct Token *tokvec = *ptr_to_tokvec;
@@ -362,12 +365,12 @@ void parse_primary_expression(struct ParserState ps,
 	} else if (tokvec[0].kind == IDENT_OR_RESERVED) {
 		++*ptr_to_tokvec;
 		printf("//`%s` as rvalue\n", tokvec[0].ident_str);
-		push_from_local(from_name(ps, tokvec[0].ident_str));
+		push_from_local(from_name(*ptr_ps, tokvec[0].ident_str));
 		return;
 	} else if (tokvec[0].kind == LEFT_PAREN) {
 		++tokvec;
 		*ptr_to_tokvec = tokvec;
-		parse_expression(ps, &tokvec);
+		parse_expression(ptr_ps, &tokvec);
 		if (tokvec[0].kind == RIGHT_PAREN) {
 			++tokvec;
 			*ptr_to_tokvec = tokvec;
@@ -389,7 +392,8 @@ void error_unexpected_token(struct Token token, const char *str)
 	abort();
 }
 
-void parse_statement(struct ParserState ps, const struct Token **ptr_to_tokvec)
+void parse_statement(struct ParserState *ptr_ps,
+                     const struct Token **ptr_to_tokvec)
 {
 	const struct Token *tokvec = *ptr_to_tokvec;
 	if (tokvec[0].kind == RES_RETURN) {
@@ -398,7 +402,7 @@ void parse_statement(struct ParserState ps, const struct Token **ptr_to_tokvec)
 		if (tokvec[0].kind == SEMICOLON) {
 			assert("`return;` unimplemented" && 0);
 		} else {
-			parse_expression(ps, &tokvec);
+			parse_expression(ptr_ps, &tokvec);
 			if (tokvec[0].kind == SEMICOLON) {
 				++tokvec;
 				*ptr_to_tokvec = tokvec;
@@ -413,7 +417,7 @@ void parse_statement(struct ParserState ps, const struct Token **ptr_to_tokvec)
 			}
 		}
 	} else {
-		parse_expression(ps, &tokvec);
+		parse_expression(ptr_ps, &tokvec);
 		if (tokvec[0].kind == SEMICOLON) {
 			print_op(OP_COMMA); /* like the comma operator, discard what's on
 			                       the stack */
@@ -427,7 +431,7 @@ void parse_statement(struct ParserState ps, const struct Token **ptr_to_tokvec)
 	*ptr_to_tokvec = tokvec;
 }
 
-void parse_final(struct ParserState ps, const struct Token **ptr_to_tokvec,
+void parse_final(struct ParserState *ptr_ps, const struct Token **ptr_to_tokvec,
                  int offset)
 {
 	const struct Token *tokvec = *ptr_to_tokvec;
@@ -480,15 +484,17 @@ int main(int argc, char const *argv[])
 
 		struct ParserState ps;
 		ps.var_table = map;
+		ps.final_label_name = 0;
+		ps.return_label_name = GARBAGE_INT;
 
 		int capacity = -v - 4;
 		print_prologue(capacity);
 		while (1) {
 			if (tokvec[0].kind == END) {
-				parse_final(ps, &tokvec, capacity);
+				parse_final(&ps, &tokvec, capacity);
 				return 0;
 			} else {
-				parse_statement(ps, &tokvec);
+				parse_statement(&ps, &tokvec);
 			}
 		}
 	}
