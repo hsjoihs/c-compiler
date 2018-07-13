@@ -210,6 +210,7 @@ void read_all_tokens_debug(const char *str)
 void parse_expression(const struct Token **ptr_to_tokvec);
 void parse_primary_expression(const struct Token **ptr_to_tokvec);
 void parse_additive_expression(const struct Token **ptr_to_tokvec);
+void parse_multiplicative_expression(const struct Token **ptr_to_tokvec);
 
 void parse_expression(const struct Token **ptr_to_tokvec)
 {
@@ -219,18 +220,40 @@ void parse_expression(const struct Token **ptr_to_tokvec)
 void parse_additive_expression(const struct Token **ptr_to_tokvec)
 {
 	const struct Token *tokvec = *ptr_to_tokvec;
-	parse_primary_expression(&tokvec);
+	parse_multiplicative_expression(&tokvec);
 	while (1) {
 		enum TokenKind kind = tokvec[0].kind;
 		if (kind != OP_PLUS && kind != OP_MINUS) {
 			break;
 		}
 		++tokvec;
-		parse_primary_expression(&tokvec);
+		parse_multiplicative_expression(&tokvec);
 		if (kind == OP_PLUS) {
 			op_ints("addl");
 		} else {
 			op_ints("subl");
+		}
+	}
+	*ptr_to_tokvec = tokvec;
+}
+
+void parse_multiplicative_expression(const struct Token **ptr_to_tokvec)
+{
+	const struct Token *tokvec = *ptr_to_tokvec;
+	parse_primary_expression(&tokvec);
+	while (1) {
+		enum TokenKind kind = tokvec[0].kind;
+		if (kind != OP_ASTERISK && kind != OP_SLASH && kind != OP_PERCENT) {
+			break;
+		}
+		++tokvec;
+		parse_primary_expression(&tokvec);
+		if (kind == OP_ASTERISK) {
+			mul_ints();
+		} else if (kind == OP_SLASH) {
+			div_ints();
+		} else {
+			rem_ints();
 		}
 	}
 	*ptr_to_tokvec = tokvec;
