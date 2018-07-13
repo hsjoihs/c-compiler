@@ -208,11 +208,28 @@ void read_all_tokens_debug(const char *str)
 }
 
 void parse_expression(const struct Token **ptr_to_tokvec);
-void parse_primary_expression(const struct Token **ptr_to_tokvec);
+void parse_assignment_expression(const struct Token **ptr_to_tokvec);
 void parse_additive_expression(const struct Token **ptr_to_tokvec);
 void parse_multiplicative_expression(const struct Token **ptr_to_tokvec);
+void parse_primary_expression(const struct Token **ptr_to_tokvec);
 
 void parse_expression(const struct Token **ptr_to_tokvec)
+{
+	const struct Token *tokvec = *ptr_to_tokvec;
+	parse_assignment_expression(&tokvec);
+	while (1) {
+		enum TokenKind kind = tokvec[0].kind;
+		if (kind != OP_COMMA) {
+			break;
+		}
+		++tokvec;
+		parse_assignment_expression(&tokvec);
+		op_ints("movl");
+	}
+	*ptr_to_tokvec = tokvec;
+}
+
+void parse_assignment_expression(const struct Token **ptr_to_tokvec)
 {
 	parse_additive_expression(ptr_to_tokvec);
 }
