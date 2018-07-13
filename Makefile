@@ -9,7 +9,7 @@ clean:
 
 assembly_sandbox:
 	gcc -Wall assembly_sandbox.c vector.c print_assembly.c -o out/assembly_sandbox.out
-	./test_ret.sh s/assembly_sandbox.s out/assembly_sandbox.out 174 out/assembly_sandbox.out
+	./test_ret3.sh '' s/assembly_sandbox.s out/assembly_sandbox.out 174 out/assembly_sandbox.out
 
 intmap_check:
 	gcc -Wall intmap.c intmap_check.c vector.c -o out/intmap_check.out
