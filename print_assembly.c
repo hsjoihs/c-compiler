@@ -49,6 +49,21 @@ void push_int(int num)
 	       num);
 }
 
+void push_ret_of(const char *fname)
+{
+	printf("  movl $0, %%eax\n"
+	       "  call " PREFIX "%s\n",
+	       fname);
+	push_eax();
+}
+
+void push_eax()
+{
+	printf("//push_eax()\n");
+	printf("  subq $4, %%rsp\n"
+	       "  movl %%eax, (%%rsp)\n");
+}
+
 void op_ints(const char *str)
 {
 	printf("//op_ints(\"%s\")\n", str);
