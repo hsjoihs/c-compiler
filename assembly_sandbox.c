@@ -5,38 +5,33 @@
 int main()
 {
 	/*
-	    return (a = b = 9, a = 41*3, 55 - (b = 4) + a);
+	    return 2 + (1 ? 100 + 72 : 17);
 	*/
 
-	struct vector_Int offsets = init_vector_Int(0);
-	struct Int a_addr = {-4};
-	struct Int b_addr = {-8};
+	print_prologue(0);
 
-	print_prologue(8);
+	push_int(2);
+	push_int(1);
+	printf(
+	       "  cmpl $0, (%%rsp)\n"
+	       "  je .L2\n");
+	push_int(100);
+	push_int(72);
+	op_ints("addl");
+	printf("  movl (%%rsp), %%eax\n"
+		   "  addq $4, %%rsp\n"
+	       "  jmp .L3\n"
+	       ".L2:\n");
+	push_int(17);
+	printf("  movl (%%rsp), %%eax\n"
+	       "  addq $4, %%rsp\n"
+	       ".L3:\n"
+	       "  movl %%eax, (%%rsp)\n"
+	       );
 
-	push_vector_Int(&offsets, a_addr);          /* a as lvalue */
-	push_vector_Int(&offsets, b_addr);          /* b as lvalue */
-	push_int(9);                                /* 9 */
-	write_to_local(pop_vector_Int(&offsets).i); /* = */
-	write_to_local(pop_vector_Int(&offsets).i); /* = */
+	op_ints("addl");
 
-	push_vector_Int(&offsets, a_addr);          /* a as lvalue */
-	push_int(41);                               /* 41 */
-	push_int(3);                                /* 3 */
-	mul_ints();                                 /* * */
-	write_to_local(pop_vector_Int(&offsets).i); /* = */
-	op_ints("movl");                            /* , */
-
-	push_int(55);                               /* 55 */
-	push_vector_Int(&offsets, b_addr);          /* b as lvalue */
-	push_int(4);                                /* 4 */
-	write_to_local(pop_vector_Int(&offsets).i); /* = */
-	op_ints("subl");                            /* - */
-	push_from_local(a_addr.i);                  /* a as rvalue */
-	op_ints("addl");                            /* + */
-
-	op_ints("movl"); /* , */
 	return_with_label("FIXME");
-	print_epilogue("FIXME", 8);
+	print_epilogue("FIXME", 0);
 	return 0;
 }
