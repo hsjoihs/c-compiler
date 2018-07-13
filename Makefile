@@ -6,21 +6,6 @@ test_all_:
 clean:
 	rm out/*.out s/*.s
 
-lexer_check:
-	gcc -Wall compiler2.c intmap.c vector.c print_assembly.c lexer.c -o out/compiler.out
-	echo '123+456-789' | ./out/compiler.out --lexer-debug 2> res.txt
-	diff res.txt expected.txt
-
-lexer_check2:
-	gcc -Wall compiler2.c intmap.c vector.c print_assembly.c lexer.c -o out/compiler.out
-	echo '7*5 	,	(0xC,(41   )*(4-(011>8)))+7*(((1-~1)>=3)<<4)/(9,(4>>(10<=10))+(3<3))-10/(	  ( 	!0  <<3)	%3)' | ./out/compiler.out --lexer-debug 2> res2.txt
-	diff res2.txt expected2.txt
-
-lexer_check3:
-	gcc -Wall compiler2.c intmap.c vector.c print_assembly.c lexer.c -o out/compiler.out
-	echo '_1qw12_er345ty = 123, 51 + _1qw12_er345ty' | ./out/compiler.out --lexer-debug 2> res3.txt
-	diff res3.txt expected3.txt
-
 full_compile001:
 	gcc -Wall compiler2.c intmap.c vector.c print_assembly.c lexer.c -o out/compiler.out
 	./test_ret2.sh input001.txt s/full_compile001.s out/task001.out 123 out/compiler.out
