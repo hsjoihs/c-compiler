@@ -3,17 +3,11 @@
 #include <stdio.h>
 
 /*
-
-int always87()
-{
-    return 87;
-}
     return (3, always87() + always87());
 */
 
 int main()
 {
-	print_always87();
 	print_prologue(0);
 	push_int(3);
 	push_ret_of("always87");

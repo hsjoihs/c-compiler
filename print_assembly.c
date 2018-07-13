@@ -10,13 +10,6 @@
 #define PREFIX ""
 #endif
 
-void print_always87(void)
-{
-	puts(PREFIX "always87:\n"
-	            "  movl $87, %eax\n"
-	            "  ret");
-}
-
 void print_prologue(int alloc_size)
 {
 	printf("//print_prologue(%d)\n", alloc_size);

@@ -567,7 +567,6 @@ int main(int argc, char const *argv[])
 		ps.return_label_name = GARBAGE_INT;
 
 		int capacity = -v - 4;
-		print_always87();
 		print_prologue(capacity);
 		while (1) {
 			if (tokvec[0].kind == END) {
