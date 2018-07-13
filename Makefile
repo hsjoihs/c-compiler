@@ -33,9 +33,9 @@ full_compile:
 	./test_ret3.sh '43,6*(3+7)-5*1' s/full_compile015.s out/task015.out 55 out/compiler.out
 	./test_ret3.sh '43,6*(3+(4|3))-(5|1)*1' s/full_compile016.s out/task016.out 55 out/compiler.out
 	./test_ret3.sh '043,41*3+07*010-0Xa/(010%(1+2))' s/full_compile017.s out/task017.out 174 out/compiler.out
-	#./test_ret3.sh '043,41*3+07*010-0Xa/(010%(!!1+2))' s/full_compile005.s out/task005.out 174 out/compiler.out
 	./test_ret3.sh '7*5,(12,41*3)+7*16/(9,2)-10/(8%3)' s/full_compile006.s out/task006.out 174 out/compiler.out
 	./test_ret3.sh '7*5 	,	(0xC,(41   )*(4-(011>8)))+7*(((1+2)>=3)<<4)/(9,(4>>(10<=10))+(3<3))-10/(	  ( 	1  <<3)	%3)' s/full_compile018.s out/task018.out 174 out/compiler.out
-	#./test_ret3.sh '7*5 	,	(0xC,(41   )*(4-(011>8)))+7*(((1-~1)>=3)<<4)/(9,(4>>(10<=10))+(3<3))-10/(	  ( 	!0  <<3)	%3)' s/full_compile007.s out/task007.out 174 out/compiler.out
 	./test_ret3.sh '35,	((	41|	(8   !=     15))*  ((3==3)+2))+((5|2)*(9&10))   -   (10/(8%3))' s/full_compile008.s out/task008.out 174 out/compiler.out
+	./test_ret3.sh '043,41*3+07*010-0Xa/(010%(!!1+2))' s/full_compile005.s out/task005.out 174 out/compiler.out
+	./test_ret3.sh '7*5 	,	(0xC,(41   )*(4-(011>8)))+7*(((1-~1)>=3)<<4)/(9,(4>>(10<=10))+(3<3))-10/(	  ( 	!0  <<3)	%3)' s/full_compile007.s out/task007.out 174 out/compiler.out
 

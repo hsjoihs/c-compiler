@@ -363,7 +363,18 @@ void parse_cast_expression(const struct Token **ptr_to_tokvec)
 
 void parse_unary_expression(const struct Token **ptr_to_tokvec)
 {
-	parse_postfix_expression(ptr_to_tokvec);
+	const struct Token *tokvec = *ptr_to_tokvec;
+
+	/* unary-operator cast-expression */
+	if (tokvec[0].kind == OP_NOT || tokvec[0].kind == OP_TILDA) {
+		enum TokenKind kind = tokvec[0].kind;
+		++tokvec;
+		parse_cast_expression(&tokvec);
+		print_op(kind);
+	} else {
+		parse_postfix_expression(&tokvec);
+	}
+	*ptr_to_tokvec = tokvec;
 }
 
 void parse_postfix_expression(const struct Token **ptr_to_tokvec)
