@@ -171,16 +171,9 @@ void parse_expression(struct ParserState ps, const struct Token **ptr_to_tokvec)
 	*ptr_to_tokvec = tokvec;
 }
 
-/* FIXME */
-int from_name(const char *str)
+int from_name(struct ParserState ps, const char *str)
 {
-	if (strcmp(str, "a") == 0) {
-		return -4;
-	} else if (strcmp(str, "b") == 0) {
-		return -8;
-	} else {
-		return GARBAGE_INT;
-	}
+	return lookup(ps.var_table, str);
 }
 
 void parse_assignment_expression(struct ParserState ps,
@@ -194,7 +187,7 @@ void parse_assignment_expression(struct ParserState ps,
 		parse_assignment_expression(ps, &tokvec);
 
 		printf("//assign to `%s`\n", name);
-		write_to_local(from_name(name));
+		write_to_local(from_name(ps, name));
 	} else {
 		parse_conditional_expression(ps, &tokvec);
 	}
@@ -369,7 +362,7 @@ void parse_primary_expression(struct ParserState ps,
 	} else if (tokvec[0].kind == IDENT_OR_RESERVED) {
 		++*ptr_to_tokvec;
 		printf("//`%s` as rvalue\n", tokvec[0].ident_str);
-		push_from_local(from_name(tokvec[0].ident_str));
+		push_from_local(from_name(ps, tokvec[0].ident_str));
 		return;
 	} else if (tokvec[0].kind == LEFT_PAREN) {
 		++tokvec;
