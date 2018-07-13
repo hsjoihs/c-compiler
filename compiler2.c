@@ -218,7 +218,22 @@ void parse_expression(const struct Token **ptr_to_tokvec)
 
 void parse_additive_expression(const struct Token **ptr_to_tokvec)
 {
-	parse_primary_expression(ptr_to_tokvec);
+	const struct Token *tokvec = *ptr_to_tokvec;
+	parse_primary_expression(&tokvec);
+	while (1) {
+		enum TokenKind kind = tokvec[0].kind;
+		if (kind != OP_PLUS && kind != OP_MINUS) {
+			break;
+		}
+		++tokvec;
+		parse_primary_expression(&tokvec);
+		if (kind == OP_PLUS) {
+			op_ints("addl");
+		} else {
+			op_ints("subl");
+		}
+	}
+	*ptr_to_tokvec = tokvec;
 }
 
 void parse_primary_expression(const struct Token **ptr_to_tokvec)
@@ -236,12 +251,18 @@ void parse_primary_expression(const struct Token **ptr_to_tokvec)
 			++tokvec;
 			*ptr_to_tokvec = tokvec;
 			return;
+		} else {
+			fprintf(stderr, "Unexpected token: `");
+			print_token(tokvec[0]);
+			fprintf(stderr, "` while expecting right paren. Aborting.\n");
+			abort();
 		}
 	}
 
 	fprintf(stderr, "Unexpected token: `");
 	print_token(tokvec[0]);
-	fprintf(stderr, "`. Aborting.\n");
+	fprintf(stderr, "` while expecting the beginning of "
+	                "parse_primary_expression. Aborting.\n");
 	abort();
 }
 
@@ -280,7 +301,7 @@ int main(int argc, char const *argv[])
 		struct vector_Token tokvec_ = read_all_tokens(str);
 		const struct Token *tokvec = tokvec_.vector;
 		print_prologue(0);
-		parse_primary_expression(&tokvec);
+		parse_expression(&tokvec);
 		parse_final(&tokvec);
 		// read_all_and_write_code(str);
 	}
