@@ -123,7 +123,7 @@ void read_all_and_write_code(const char* str)
 {
 	struct vector_Token op_stack = init_vector_Token(0);
 
-	print_header(0);
+	print_prologue(0);
 
 	struct Token tok;
 	do {
@@ -179,7 +179,7 @@ void read_all_and_write_code(const char* str)
 		print_op(pop_vector_Token(&op_stack));
 	}
 
-	print_footer(0);
+	print_epilogue(0);
 }
 
 int main()

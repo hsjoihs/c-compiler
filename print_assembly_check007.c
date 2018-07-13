@@ -7,7 +7,7 @@ int main()
 	/* 
 		7*5,(12,(41)*(4-(9>8)))+7*(((1-~1)>=3)<<4)/(9,(4>>(10<=10))+(3<3))-10/((!0<<3)%3)
 	*/
-	print_header(0);
+	print_prologue(0);
 	push_int(7);
 	push_int(5);
 	mul_ints();
@@ -54,6 +54,6 @@ int main()
 	div_ints();
 	op_ints("subl");
 	op_ints("movl");
-	print_footer(0);
+	print_epilogue(0);
 	return 0;
 }

@@ -1,6 +1,6 @@
-void print_header(int alloc_size);
+void print_prologue(int alloc_size);
 void push_int(int num);
-void print_footer(int alloc_size);
+void print_epilogue(int alloc_size);
 void op_ints(const char* str);
 void compare_ints(const char* str);
 void mul_ints(void);

@@ -13,7 +13,7 @@ int main()
 	struct Int a_addr = {-4};
 	struct Int b_addr = {-8};
 	
-	print_header(8);
+	print_prologue(8);
 
 	push_vector_Int(&offsets, a_addr); /* a as lvalue */
 	push_vector_Int(&offsets, b_addr); /* b as lvalue */
@@ -37,6 +37,6 @@ int main()
 	op_ints("addl"); /* + */
 
 	op_ints("movl"); /* , */
-	print_footer(8);
+	print_epilogue(8);
 	return 0;
 }

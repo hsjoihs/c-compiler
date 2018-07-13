@@ -11,7 +11,7 @@
 #endif
 
 
-void print_header(int alloc_size)
+void print_prologue(int alloc_size)
 {
 	printf(
 		".global " PREFIX "main\n"
@@ -139,7 +139,7 @@ void shift_ints(const char* str)
 	,str);
 }
 
-void print_footer(int alloc_size)
+void print_epilogue(int alloc_size)
 {
 	printf(
 		"  movl (%%rsp), %%eax\n"
