@@ -51,7 +51,6 @@ int get_precedence(enum TokenKind k)
 			return -13;
 
 		case IDENT_OR_RESERVED:
-		case EMPTY:
 		case RIGHT_PAREN:
 		case END:
 		case LIT_DEC_INTEGER:
@@ -107,7 +106,6 @@ void print_op(struct Token tok)
 		}
 
 		case IDENT_OR_RESERVED:
-		case EMPTY:
 		case LEFT_PAREN:
 		case RIGHT_PAREN:
 		case END:
@@ -131,10 +129,6 @@ void read_all_and_write_code(const char* str)
 
 		if (tok.kind == END) {
 			break;
-		}
-
-		if (tok.kind == EMPTY) {
-			continue;
 		}
 
 		if (tok.kind == LIT_DEC_INTEGER) {

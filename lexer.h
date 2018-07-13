@@ -21,7 +21,6 @@ enum TokenKind {
 	OP_GT_EQ,
 	OP_GT,
 	OP_AND,
-	EMPTY,
 	OP_OR,
 	OP_EQ_EQ,
 	OP_NOT_EQ,
