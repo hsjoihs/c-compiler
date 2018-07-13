@@ -1,4 +1,4 @@
-#include "lexer.h"
+#include "header.h"
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
@@ -26,7 +26,6 @@ void print_token(struct Token tok)
 		case OP_RSHIFT: fprintf(stderr,">>"); break;
 		case OP_AND: fprintf(stderr,"&"); break;
 		case OP_OR: fprintf(stderr,"|"); break;
-		case EMPTY: fprintf(stderr,"(whitespace)"); break;
 		case OP_EQ_EQ: fprintf(stderr,"=="); break;
 		case OP_NOT_EQ: fprintf(stderr,"!="); break;
 		case OP_EQ: fprintf(stderr,"="); break;
@@ -55,9 +54,8 @@ struct Token get_token(const char** ptr_to_str)
 	 || *str == '\v'
 	 || *str == '\f'
 	 || *str == '\r') {
-		t.kind = EMPTY;
 		++*ptr_to_str;
-		return t;
+		return get_token(ptr_to_str);
 	} 
 
 	if (*str == '+') {

@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <assert.h>
 #include <stdlib.h>
-#include "lexer.h"
-#include "print_assembly.h"
+#include <string.h>
+#include "header.h"
 #include "vector.h"
 
 int get_precedence(enum TokenKind k)
@@ -51,7 +51,6 @@ int get_precedence(enum TokenKind k)
 			return -13;
 
 		case IDENT_OR_RESERVED:
-		case EMPTY:
 		case RIGHT_PAREN:
 		case END:
 		case LIT_DEC_INTEGER:
@@ -107,7 +106,6 @@ void print_op(struct Token tok)
 		}
 
 		case IDENT_OR_RESERVED:
-		case EMPTY:
 		case LEFT_PAREN:
 		case RIGHT_PAREN:
 		case END:
@@ -123,7 +121,7 @@ void read_all_and_write_code(const char* str)
 {
 	struct vector_Token op_stack = init_vector_Token(0);
 
-	print_header(0);
+	print_prologue(0);
 
 	struct Token tok;
 	do {
@@ -131,10 +129,6 @@ void read_all_and_write_code(const char* str)
 
 		if (tok.kind == END) {
 			break;
-		}
-
-		if (tok.kind == EMPTY) {
-			continue;
 		}
 
 		if (tok.kind == LIT_DEC_INTEGER) {
@@ -173,19 +167,39 @@ void read_all_and_write_code(const char* str)
 			}
 			push_vector_Token(&op_stack, tok);
 		}
-	}while(1);
+	} while (1);
 
-	while(op_stack.length > 0) {
+	while (op_stack.length > 0) {
 		print_op(pop_vector_Token(&op_stack));
 	}
 
-	print_footer(0);
+	print_epilogue(0);
 }
 
-int main()
+void read_all_tokens(const char* str)
+{
+	struct Token tok;
+	do {
+		tok = get_token(&str);
+		print_token(tok);
+		fprintf(stderr, "\n");
+		if (tok.kind == END) {
+			break;
+		}
+	} while (1);
+}
+
+int main(int argc, char const *argv[])
 {
 	char str[1000];
 	/* const char* str = "123+456-789"; */
 	scanf("%[^\n]s", str); /* VULNERABLE!!! */
-	read_all_and_write_code(str);
+	if (argc == 2) {
+		if(strcmp(argv[1], "--lexer-debug") == 0) {
+			read_all_tokens(str);
+		}
+	} else {
+		read_all_and_write_code(str);
+	}
+	return 0;
 }
