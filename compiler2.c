@@ -207,9 +207,16 @@ void read_all_tokens_debug(const char *str)
 	} while (1);
 }
 
+void parse_expression(const struct Token **ptr_to_tokvec);
 void parse_primary_expression(const struct Token **ptr_to_tokvec);
+void parse_additive_expression(const struct Token **ptr_to_tokvec);
 
 void parse_expression(const struct Token **ptr_to_tokvec)
+{
+	parse_additive_expression(ptr_to_tokvec);
+}
+
+void parse_additive_expression(const struct Token **ptr_to_tokvec)
 {
 	parse_primary_expression(ptr_to_tokvec);
 }
