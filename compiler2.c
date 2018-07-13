@@ -258,22 +258,67 @@ void parse_inclusive_OR_expression(const struct Token **ptr_to_tokvec)
 
 void parse_AND_expression(const struct Token **ptr_to_tokvec)
 {
-	parse_equality_expression(ptr_to_tokvec);
+	const struct Token *tokvec = *ptr_to_tokvec;
+	parse_equality_expression(&tokvec);
+	while (1) {
+		enum TokenKind kind = tokvec[0].kind;
+		if (kind != OP_AND) {
+			break;
+		}
+		++tokvec;
+		parse_equality_expression(&tokvec);
+		print_op(kind);
+	}
+	*ptr_to_tokvec = tokvec;
 }
 
 void parse_equality_expression(const struct Token **ptr_to_tokvec)
 {
-	parse_relational_expression(ptr_to_tokvec);
+	const struct Token *tokvec = *ptr_to_tokvec;
+	parse_relational_expression(&tokvec);
+	while (1) {
+		enum TokenKind kind = tokvec[0].kind;
+		if (kind != OP_EQ_EQ && kind != OP_NOT_EQ) {
+			break;
+		}
+		++tokvec;
+		parse_relational_expression(&tokvec);
+		print_op(kind);
+	}
+	*ptr_to_tokvec = tokvec;
 }
 
 void parse_relational_expression(const struct Token **ptr_to_tokvec)
 {
-	parse_shift_expression(ptr_to_tokvec);
+	const struct Token *tokvec = *ptr_to_tokvec;
+	parse_shift_expression(&tokvec);
+	while (1) {
+		enum TokenKind kind = tokvec[0].kind;
+		if (kind != OP_GT && kind != OP_GT_EQ && kind != OP_LT &&
+		    kind != OP_LT_EQ) {
+			break;
+		}
+		++tokvec;
+		parse_shift_expression(&tokvec);
+		print_op(kind);
+	}
+	*ptr_to_tokvec = tokvec;
 }
 
 void parse_shift_expression(const struct Token **ptr_to_tokvec)
 {
-	parse_additive_expression(ptr_to_tokvec);
+	const struct Token *tokvec = *ptr_to_tokvec;
+	parse_additive_expression(&tokvec);
+	while (1) {
+		enum TokenKind kind = tokvec[0].kind;
+		if (kind != OP_LSHIFT && kind != OP_RSHIFT) {
+			break;
+		}
+		++tokvec;
+		parse_additive_expression(&tokvec);
+		print_op(kind);
+	}
+	*ptr_to_tokvec = tokvec;
 }
 
 void parse_additive_expression(const struct Token **ptr_to_tokvec)
