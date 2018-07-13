@@ -42,11 +42,6 @@ int main()
 
 	push_int(87);
 	op_ints("addl");
-
-	puts("  movl (%rsp),%eax\n"
-	     "  addq $4, %rsp\n"
-	     "  movl %eax, -4(%rsp)\n"
-	     "  movl -4(%rsp), %eax\n"
-	     "  leave\n"
-	     "  ret\n");
+	return_with_label(12);
+	print_epilogue(12, 16);
 }
