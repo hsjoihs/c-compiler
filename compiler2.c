@@ -397,8 +397,14 @@ int main(int argc, char const *argv[])
 		struct vector_Token tokvec_ = read_all_tokens(str);
 		const struct Token *tokvec = tokvec_.vector;
 		print_prologue(0);
-		parse_statement(&tokvec);
-		parse_final(&tokvec);
+		while (1) {
+			if (tokvec[0].kind == END) {
+				parse_final(&tokvec);
+				return 0;
+			} else {
+				parse_statement(&tokvec);
+			}
+		}
 	}
 	return 0;
 }
