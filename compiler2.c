@@ -194,7 +194,7 @@ void read_all_and_write_code(const char *str)
 	print_epilogue(0);
 }
 
-void read_all_tokens(const char *str)
+void read_all_tokens_debug(const char *str)
 {
 	struct Token tok;
 	do {
@@ -207,6 +207,40 @@ void read_all_tokens(const char *str)
 	} while (1);
 }
 
+void parse_primary_expression(const struct Token **ptr_to_tokvec)
+{
+	const struct Token *tokvec = *ptr_to_tokvec;
+	if (tokvec[0].kind == LIT_DEC_INTEGER) {
+		++*ptr_to_tokvec;
+		push_int(tokvec[0].int_value);
+		return;
+	}
+
+	assert("cannot be here" && 0);
+}
+
+void parse_final(const struct Token **ptr_to_tokvec)
+{
+	const struct Token *tokvec = *ptr_to_tokvec;
+	if (tokvec[0].kind == END) {
+		print_epilogue(0);
+	}
+}
+
+struct vector_Token read_all_tokens(const char *str)
+{
+	struct Token tok;
+	struct vector_Token tokvec = init_vector_Token(0);
+	while (1) {
+		tok = get_token(&str);
+		push_vector_Token(&tokvec, tok);
+		if (tok.kind == END) {
+			break;
+		}
+	}
+	return tokvec;
+}
+
 int main(int argc, char const *argv[])
 {
 	char str[1000];
@@ -214,10 +248,15 @@ int main(int argc, char const *argv[])
 	scanf("%[^\n]s", str); /* VULNERABLE!!! */
 	if (argc == 2) {
 		if (strcmp(argv[1], "--lexer-debug") == 0) {
-			read_all_tokens(str);
+			read_all_tokens_debug(str);
 		}
 	} else {
-		read_all_and_write_code(str);
+		struct vector_Token tokvec_ = read_all_tokens(str);
+		const struct Token *tokvec = tokvec_.vector;
+		print_prologue(0);
+		parse_primary_expression(&tokvec);
+		parse_final(&tokvec);
+		// read_all_and_write_code(str);
 	}
 	return 0;
 }
