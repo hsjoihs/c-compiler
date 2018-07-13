@@ -133,6 +133,7 @@ void parse_shift_expression(const struct Token **ptr_to_tokvec);
 void parse_cast_expression(const struct Token **ptr_to_tokvec);
 void parse_unary_expression(const struct Token **ptr_to_tokvec);
 void parse_postfix_expression(const struct Token **ptr_to_tokvec);
+void parse_conditional_expression(const struct Token **ptr_to_tokvec);
 
 void parse_expression(const struct Token **ptr_to_tokvec)
 {
@@ -151,6 +152,22 @@ void parse_expression(const struct Token **ptr_to_tokvec)
 }
 
 void parse_assignment_expression(const struct Token **ptr_to_tokvec)
+{
+	const struct Token *tokvec = *ptr_to_tokvec;
+	if (tokvec[0].kind == IDENT_OR_RESERVED && tokvec[1].kind == OP_EQ) {
+		printf("// FIXME: `%s as lvalue`\n", tokvec[0].ident_str);
+		tokvec += 2;
+		*ptr_to_tokvec = tokvec;
+		parse_assignment_expression(&tokvec);
+		printf("// FIXME: `=`\n");
+	} else {
+		parse_conditional_expression(&tokvec);
+	}
+	*ptr_to_tokvec = tokvec;
+}
+
+/* FIXME */
+void parse_conditional_expression(const struct Token **ptr_to_tokvec)
 {
 	parse_inclusive_OR_expression(ptr_to_tokvec);
 }
