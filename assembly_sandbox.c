@@ -13,16 +13,14 @@ int always87()
 
 int main()
 {
-	puts("_always87:\n"
-	     "  movl $87, %eax\n"
-	     "  ret");
-	print_prologue(24);
+	print_always87();
+	print_prologue(0);
 	push_int(3);
 	push_ret_of("always87");
 	push_ret_of("always87");
 	op_ints("addl");
 	op_ints("movl");
 	return_with_label(2);
-	print_epilogue(2, 24);
+	print_epilogue(2, 0);
 	return 0;
 }

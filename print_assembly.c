@@ -10,6 +10,13 @@
 #define PREFIX ""
 #endif
 
+void print_always87(void)
+{
+	puts(PREFIX "always87:\n"
+	            "  movl $87, %eax\n"
+	            "  ret");
+}
+
 void print_prologue(int alloc_size)
 {
 	printf("//print_prologue(%d)\n", alloc_size);
@@ -51,13 +58,14 @@ void push_int(int num)
 
 void push_ret_of(const char *fname)
 {
+	printf("//push_ret_of(\"%s\")\n", fname);
 	printf("  movl $0, %%eax\n"
 	       "  call " PREFIX "%s\n",
 	       fname);
 	push_eax();
 }
 
-void push_eax()
+void push_eax(void)
 {
 	printf("//push_eax()\n");
 	printf("  subq $4, %%rsp\n"

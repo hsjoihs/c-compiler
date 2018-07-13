@@ -15,9 +15,9 @@ void push_from_local(int offset);
 void write_to_local(int offset);
 void return_with_label(int label);
 void print_epilogue(int label, int alloc_size);
-void push_eax();
+void push_eax(void);
 void push_ret_of(const char* fname);
-
+void print_always87(void);
 
 #define GARBAGE_INT 0xCCCCCCCC
 #define BOOL int

@@ -412,7 +412,18 @@ void parse_unary_expression(struct ParserState *ptr_ps,
 void parse_postfix_expression(struct ParserState *ptr_ps,
                               const struct Token **ptr_to_tokvec)
 {
-	parse_primary_expression(ptr_ps, ptr_to_tokvec);
+	const struct Token *tokvec = *ptr_to_tokvec;
+	if (tokvec[0].kind == IDENT_OR_RESERVED && tokvec[1].kind == LEFT_PAREN) {
+		if (tokvec[2].kind == RIGHT_PAREN) {
+			push_ret_of(tokvec[0].ident_str);
+		} else {
+			fprintf(stderr, "calling with arguments is unimplemented!\n");
+		}
+		tokvec += 3;
+	} else {
+		parse_primary_expression(ptr_ps, &tokvec);
+	}
+	*ptr_to_tokvec = tokvec;
 }
 
 void parse_primary_expression(struct ParserState *ptr_ps,
@@ -556,6 +567,7 @@ int main(int argc, char const *argv[])
 		ps.return_label_name = GARBAGE_INT;
 
 		int capacity = -v - 4;
+		print_always87();
 		print_prologue(capacity);
 		while (1) {
 			if (tokvec[0].kind == END) {
