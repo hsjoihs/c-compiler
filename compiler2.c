@@ -412,7 +412,9 @@ void parse_statement(struct ParserState *ptr_ps,
 				++tokvec;
 				*ptr_to_tokvec = tokvec;
 
-				return_with_label(123456);
+				int ret_label = get_label_name(ptr_ps);
+				ptr_ps->return_label_name = ret_label;
+				return_with_label(ret_label);
 
 				return;
 			} else {
@@ -441,7 +443,7 @@ void parse_final(struct ParserState *ptr_ps, const struct Token **ptr_to_tokvec,
 {
 	const struct Token *tokvec = *ptr_to_tokvec;
 	if (tokvec[0].kind == END) {
-		print_epilogue(123456, offset);
+		print_epilogue(ptr_ps->return_label_name, offset);
 	}
 }
 
@@ -489,7 +491,7 @@ int main(int argc, char const *argv[])
 
 		struct ParserState ps;
 		ps.var_table = map;
-		ps.final_label_name = 0;
+		ps.final_label_name = 1;
 		ps.return_label_name = GARBAGE_INT;
 
 		int capacity = -v - 4;
