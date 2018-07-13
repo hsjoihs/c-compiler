@@ -7,9 +7,9 @@ clean:
 	rm out/*.out s/*.s
 
 
-print_assembly_check009:
-	gcc -Wall print_assembly_check009.c vector.c print_assembly.c -o out/pac009.out
-	./test_ret.sh s/print_assembly_check009.s out/pa009.out 174 out/pac009.out
+assembly_sandbox:
+	gcc -Wall assembly_sandbox.c vector.c print_assembly.c -o out/assembly_sandbox.out
+	./test_ret.sh s/assembly_sandbox.s out/assembly_sandbox.out 174 out/assembly_sandbox.out
 
 intmap_check:
 	gcc -Wall intmap.c intmap_check.c vector.c -o out/intmap_check.out
