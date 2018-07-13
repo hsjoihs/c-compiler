@@ -60,9 +60,9 @@ int get_precedence(enum TokenKind k)
 	assert("unimplemented!!!!" && 0);
 }
 
-void print_op(struct Token tok)
+void print_op(enum TokenKind kind)
 {
-	switch (tok.kind) {
+	switch (kind) {
 		case OP_PLUS:
 			op_ints("addl");
 			return;
@@ -155,7 +155,7 @@ void read_all_and_write_code(const char *str)
 		} else if (tok.kind == RIGHT_PAREN) {
 			while (op_stack.length > 0 &&
 			       op_stack.vector[op_stack.length - 1].kind != LEFT_PAREN) {
-				print_op(pop_vector_Token(&op_stack));
+				print_op(pop_vector_Token(&op_stack).kind);
 			}
 			if (op_stack.length == 0) {
 				fprintf(stderr, "UNMATCHED BRACKET");
@@ -181,14 +181,14 @@ void read_all_and_write_code(const char *str)
 			    /* the operator at the top of the operator stack is not a left
 			       bracket */
 			) {
-				print_op(pop_vector_Token(&op_stack));
+				print_op(pop_vector_Token(&op_stack).kind);
 			}
 			push_vector_Token(&op_stack, tok);
 		}
 	} while (1);
 
 	while (op_stack.length > 0) {
-		print_op(pop_vector_Token(&op_stack));
+		print_op(pop_vector_Token(&op_stack).kind);
 	}
 
 	print_epilogue(0);
@@ -226,7 +226,7 @@ void parse_expression(const struct Token **ptr_to_tokvec)
 		}
 		++tokvec;
 		parse_assignment_expression(&tokvec);
-		op_ints("movl");
+		print_op(OP_COMMA);
 	}
 	*ptr_to_tokvec = tokvec;
 }
@@ -247,7 +247,7 @@ void parse_inclusive_OR_expression(const struct Token **ptr_to_tokvec)
 		}
 		++tokvec;
 		parse_AND_expression(&tokvec);
-		op_ints("orl");
+		print_op(kind);
 	}
 	*ptr_to_tokvec = tokvec;
 }
@@ -268,11 +268,7 @@ void parse_additive_expression(const struct Token **ptr_to_tokvec)
 		}
 		++tokvec;
 		parse_multiplicative_expression(&tokvec);
-		if (kind == OP_PLUS) {
-			op_ints("addl");
-		} else {
-			op_ints("subl");
-		}
+		print_op(kind);
 	}
 	*ptr_to_tokvec = tokvec;
 }
@@ -288,13 +284,7 @@ void parse_multiplicative_expression(const struct Token **ptr_to_tokvec)
 		}
 		++tokvec;
 		parse_primary_expression(&tokvec);
-		if (kind == OP_ASTERISK) {
-			mul_ints();
-		} else if (kind == OP_SLASH) {
-			div_ints();
-		} else {
-			rem_ints();
-		}
+		print_op(kind);
 	}
 	*ptr_to_tokvec = tokvec;
 }
