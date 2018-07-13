@@ -218,6 +218,9 @@ void parse_AND_expression(const struct Token **ptr_to_tokvec);
 void parse_equality_expression(const struct Token **ptr_to_tokvec);
 void parse_relational_expression(const struct Token **ptr_to_tokvec);
 void parse_shift_expression(const struct Token **ptr_to_tokvec);
+void parse_cast_expression(const struct Token **ptr_to_tokvec);
+void parse_unary_expression(const struct Token **ptr_to_tokvec);
+void parse_postfix_expression(const struct Token **ptr_to_tokvec);
 
 void parse_expression(const struct Token **ptr_to_tokvec)
 {
@@ -340,17 +343,32 @@ void parse_additive_expression(const struct Token **ptr_to_tokvec)
 void parse_multiplicative_expression(const struct Token **ptr_to_tokvec)
 {
 	const struct Token *tokvec = *ptr_to_tokvec;
-	parse_primary_expression(&tokvec);
+	parse_cast_expression(&tokvec);
 	while (1) {
 		enum TokenKind kind = tokvec[0].kind;
 		if (kind != OP_ASTERISK && kind != OP_SLASH && kind != OP_PERCENT) {
 			break;
 		}
 		++tokvec;
-		parse_primary_expression(&tokvec);
+		parse_cast_expression(&tokvec);
 		print_op(kind);
 	}
 	*ptr_to_tokvec = tokvec;
+}
+
+void parse_cast_expression(const struct Token **ptr_to_tokvec)
+{
+	parse_unary_expression(ptr_to_tokvec);
+}
+
+void parse_unary_expression(const struct Token **ptr_to_tokvec)
+{
+	parse_postfix_expression(ptr_to_tokvec);
+}
+
+void parse_postfix_expression(const struct Token **ptr_to_tokvec)
+{
+	parse_primary_expression(ptr_to_tokvec);
 }
 
 void parse_primary_expression(const struct Token **ptr_to_tokvec)
