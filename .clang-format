@@ -1,0 +1,5 @@
+TabWidth: 4
+IndentWidth: 4
+IndentCaseLabels: true
+UseTab: ForIndentation
+BreakBeforeBraces: Linux

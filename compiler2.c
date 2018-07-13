@@ -1,9 +1,9 @@
-#include <stdio.h>
-#include <assert.h>
-#include <stdlib.h>
-#include <string.h>
 #include "header.h"
 #include "vector.h"
+#include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 int get_precedence(enum TokenKind k)
 {
@@ -64,41 +64,59 @@ void print_op(struct Token tok)
 {
 	switch (tok.kind) {
 		case OP_PLUS:
-			op_ints("addl"); return;
+			op_ints("addl");
+			return;
 		case OP_MINUS:
-			op_ints("subl"); return;
+			op_ints("subl");
+			return;
 		case OP_ASTERISK:
-			mul_ints(); return;
+			mul_ints();
+			return;
 		case OP_SLASH:
-			div_ints(); return;
+			div_ints();
+			return;
 		case OP_PERCENT:
-			rem_ints(); return;
+			rem_ints();
+			return;
 		case OP_COMMA:
-			op_ints("movl"); return;
+			op_ints("movl");
+			return;
 		case OP_LT:
-			compare_ints("setl"); return;
+			compare_ints("setl");
+			return;
 		case OP_LT_EQ:
-			compare_ints("setle"); return;
+			compare_ints("setle");
+			return;
 		case OP_LSHIFT:
-			shift_ints("sall"); return;
+			shift_ints("sall");
+			return;
 		case OP_GT:
-			compare_ints("setg"); return;
+			compare_ints("setg");
+			return;
 		case OP_GT_EQ:
-			compare_ints("setge"); return;
+			compare_ints("setge");
+			return;
 		case OP_RSHIFT:
-			shift_ints("sarl"); return;
+			shift_ints("sarl");
+			return;
 		case OP_AND:
-			op_ints("andl"); return;
+			op_ints("andl");
+			return;
 		case OP_OR:
-			op_ints("orl"); return;
+			op_ints("orl");
+			return;
 		case OP_EQ_EQ:
-			compare_ints("sete"); return;
+			compare_ints("sete");
+			return;
 		case OP_NOT_EQ:
-			compare_ints("setne"); return;
+			compare_ints("setne");
+			return;
 		case OP_NOT:
-			unary_not(); return;
+			unary_not();
+			return;
 		case OP_TILDA:
-			unary_bitnot(); return;
+			unary_bitnot();
+			return;
 
 		case OP_EQ: {
 			assert("= is unimplemented!!!!" && 0);
@@ -112,12 +130,11 @@ void print_op(struct Token tok)
 		case LIT_DEC_INTEGER:
 			assert("failure!!! not an op!!!!" && 0);
 	}
-	 
+
 	assert("unimplemented!!!!" && 0);
-	
 }
 
-void read_all_and_write_code(const char* str)
+void read_all_and_write_code(const char *str)
 {
 	struct vector_Token op_stack = init_vector_Token(0);
 
@@ -136,10 +153,11 @@ void read_all_and_write_code(const char* str)
 		} else if (tok.kind == LEFT_PAREN) {
 			push_vector_Token(&op_stack, tok);
 		} else if (tok.kind == RIGHT_PAREN) {
-			while(op_stack.length > 0 && op_stack.vector[op_stack.length-1].kind != LEFT_PAREN){
+			while (op_stack.length > 0 &&
+			       op_stack.vector[op_stack.length - 1].kind != LEFT_PAREN) {
 				print_op(pop_vector_Token(&op_stack));
 			}
-			if (op_stack.length == 0){
+			if (op_stack.length == 0) {
 				fprintf(stderr, "UNMATCHED BRACKET");
 				abort();
 			} else {
@@ -148,20 +166,20 @@ void read_all_and_write_code(const char* str)
 		} else if (tok.kind == IDENT_OR_RESERVED) {
 			assert("ident pushing unimplemented" && 0);
 		} else { /* operators */
-			while (op_stack.length > 0 && 
-				(
-					get_precedence(op_stack.vector[op_stack.length-1].kind) >
-					get_precedence(tok.kind) 
-					|| (
-						get_precedence(op_stack.vector[op_stack.length-1].kind) ==
-						get_precedence(tok.kind)
-						&& get_precedence(tok.kind) != -1 
-						&& get_precedence(tok.kind) != -2 
-						&& get_precedence(tok.kind) != -13 
-						 /* is left-associative */ 
-					)
-				) && op_stack.vector[op_stack.length-1].kind != LEFT_PAREN
-				/* the operator at the top of the operator stack is not a left bracket */
+			while (
+			    op_stack.length > 0 &&
+			    (get_precedence(op_stack.vector[op_stack.length - 1].kind) >
+			         get_precedence(tok.kind) ||
+			     (get_precedence(op_stack.vector[op_stack.length - 1].kind) ==
+			          get_precedence(tok.kind) &&
+			      get_precedence(tok.kind) != -1 &&
+			      get_precedence(tok.kind) != -2 &&
+			      get_precedence(tok.kind) != -13
+			      /* is left-associative */
+			      )) &&
+			    op_stack.vector[op_stack.length - 1].kind != LEFT_PAREN
+			    /* the operator at the top of the operator stack is not a left
+			       bracket */
 			) {
 				print_op(pop_vector_Token(&op_stack));
 			}
@@ -176,7 +194,7 @@ void read_all_and_write_code(const char* str)
 	print_epilogue(0);
 }
 
-void read_all_tokens(const char* str)
+void read_all_tokens(const char *str)
 {
 	struct Token tok;
 	do {
@@ -195,7 +213,7 @@ int main(int argc, char const *argv[])
 	/* const char* str = "123+456-789"; */
 	scanf("%[^\n]s", str); /* VULNERABLE!!! */
 	if (argc == 2) {
-		if(strcmp(argv[1], "--lexer-debug") == 0) {
+		if (strcmp(argv[1], "--lexer-debug") == 0) {
 			read_all_tokens(str);
 		}
 	} else {

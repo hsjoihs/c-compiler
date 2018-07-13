@@ -13,7 +13,7 @@ void insert(struct int_map *map_ptr, const char *key, int value)
 /* returns garbage (0xCCCCCCCC == GARBAGE_INT) if not found. */
 int lookup(const struct int_map map, const char *key)
 {
-	for (int i=(map.length)-1; i>=0; --i) {
+	for (int i = (map.length) - 1; i >= 0; --i) {
 		if (strcmp(map.vector[i].ptr, key) == 0) {
 			return map.vector[i].value;
 		}
@@ -26,8 +26,4 @@ void deletion(struct int_map *map_ptr, const char *key)
 	insert(map_ptr, key, GARBAGE_INT);
 }
 
-struct int_map init_int_map(void)
-{
-	return init_vector_charptANDint(0);
-}
-
+struct int_map init_int_map(void) { return init_vector_charptANDint(0); }

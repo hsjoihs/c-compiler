@@ -1,8 +1,8 @@
 /* AUTOMATICALLY GENERATED. DO NOT EDIT. */
-#include <stdlib.h>
+#include "vector.h"
 #include <assert.h>
 #include <stdio.h>
-#include "vector.h"
+#include <stdlib.h>
 struct vector_Token init_vector_Token(int initial_length)
 {
 	struct vector_Token res;
@@ -12,14 +12,16 @@ struct vector_Token init_vector_Token(int initial_length)
 	return res;
 }
 
-void extend_vector_Token(struct vector_Token* ptr)
+void extend_vector_Token(struct vector_Token *ptr)
 {
 	if (ptr->_allocated_length < ptr->length + 1) {
 
-		ptr->vector = realloc(ptr->vector, ptr->_allocated_length * 2 * sizeof(struct Token));
+		ptr->vector = realloc(ptr->vector, ptr->_allocated_length * 2 *
+		                                       sizeof(struct Token));
 
 		if (!(ptr->vector)) { /* fails when the memory runs out */
-			fprintf(stderr, "memory ran out when trying to reallocate an empty vector of type Token");
+			fprintf(stderr, "memory ran out when trying to reallocate an empty "
+			                "vector of type Token");
 			abort();
 		}
 
@@ -27,20 +29,21 @@ void extend_vector_Token(struct vector_Token* ptr)
 	}
 }
 
-void push_vector_Token(struct vector_Token* ptr, struct Token tok)
+void push_vector_Token(struct vector_Token *ptr, struct Token tok)
 {
 	extend_vector_Token(ptr);
 	ptr->vector[ptr->length] = tok;
-	++(ptr->length); 
+	++(ptr->length);
 }
 
-struct Token pop_vector_Token(struct vector_Token* ptr)
+struct Token pop_vector_Token(struct vector_Token *ptr)
 {
 	if (ptr->length == 0) {
 		assert("tried to pop an empty vector of type `struct Token`" && 0);
 	}
-	--(ptr->length); 
-	return ptr->vector[ptr->length]; /* safe, since it is not yet released or anything */
+	--(ptr->length);
+	return ptr->vector[ptr->length]; /* safe, since it is not yet released or
+	                                    anything */
 }
 struct vector_charptANDint init_vector_charptANDint(int initial_length)
 {
@@ -51,14 +54,16 @@ struct vector_charptANDint init_vector_charptANDint(int initial_length)
 	return res;
 }
 
-void extend_vector_charptANDint(struct vector_charptANDint* ptr)
+void extend_vector_charptANDint(struct vector_charptANDint *ptr)
 {
 	if (ptr->_allocated_length < ptr->length + 1) {
 
-		ptr->vector = realloc(ptr->vector, ptr->_allocated_length * 2 * sizeof(struct charptANDint));
+		ptr->vector = realloc(ptr->vector, ptr->_allocated_length * 2 *
+		                                       sizeof(struct charptANDint));
 
 		if (!(ptr->vector)) { /* fails when the memory runs out */
-			fprintf(stderr, "memory ran out when trying to reallocate an empty vector of type charptANDint");
+			fprintf(stderr, "memory ran out when trying to reallocate an empty "
+			                "vector of type charptANDint");
 			abort();
 		}
 
@@ -66,20 +71,23 @@ void extend_vector_charptANDint(struct vector_charptANDint* ptr)
 	}
 }
 
-void push_vector_charptANDint(struct vector_charptANDint* ptr, struct charptANDint tok)
+void push_vector_charptANDint(struct vector_charptANDint *ptr,
+                              struct charptANDint tok)
 {
 	extend_vector_charptANDint(ptr);
 	ptr->vector[ptr->length] = tok;
-	++(ptr->length); 
+	++(ptr->length);
 }
 
-struct charptANDint pop_vector_charptANDint(struct vector_charptANDint* ptr)
+struct charptANDint pop_vector_charptANDint(struct vector_charptANDint *ptr)
 {
 	if (ptr->length == 0) {
-		assert("tried to pop an empty vector of type `struct charptANDint`" && 0);
+		assert("tried to pop an empty vector of type `struct charptANDint`" &&
+		       0);
 	}
-	--(ptr->length); 
-	return ptr->vector[ptr->length]; /* safe, since it is not yet released or anything */
+	--(ptr->length);
+	return ptr->vector[ptr->length]; /* safe, since it is not yet released or
+	                                    anything */
 }
 struct vector_Int init_vector_Int(int initial_length)
 {
@@ -90,14 +98,16 @@ struct vector_Int init_vector_Int(int initial_length)
 	return res;
 }
 
-void extend_vector_Int(struct vector_Int* ptr)
+void extend_vector_Int(struct vector_Int *ptr)
 {
 	if (ptr->_allocated_length < ptr->length + 1) {
 
-		ptr->vector = realloc(ptr->vector, ptr->_allocated_length * 2 * sizeof(struct Int));
+		ptr->vector = realloc(ptr->vector,
+		                      ptr->_allocated_length * 2 * sizeof(struct Int));
 
 		if (!(ptr->vector)) { /* fails when the memory runs out */
-			fprintf(stderr, "memory ran out when trying to reallocate an empty vector of type Int");
+			fprintf(stderr, "memory ran out when trying to reallocate an empty "
+			                "vector of type Int");
 			abort();
 		}
 
@@ -105,18 +115,19 @@ void extend_vector_Int(struct vector_Int* ptr)
 	}
 }
 
-void push_vector_Int(struct vector_Int* ptr, struct Int tok)
+void push_vector_Int(struct vector_Int *ptr, struct Int tok)
 {
 	extend_vector_Int(ptr);
 	ptr->vector[ptr->length] = tok;
-	++(ptr->length); 
+	++(ptr->length);
 }
 
-struct Int pop_vector_Int(struct vector_Int* ptr)
+struct Int pop_vector_Int(struct vector_Int *ptr)
 {
 	if (ptr->length == 0) {
 		assert("tried to pop an empty vector of type `struct Int`" && 0);
 	}
-	--(ptr->length); 
-	return ptr->vector[ptr->length]; /* safe, since it is not yet released or anything */
+	--(ptr->length);
+	return ptr->vector[ptr->length]; /* safe, since it is not yet released or
+	                                    anything */
 }
