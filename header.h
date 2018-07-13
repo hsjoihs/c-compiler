@@ -1,3 +1,6 @@
+#pragma once
+
+
 void print_prologue(int alloc_size);
 void push_int(int num);
 void op_ints(const char* str);
@@ -13,7 +16,6 @@ void write_to_local(int offset);
 void return_with_label(const char *str);
 void print_epilogue(const char *label, int alloc_size);
 
-#pragma once
 
 #define GARBAGE_INT 0xCCCCCCCC
 #define BOOL int

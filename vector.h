@@ -1,4 +1,5 @@
 /* AUTOMATICALLY GENERATED. DO NOT EDIT. */
+#pragma once 
 #include "header.h"
 struct vector_Token {
 	int length;

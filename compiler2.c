@@ -436,11 +436,26 @@ int main(int argc, char const *argv[])
 		struct vector_Token tokvec_ = read_all_tokens(str);
 		const struct Token *tokvec = tokvec_.vector;
 
-		int offset = 8;
-		print_prologue(offset);
+		int v = -4;
+		struct int_map map = init_int_map();
+
+		for (int i = 0; i < tokvec_.length; i++) {
+			if (tokvec_.vector[i].kind != IDENT_OR_RESERVED) {
+				continue;
+			}
+
+			if (lookup(map, tokvec_.vector[i].ident_str) ==
+			    GARBAGE_INT) { // newly found
+				insert(&map, tokvec_.vector[i].ident_str, v);
+				v -= 4;
+			}
+		}
+
+		int capacity = -v - 4;
+		print_prologue(capacity);
 		while (1) {
 			if (tokvec[0].kind == END) {
-				parse_final(&tokvec, offset);
+				parse_final(&tokvec, capacity);
 				return 0;
 			} else {
 				parse_statement(&tokvec);
