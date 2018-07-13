@@ -67,11 +67,11 @@ void mul_ints(void)
 	       "  addq $4, %%rsp\n");
 }
 
-void return_with_label(const char *str)
+void return_with_label(int label)
 {
 	printf("//return \n"
-	       "  jmp .%s\n",
-	       str);
+	       "  jmp .L%d\n",
+	       label);
 }
 
 void div_ints(void)
@@ -145,10 +145,10 @@ void shift_ints(const char *str)
 	       str);
 }
 
-void print_epilogue(const char *label, int alloc_size)
+void print_epilogue(int label, int alloc_size)
 {
 	printf("//print_epilogue(%d)\n", alloc_size);
-	printf(".%s:"
+	printf(".L%d:"
 	       "  movl (%%rsp), %%eax\n"
 	       "  addq $%d, %%rsp\n"
 	       "  movq (%%rbp), %%rbp\n"

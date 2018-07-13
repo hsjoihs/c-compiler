@@ -29,7 +29,7 @@ int main()
 
 	op_ints("addl");
 
-	return_with_label("FIXME");
-	print_epilogue("FIXME", 0);
+	return_with_label(123);
+	print_epilogue(123, 0);
 	return 0;
 }

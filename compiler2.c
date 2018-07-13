@@ -392,6 +392,11 @@ void error_unexpected_token(struct Token token, const char *str)
 	abort();
 }
 
+int get_label_name(struct ParserState *ptr_ps)
+{
+	return ++(ptr_ps->final_label_name);
+}
+
 void parse_statement(struct ParserState *ptr_ps,
                      const struct Token **ptr_to_tokvec)
 {
@@ -407,7 +412,7 @@ void parse_statement(struct ParserState *ptr_ps,
 				++tokvec;
 				*ptr_to_tokvec = tokvec;
 
-				return_with_label("FIXME");
+				return_with_label(123456);
 
 				return;
 			} else {
@@ -436,7 +441,7 @@ void parse_final(struct ParserState *ptr_ps, const struct Token **ptr_to_tokvec,
 {
 	const struct Token *tokvec = *ptr_to_tokvec;
 	if (tokvec[0].kind == END) {
-		print_epilogue("FIXME", offset);
+		print_epilogue(123456, offset);
 	}
 }
 

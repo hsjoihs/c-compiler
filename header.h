@@ -13,8 +13,8 @@ void unary_not(void);
 void unary(const char* str);
 void push_from_local(int offset);
 void write_to_local(int offset);
-void return_with_label(const char *str);
-void print_epilogue(const char *label, int alloc_size);
+void return_with_label(int label);
+void print_epilogue(int label, int alloc_size);
 
 
 #define GARBAGE_INT 0xCCCCCCCC
