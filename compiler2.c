@@ -214,6 +214,10 @@ void parse_multiplicative_expression(const struct Token **ptr_to_tokvec);
 void parse_primary_expression(const struct Token **ptr_to_tokvec);
 void parse_inclusive_OR_expression(const struct Token **ptr_to_tokvec);
 void parse_AND_expression(const struct Token **ptr_to_tokvec);
+void parse_AND_expression(const struct Token **ptr_to_tokvec);
+void parse_equality_expression(const struct Token **ptr_to_tokvec);
+void parse_relational_expression(const struct Token **ptr_to_tokvec);
+void parse_shift_expression(const struct Token **ptr_to_tokvec);
 
 void parse_expression(const struct Token **ptr_to_tokvec)
 {
@@ -253,6 +257,21 @@ void parse_inclusive_OR_expression(const struct Token **ptr_to_tokvec)
 }
 
 void parse_AND_expression(const struct Token **ptr_to_tokvec)
+{
+	parse_equality_expression(ptr_to_tokvec);
+}
+
+void parse_equality_expression(const struct Token **ptr_to_tokvec)
+{
+	parse_relational_expression(ptr_to_tokvec);
+}
+
+void parse_relational_expression(const struct Token **ptr_to_tokvec)
+{
+	parse_shift_expression(ptr_to_tokvec);
+}
+
+void parse_shift_expression(const struct Token **ptr_to_tokvec)
 {
 	parse_additive_expression(ptr_to_tokvec);
 }
