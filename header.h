@@ -41,7 +41,9 @@ enum TokenKind {
 	OP_NOT,
 	OP_TILDA,
 	OP_EQ,
-	IDENT_OR_RESERVED
+	IDENT_OR_RESERVED,
+	RES_RETURN,
+	SEMICOLON
 };
 
 struct Token{

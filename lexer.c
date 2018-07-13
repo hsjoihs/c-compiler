@@ -75,11 +75,17 @@ void print_token(struct Token tok)
 		case OP_TILDA:
 			fprintf(stderr, "~");
 			break;
+		case SEMICOLON:
+			fprintf(stderr, ";");
+			break;
 		case IDENT_OR_RESERVED:
 			fprintf(stderr, "%s", tok.ident_str);
 			break;
 		case LIT_DEC_INTEGER:
 			fprintf(stderr, "%d", tok.int_value);
+			break;
+		case RES_RETURN:
+			fprintf(stderr, "return");
 			break;
 	}
 }
@@ -132,6 +138,10 @@ struct Token get_token(const char **ptr_to_str)
 		return t;
 	} else if (*str == ',') {
 		t.kind = OP_COMMA;
+		++*ptr_to_str;
+		return t;
+	} else if (*str == ';') {
+		t.kind = SEMICOLON;
 		++*ptr_to_str;
 		return t;
 	} else if (*str == '<') {
@@ -299,7 +309,13 @@ struct Token get_token(const char **ptr_to_str)
 			new_str[j] = str[j];
 		}
 		new_str[i] = '\0';
-		t.ident_str = new_str;
+
+		if (strcmp(new_str, "return") == 0) {
+			t.kind = RES_RETURN;
+			t.int_value = GARBAGE_INT;
+		} else {
+			t.ident_str = new_str;
+		}
 		*ptr_to_str = str + i;
 		return t;
 	}

@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+void error_unexpected_token(struct Token token, const char *str);
+
 void print_unary_prefix_op(enum TokenKind kind)
 {
 	switch (kind) {
@@ -96,6 +98,8 @@ void print_op(enum TokenKind kind)
 		case RIGHT_PAREN:
 		case END:
 		case LIT_DEC_INTEGER:
+		case RES_RETURN:
+		case SEMICOLON:
 			assert("failure!!! not a binary op!!!!" && 0);
 	}
 
@@ -307,18 +311,55 @@ void parse_primary_expression(const struct Token **ptr_to_tokvec)
 			*ptr_to_tokvec = tokvec;
 			return;
 		} else {
-			fprintf(stderr, "Unexpected token: `");
-			print_token(tokvec[0]);
-			fprintf(stderr, "` while expecting right paren. Aborting.\n");
-			abort();
+			error_unexpected_token(tokvec[0], "right paren");
 		}
 	}
 
+	error_unexpected_token(tokvec[0],
+	                       "the beginning of parse_primary_expression");
+}
+
+void error_unexpected_token(struct Token token, const char *str)
+{
 	fprintf(stderr, "Unexpected token: `");
-	print_token(tokvec[0]);
-	fprintf(stderr, "` while expecting the beginning of "
-	                "parse_primary_expression. Aborting.\n");
+	print_token(token);
+	fprintf(stderr, "` while expecting %s. Aborting.\n", str);
 	abort();
+}
+
+void parse_statement(const struct Token **ptr_to_tokvec)
+{
+	const struct Token *tokvec = *ptr_to_tokvec;
+	if (tokvec[0].kind == RES_RETURN) {
+		++tokvec;
+		*ptr_to_tokvec = tokvec;
+		if (tokvec[0].kind == SEMICOLON) {
+			assert("`return;` unimplemented" && 0);
+		} else {
+			parse_expression(&tokvec);
+			if (tokvec[0].kind == SEMICOLON) {
+				++tokvec;
+				*ptr_to_tokvec = tokvec;
+				return;
+			} else {
+				error_unexpected_token(
+				    tokvec[0],
+				    "semicolon after `return` followed by an expression");
+			}
+		}
+	} else {
+		parse_expression(&tokvec);
+		if (tokvec[0].kind == SEMICOLON) {
+			print_op(OP_COMMA); /* like the comma operator, discard what's on
+			                       the stack */
+			++tokvec;
+			*ptr_to_tokvec = tokvec;
+			return;
+		} else {
+			error_unexpected_token(tokvec[0], "semicolon after an expression");
+		}
+	}
+	*ptr_to_tokvec = tokvec;
 }
 
 void parse_final(const struct Token **ptr_to_tokvec)
@@ -356,7 +397,7 @@ int main(int argc, char const *argv[])
 		struct vector_Token tokvec_ = read_all_tokens(str);
 		const struct Token *tokvec = tokvec_.vector;
 		print_prologue(0);
-		parse_expression(&tokvec);
+		parse_statement(&tokvec);
 		parse_final(&tokvec);
 	}
 	return 0;
