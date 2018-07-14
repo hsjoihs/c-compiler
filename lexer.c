@@ -84,6 +84,12 @@ void print_token(struct Token tok)
 		case COLON:
 			fprintf(stderr, ":");
 			break;
+		case LEFT_BRACE:
+			fprintf(stderr, "{");
+			break;
+		case RIGHT_BRACE:
+			fprintf(stderr, "}");
+			break;
 		case QUESTION:
 			fprintf(stderr, "?");
 			break;
@@ -163,6 +169,14 @@ struct Token get_token(const char **ptr_to_str)
 		return t;
 	} else if (*str == ':') {
 		t.kind = COLON;
+		++*ptr_to_str;
+		return t;
+	} else if (*str == '{') {
+		t.kind = LEFT_BRACE;
+		++*ptr_to_str;
+		return t;
+	} else if (*str == '}') {
+		t.kind = RIGHT_BRACE;
 		++*ptr_to_str;
 		return t;
 	} else if (*str == '<') {

@@ -51,7 +51,9 @@ enum TokenKind {
 	SEMICOLON,
 	OP_HAT,
 	QUESTION,
-	COLON
+	COLON,
+	LEFT_BRACE,
+	RIGHT_BRACE
 };
 
 struct Token{

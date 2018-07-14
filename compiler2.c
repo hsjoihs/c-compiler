@@ -102,6 +102,8 @@ void print_op(enum TokenKind kind)
 			return;
 		}
 
+		case LEFT_BRACE:
+		case RIGHT_BRACE:
 		case QUESTION:
 		case COLON:
 		case OP_NOT:
@@ -568,6 +570,25 @@ struct vector_Token read_all_tokens(const char *str)
 	return tokvec;
 }
 
+void parse_compound_statement(struct ParserState *ptr_ps,
+                              const struct Token **ptr_to_tokvec)
+{
+	const struct Token *tokvec = *ptr_to_tokvec;
+	if (tokvec[0].kind == LEFT_BRACE) {
+		++tokvec;
+		*ptr_to_tokvec = tokvec;
+		while (1) {
+			if (tokvec[0].kind == RIGHT_BRACE) {
+				++tokvec;
+				*ptr_to_tokvec = tokvec;
+				return;
+			} else {
+				parse_statement(ptr_ps, &tokvec);
+			}
+		}
+	}
+}
+
 int main(int argc, char const *argv[])
 {
 	char str[1000];
@@ -603,13 +624,10 @@ int main(int argc, char const *argv[])
 
 		int capacity = -v - 4;
 		print_prologue(capacity);
-		while (1) {
-			if (tokvec[0].kind == END) {
-				parse_final(&ps, &tokvec, capacity);
-				return 0;
-			} else {
-				parse_statement(&ps, &tokvec);
-			}
+		parse_compound_statement(&ps, &tokvec);
+		if (tokvec[0].kind == END) {
+			parse_final(&ps, &tokvec, capacity);
+			return 0;
 		}
 	}
 	return 0;
