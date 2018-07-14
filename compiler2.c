@@ -630,13 +630,64 @@ void parse_function_definition(struct ParserState *ptr_ps,
 			parse_compound_statement(ptr_ps, &tokvec);
 			print_epilogue(ptr_ps->return_label_name, capacity);
 		} else {
-			fprintf(
-			    stderr,
-			    "function definition with arguments not yet implemented!!!\n");
-			abort();
+
+			print_prologue(capacity, ident_str);
+
+			tokvec += 2;
+
+			const char *regs[] = {"edi", "esi", "edx", "ecx", "r8d", "r9d"};
+			int counter = 0;
+
+			if (tokvec[0].kind == IDENT_OR_RESERVED) {
+				write_register_to_local(
+				    regs[counter], from_name(*ptr_ps, tokvec[0].ident_str));
+				++counter;
+				++tokvec;
+			} else {
+				error_unexpected_token(tokvec[0],
+				                       "identifier in the arglist of funcdef");
+			}
+
+			while (1) {
+				enum TokenKind kind = tokvec[0].kind;
+				if (kind != OP_COMMA) {
+					break;
+				}
+				++tokvec;
+
+				if (tokvec[0].kind == IDENT_OR_RESERVED) {
+					if (counter > 5) {
+						fprintf(stderr, "6-or-more args not implemented!\n");
+					}
+					write_register_to_local(
+					    regs[counter], from_name(*ptr_ps, tokvec[0].ident_str));
+					++counter;
+					++tokvec;
+				} else {
+					error_unexpected_token(
+					    tokvec[0], "identifier in the arglist of funcdef");
+				}
+			}
+			*ptr_to_tokvec = tokvec;
+
+			if (tokvec[0].kind == RIGHT_PAREN) {
+				++tokvec;
+				*ptr_to_tokvec = tokvec;
+			} else {
+				error_unexpected_token(
+				    tokvec[0], "closing parenthesis of function definition");
+			}
+
+			parse_compound_statement(ptr_ps, &tokvec);
+			print_epilogue(ptr_ps->return_label_name, capacity);
 		}
 	} else {
 		fprintf(stderr, "expected function definition but could not find it\n");
+		fprintf(stderr, "current token: ");
+		print_token(tokvec[0]);
+		fprintf(stderr, "\nnext token: ");
+		print_token(tokvec[1]);
+		fprintf(stderr, "\n");
 		abort();
 	}
 	*ptr_to_tokvec = tokvec;

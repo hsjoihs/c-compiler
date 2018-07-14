@@ -20,15 +20,15 @@ int main()
 {
 
 	print_prologue(8, "foo");
-	write_register_to_local("edi",-4);
-	write_register_to_local("esi",-8);
+	write_register_to_local("edi", -4);
+	write_register_to_local("esi", -8);
 	push_from_local(-4);
 	push_int(103);
 	op_ints("addl");
 	push_from_local(-8);
 	op_ints("subl");
 	return_with_label(2);
-	print_epilogue(2,8);
+	print_epilogue(2, 8);
 
 	print_prologue(16, "main");
 

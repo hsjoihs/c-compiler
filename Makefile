@@ -54,4 +54,6 @@ full_compile:
 	./test_ret3.sh 'main(){return always87() + ((always8()* subtract(12,1)) -1);}' s/full_compile029.s out/task029.out 174 out/compiler.out
 	./test_ret3.sh 'main(){3; {5; 7; 11; } return 175^1;}' s/full_compile030.s out/task030.out 174 out/compiler.out
 	./test_ret3.sh 'always87_(){return 87;} main(){return (3, always87() + always87_());}' s/full_compile031.s out/task031.out 174 out/compiler.out
+	./test_ret3.sh 'add_(x,y){4; return x+y;} main(){3; return add_(87,87);}' s/full_compile032.s out/task032.out 174 out/compiler.out
+	./test_ret3.sh 'fib(n){ return n < 2? n : fib(n - 1) + fib(n - 2); } main(){3; return fib(10);}' s/full_compile033.s out/task033.out 55 out/compiler.out
 
