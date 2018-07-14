@@ -3,7 +3,7 @@
 #include <stdio.h>
 /*
 int main() {
-    return (3 && 2) + 173; }
+    return (3 && 2 && 5) + 173; }
 */
 int main()
 {
@@ -14,7 +14,9 @@ int main()
 	logical_AND_set(0, label1, label2);
 	push_int(2);
 	logical_AND_set(1, label1, label2);
-	logical_AND_final(label1, label2);
+	push_int(5);
+	logical_AND_set(2, label1, label2);
+	logical_AND_final(2, label1, label2);
 	push_int(173);
 	op_ints("addl");
 	return_with_label(12);

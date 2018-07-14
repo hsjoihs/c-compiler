@@ -166,17 +166,17 @@ void unary(const char *str)
 
 void logical_AND_set(int depth, int label1, int label2)
 {
-	printf("//logical_AND_set(%d, %d);\n", label1, label2);
-	printf(
-	       "  addq $%d, %%rsp\n"
-		   "  cmpl $0, %d(%%rsp)\n"
-	       "  je .L%d\n",
-	       depth * 4, -depth * 4,label1);
+	printf("//logical_AND_set(%d, %d, %d);\n", depth, label1, label2);
+	printf("  addq $%d, %%rsp\n", depth * 4);
+	printf("  cmpl $0, %d(%%rsp)\n", -depth * 4);
+	printf("  je .L%d\n", label1);
+	printf("  subq $%d, %%rsp\n", depth * 4);
 }
 
-void logical_AND_final(int label1, int label2)
+void logical_AND_final(int final_depth, int label1, int label2)
 {
-	printf("//logical_AND_final(%d, %d);\n", label1, label2);
+	printf("//logical_AND_final(%d, %d, %d);\n", final_depth, label1, label2);
+	printf("  addq $%d, %%rsp\n", final_depth * 4);
 	printf("  movl $1, %%eax\n"
 	       "  jmp .L%d\n"
 	       ".L%d:\n"

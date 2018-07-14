@@ -20,7 +20,7 @@ void push_ret_of(const char* fname);
 void pop_to_reg(const char *str);
 void write_register_to_local(const char* str, int offset);
 void logical_AND_set(int offset, int label1, int label2);
-void logical_AND_final(int label1, int label2);
+void logical_AND_final(int final_depth, int label1, int label2);
 
 
 #define GARBAGE_INT 0xCCCCCCCC
