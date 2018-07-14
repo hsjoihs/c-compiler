@@ -168,6 +168,10 @@ void parse_conditional_expression(struct ParserState *ptr_ps,
                                   const struct Token **ptr_to_tokvec);
 void parse_compound_statement(struct ParserState *ptr_ps,
                               const struct Token **ptr_to_tokvec);
+void parse_logical_OR_expression(struct ParserState *ptr_ps,
+                                 const struct Token **ptr_to_tokvec);
+void parse_logical_AND_expression(struct ParserState *ptr_ps,
+                                  const struct Token **ptr_to_tokvec);
 
 void parse_expression(struct ParserState *ptr_ps,
                       const struct Token **ptr_to_tokvec)
@@ -209,12 +213,11 @@ void parse_assignment_expression(struct ParserState *ptr_ps,
 	*ptr_to_tokvec = tokvec;
 }
 
-/* FIXME */
 void parse_conditional_expression(struct ParserState *ptr_ps,
                                   const struct Token **ptr_to_tokvec)
 {
 	const struct Token *tokvec = *ptr_to_tokvec;
-	parse_inclusive_OR_expression(ptr_ps, &tokvec);
+	parse_logical_OR_expression(ptr_ps, &tokvec);
 	if (tokvec[0].kind == QUESTION) {
 		int label1 = get_label_name(ptr_ps);
 		int label2 = get_label_name(ptr_ps);
@@ -250,6 +253,18 @@ void parse_conditional_expression(struct ParserState *ptr_ps,
 		}
 	}
 	*ptr_to_tokvec = tokvec;
+}
+
+void parse_logical_OR_expression(struct ParserState *ptr_ps,
+                                 const struct Token **ptr_to_tokvec)
+{
+	parse_logical_AND_expression(ptr_ps, ptr_to_tokvec);
+}
+
+void parse_logical_AND_expression(struct ParserState *ptr_ps,
+                                  const struct Token **ptr_to_tokvec)
+{
+	parse_inclusive_OR_expression(ptr_ps, ptr_to_tokvec);
 }
 
 void parse_inclusive_OR_expression(struct ParserState *ptr_ps,
