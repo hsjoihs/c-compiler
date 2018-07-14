@@ -56,4 +56,5 @@ full_compile:
 	./test_ret3.sh 'always87_(){return 87;} main(){return (3, always87() + always87_());}' s/full_compile031.s out/task031.out 174 out/compiler.out
 	./test_ret3.sh 'add_(x,y){4; return x+y;} main(){3; return add_(87,87);}' s/full_compile032.s out/task032.out 174 out/compiler.out
 	./test_ret3.sh 'fib(n){ return n < 2? n : fib(n - 1) + fib(n - 2); } main(){3; return fib(10);}' s/full_compile033.s out/task033.out 55 out/compiler.out
+	./test_ret3.sh 'tarai(x,y,z){ return x <= y? y : tarai(tarai(x-1, y, z), tarai(y-1, z, x), tarai(z-1, x, y)); } main(){return tarai(12,6,0);}' s/full_compile034.s out/task034.out 12 out/compiler.out
 
