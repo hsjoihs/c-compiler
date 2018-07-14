@@ -164,6 +164,30 @@ void unary(const char *str)
 	printf("  %s (%%rsp)\n", str);
 }
 
+void logical_AND_part1(int label1, int label2)
+{
+	printf(
+		"//logical_AND_part1(%d, %d);",label1, label2);
+	printf("  cmpl $0, (%%rsp)\n"
+	    "  je .L%d\n", label1);
+}
+
+void logical_AND_part2(int label1, int label2)
+{
+	printf(
+		"//logical_AND_part2(%d, %d);",label1, label2);
+	printf(
+	    "  cmpl $0, (%%rsp)\n"
+	    "  addq $4, %%rsp\n"
+	    "  je .L%d\n"
+	    "  movl $1, %%eax\n"
+	    "  jmp .L%d\n"
+	    ".L%d:\n"
+	    "  movl $0, %%eax\n"
+	    ".L%d:\n"
+	    "  movl %%eax, (%%rsp)\n",label1,label2, label1, label2);
+}
+
 /*
 sall: left shift
 sarl: right shift
