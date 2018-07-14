@@ -93,6 +93,9 @@ void print_token(struct Token tok)
 		case QUESTION:
 			fprintf(stderr, "?");
 			break;
+		case OP_AND_AND:
+			fprintf(stderr, "&&");
+			break;
 		case IDENT_OR_RESERVED:
 			fprintf(stderr, "%s", tok.ident_str);
 			break;
@@ -211,11 +214,11 @@ struct Token get_token(const char **ptr_to_str)
 		}
 	} else if (*str == '&') {
 		switch (str[1]) {
-			/*case '&':
+			case '&':
 				t.kind = OP_AND_AND;
 				*ptr_to_str += 2;
 				return t;
-			case '=':
+			/*case '=':
 				t.kind = OP_AND_EQ;
 				*ptr_to_str += 2;
 				return t;*/

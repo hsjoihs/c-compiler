@@ -57,7 +57,8 @@ enum TokenKind {
 	QUESTION,
 	COLON,
 	LEFT_BRACE,
-	RIGHT_BRACE
+	RIGHT_BRACE,
+	OP_AND_AND
 };
 
 struct Token{
