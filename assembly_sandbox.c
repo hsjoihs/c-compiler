@@ -4,6 +4,11 @@
 /*
 int always87_(int x, int y) { return 87; }
 
+int foo_(int x, int y)
+{
+    return 103+x-y;
+}
+
 int main()
 {
     int b = 3;
@@ -14,16 +19,16 @@ int main()
 int main()
 {
 
-	puts("_foo:\n"
-	     "  pushq %rbp\n"
-	     "  movq %rsp, %rbp\n"
-	     "  movl %edi, -4(%rbp)\n"
-	     "  movl %esi, -8(%rbp)\n"
-	     "  movl -4(%rbp), %eax\n"
-	     "  addl $103, %eax\n"
-	     "  subl -8(%rbp), %eax\n"
-	     "  popq %rbp\n"
-	     "  ret\n");
+	print_prologue(8, "foo");
+	write_register_to_local("edi",-4);
+	write_register_to_local("esi",-8);
+	push_from_local(-4);
+	push_int(103);
+	op_ints("addl");
+	push_from_local(-8);
+	op_ints("subl");
+	return_with_label(2);
+	print_epilogue(2,8);
 
 	print_prologue(16, "main");
 

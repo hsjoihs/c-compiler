@@ -31,6 +31,14 @@ void write_to_local(int offset)
 	printf("  movl %%eax, %d(%%rbp)\n", offset);
 }
 
+/* write to local mem what's in the register */
+void write_register_to_local(const char* str, int offset)
+{
+	assert(offset < 0);
+	printf("//write_register_to_local(%s, %d)\n",str, offset);
+	printf("  movl %%%s, %d(%%rbp)\n", str, offset);
+}
+
 /* push what's on local mem */
 void push_from_local(int offset)
 {
