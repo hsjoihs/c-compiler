@@ -595,7 +595,8 @@ void parse_compound_statement(struct ParserState *ptr_ps,
 	}
 }
 
-void parse_function_definition(const struct Token **ptr_to_tokvec)
+void parse_function_definition(struct ParserState *ptr_ps,
+                               const struct Token **ptr_to_tokvec)
 {
 	const struct Token *tokvec = *ptr_to_tokvec;
 	if (tokvec[0].kind == IDENT_OR_RESERVED && tokvec[1].kind == LEFT_PAREN) {
@@ -619,18 +620,15 @@ void parse_function_definition(const struct Token **ptr_to_tokvec)
 			}
 		}
 
-		struct ParserState ps;
-		ps.var_table = map;
-		ps.final_label_name = 1;
-		ps.return_label_name = GARBAGE_INT;
+		ptr_ps->var_table = map;
 
 		int capacity = -v - 4;
 
 		if (tokvec[2].kind == RIGHT_PAREN) {
 			print_prologue(capacity, ident_str);
 			tokvec += 3;
-			parse_compound_statement(&ps, &tokvec);
-			print_epilogue(ps.return_label_name, capacity);
+			parse_compound_statement(ptr_ps, &tokvec);
+			print_epilogue(ptr_ps->return_label_name, capacity);
 		} else {
 			fprintf(
 			    stderr,
@@ -657,11 +655,17 @@ int main(int argc, char const *argv[])
 		struct vector_Token tokvec_ = read_all_tokens(str);
 		const struct Token *tokvec = tokvec_.vector;
 
-		parse_function_definition(&tokvec);
+		struct ParserState ps;
+		ps.final_label_name = 1;
+		ps.return_label_name = GARBAGE_INT;
 
-		if (tokvec[0].kind == END) {
-			parse_final(&tokvec);
-			return 0;
+		while (1) {
+			if (tokvec[0].kind == END) {
+				parse_final(&tokvec);
+				return 0;
+			} else {
+				parse_function_definition(&ps, &tokvec);
+			}
 		}
 	}
 	return 0;
