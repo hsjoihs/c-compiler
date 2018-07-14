@@ -25,7 +25,7 @@ int main()
 	     "  popq %rbp\n"
 	     "  ret\n");
 
-	print_prologue(16);
+	print_prologue(16, "main");
 
 	push_int(6);
 

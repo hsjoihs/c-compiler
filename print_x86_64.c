@@ -10,12 +10,13 @@
 #define PREFIX ""
 #endif
 
-void print_prologue(int alloc_size)
+void print_prologue(int alloc_size, const char *fname)
 {
-	printf("//print_prologue(%d)\n", alloc_size);
-	printf(".global " PREFIX "main\n" PREFIX "main:\n"
+	printf("//print_prologue(%d, %s)\n", alloc_size, fname);
+	printf(".global " PREFIX "%s\n" PREFIX "%s:\n"
 	       "  pushq %%rbp\n"
-	       "  movq %%rsp, %%rbp\n");
+	       "  movq %%rsp, %%rbp\n",
+	       fname, fname);
 	if (alloc_size) {
 		printf("  subq $%d, %%rsp\n", alloc_size);
 	}

@@ -52,4 +52,5 @@ full_compile:
 	./test_ret3.sh '{return add(170,4);}' s/full_compile029.s out/task029.out 174 out/compiler.out
 	./test_ret3.sh '{return always87() + ((always8()* add(4,7)) -1);}' s/full_compile028.s out/task028.out 174 out/compiler.out
 	./test_ret3.sh '{return always87() + ((always8()* subtract(12,1)) -1);}' s/full_compile029.s out/task029.out 174 out/compiler.out
+	./test_ret3.sh '{3; {5; 7; 11; } return 175^1;}' s/full_compile030.s out/task030.out 174 out/compiler.out
 

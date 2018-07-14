@@ -166,6 +166,8 @@ void parse_postfix_expression(struct ParserState *ptr_ps,
                               const struct Token **ptr_to_tokvec);
 void parse_conditional_expression(struct ParserState *ptr_ps,
                                   const struct Token **ptr_to_tokvec);
+void parse_compound_statement(struct ParserState *ptr_ps,
+                              const struct Token **ptr_to_tokvec);
 
 void parse_expression(struct ParserState *ptr_ps,
                       const struct Token **ptr_to_tokvec)
@@ -510,7 +512,10 @@ void parse_statement(struct ParserState *ptr_ps,
                      const struct Token **ptr_to_tokvec)
 {
 	const struct Token *tokvec = *ptr_to_tokvec;
-	if (tokvec[0].kind == RES_RETURN) {
+	if (tokvec[0].kind == LEFT_BRACE) {
+		parse_compound_statement(ptr_ps, &tokvec);
+		*ptr_to_tokvec = tokvec;
+	} else if (tokvec[0].kind == RES_RETURN) {
 		++tokvec;
 		*ptr_to_tokvec = tokvec;
 		if (tokvec[0].kind == SEMICOLON) {
@@ -624,7 +629,7 @@ int main(int argc, char const *argv[])
 		ps.return_label_name = GARBAGE_INT;
 
 		int capacity = -v - 4;
-		print_prologue(capacity);
+		print_prologue(capacity, "main");
 		parse_compound_statement(&ps, &tokvec);
 		print_epilogue(ps.return_label_name, capacity);
 		if (tokvec[0].kind == END) {

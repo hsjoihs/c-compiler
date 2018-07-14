@@ -1,7 +1,7 @@
 #pragma once
 
 
-void print_prologue(int alloc_size);
+void print_prologue(int alloc_size, const char* fname);
 void push_int(int num);
 void op_ints(const char* str);
 void compare_ints(const char* str);
