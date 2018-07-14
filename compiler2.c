@@ -547,12 +547,13 @@ void parse_statement(struct ParserState *ptr_ps,
 	*ptr_to_tokvec = tokvec;
 }
 
-void parse_final(struct ParserState *ptr_ps, const struct Token **ptr_to_tokvec,
-                 int offset)
+void parse_final(const struct Token **ptr_to_tokvec)
 {
 	const struct Token *tokvec = *ptr_to_tokvec;
 	if (tokvec[0].kind == END) {
-		print_epilogue(ptr_ps->return_label_name, offset);
+		return;
+	} else {
+		error_unexpected_token(tokvec[0], "the end of file");
 	}
 }
 
@@ -625,8 +626,9 @@ int main(int argc, char const *argv[])
 		int capacity = -v - 4;
 		print_prologue(capacity);
 		parse_compound_statement(&ps, &tokvec);
+		print_epilogue(ps.return_label_name, capacity);
 		if (tokvec[0].kind == END) {
-			parse_final(&ps, &tokvec, capacity);
+			parse_final(&tokvec);
 			return 0;
 		}
 	}
