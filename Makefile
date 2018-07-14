@@ -11,7 +11,7 @@ clean:
 
 
 assembly_sandbox:
-	gcc -Wall assembly_sandbox.c vector.c print_assembly.c -o out/assembly_sandbox.out
+	gcc -Wall assembly_sandbox.c vector.c print_x86_64.c -o out/assembly_sandbox.out
 	./test_ret3.sh '' s/assembly_sandbox.s out/assembly_sandbox.out 174 out/assembly_sandbox.out
 
 intmap_check:
@@ -20,7 +20,7 @@ intmap_check:
 
 
 full_compile:
-	gcc -Wall compiler2.c intmap.c vector.c print_assembly.c lexer.c -o out/compiler.out
+	gcc -Wall compiler2.c intmap.c vector.c print_x86_64.c lexer.c -o out/compiler.out
 	./test_ret3.sh '{return 123;}' s/full_compile001.s out/task001.out 123 out/compiler.out
 	./test_ret3.sh '{return (123);}' s/full_compile010.s out/task010.out 123 out/compiler.out
 	./test_ret3.sh '{return ((((123))));}' s/full_compile011.s out/task011.out 123 out/compiler.out
