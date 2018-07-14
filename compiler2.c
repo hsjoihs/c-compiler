@@ -595,6 +595,55 @@ void parse_compound_statement(struct ParserState *ptr_ps,
 	}
 }
 
+void parse_function_definition(const struct Token **ptr_to_tokvec)
+{
+	const struct Token *tokvec = *ptr_to_tokvec;
+	if (tokvec[0].kind == IDENT_OR_RESERVED && tokvec[1].kind == LEFT_PAREN) {
+		const char *ident_str = tokvec[0].ident_str;
+
+		int v = -4;
+		struct int_map map = init_int_map();
+
+		for (int i = 0;; i++) {
+			if (tokvec[i].kind == END) {
+				break;
+			}
+			if (tokvec[i].kind != IDENT_OR_RESERVED) {
+				continue;
+			}
+
+			if (lookup(map, tokvec[i].ident_str) ==
+			    GARBAGE_INT) { // newly found
+				insert(&map, tokvec[i].ident_str, v);
+				v -= 4;
+			}
+		}
+
+		struct ParserState ps;
+		ps.var_table = map;
+		ps.final_label_name = 1;
+		ps.return_label_name = GARBAGE_INT;
+
+		int capacity = -v - 4;
+
+		if (tokvec[2].kind == RIGHT_PAREN) {
+			print_prologue(capacity, ident_str);
+			tokvec += 3;
+			parse_compound_statement(&ps, &tokvec);
+			print_epilogue(ps.return_label_name, capacity);
+		} else {
+			fprintf(
+			    stderr,
+			    "function definition with arguments not yet implemented!!!\n");
+			abort();
+		}
+	} else {
+		fprintf(stderr, "expected function definition but could not find it\n");
+		abort();
+	}
+	*ptr_to_tokvec = tokvec;
+}
+
 int main(int argc, char const *argv[])
 {
 	char str[1000];
@@ -608,30 +657,8 @@ int main(int argc, char const *argv[])
 		struct vector_Token tokvec_ = read_all_tokens(str);
 		const struct Token *tokvec = tokvec_.vector;
 
-		int v = -4;
-		struct int_map map = init_int_map();
+		parse_function_definition(&tokvec);
 
-		for (int i = 0; i < tokvec_.length; i++) {
-			if (tokvec_.vector[i].kind != IDENT_OR_RESERVED) {
-				continue;
-			}
-
-			if (lookup(map, tokvec_.vector[i].ident_str) ==
-			    GARBAGE_INT) { // newly found
-				insert(&map, tokvec_.vector[i].ident_str, v);
-				v -= 4;
-			}
-		}
-
-		struct ParserState ps;
-		ps.var_table = map;
-		ps.final_label_name = 1;
-		ps.return_label_name = GARBAGE_INT;
-
-		int capacity = -v - 4;
-		print_prologue(capacity, "main");
-		parse_compound_statement(&ps, &tokvec);
-		print_epilogue(ps.return_label_name, capacity);
 		if (tokvec[0].kind == END) {
 			parse_final(&tokvec);
 			return 0;
