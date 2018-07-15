@@ -99,6 +99,15 @@ void print_op(enum TokenKind kind)
 
 		case OP_EQ:
 		case OP_PLUS_EQ:
+		case OP_MINUS_EQ:
+		case OP_ASTERISK_EQ:
+		case OP_SLASH_EQ:
+		case OP_PERCENT_EQ:
+		case OP_LSHIFT_EQ:
+		case OP_RSHIFT_EQ:
+		case OP_AND_EQ:
+		case OP_HAT_EQ:
+		case OP_OR_EQ:
 		case OP_AND_AND:
 		case OP_OR_OR:
 			assert("failure!!! must be handled separately!!!!" && 0);
@@ -202,6 +211,33 @@ void before_assign(enum TokenKind kind)
 		case OP_PLUS_EQ:
 			print_op(OP_PLUS);
 			return;
+		case OP_MINUS_EQ:
+			print_op(OP_MINUS);
+			return;
+		case OP_ASTERISK_EQ:
+			print_op(OP_ASTERISK);
+			return;
+		case OP_SLASH_EQ:
+			print_op(OP_SLASH);
+			return;
+		case OP_PERCENT_EQ:
+			print_op(OP_PERCENT);
+			return;
+		case OP_LSHIFT_EQ:
+			print_op(OP_LSHIFT);
+			return;
+		case OP_RSHIFT_EQ:
+			print_op(OP_RSHIFT);
+			return;
+		case OP_AND_EQ:
+			print_op(OP_AND);
+			return;
+		case OP_HAT_EQ:
+			print_op(OP_HAT);
+			return;
+		case OP_OR_EQ:
+			print_op(OP_OR);
+			return;
 		default:
 			assert("cannot happen" && 0);
 	}
@@ -215,7 +251,11 @@ void parse_assignment_expression(struct ParserState *ptr_ps,
 	enum TokenKind opkind = tokvec[1].kind;
 
 	if (tokvec[0].kind == IDENT_OR_RESERVED &&
-	    (opkind == OP_EQ || opkind == OP_PLUS_EQ)) {
+	    (opkind == OP_EQ || opkind == OP_PLUS_EQ || opkind == OP_MINUS_EQ ||
+	     opkind == OP_ASTERISK_EQ || opkind == OP_SLASH_EQ ||
+	     opkind == OP_PERCENT_EQ || opkind == OP_LSHIFT_EQ ||
+	     opkind == OP_RSHIFT_EQ || opkind == OP_AND_EQ || opkind == OP_HAT_EQ ||
+	     opkind == OP_OR_EQ)) {
 		const char *name = tokvec[0].ident_str;
 		tokvec += 2;
 		*ptr_to_tokvec = tokvec;

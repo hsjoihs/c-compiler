@@ -63,4 +63,7 @@ full_compile:
 	./test_ret4.sh 038 'main() { return (3 || 2) + (3 || 0) + (0 || 3)+ !(0 || 0) + 170; }' 174 out/compiler.out
 	./test_ret4.sh 039 'main() { a = 3; a += 5;  return a + 166; }' 174 out/compiler.out
 	./test_ret4.sh 040 'main() { a = 3; b = (a += 5);  return a + b + 158; }' 174 out/compiler.out
+	./test_ret4.sh 044 'main() { a = 3; b = 1; b *= (a += 5);  return a + b + 158; }' 174 out/compiler.out
+	./test_ret4.sh 045 'main() { a = 11; a -=5; a /= 2; b = 1; b *= (a += 5);  return a + b + 158; }' 174 out/compiler.out
+	./test_ret4.sh 046 'main() { a = 7; a &= ~2; a <<= 2; a |=2; a >>= 1; a -=5; a /= 2; b = 3; c = 8; b ^= (c%=3); b *= (a += 5);  return a + b + 158; }' 174 out/compiler.out
 

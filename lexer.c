@@ -102,6 +102,33 @@ void print_token(struct Token tok)
 		case OP_PLUS_EQ:
 			fprintf(stderr, "+=");
 			break;
+		case OP_MINUS_EQ:
+			fprintf(stderr, "-=");
+			break;
+		case OP_ASTERISK_EQ:
+			fprintf(stderr, "*=");
+			break;
+		case OP_SLASH_EQ:
+			fprintf(stderr, "/=");
+			break;
+		case OP_PERCENT_EQ:
+			fprintf(stderr, "%%=");
+			break;
+		case OP_LSHIFT_EQ:
+			fprintf(stderr, "<<=");
+			break;
+		case OP_RSHIFT_EQ:
+			fprintf(stderr, ">>=");
+			break;
+		case OP_AND_EQ:
+			fprintf(stderr, "&=");
+			break;
+		case OP_HAT_EQ:
+			fprintf(stderr, "^=");
+			break;
+		case OP_OR_EQ:
+			fprintf(stderr, "|=");
+			break;
 		case IDENT_OR_RESERVED:
 			fprintf(stderr, "%s", tok.ident_str);
 			break;
@@ -145,13 +172,29 @@ struct Token get_token(const char **ptr_to_str)
 		}
 
 	} else if (*str == '-') {
-		t.kind = OP_MINUS;
-		++*ptr_to_str;
-		return t;
+		switch (str[1]) {
+			case '=':
+				t.kind = OP_MINUS_EQ;
+				*ptr_to_str += 2;
+				return t;
+			default:
+				t.kind = OP_MINUS;
+				++*ptr_to_str;
+				return t;
+		}
+
 	} else if (*str == '*') {
-		t.kind = OP_ASTERISK;
-		++*ptr_to_str;
-		return t;
+		switch (str[1]) {
+			case '=':
+				t.kind = OP_ASTERISK_EQ;
+				*ptr_to_str += 2;
+				return t;
+			default:
+				t.kind = OP_ASTERISK;
+				++*ptr_to_str;
+				return t;
+		}
+
 	} else if (*str == '(') {
 		t.kind = LEFT_PAREN;
 		++*ptr_to_str;
@@ -161,21 +204,42 @@ struct Token get_token(const char **ptr_to_str)
 		++*ptr_to_str;
 		return t;
 	} else if (*str == '/') {
-		t.kind = OP_SLASH;
-		++*ptr_to_str;
-		return t;
+		switch (str[1]) {
+			case '=':
+				t.kind = OP_SLASH_EQ;
+				*ptr_to_str += 2;
+				return t;
+			default:
+				t.kind = OP_SLASH;
+				++*ptr_to_str;
+				return t;
+		}
 	} else if (*str == '%') {
-		t.kind = OP_PERCENT;
-		++*ptr_to_str;
-		return t;
+		switch (str[1]) {
+			case '=':
+				t.kind = OP_PERCENT_EQ;
+				*ptr_to_str += 2;
+				return t;
+			default:
+				t.kind = OP_PERCENT;
+				++*ptr_to_str;
+				return t;
+		}
 	} else if (*str == ',') {
 		t.kind = OP_COMMA;
 		++*ptr_to_str;
 		return t;
 	} else if (*str == '^') {
-		t.kind = OP_HAT;
-		++*ptr_to_str;
-		return t;
+		switch (str[1]) {
+			case '=':
+				t.kind = OP_HAT_EQ;
+				*ptr_to_str += 2;
+				return t;
+			default:
+				t.kind = OP_HAT;
+				++*ptr_to_str;
+				return t;
+		}
 	} else if (*str == ';') {
 		t.kind = SEMICOLON;
 		++*ptr_to_str;
@@ -199,9 +263,16 @@ struct Token get_token(const char **ptr_to_str)
 	} else if (*str == '<') {
 		switch (str[1]) {
 			case '<':
-				t.kind = OP_LSHIFT;
-				*ptr_to_str += 2;
-				return t;
+				switch (str[2]) {
+					case '=':
+						t.kind = OP_LSHIFT_EQ;
+						*ptr_to_str += 3;
+						return t;
+					default:
+						t.kind = OP_LSHIFT;
+						*ptr_to_str += 2;
+						return t;
+				}
 			case '=':
 				t.kind = OP_LT_EQ;
 				*ptr_to_str += 2;
@@ -214,9 +285,16 @@ struct Token get_token(const char **ptr_to_str)
 	} else if (*str == '>') {
 		switch (str[1]) {
 			case '>':
-				t.kind = OP_RSHIFT;
-				*ptr_to_str += 2;
-				return t;
+				switch (str[2]) {
+					case '=':
+						t.kind = OP_RSHIFT_EQ;
+						*ptr_to_str += 3;
+						return t;
+					default:
+						t.kind = OP_RSHIFT;
+						*ptr_to_str += 2;
+						return t;
+				}
 			case '=':
 				t.kind = OP_GT_EQ;
 				*ptr_to_str += 2;
@@ -232,10 +310,10 @@ struct Token get_token(const char **ptr_to_str)
 				t.kind = OP_AND_AND;
 				*ptr_to_str += 2;
 				return t;
-			/*case '=':
+			case '=':
 				t.kind = OP_AND_EQ;
 				*ptr_to_str += 2;
-				return t;*/
+				return t;
 			default:
 				t.kind = OP_AND;
 				++*ptr_to_str;
@@ -247,10 +325,10 @@ struct Token get_token(const char **ptr_to_str)
 				t.kind = OP_OR_OR;
 				*ptr_to_str += 2;
 				return t;
-			/*case '=':
+			case '=':
 				t.kind = OP_OR_EQ;
 				*ptr_to_str += 2;
-				return t;*/
+				return t;
 			default:
 				t.kind = OP_OR;
 				++*ptr_to_str;
