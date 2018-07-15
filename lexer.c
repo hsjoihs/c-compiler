@@ -138,6 +138,12 @@ void print_token(struct Token tok)
 		case RES_RETURN:
 			fprintf(stderr, "return");
 			break;
+		case RES_IF:
+			fprintf(stderr, "if");
+			break;
+		case RES_ELSE:
+			fprintf(stderr, "else");
+			break;
 	}
 }
 
@@ -442,6 +448,12 @@ struct Token get_token(const char **ptr_to_str)
 
 		if (strcmp(new_str, "return") == 0) {
 			t.kind = RES_RETURN;
+			t.int_value = GARBAGE_INT;
+		} else if (strcmp(new_str, "if") == 0) {
+			t.kind = RES_IF;
+			t.int_value = GARBAGE_INT;
+		} else if (strcmp(new_str, "else") == 0) {
+			t.kind = RES_ELSE;
 			t.int_value = GARBAGE_INT;
 		} else {
 			t.ident_str = new_str;

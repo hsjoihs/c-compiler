@@ -66,4 +66,9 @@ full_compile:
 	./test_ret4.sh 044 'main() { a = 3; b = 1; b *= (a += 5);  return a + b + 158; }' 174 out/compiler.out
 	./test_ret4.sh 045 'main() { a = 11; a -=5; a /= 2; b = 1; b *= (a += 5);  return a + b + 158; }' 174 out/compiler.out
 	./test_ret4.sh 046 'main() { a = 7; a &= ~2; a <<= 2; a |=2; a >>= 1; a -=5; a /= 2; b = 3; c = 8; b ^= (c%=3); b *= (a += 5);  return a + b + 158; }' 174 out/compiler.out
+	./test_ret4.sh 047 'foo(){ return 2;} main() {a = 3;b = 5;c = 2;if(a) {b = foo();} else { }    return 172+b;}' 174 out/compiler.out
+	./test_ret4.sh 048 'foo(){ return 2;} main() {a = 3;b = 5;c = 2;if(a) {b = foo();}   return 172+b;}' 174 out/compiler.out
+	./test_ret4.sh 049 'foo(){ return 2;} bar(){ return 7;} main() {a = 3;b = 5;c = 2;if(a) {b = foo();} else { c = bar();}    return 172+b;}' 174 out/compiler.out
+	./test_ret4.sh 050 'foo(){ return 2;} bar(){ return 7;} main() {a = 0;b = 5;c = 2;if(a) {b = foo();} else { c = bar();}    return 162+b+c;}' 174 out/compiler.out
+	./test_ret4.sh 051 'foo(){ return 2;} bar(){ return 7;} main() {a = 3;b = 5;c = 2;if(a) if(0) { b = foo(); } else {  c = bar(); }    return 162+b+c;}' 174 out/compiler.out
 

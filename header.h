@@ -77,7 +77,9 @@ enum TokenKind {
 	OP_RSHIFT_EQ,
 	OP_AND_EQ,
 	OP_HAT_EQ,
-	OP_OR_EQ
+	OP_OR_EQ,
+	RES_IF,
+	RES_ELSE
 };
 
 struct Token{

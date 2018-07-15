@@ -125,6 +125,8 @@ void print_op(enum TokenKind kind)
 		case LIT_DEC_INTEGER:
 		case RES_RETURN:
 		case SEMICOLON:
+		case RES_IF:
+		case RES_ELSE:
 			assert("failure!!! not a binary op!!!!" && 0);
 	}
 
@@ -639,6 +641,38 @@ void parse_statement(struct ParserState *ptr_ps,
 	const struct Token *tokvec = *ptr_to_tokvec;
 	if (tokvec[0].kind == LEFT_BRACE) {
 		parse_compound_statement(ptr_ps, &tokvec);
+		*ptr_to_tokvec = tokvec;
+	} else if (tokvec[0].kind == RES_IF) { /* or SWITCH */
+		int label1 = get_label_name(ptr_ps);
+		int label2 = get_label_name(ptr_ps);
+
+		if (tokvec[1].kind != LEFT_PAREN) {
+			error_unexpected_token(tokvec[1],
+			                       "left parenthesis immediately after `if`");
+		}
+		tokvec += 2;
+		parse_expression(ptr_ps, &tokvec);
+
+		if (tokvec[0].kind != RIGHT_PAREN) {
+			error_unexpected_token(tokvec[0], "right parenthesis of `if`");
+		}
+		++tokvec;
+
+		if_else_part1(label1, label2);
+
+		parse_statement(ptr_ps, &tokvec);
+
+		if_else_part2(label1, label2);
+
+		if (tokvec[0].kind == RES_ELSE) { /* must bind to the most inner one */
+			++tokvec;
+			parse_statement(ptr_ps, &tokvec);
+		} else {
+			/* do nothing */
+		}
+
+		if_else_part3(label1, label2);
+
 		*ptr_to_tokvec = tokvec;
 	} else if (tokvec[0].kind == RES_RETURN) {
 		++tokvec;
