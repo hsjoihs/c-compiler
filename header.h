@@ -23,6 +23,9 @@ void logical_AND_set(int offset, int label1, int label2);
 void logical_OR_set(int offset, int label1, int label2);
 void logical_AND_final(int final_depth, int label1, int label2);
 void logical_OR_final(int final_depth, int label1, int label2);
+void ternary_part1(int label1, int label2);
+void ternary_part2(int label1, int label2);
+void ternary_part3(int label1, int label2);
 
 
 #define GARBAGE_INT 0xCCCCCCCC

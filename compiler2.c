@@ -222,31 +222,20 @@ void parse_conditional_expression(struct ParserState *ptr_ps,
 		int label1 = get_label_name(ptr_ps);
 		int label2 = get_label_name(ptr_ps);
 
-		printf("//ternary: part1\n"
-		       "  cmpl $0, (%%rsp)\n"
-		       "  je .L%d\n",
-		       label1);
+		ternary_part1(label1, label2);
 		++tokvec;
 		*ptr_to_tokvec = tokvec;
 		parse_expression(ptr_ps, &tokvec);
 
-		printf("//ternary: part2\n"
-		       "  movl (%%rsp), %%eax\n"
-		       "  addq $4, %%rsp\n"
-		       "  jmp .L%d\n"
-		       ".L%d:\n",
-		       label2, label1);
+		ternary_part2(label1, label2);
 
 		if (tokvec[0].kind == COLON) {
 			++tokvec;
 			*ptr_to_tokvec = tokvec;
 			parse_conditional_expression(ptr_ps, &tokvec);
-			printf("//ternary: part3\n"
-			       "  movl (%%rsp), %%eax\n"
-			       "  addq $4, %%rsp\n"
-			       ".L%d:\n"
-			       "  movl %%eax, (%%rsp)\n",
-			       label2);
+
+			ternary_part3(label1, label2);
+
 		} else {
 			error_unexpected_token(tokvec[0],
 			                       "colon of the conditional operator");

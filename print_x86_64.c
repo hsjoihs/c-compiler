@@ -164,6 +164,34 @@ void unary(const char *str)
 	printf("  %s (%%rsp)\n", str);
 }
 
+void ternary_part1(int label1, int label2)
+{
+	printf("//ternary: part1\n"
+	       "  cmpl $0, (%%rsp)\n"
+	       "  je .L%d\n",
+	       label1);
+}
+
+void ternary_part2(int label1, int label2)
+{
+	printf("//ternary: part2\n"
+	       "  movl (%%rsp), %%eax\n"
+	       "  addq $4, %%rsp\n"
+	       "  jmp .L%d\n"
+	       ".L%d:\n",
+	       label2, label1);
+}
+
+void ternary_part3(int label1, int label2)
+{
+	printf("//ternary: part3\n"
+	       "  movl (%%rsp), %%eax\n"
+	       "  addq $4, %%rsp\n"
+	       ".L%d:\n"
+	       "  movl %%eax, (%%rsp)\n",
+	       label2);
+}
+
 void logical_OR_set(int depth, int label1, int label2)
 {
 	printf("//logical_OR_set(%d, %d, %d);\n", depth, label1, label2);
