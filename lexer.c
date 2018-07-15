@@ -97,7 +97,8 @@ void print_token(struct Token tok)
 			fprintf(stderr, "&&");
 			break;
 		case OP_OR_OR:
-			fprintf(stderr, "&&");
+			fprintf(stderr, "||");
+			break;
 			break;
 		case IDENT_OR_RESERVED:
 			fprintf(stderr, "%s", tok.ident_str);
