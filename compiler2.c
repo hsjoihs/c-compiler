@@ -97,11 +97,7 @@ void print_op(enum TokenKind kind)
 			op_ints("xorl");
 			return;
 
-		case OP_EQ: {
-			assert("= is unimplemented!!!!" && 0);
-			return;
-		}
-
+		case OP_EQ:
 		case OP_AND_AND:
 		case OP_OR_OR:
 			assert("failure!!! must be handled separately!!!!" && 0);
