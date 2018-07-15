@@ -39,7 +39,7 @@ full_compile:
 	./test_ret4.sh 005 'main(){return 043,41*3+07*010-0Xa/(010%(!!1+2));}' 174 out/compiler.out
 	./test_ret4.sh 007 'main(){return 7*5 	,	(0xC,(41   )*(4-(011>8)))+7*(((1-~1)>=3)<<4)/(9,(4>>(10<=10))+(3<3))-10/(	  ( 	!0  <<3)	%3);}' 174 out/compiler.out
 	./test_ret4.sh 019 'main(){return +174;}' 174 out/compiler.out
-	./test_ret4.sh 019 'main(){return -(1-175);}' 174 out/compiler.out
+	./test_ret4.sh 041 'main(){return -(1-175);}' 174 out/compiler.out
 	./test_ret4.sh 020 'main(){23; 45+37; ((12-1)*75); return -(1-175);}' 174 out/compiler.out
 	./test_ret4.sh 021 'main(){23; 45+37; return -(1-175); ((12-1)*75);}' 174 out/compiler.out
 	./test_ret4.sh 022 'main(){return (a = b = 9, a = 41*3, 55 - (b = 4) + a);}' 174 out/compiler.out
@@ -48,10 +48,10 @@ full_compile:
 	./test_ret4.sh 025 'main(){return 2 + (1? 100 + 72 : 17);}' 174 out/compiler.out
 	./test_ret4.sh 026 'main(){return (0? 234 : 2) + (1? 100 + 72 : 17);}' 174 out/compiler.out
 	./test_ret4.sh 027 'main(){return (3, always87() + always87());}' 174 out/compiler.out
-	./test_ret4.sh 027 'main(){return always87() + ((always8()* 11) -1);}' 174 out/compiler.out
+	./test_ret4.sh 042 'main(){return always87() + ((always8()* 11) -1);}' 174 out/compiler.out
 	./test_ret4.sh 029 'main(){return add(170,4);}' 174 out/compiler.out
 	./test_ret4.sh 028 'main(){return always87() + ((always8()* add(4,7)) -1);}' 174 out/compiler.out
-	./test_ret4.sh 029 'main(){return always87() + ((always8()* subtract(12,1)) -1);}' 174 out/compiler.out
+	./test_ret4.sh 043 'main(){return always87() + ((always8()* subtract(12,1)) -1);}' 174 out/compiler.out
 	./test_ret4.sh 030 'main(){3; {5; 7; 11; } return 175^1;}' 174 out/compiler.out
 	./test_ret4.sh 031 'always87_(){return 87;} main(){return (3, always87() + always87_());}' 174 out/compiler.out
 	./test_ret4.sh 032 'add_(x,y){4; return x+y;} main(){3; return add_(87,87);}' 174 out/compiler.out
