@@ -753,7 +753,7 @@ void parse_function_definition(struct ParserState *ptr_ps,
 			print_prologue(capacity, ident_str);
 			tokvec += 3;
 			parse_compound_statement(ptr_ps, &tokvec);
-			print_epilogue(ptr_ps->return_label_name, capacity);
+			print_epilogue(ptr_ps->return_label_name);
 		} else {
 
 			print_prologue(capacity, ident_str);
@@ -804,7 +804,7 @@ void parse_function_definition(struct ParserState *ptr_ps,
 			}
 
 			parse_compound_statement(ptr_ps, &tokvec);
-			print_epilogue(ptr_ps->return_label_name, capacity);
+			print_epilogue(ptr_ps->return_label_name);
 		}
 	} else {
 		fprintf(stderr, "expected function definition but could not find it\n");

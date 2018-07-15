@@ -250,13 +250,14 @@ void shift_ints(const char *str)
 	       str);
 }
 
-void print_epilogue(int label, int alloc_size)
+void print_epilogue(int label)
 {
-	printf("//print_epilogue(%d)\n", alloc_size);
+	printf("//print_epilogue(%d)\n", label);
 	printf(".L%d:"
 	       "  movl (%%rsp), %%eax\n"
-	       "  addq $%d, %%rsp\n"
+	       "  movq %%rbp, %%rsp\n"
+	       "  addq $8, %%rsp\n"
 	       "  movq (%%rbp), %%rbp\n"
 	       "  ret\n",
-	       label, 12 + alloc_size);
+	       label);
 }

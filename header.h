@@ -14,7 +14,7 @@ void unary(const char* str);
 void push_from_local(int offset);
 void write_to_local(int offset);
 void return_with_label(int label);
-void print_epilogue(int label, int alloc_size);
+void print_epilogue(int label);
 void push_eax(void);
 void push_ret_of(const char* fname);
 void pop_to_reg(const char *str);
