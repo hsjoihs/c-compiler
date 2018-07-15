@@ -72,4 +72,6 @@ full_compile:
 	./test_ret4.sh 050 'foo(){ return 2;} bar(){ return 7;} main() {a = 0;b = 5;c = 2;if(a) {b = foo();} else { c = bar();}    return 162+b+c;}' 174 out/compiler.out
 	./test_ret4.sh 051 'foo(){ return 2;} bar(){ return 7;} main() {a = 3;b = 5;c = 2;if(a) if(0) { b = foo(); } else {  c = bar(); }    return 162+b+c;}' 174 out/compiler.out
 	./test_ret4.sh 052 'foo(){ return 2;} bar(){ return 7;} main() {a = 3;b = 5;c = 2;if(a) if(0)b=foo();else c = bar();return 162+b+c;}' 174 out/compiler.out
+	./test_ret4.sh 053 'main() {a = 4; if(1){return 170+a; a = 7; }else{return 170-a; a = 9;} a = 5; return a;}' 174 out/compiler.out
+
 

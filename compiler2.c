@@ -685,9 +685,14 @@ void parse_statement(struct ParserState *ptr_ps,
 				++tokvec;
 				*ptr_to_tokvec = tokvec;
 
-				int ret_label = get_label_name(ptr_ps);
-				ptr_ps->return_label_name = ret_label;
-				return_with_label(ret_label);
+				/* the first occurrence of return within a function */
+				if (ptr_ps->return_label_name == GARBAGE_INT) {
+					int ret_label = get_label_name(ptr_ps);
+					ptr_ps->return_label_name = ret_label;
+					return_with_label(ret_label);
+				} else {
+					return_with_label(ptr_ps->return_label_name);
+				}
 
 				return;
 			} else {
@@ -780,6 +785,7 @@ void parse_function_definition(struct ParserState *ptr_ps,
 		}
 
 		ptr_ps->var_table = map;
+		ptr_ps->return_label_name = GARBAGE_INT; /* INITIALIZE */
 
 		int capacity = -v - 4;
 
