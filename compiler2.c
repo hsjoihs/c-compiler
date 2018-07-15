@@ -103,6 +103,7 @@ void print_op(enum TokenKind kind)
 		}
 
 		case OP_AND_AND:
+		case OP_OR_OR:
 			assert("failure!!! must be handled separately!!!!" && 0);
 
 		case LEFT_BRACE:
@@ -261,7 +262,34 @@ void parse_conditional_expression(struct ParserState *ptr_ps,
 void parse_logical_OR_expression(struct ParserState *ptr_ps,
                                  const struct Token **ptr_to_tokvec)
 {
-	parse_logical_AND_expression(ptr_ps, ptr_to_tokvec);
+	const struct Token *tokvec = *ptr_to_tokvec;
+	int label1 = get_label_name(ptr_ps);
+	int label2 = get_label_name(ptr_ps);
+
+	int counter = 0;
+	parse_logical_AND_expression(ptr_ps, &tokvec);
+
+	while (1) {
+		enum TokenKind kind = tokvec[0].kind;
+		if (kind != OP_OR_OR) {
+			break;
+		}
+
+		if (counter == 0) {
+			logical_OR_set(0, label1, label2);
+		}
+
+		++tokvec;
+		parse_logical_AND_expression(ptr_ps, &tokvec);
+		++counter;
+		logical_OR_set(counter, label1, label2);
+	}
+
+	if (counter != 0) {
+		logical_OR_final(counter, label1, label2);
+	}
+
+	*ptr_to_tokvec = tokvec;
 }
 
 void parse_logical_AND_expression(struct ParserState *ptr_ps,

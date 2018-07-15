@@ -59,4 +59,6 @@ full_compile:
 	./test_ret3.sh 'tarai(x,y,z){ return x <= y? y : tarai(tarai(x-1, y, z), tarai(y-1, z, x), tarai(z-1, x, y)); } main(){return tarai(12,6,0);}' s/full_compile034.s out/task034.out 12 out/compiler.out
 	./test_ret3.sh 'main() { return (3 && 2 && 5) + 173; }' s/full_compile035.s out/task035.out 174 out/compiler.out
 	./test_ret3.sh 'main() { return (3 && 2) + !(3 && 0) + !(0 && 3)+ !(0 && 0) + 170; }' s/full_compile036.s out/task036.out 174 out/compiler.out
+	./test_ret3.sh 'main() { return (3 || 2 || 5) + 173; }' s/full_compile037.s out/task037.out 174 out/compiler.out
+	./test_ret3.sh 'main() { return (3 || 2) + (3 || 0) + (0 || 3)+ !(0 || 0) + 170; }' s/full_compile038.s out/task038.out 174 out/compiler.out
 
