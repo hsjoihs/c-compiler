@@ -98,6 +98,7 @@ void print_op(enum TokenKind kind)
 			return;
 
 		case OP_EQ:
+		case OP_PLUS_EQ:
 		case OP_AND_AND:
 		case OP_OR_OR:
 			assert("failure!!! must be handled separately!!!!" && 0);
@@ -195,15 +196,41 @@ int from_name(struct ParserState ps, const char *str)
 	return lookup(ps.var_table, str);
 }
 
+void before_assign(enum TokenKind kind)
+{
+	switch (kind) {
+		case OP_PLUS_EQ:
+			print_op(OP_PLUS);
+			return;
+		default:
+			assert("cannot happen" && 0);
+	}
+}
+
 void parse_assignment_expression(struct ParserState *ptr_ps,
                                  const struct Token **ptr_to_tokvec)
 {
 	const struct Token *tokvec = *ptr_to_tokvec;
-	if (tokvec[0].kind == IDENT_OR_RESERVED && tokvec[1].kind == OP_EQ) {
+
+	enum TokenKind opkind = tokvec[1].kind;
+
+	if (tokvec[0].kind == IDENT_OR_RESERVED &&
+	    (opkind == OP_EQ || opkind == OP_PLUS_EQ)) {
 		const char *name = tokvec[0].ident_str;
 		tokvec += 2;
 		*ptr_to_tokvec = tokvec;
+
+		if (opkind != OP_EQ) {
+			printf("//load from `%s`\n", name);
+			push_from_local(from_name(*ptr_ps, name));
+		}
+
 		parse_assignment_expression(ptr_ps, &tokvec);
+
+		if (opkind != OP_EQ) {
+			printf("//before assigning to `%s`:\n", name);
+			before_assign(opkind);
+		}
 
 		printf("//assign to `%s`\n", name);
 		write_to_local(from_name(*ptr_ps, name));

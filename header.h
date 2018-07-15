@@ -64,7 +64,8 @@ enum TokenKind {
 	LEFT_BRACE,
 	RIGHT_BRACE,
 	OP_AND_AND,
-	OP_OR_OR
+	OP_OR_OR,
+	OP_PLUS_EQ
 };
 
 struct Token{

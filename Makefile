@@ -61,4 +61,6 @@ full_compile:
 	./test_ret3.sh 'main() { return (3 && 2) + !(3 && 0) + !(0 && 3)+ !(0 && 0) + 170; }' s/full_compile036.s out/task036.out 174 out/compiler.out
 	./test_ret3.sh 'main() { return (3 || 2 || 5) + 173; }' s/full_compile037.s out/task037.out 174 out/compiler.out
 	./test_ret3.sh 'main() { return (3 || 2) + (3 || 0) + (0 || 3)+ !(0 || 0) + 170; }' s/full_compile038.s out/task038.out 174 out/compiler.out
+	./test_ret3.sh 'main() { a = 3; a += 5;  return a + 166; }' s/full_compile039.s out/task039.out 174 out/compiler.out
+	./test_ret3.sh 'main() { a = 3; b = (a += 5);  return a + b + 158; }' s/full_compile040.s out/task040.out 174 out/compiler.out
 
