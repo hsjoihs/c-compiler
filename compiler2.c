@@ -42,7 +42,7 @@ void print_unary_prefix_op(enum TokenKind kind)
 	assert("unimplemented!!!!" && 0);
 }
 
-void print_op(enum TokenKind kind)
+void binary_op(enum TokenKind kind)
 {
 	switch (kind) {
 		case OP_PLUS:
@@ -197,7 +197,7 @@ void parse_expression(struct ParserState *ptr_ps,
 		}
 		++tokvec;
 		parse_assignment_expression(ptr_ps, &tokvec);
-		print_op(OP_COMMA);
+		binary_op(OP_COMMA);
 	}
 	*ptr_to_tokvec = tokvec;
 }
@@ -211,34 +211,34 @@ void before_assign(enum TokenKind kind)
 {
 	switch (kind) {
 		case OP_PLUS_EQ:
-			print_op(OP_PLUS);
+			binary_op(OP_PLUS);
 			return;
 		case OP_MINUS_EQ:
-			print_op(OP_MINUS);
+			binary_op(OP_MINUS);
 			return;
 		case OP_ASTERISK_EQ:
-			print_op(OP_ASTERISK);
+			binary_op(OP_ASTERISK);
 			return;
 		case OP_SLASH_EQ:
-			print_op(OP_SLASH);
+			binary_op(OP_SLASH);
 			return;
 		case OP_PERCENT_EQ:
-			print_op(OP_PERCENT);
+			binary_op(OP_PERCENT);
 			return;
 		case OP_LSHIFT_EQ:
-			print_op(OP_LSHIFT);
+			binary_op(OP_LSHIFT);
 			return;
 		case OP_RSHIFT_EQ:
-			print_op(OP_RSHIFT);
+			binary_op(OP_RSHIFT);
 			return;
 		case OP_AND_EQ:
-			print_op(OP_AND);
+			binary_op(OP_AND);
 			return;
 		case OP_HAT_EQ:
-			print_op(OP_HAT);
+			binary_op(OP_HAT);
 			return;
 		case OP_OR_EQ:
-			print_op(OP_OR);
+			binary_op(OP_OR);
 			return;
 		default:
 			assert("cannot happen" && 0);
@@ -391,7 +391,7 @@ void parse_inclusive_OR_expression(struct ParserState *ptr_ps,
 		}
 		++tokvec;
 		parse_exclusive_OR_expression(ptr_ps, &tokvec);
-		print_op(kind);
+		binary_op(kind);
 	}
 	*ptr_to_tokvec = tokvec;
 }
@@ -408,7 +408,7 @@ void parse_exclusive_OR_expression(struct ParserState *ptr_ps,
 		}
 		++tokvec;
 		parse_AND_expression(ptr_ps, &tokvec);
-		print_op(kind);
+		binary_op(kind);
 	}
 	*ptr_to_tokvec = tokvec;
 }
@@ -425,7 +425,7 @@ void parse_AND_expression(struct ParserState *ptr_ps,
 		}
 		++tokvec;
 		parse_equality_expression(ptr_ps, &tokvec);
-		print_op(kind);
+		binary_op(kind);
 	}
 	*ptr_to_tokvec = tokvec;
 }
@@ -442,7 +442,7 @@ void parse_equality_expression(struct ParserState *ptr_ps,
 		}
 		++tokvec;
 		parse_relational_expression(ptr_ps, &tokvec);
-		print_op(kind);
+		binary_op(kind);
 	}
 	*ptr_to_tokvec = tokvec;
 }
@@ -460,7 +460,7 @@ void parse_relational_expression(struct ParserState *ptr_ps,
 		}
 		++tokvec;
 		parse_shift_expression(ptr_ps, &tokvec);
-		print_op(kind);
+		binary_op(kind);
 	}
 	*ptr_to_tokvec = tokvec;
 }
@@ -477,7 +477,7 @@ void parse_shift_expression(struct ParserState *ptr_ps,
 		}
 		++tokvec;
 		parse_additive_expression(ptr_ps, &tokvec);
-		print_op(kind);
+		binary_op(kind);
 	}
 	*ptr_to_tokvec = tokvec;
 }
@@ -494,7 +494,7 @@ void parse_additive_expression(struct ParserState *ptr_ps,
 		}
 		++tokvec;
 		parse_multiplicative_expression(ptr_ps, &tokvec);
-		print_op(kind);
+		binary_op(kind);
 	}
 	*ptr_to_tokvec = tokvec;
 }
@@ -511,7 +511,7 @@ void parse_multiplicative_expression(struct ParserState *ptr_ps,
 		}
 		++tokvec;
 		parse_cast_expression(ptr_ps, &tokvec);
-		print_op(kind);
+		binary_op(kind);
 	}
 	*ptr_to_tokvec = tokvec;
 }
@@ -704,7 +704,7 @@ void parse_statement(struct ParserState *ptr_ps,
 	} else {
 		parse_expression(ptr_ps, &tokvec);
 		if (tokvec[0].kind == SEMICOLON) {
-			print_op(OP_COMMA); /* like the comma operator, discard what's on
+			binary_op(OP_COMMA); /* like the comma operator, discard what's on
 			                       the stack */
 			++tokvec;
 			*ptr_to_tokvec = tokvec;
