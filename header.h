@@ -1,34 +1,34 @@
 #pragma once
 
 
-void print_prologue(int alloc_size, const char* fname);
-void push_int(int num);
-void op_ints(const char* str);
-void compare_ints(const char* str);
-void mul_ints(void);
-void div_ints(void);
-void rem_ints(void);
-void shift_ints(const char* str);
-void unary_not(void);
-void unary(const char* str);
-void push_from_local(int offset);
-void write_to_local(int offset);
-void return_with_label(int label);
-void print_epilogue(int label);
-void push_eax(void);
-void push_ret_of(const char* fname);
-void pop_to_reg(const char *str);
-void write_register_to_local(const char* str, int offset);
-void logical_AND_set(int offset, int label1, int label2);
-void logical_OR_set(int offset, int label1, int label2);
-void logical_AND_final(int final_depth, int label1, int label2);
-void logical_OR_final(int final_depth, int label1, int label2);
-void ternary_part1(int label1, int label2);
-void ternary_part2(int label1, int label2);
-void ternary_part3(int label1, int label2);
-void if_else_part1(int label1, int label2);
-void if_else_part2(int label1, int label2);
-void if_else_part3(int label1, int label2);
+void gen_prologue(int alloc_size, const char* fname);
+void gen_push_int(int num);
+void gen_op_ints(const char* str);
+void gen_compare_ints(const char* str);
+void gen_mul_ints(void);
+void gen_div_ints(void);
+void gen_rem_ints(void);
+void gen_shift_ints(const char* str);
+void gen_unary_not(void);
+void gen_unary(const char* str);
+void gen_push_from_local(int offset);
+void gen_write_to_local(int offset);
+void gen_return_with_label(int label);
+void gen_epilogue(int label);
+void gen_push_eax(void);
+void gen_push_ret_of(const char* fname);
+void gen_pop_to_reg(const char *str);
+void gen_write_register_to_local(const char* str, int offset);
+void gen_logical_AND_set(int offset, int label1, int label2);
+void gen_logical_OR_set(int offset, int label1, int label2);
+void gen_logical_AND_final(int final_depth, int label1, int label2);
+void gen_logical_OR_final(int final_depth, int label1, int label2);
+void gen_ternary_part1(int label1, int label2);
+void gen_ternary_part2(int label1, int label2);
+void gen_ternary_part3(int label1, int label2);
+void gen_if_else_part1(int label1, int label2);
+void gen_if_else_part2(int label1, int label2);
+void gen_if_else_part3(int label1, int label2);
 
 
 #define GARBAGE_INT 0xCCCCCCCC

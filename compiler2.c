@@ -19,16 +19,16 @@ void print_unary_prefix_op(enum TokenKind kind)
 {
 	switch (kind) {
 		case OP_NOT:
-			unary_not();
+			gen_unary_not();
 			return;
 		case OP_TILDA:
-			unary("notl");
+			gen_unary("notl");
 			return;
 		case OP_PLUS:
 			/* do nothing */
 			return;
 		case OP_MINUS:
-			unary("negl");
+			gen_unary("negl");
 			return;
 		case IDENT_OR_RESERVED:
 		case LEFT_PAREN:
@@ -46,55 +46,55 @@ void print_op(enum TokenKind kind)
 {
 	switch (kind) {
 		case OP_PLUS:
-			op_ints("addl");
+			gen_op_ints("addl");
 			return;
 		case OP_MINUS:
-			op_ints("subl");
+			gen_op_ints("subl");
 			return;
 		case OP_ASTERISK:
-			mul_ints();
+			gen_mul_ints();
 			return;
 		case OP_SLASH:
-			div_ints();
+			gen_div_ints();
 			return;
 		case OP_PERCENT:
-			rem_ints();
+			gen_rem_ints();
 			return;
 		case OP_COMMA:
-			op_ints("movl");
+			gen_op_ints("movl");
 			return;
 		case OP_LT:
-			compare_ints("setl");
+			gen_compare_ints("setl");
 			return;
 		case OP_LT_EQ:
-			compare_ints("setle");
+			gen_compare_ints("setle");
 			return;
 		case OP_LSHIFT:
-			shift_ints("sall");
+			gen_shift_ints("sall");
 			return;
 		case OP_GT:
-			compare_ints("setg");
+			gen_compare_ints("setg");
 			return;
 		case OP_GT_EQ:
-			compare_ints("setge");
+			gen_compare_ints("setge");
 			return;
 		case OP_RSHIFT:
-			shift_ints("sarl");
+			gen_shift_ints("sarl");
 			return;
 		case OP_AND:
-			op_ints("andl");
+			gen_op_ints("andl");
 			return;
 		case OP_OR:
-			op_ints("orl");
+			gen_op_ints("orl");
 			return;
 		case OP_EQ_EQ:
-			compare_ints("sete");
+			gen_compare_ints("sete");
 			return;
 		case OP_NOT_EQ:
-			compare_ints("setne");
+			gen_compare_ints("setne");
 			return;
 		case OP_HAT:
-			op_ints("xorl");
+			gen_op_ints("xorl");
 			return;
 
 		case OP_EQ:
@@ -264,7 +264,7 @@ void parse_assignment_expression(struct ParserState *ptr_ps,
 
 		if (opkind != OP_EQ) {
 			printf("//load from `%s`\n", name);
-			push_from_local(from_name(*ptr_ps, name));
+			gen_push_from_local(from_name(*ptr_ps, name));
 		}
 
 		parse_assignment_expression(ptr_ps, &tokvec);
@@ -275,7 +275,7 @@ void parse_assignment_expression(struct ParserState *ptr_ps,
 		}
 
 		printf("//assign to `%s`\n", name);
-		write_to_local(from_name(*ptr_ps, name));
+		gen_write_to_local(from_name(*ptr_ps, name));
 	} else {
 		parse_conditional_expression(ptr_ps, &tokvec);
 	}
@@ -291,19 +291,19 @@ void parse_conditional_expression(struct ParserState *ptr_ps,
 		int label1 = get_label_name(ptr_ps);
 		int label2 = get_label_name(ptr_ps);
 
-		ternary_part1(label1, label2);
+		gen_ternary_part1(label1, label2);
 		++tokvec;
 		*ptr_to_tokvec = tokvec;
 		parse_expression(ptr_ps, &tokvec);
 
-		ternary_part2(label1, label2);
+		gen_ternary_part2(label1, label2);
 
 		if (tokvec[0].kind == COLON) {
 			++tokvec;
 			*ptr_to_tokvec = tokvec;
 			parse_conditional_expression(ptr_ps, &tokvec);
 
-			ternary_part3(label1, label2);
+			gen_ternary_part3(label1, label2);
 
 		} else {
 			error_unexpected_token(tokvec[0],
@@ -330,17 +330,17 @@ void parse_logical_OR_expression(struct ParserState *ptr_ps,
 		}
 
 		if (counter == 0) {
-			logical_OR_set(0, label1, label2);
+			gen_logical_OR_set(0, label1, label2);
 		}
 
 		++tokvec;
 		parse_logical_AND_expression(ptr_ps, &tokvec);
 		++counter;
-		logical_OR_set(counter, label1, label2);
+		gen_logical_OR_set(counter, label1, label2);
 	}
 
 	if (counter != 0) {
-		logical_OR_final(counter, label1, label2);
+		gen_logical_OR_final(counter, label1, label2);
 	}
 
 	*ptr_to_tokvec = tokvec;
@@ -363,17 +363,17 @@ void parse_logical_AND_expression(struct ParserState *ptr_ps,
 		}
 
 		if (counter == 0) {
-			logical_AND_set(0, label1, label2);
+			gen_logical_AND_set(0, label1, label2);
 		}
 
 		++tokvec;
 		parse_inclusive_OR_expression(ptr_ps, &tokvec);
 		++counter;
-		logical_AND_set(counter, label1, label2);
+		gen_logical_AND_set(counter, label1, label2);
 	}
 
 	if (counter != 0) {
-		logical_AND_final(counter, label1, label2);
+		gen_logical_AND_final(counter, label1, label2);
 	}
 
 	*ptr_to_tokvec = tokvec;
@@ -547,7 +547,7 @@ void parse_postfix_expression(struct ParserState *ptr_ps,
 	if (tokvec[0].kind == IDENT_OR_RESERVED && tokvec[1].kind == LEFT_PAREN) {
 		const char *ident_str = tokvec[0].ident_str;
 		if (tokvec[2].kind == RIGHT_PAREN) {
-			push_ret_of(ident_str);
+			gen_push_ret_of(ident_str);
 			tokvec += 3;
 		} else {
 			const char *regs[] = {"edi", "esi", "edx", "ecx", "r8d", "r9d"};
@@ -555,7 +555,7 @@ void parse_postfix_expression(struct ParserState *ptr_ps,
 			int counter = 0;
 
 			parse_assignment_expression(ptr_ps, &tokvec);
-			pop_to_reg(regs[counter]);
+			gen_pop_to_reg(regs[counter]);
 			counter++;
 			while (1) {
 				enum TokenKind kind = tokvec[0].kind;
@@ -570,11 +570,11 @@ void parse_postfix_expression(struct ParserState *ptr_ps,
 					    "calling with 7 or more arguments is unimplemented!\n");
 					abort();
 				}
-				pop_to_reg(regs[counter]);
+				gen_pop_to_reg(regs[counter]);
 				counter++;
 			}
 
-			push_ret_of(ident_str);
+			gen_push_ret_of(ident_str);
 			*ptr_to_tokvec = tokvec;
 
 			if (tokvec[0].kind == RIGHT_PAREN) {
@@ -598,12 +598,12 @@ void parse_primary_expression(struct ParserState *ptr_ps,
 	const struct Token *tokvec = *ptr_to_tokvec;
 	if (tokvec[0].kind == LIT_DEC_INTEGER) {
 		++*ptr_to_tokvec;
-		push_int(tokvec[0].int_value);
+		gen_push_int(tokvec[0].int_value);
 		return;
 	} else if (tokvec[0].kind == IDENT_OR_RESERVED) {
 		++*ptr_to_tokvec;
 		printf("//`%s` as rvalue\n", tokvec[0].ident_str);
-		push_from_local(from_name(*ptr_ps, tokvec[0].ident_str));
+		gen_push_from_local(from_name(*ptr_ps, tokvec[0].ident_str));
 		return;
 	} else if (tokvec[0].kind == LEFT_PAREN) {
 		++tokvec;
@@ -658,11 +658,11 @@ void parse_statement(struct ParserState *ptr_ps,
 		}
 		++tokvec;
 
-		if_else_part1(label1, label2);
+		gen_if_else_part1(label1, label2);
 
 		parse_statement(ptr_ps, &tokvec);
 
-		if_else_part2(label1, label2);
+		gen_if_else_part2(label1, label2);
 
 		if (tokvec[0].kind == RES_ELSE) { /* must bind to the most inner one */
 			++tokvec;
@@ -671,7 +671,7 @@ void parse_statement(struct ParserState *ptr_ps,
 			/* do nothing */
 		}
 
-		if_else_part3(label1, label2);
+		gen_if_else_part3(label1, label2);
 
 		*ptr_to_tokvec = tokvec;
 	} else if (tokvec[0].kind == RES_RETURN) {
@@ -689,9 +689,9 @@ void parse_statement(struct ParserState *ptr_ps,
 				if (ptr_ps->return_label_name == GARBAGE_INT) {
 					int ret_label = get_label_name(ptr_ps);
 					ptr_ps->return_label_name = ret_label;
-					return_with_label(ret_label);
+					gen_return_with_label(ret_label);
 				} else {
-					return_with_label(ptr_ps->return_label_name);
+					gen_return_with_label(ptr_ps->return_label_name);
 				}
 
 				return;
@@ -790,13 +790,13 @@ void parse_function_definition(struct ParserState *ptr_ps,
 		int capacity = -v - 4;
 
 		if (tokvec[2].kind == RIGHT_PAREN) {
-			print_prologue(capacity, ident_str);
+			gen_prologue(capacity, ident_str);
 			tokvec += 3;
 			parse_compound_statement(ptr_ps, &tokvec);
-			print_epilogue(ptr_ps->return_label_name);
+			gen_epilogue(ptr_ps->return_label_name);
 		} else {
 
-			print_prologue(capacity, ident_str);
+			gen_prologue(capacity, ident_str);
 
 			tokvec += 2;
 
@@ -804,7 +804,7 @@ void parse_function_definition(struct ParserState *ptr_ps,
 			int counter = 0;
 
 			if (tokvec[0].kind == IDENT_OR_RESERVED) {
-				write_register_to_local(
+				gen_write_register_to_local(
 				    regs[counter], from_name(*ptr_ps, tokvec[0].ident_str));
 				++counter;
 				++tokvec;
@@ -824,7 +824,7 @@ void parse_function_definition(struct ParserState *ptr_ps,
 					if (counter > 5) {
 						fprintf(stderr, "6-or-more args not implemented!\n");
 					}
-					write_register_to_local(
+					gen_write_register_to_local(
 					    regs[counter], from_name(*ptr_ps, tokvec[0].ident_str));
 					++counter;
 					++tokvec;
@@ -844,7 +844,7 @@ void parse_function_definition(struct ParserState *ptr_ps,
 			}
 
 			parse_compound_statement(ptr_ps, &tokvec);
-			print_epilogue(ptr_ps->return_label_name);
+			gen_epilogue(ptr_ps->return_label_name);
 		}
 	} else {
 		fprintf(stderr, "expected function definition but could not find it\n");

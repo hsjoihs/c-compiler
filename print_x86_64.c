@@ -10,7 +10,7 @@
 #define PREFIX ""
 #endif
 
-void print_prologue(int alloc_size, const char *fname)
+void gen_prologue(int alloc_size, const char *fname)
 {
 	printf("//print_prologue(%d, %s)\n", alloc_size, fname);
 	printf(".global " PREFIX "%s\n" PREFIX "%s:\n"
@@ -23,7 +23,7 @@ void print_prologue(int alloc_size, const char *fname)
 }
 
 /* write to local mem what's at the top of the stack. does not consume stack. */
-void write_to_local(int offset)
+void gen_write_to_local(int offset)
 {
 	assert(offset < 0);
 	printf("//write_to_local(%d)\n", offset);
@@ -32,7 +32,7 @@ void write_to_local(int offset)
 }
 
 /* write to local mem what's in the register */
-void write_register_to_local(const char *str, int offset)
+void gen_write_register_to_local(const char *str, int offset)
 {
 	assert(offset < 0);
 	printf("//write_register_to_local(%s, %d)\n", str, offset);
@@ -40,7 +40,7 @@ void write_register_to_local(const char *str, int offset)
 }
 
 /* push what's on local mem */
-void push_from_local(int offset)
+void gen_push_from_local(int offset)
 {
 	assert(offset < 0);
 	printf("//push_from_local(%d)\n", offset);
@@ -50,7 +50,7 @@ void push_from_local(int offset)
 	       offset);
 }
 
-void push_int(int num)
+void gen_push_int(int num)
 {
 	printf("//push_int(%d)\n", num);
 	printf("  subq $4, %%rsp\n"
@@ -58,7 +58,7 @@ void push_int(int num)
 	       num);
 }
 
-void push_ret_of(const char *fname)
+void gen_push_ret_of(const char *fname)
 {
 	printf("//push_ret_of(\"%s\")\n", fname);
 	printf("  movl $0, %%eax\n"
@@ -68,21 +68,21 @@ void push_ret_of(const char *fname)
 	       "  movl %%eax, (%%rsp)\n");
 }
 
-void push_eax(void)
+void gen_push_eax(void)
 {
 	printf("//push_eax()\n");
 	printf("  subq $4, %%rsp\n"
 	       "  movl %%eax, (%%rsp)\n");
 }
 
-void pop_to_reg(const char *str)
+void gen_pop_to_reg(const char *str)
 {
 	printf("//pop_to_reg(%s)\n", str);
 	printf("  movl (%%rsp), %%%s\n", str);
 	printf("  addq $4, %%rsp\n");
 }
 
-void op_ints(const char *str)
+void gen_op_ints(const char *str)
 {
 	printf("//op_ints(\"%s\")\n", str);
 	printf("  movl (%%rsp), %%eax\n"
@@ -91,7 +91,7 @@ void op_ints(const char *str)
 	       str);
 }
 
-void mul_ints(void)
+void gen_mul_ints(void)
 {
 	printf("//mul_ints()\n");
 	printf("  movl +4(%%rsp), %%eax\n"
@@ -100,14 +100,14 @@ void mul_ints(void)
 	       "  addq $4, %%rsp\n");
 }
 
-void return_with_label(int label)
+void gen_return_with_label(int label)
 {
 	printf("//return \n"
 	       "  jmp .L%d\n",
 	       label);
 }
 
-void div_ints(void)
+void gen_div_ints(void)
 {
 	printf("//div_ints()\n");
 	printf("  movl +4(%%rsp), %%eax\n"
@@ -117,7 +117,7 @@ void div_ints(void)
 	       "  addq $4, %%rsp\n");
 }
 
-void rem_ints(void)
+void gen_rem_ints(void)
 {
 	printf("//rem_ints()\n");
 	printf("  movl +4(%%rsp), %%eax\n"
@@ -133,7 +133,7 @@ setle: less than or eq
 setg: greater than
 setge: greater than or eq
 */
-void compare_ints(const char *str)
+void gen_compare_ints(const char *str)
 {
 	printf("//compare_ints(\"%s\")\n", str);
 	printf("  movl +4(%%rsp), %%eax\n"
@@ -145,7 +145,7 @@ void compare_ints(const char *str)
 	       str);
 }
 
-void unary_not(void)
+void gen_unary_not(void)
 {
 	printf("//unary_not()\n");
 	printf("  cmpl $0, (%%rsp)\n"
@@ -158,13 +158,13 @@ void unary_not(void)
 notl: bitnot
 negl: integer negation
 */
-void unary(const char *str)
+void gen_unary(const char *str)
 {
 	printf("//unary(\"%s\")\n", str);
 	printf("  %s (%%rsp)\n", str);
 }
 
-void ternary_part1(int label1, int label2)
+void gen_ternary_part1(int label1, int label2)
 {
 	printf("//ternary: part1\n"
 	       "  cmpl $0, (%%rsp)\n"
@@ -172,7 +172,7 @@ void ternary_part1(int label1, int label2)
 	       label1);
 }
 
-void ternary_part2(int label1, int label2)
+void gen_ternary_part2(int label1, int label2)
 {
 	printf("//ternary: part2\n"
 	       "  movl (%%rsp), %%eax\n"
@@ -182,7 +182,7 @@ void ternary_part2(int label1, int label2)
 	       label2, label1);
 }
 
-void ternary_part3(int label1, int label2)
+void gen_ternary_part3(int label1, int label2)
 {
 	printf("//ternary: part3\n"
 	       "  movl (%%rsp), %%eax\n"
@@ -192,7 +192,7 @@ void ternary_part3(int label1, int label2)
 	       label2);
 }
 
-void logical_OR_set(int depth, int label1, int label2)
+void gen_logical_OR_set(int depth, int label1, int label2)
 {
 	printf("//logical_OR_set(%d, %d, %d);\n", depth, label1, label2);
 	printf("  addq $%d, %%rsp\n", depth * 4);
@@ -201,7 +201,7 @@ void logical_OR_set(int depth, int label1, int label2)
 	printf("  subq $%d, %%rsp\n", depth * 4);
 }
 
-void logical_OR_final(int final_depth, int label1, int label2)
+void gen_logical_OR_final(int final_depth, int label1, int label2)
 {
 	printf("//logical_OR_final(%d, %d, %d);\n", final_depth, label1, label2);
 	printf("  addq $%d, %%rsp\n", final_depth * 4);
@@ -214,7 +214,7 @@ void logical_OR_final(int final_depth, int label1, int label2)
 	       label2, label1, label2);
 }
 
-void logical_AND_set(int depth, int label1, int label2)
+void gen_logical_AND_set(int depth, int label1, int label2)
 {
 	printf("//logical_AND_set(%d, %d, %d);\n", depth, label1, label2);
 	printf("  addq $%d, %%rsp\n", depth * 4);
@@ -223,7 +223,7 @@ void logical_AND_set(int depth, int label1, int label2)
 	printf("  subq $%d, %%rsp\n", depth * 4);
 }
 
-void logical_AND_final(int final_depth, int label1, int label2)
+void gen_logical_AND_final(int final_depth, int label1, int label2)
 {
 	printf("//logical_AND_final(%d, %d, %d);\n", final_depth, label1, label2);
 	printf("  addq $%d, %%rsp\n", final_depth * 4);
@@ -237,7 +237,7 @@ void logical_AND_final(int final_depth, int label1, int label2)
 }
 
 /* consumes the top of the stack and branch */
-void if_else_part1(int label1, int label2)
+void gen_if_else_part1(int label1, int label2)
 {
 	printf("  cmpl $0, (%%rsp)\n"
 	       "  je .L%d\n"
@@ -245,7 +245,7 @@ void if_else_part1(int label1, int label2)
 	       label1);
 }
 
-void if_else_part2(int label1, int label2)
+void gen_if_else_part2(int label1, int label2)
 {
 	printf("  jmp .L%d\n"
 	       ".L%d:\n"
@@ -253,13 +253,13 @@ void if_else_part2(int label1, int label2)
 	       label2, label1);
 }
 
-void if_else_part3(int label1, int label2) { printf(".L%d:\n", label2); }
+void gen_if_else_part3(int label1, int label2) { printf(".L%d:\n", label2); }
 
 /*
 sall: left shift
 sarl: right shift
 */
-void shift_ints(const char *str)
+void gen_shift_ints(const char *str)
 {
 	printf("//shift_ints(\"%s\")\n", str);
 	printf("  movl (%%rsp), %%eax\n"
@@ -269,7 +269,7 @@ void shift_ints(const char *str)
 	       str);
 }
 
-void print_epilogue(int label)
+void gen_epilogue(int label)
 {
 	printf("//print_epilogue(%d)\n", label);
 	printf(".L%d:"
