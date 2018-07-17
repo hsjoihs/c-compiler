@@ -27,6 +27,9 @@ void print_token(struct Token tok)
 		case END:
 			fprintf(stderr, "DUMMY: END");
 			break;
+		case BEGINNING:
+			fprintf(stderr, "DUMMY: BEGINNING");
+			break;
 		case OP_SLASH:
 			fprintf(stderr, "/");
 			break;

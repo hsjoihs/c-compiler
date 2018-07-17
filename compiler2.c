@@ -133,6 +133,7 @@ void binary_op(enum TokenKind kind)
 		case RES_WHILE:
 		case RES_DO:
 		case RES_BREAK:
+		case BEGINNING:
 			assert("failure!!! not a binary op!!!!" && 0);
 	}
 
@@ -142,6 +143,13 @@ void binary_op(enum TokenKind kind)
 void read_all_tokens_debug(const char *str)
 {
 	struct Token tok;
+	tok.kind = BEGINNING;
+	tok.int_value = GARBAGE_INT;
+	tok.ident_str = 0;
+
+	print_token(tok);
+	fprintf(stderr, "\n");
+
 	do {
 		tok = get_token(&str);
 		print_token(tok);
@@ -625,8 +633,9 @@ void error_unexpected_token(const struct Token *tokvec, const char *str)
 	print_token(tokvec[1]);
 	fprintf(stderr, "`\n");
 	fprintf(stderr, "Previous token: `");
-	print_token(tokvec[-1]); /* it fails if tokvec[0] was the first token, but
-	                            who cares? */
+	print_token(
+	    tokvec[-1]); /* it does not fail if tokvec[0] was the first token, since
+	                    there always is at least one token (BEGINNING) */
 	fprintf(stderr, "`\n");
 	exit(EXIT_FAILURE);
 }
@@ -802,6 +811,13 @@ struct vector_Token read_all_tokens(const char *str)
 {
 	struct Token tok;
 	struct vector_Token tokvec = init_vector_Token(0);
+
+	tok.kind = BEGINNING;
+	tok.int_value = GARBAGE_INT;
+	tok.ident_str = 0;
+
+	push_vector_Token(&tokvec, tok);
+
 	while (1) {
 		tok = get_token(&str);
 		push_vector_Token(&tokvec, tok);
@@ -939,6 +955,8 @@ int main(int argc, char const *argv[])
 	} else {
 		struct vector_Token tokvec_ = read_all_tokens(str);
 		const struct Token *tokvec = tokvec_.vector;
+
+		++tokvec; /* skip the dummy token BEGINNING */
 
 		struct ParserState ps;
 		ps.final_label_name = 1;
