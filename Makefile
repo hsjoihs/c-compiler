@@ -76,5 +76,6 @@ full_compile:
 	./test_ret4.sh 053 'main() {a = 4; if(1){return 170+a; a = 7; }else{return 170-a; a = 9;} a = 5; return a;}' 174 out/compiler.out
 	./test_ret4.sh 054 'foo(){return 1;}main(){a=0;do{a=3;}while(a==foo());return 174;}' 174 out/compiler.out
 	./test_ret4.sh 055 'main(){a=0;do{a+=1;}while(a && a < 174);return a;}' 174 out/compiler.out
+	./test_ret4.sh 056 'main(){a=-8;do{a+=1;}while(a);return a+174;}' 174 out/compiler.out
 
 
