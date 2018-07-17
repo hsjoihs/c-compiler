@@ -13,8 +13,8 @@ struct ParserState {
 	int break_label_name;  /* the label at the end of the current loop */
 };
 
-void error_unexpected_token(struct Token token, const char *str);
-int get_label_name(struct ParserState *ptr_ps);
+void error_unexpected_token(const struct Token *tokvec, const char *str);
+int get_new_label_name(struct ParserState *ptr_ps);
 void expect_and_consume(const struct Token **ptr_to_tokvec, enum TokenKind kind,
                         const char *str);
 
@@ -294,8 +294,8 @@ void parse_conditional_expression(struct ParserState *ptr_ps,
 	const struct Token *tokvec = *ptr_to_tokvec;
 	parse_logical_OR_expression(ptr_ps, &tokvec);
 	if (tokvec[0].kind == QUESTION) {
-		int label1 = get_label_name(ptr_ps);
-		int label2 = get_label_name(ptr_ps);
+		int label1 = get_new_label_name(ptr_ps);
+		int label2 = get_new_label_name(ptr_ps);
 
 		gen_ternary_part1(label1, label2);
 		++tokvec;
@@ -318,8 +318,8 @@ void parse_logical_OR_expression(struct ParserState *ptr_ps,
                                  const struct Token **ptr_to_tokvec)
 {
 	const struct Token *tokvec = *ptr_to_tokvec;
-	int label1 = get_label_name(ptr_ps);
-	int label2 = get_label_name(ptr_ps);
+	int label1 = get_new_label_name(ptr_ps);
+	int label2 = get_new_label_name(ptr_ps);
 
 	int counter = 0;
 	parse_logical_AND_expression(ptr_ps, &tokvec);
@@ -351,8 +351,8 @@ void parse_logical_AND_expression(struct ParserState *ptr_ps,
                                   const struct Token **ptr_to_tokvec)
 {
 	const struct Token *tokvec = *ptr_to_tokvec;
-	int label1 = get_label_name(ptr_ps);
-	int label2 = get_label_name(ptr_ps);
+	int label1 = get_new_label_name(ptr_ps);
+	int label2 = get_new_label_name(ptr_ps);
 
 	int counter = 0;
 	parse_inclusive_OR_expression(ptr_ps, &tokvec);
@@ -613,19 +613,25 @@ void parse_primary_expression(struct ParserState *ptr_ps,
 		return;
 	}
 
-	error_unexpected_token(tokvec[0],
-	                       "the beginning of parse_primary_expression");
+	error_unexpected_token(tokvec, "the beginning of parse_primary_expression");
 }
 
-void error_unexpected_token(struct Token token, const char *str)
+void error_unexpected_token(const struct Token *tokvec, const char *str)
 {
 	fprintf(stderr, "Unexpected token: `");
-	print_token(token);
-	fprintf(stderr, "` while expecting %s. Aborting.\n", str);
+	print_token(tokvec[0]);
+	fprintf(stderr, "` while expecting %s. \n", str);
+	fprintf(stderr, "Next token: `");
+	print_token(tokvec[1]);
+	fprintf(stderr, "`\n");
+	fprintf(stderr, "Previous token: `");
+	print_token(tokvec[-1]); /* it fails if tokvec[0] was the first token, but
+	                            who cares? */
+	fprintf(stderr, "`\n");
 	exit(EXIT_FAILURE);
 }
 
-int get_label_name(struct ParserState *ptr_ps)
+int get_new_label_name(struct ParserState *ptr_ps)
 {
 	return ++(ptr_ps->final_label_name);
 }
@@ -636,7 +642,7 @@ void expect_and_consume(const struct Token **ptr_to_tokvec, enum TokenKind kind,
 	const struct Token *tokvec = *ptr_to_tokvec;
 
 	if (tokvec[0].kind != kind) {
-		error_unexpected_token(tokvec[0], str);
+		error_unexpected_token(tokvec, str);
 	}
 	++tokvec;
 	*ptr_to_tokvec = tokvec;
@@ -650,8 +656,8 @@ void parse_statement(struct ParserState *ptr_ps,
 		parse_compound_statement(ptr_ps, &tokvec);
 		*ptr_to_tokvec = tokvec;
 	} else if (tokvec[0].kind == RES_IF) { /* or SWITCH */
-		int label1 = get_label_name(ptr_ps);
-		int label2 = get_label_name(ptr_ps);
+		int label1 = get_new_label_name(ptr_ps);
+		int label2 = get_new_label_name(ptr_ps);
 		++tokvec;
 
 		expect_and_consume(&tokvec, LEFT_PAREN,
@@ -693,7 +699,7 @@ void parse_statement(struct ParserState *ptr_ps,
 
 			/* the first occurrence of return within a function */
 			if (ptr_ps->return_label_name == GARBAGE_INT) {
-				int ret_label = get_label_name(ptr_ps);
+				int ret_label = get_new_label_name(ptr_ps);
 				ptr_ps->return_label_name = ret_label;
 				gen_return_with_label(ret_label);
 			} else {
@@ -708,8 +714,8 @@ void parse_statement(struct ParserState *ptr_ps,
 
 		++tokvec;
 		*ptr_to_tokvec = tokvec;
-		int label1 = get_label_name(ptr_ps);
-		int label2 = get_label_name(ptr_ps);
+		int label1 = get_new_label_name(ptr_ps);
+		int label2 = get_new_label_name(ptr_ps);
 
 		ptr_ps->break_label_name = label2;
 
@@ -739,8 +745,8 @@ void parse_statement(struct ParserState *ptr_ps,
 
 		expect_and_consume(&tokvec, LEFT_PAREN, "left parenthesis of while");
 
-		int label1 = get_label_name(ptr_ps);
-		int label2 = get_label_name(ptr_ps);
+		int label1 = get_new_label_name(ptr_ps);
+		int label2 = get_new_label_name(ptr_ps);
 		ptr_ps->break_label_name = label2;
 
 		gen_label(label1);
@@ -871,7 +877,7 @@ void parse_function_definition(struct ParserState *ptr_ps,
 			int counter = 0;
 
 			if (tokvec[0].kind != IDENT_OR_RESERVED) {
-				error_unexpected_token(tokvec[0],
+				error_unexpected_token(tokvec,
 				                       "identifier in the arglist of funcdef");
 			}
 			gen_write_register_to_local(
@@ -888,7 +894,7 @@ void parse_function_definition(struct ParserState *ptr_ps,
 
 				if (tokvec[0].kind != IDENT_OR_RESERVED) {
 					error_unexpected_token(
-					    tokvec[0], "identifier in the arglist of funcdef");
+					    tokvec, "identifier in the arglist of funcdef");
 				}
 
 				if (counter > 5) {
