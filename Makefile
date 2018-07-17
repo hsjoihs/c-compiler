@@ -11,6 +11,7 @@ clean:
 
 
 assembly_sandbox:
+	make format
 	gcc -Wall assembly_sandbox.c vector.c print_x86_64.c -o out/assembly_sandbox.out
 	./test_ret3.sh '' s/assembly_sandbox.s out/assembly_sandbox.out 174 out/assembly_sandbox.out
 
