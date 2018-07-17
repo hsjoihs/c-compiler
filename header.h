@@ -30,7 +30,7 @@ void gen_if_else_part1(int label1, int label2);
 void gen_if_else_part2(int label1, int label2);
 void gen_if_else_part3(int label1, int label2);
 void gen_label(int label1);
-void gen_do_while_final(int label1);
+void gen_do_while_final(int label1, int label2);
 void gen_while_part2(int label1, int label2);
 void gen_while_part3(int label1, int label2);
 void gen_discard();
@@ -86,6 +86,7 @@ enum TokenKind {
 	RES_ELSE,
 	RES_DO,
 	RES_WHILE,
+	RES_BREAK,
 };
 
 struct Token{

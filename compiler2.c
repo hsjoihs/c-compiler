@@ -9,7 +9,8 @@
 struct ParserState {
 	struct int_map var_table;
 	int final_label_name;
-	int return_label_name;
+	int return_label_name; /* the label at the end of the function */
+	int break_label_name;  /* the label at the end of the current loop */
 };
 
 void error_unexpected_token(struct Token token, const char *str);
@@ -131,6 +132,7 @@ void binary_op(enum TokenKind kind)
 		case RES_ELSE:
 		case RES_WHILE:
 		case RES_DO:
+		case RES_BREAK:
 			assert("failure!!! not a binary op!!!!" && 0);
 	}
 
@@ -701,9 +703,16 @@ void parse_statement(struct ParserState *ptr_ps,
 			return;
 		}
 	} else if (tokvec[0].kind == RES_DO) {
+
+		int stashed_break_label = ptr_ps->break_label_name;
+
 		++tokvec;
 		*ptr_to_tokvec = tokvec;
 		int label1 = get_label_name(ptr_ps);
+		int label2 = get_label_name(ptr_ps);
+
+		ptr_ps->break_label_name = label2;
+
 		gen_label(label1);
 		parse_statement(ptr_ps, &tokvec);
 
@@ -717,9 +726,14 @@ void parse_statement(struct ParserState *ptr_ps,
 		expect_and_consume(&tokvec, SEMICOLON, "semicolon after do-while");
 		*ptr_to_tokvec = tokvec;
 
-		gen_do_while_final(label1);
+		gen_do_while_final(label1, label2);
+
+		ptr_ps->break_label_name = stashed_break_label;
 
 	} else if (tokvec[0].kind == RES_WHILE) {
+
+		int stashed_break_label = ptr_ps->break_label_name;
+
 		++tokvec;
 		*ptr_to_tokvec = tokvec;
 
@@ -727,6 +741,7 @@ void parse_statement(struct ParserState *ptr_ps,
 
 		int label1 = get_label_name(ptr_ps);
 		int label2 = get_label_name(ptr_ps);
+		ptr_ps->break_label_name = label2;
 
 		gen_label(label1);
 
@@ -742,6 +757,23 @@ void parse_statement(struct ParserState *ptr_ps,
 
 		*ptr_to_tokvec = tokvec;
 
+		ptr_ps->break_label_name = stashed_break_label;
+
+	} else if (tokvec[0].kind == RES_BREAK) {
+
+		++tokvec;
+		expect_and_consume(&tokvec, SEMICOLON, "semicolon after `break`");
+		*ptr_to_tokvec = tokvec;
+
+		if (ptr_ps->break_label_name == GARBAGE_INT) {
+			fprintf(stderr, "invalid `break`; no loop, no switch\n");
+			exit(EXIT_FAILURE);
+		} else {
+			printf("//break;\n");
+			printf("  jmp .L%d\n", ptr_ps->break_label_name);
+		}
+
+		return;
 	} else {
 		parse_expression(ptr_ps, &tokvec);
 		expect_and_consume(&tokvec, SEMICOLON, "semicolon after an expression");
@@ -820,6 +852,7 @@ void parse_function_definition(struct ParserState *ptr_ps,
 
 		ptr_ps->var_table = map;
 		ptr_ps->return_label_name = GARBAGE_INT; /* INITIALIZE */
+		ptr_ps->break_label_name = GARBAGE_INT;  /* INITIALIZE */
 
 		int capacity = -v - 4;
 
