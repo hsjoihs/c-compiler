@@ -713,11 +713,13 @@ void parse_statement(struct ParserState *ptr_ps,
 			error_unexpected_token(tokvec[0], "`while` of do-while");
 		}
 
-		if (tokvec[1].kind != LEFT_PAREN) {
-			error_unexpected_token(tokvec[1], "left parenthesis of do-while");
+		++tokvec;
+
+		if (tokvec[0].kind != LEFT_PAREN) {
+			error_unexpected_token(tokvec[0], "left parenthesis of do-while");
 		}
 
-		tokvec += 2;
+		++tokvec;
 		*ptr_to_tokvec = tokvec;
 
 		parse_expression(ptr_ps, &tokvec);
@@ -725,12 +727,13 @@ void parse_statement(struct ParserState *ptr_ps,
 		if (tokvec[0].kind != RIGHT_PAREN) {
 			error_unexpected_token(tokvec[0], "right parenthesis of do-while");
 		}
+		++tokvec;
 
-		if (tokvec[1].kind != SEMICOLON) {
-			error_unexpected_token(tokvec[1], "semicolon after do-while");
+		if (tokvec[0].kind != SEMICOLON) {
+			error_unexpected_token(tokvec[0], "semicolon after do-while");
 		}
 
-		tokvec += 2;
+		++tokvec;
 		*ptr_to_tokvec = tokvec;
 
 		gen_do_while_final(label1);
