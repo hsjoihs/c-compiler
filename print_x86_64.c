@@ -39,6 +39,21 @@ void gen_write_register_to_local(const char *str, int offset)
 	printf("  movl %%%s, %d(%%rbp)\n", str, offset);
 }
 
+void gen_label(int label1)
+{
+	printf("//gen_label(%d)\n", label1);
+	printf(".L%d:\n", label1);
+}
+
+void gen_do_while_final(int label1)
+{
+	printf("  addq $4, %%rsp\n"
+	       "  cmpl $1, -4(%%rsp)\n"
+	       "  je .L%d\n"
+	       "  addq $4, %%rsp\n",
+	       label1);
+}
+
 /* push what's on local mem */
 void gen_push_from_local(int offset)
 {

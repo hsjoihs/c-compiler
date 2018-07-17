@@ -144,6 +144,12 @@ void print_token(struct Token tok)
 		case RES_ELSE:
 			fprintf(stderr, "else");
 			break;
+		case RES_DO:
+			fprintf(stderr, "do");
+			break;
+		case RES_WHILE:
+			fprintf(stderr, "while");
+			break;
 	}
 }
 
@@ -454,6 +460,12 @@ struct Token get_token(const char **ptr_to_str)
 			t.int_value = GARBAGE_INT;
 		} else if (strcmp(new_str, "else") == 0) {
 			t.kind = RES_ELSE;
+			t.int_value = GARBAGE_INT;
+		} else if (strcmp(new_str, "do") == 0) {
+			t.kind = RES_DO;
+			t.int_value = GARBAGE_INT;
+		} else if (strcmp(new_str, "while") == 0) {
+			t.kind = RES_WHILE;
 			t.int_value = GARBAGE_INT;
 		} else {
 			t.ident_str = new_str;

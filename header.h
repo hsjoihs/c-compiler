@@ -29,6 +29,8 @@ void gen_ternary_part3(int label1, int label2);
 void gen_if_else_part1(int label1, int label2);
 void gen_if_else_part2(int label1, int label2);
 void gen_if_else_part3(int label1, int label2);
+void gen_label(int label1);
+void gen_do_while_final(int label1);
 
 
 #define GARBAGE_INT 0xCCCCCCCC
@@ -79,7 +81,9 @@ enum TokenKind {
 	OP_HAT_EQ,
 	OP_OR_EQ,
 	RES_IF,
-	RES_ELSE
+	RES_ELSE,
+	RES_DO,
+	RES_WHILE,
 };
 
 struct Token{

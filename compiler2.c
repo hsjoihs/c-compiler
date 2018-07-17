@@ -127,6 +127,8 @@ void binary_op(enum TokenKind kind)
 		case SEMICOLON:
 		case RES_IF:
 		case RES_ELSE:
+		case RES_WHILE:
+		case RES_DO:
 			assert("failure!!! not a binary op!!!!" && 0);
 	}
 
@@ -701,6 +703,39 @@ void parse_statement(struct ParserState *ptr_ps,
 				    "semicolon after `return` followed by an expression");
 			}
 		}
+	} else if (tokvec[0].kind == RES_DO) {
+		++tokvec;
+		*ptr_to_tokvec = tokvec;
+		int label1 = get_label_name(ptr_ps);
+		gen_label(label1);
+		parse_statement(ptr_ps, &tokvec);
+
+		if (tokvec[0].kind != RES_WHILE) {
+			error_unexpected_token(tokvec[0], "`while` of do-while");
+		}
+
+		if (tokvec[1].kind != LEFT_PAREN) {
+			error_unexpected_token(tokvec[1], "left parenthesis of do-while");
+		}
+
+		tokvec += 2;
+		*ptr_to_tokvec = tokvec;
+
+		parse_expression(ptr_ps, &tokvec);
+
+		if (tokvec[0].kind != RIGHT_PAREN) {
+			error_unexpected_token(tokvec[0], "right parenthesis of do-while");
+		}
+
+		if (tokvec[1].kind != SEMICOLON) {
+			error_unexpected_token(tokvec[1], "semicolon after do-while");
+		}
+
+		tokvec += 2;
+		*ptr_to_tokvec = tokvec;
+
+		gen_do_while_final(label1);
+
 	} else {
 		parse_expression(ptr_ps, &tokvec);
 		if (tokvec[0].kind == SEMICOLON) {
