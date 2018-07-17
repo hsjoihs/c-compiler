@@ -444,7 +444,7 @@ struct Token get_token(const char **ptr_to_str)
 		    malloc(i + 1); /* memory leak is much better than use after free */
 		if (!new_str) {
 			fprintf(stderr, "memory ran out\n");
-			abort();
+			exit(EXIT_FAILURE);
 		}
 
 		for (int j = 0; j < i; j++) {
@@ -475,7 +475,7 @@ struct Token get_token(const char **ptr_to_str)
 	}
 
 	fprintf(stderr, "Found unexpected character: '%c' (%d)\n", *str, (int)*str);
-	abort();
+	exit(EXIT_FAILURE);
 }
 
 int from_hex(char c)
