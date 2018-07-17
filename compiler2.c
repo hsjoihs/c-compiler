@@ -739,8 +739,7 @@ void parse_statement(struct ParserState *ptr_ps,
 	} else {
 		parse_expression(ptr_ps, &tokvec);
 		if (tokvec[0].kind == SEMICOLON) {
-			binary_op(OP_COMMA); /* like the comma operator, discard what's on
-			                       the stack */
+			gen_discard();
 			++tokvec;
 			*ptr_to_tokvec = tokvec;
 			return;

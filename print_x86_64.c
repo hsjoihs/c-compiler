@@ -54,6 +54,12 @@ void gen_do_while_final(int label1)
 	       label1);
 }
 
+void gen_discard()
+{
+	printf("//gen_discard()\n");
+	printf("  addq $4, %%rsp\n");
+}
+
 /* push what's on local mem */
 void gen_push_from_local(int offset)
 {

@@ -32,6 +32,7 @@ void gen_if_else_part3(int label1, int label2);
 void gen_label(int label1);
 void gen_do_while_final(int label1);
 
+void gen_discard();
 
 #define GARBAGE_INT 0xCCCCCCCC
 #define BOOL int
