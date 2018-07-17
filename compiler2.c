@@ -300,17 +300,17 @@ void parse_conditional_expression(struct ParserState *ptr_ps,
 
 		gen_ternary_part2(label1, label2);
 
-		if (tokvec[0].kind == COLON) {
-			++tokvec;
-			*ptr_to_tokvec = tokvec;
-			parse_conditional_expression(ptr_ps, &tokvec);
+		if (tokvec[0].kind != COLON) {
 
-			gen_ternary_part3(label1, label2);
-
-		} else {
 			error_unexpected_token(tokvec[0],
 			                       "colon of the conditional operator");
 		}
+
+		++tokvec;
+		*ptr_to_tokvec = tokvec;
+		parse_conditional_expression(ptr_ps, &tokvec);
+
+		gen_ternary_part3(label1, label2);
 	}
 	*ptr_to_tokvec = tokvec;
 }
@@ -579,13 +579,12 @@ void parse_postfix_expression(struct ParserState *ptr_ps,
 			gen_push_ret_of(ident_str);
 			*ptr_to_tokvec = tokvec;
 
-			if (tokvec[0].kind == RIGHT_PAREN) {
-				++tokvec;
-				*ptr_to_tokvec = tokvec;
-			} else {
+			if (tokvec[0].kind != RIGHT_PAREN) {
 				error_unexpected_token(tokvec[0],
 				                       "closing parenthesis of function call");
 			}
+			++tokvec;
+			*ptr_to_tokvec = tokvec;
 		}
 
 	} else {
@@ -611,13 +610,13 @@ void parse_primary_expression(struct ParserState *ptr_ps,
 		++tokvec;
 		*ptr_to_tokvec = tokvec;
 		parse_expression(ptr_ps, &tokvec);
-		if (tokvec[0].kind == RIGHT_PAREN) {
-			++tokvec;
-			*ptr_to_tokvec = tokvec;
-			return;
-		} else {
+		if (tokvec[0].kind != RIGHT_PAREN) {
+
 			error_unexpected_token(tokvec[0], "right paren");
 		}
+		++tokvec;
+		*ptr_to_tokvec = tokvec;
+		return;
 	}
 
 	error_unexpected_token(tokvec[0],
@@ -683,25 +682,25 @@ void parse_statement(struct ParserState *ptr_ps,
 			assert("`return;` unimplemented" && 0);
 		} else {
 			parse_expression(ptr_ps, &tokvec);
-			if (tokvec[0].kind == SEMICOLON) {
-				++tokvec;
-				*ptr_to_tokvec = tokvec;
-
-				/* the first occurrence of return within a function */
-				if (ptr_ps->return_label_name == GARBAGE_INT) {
-					int ret_label = get_label_name(ptr_ps);
-					ptr_ps->return_label_name = ret_label;
-					gen_return_with_label(ret_label);
-				} else {
-					gen_return_with_label(ptr_ps->return_label_name);
-				}
-
-				return;
-			} else {
+			if (tokvec[0].kind != SEMICOLON) {
 				error_unexpected_token(
 				    tokvec[0],
 				    "semicolon after `return` followed by an expression");
 			}
+
+			++tokvec;
+			*ptr_to_tokvec = tokvec;
+
+			/* the first occurrence of return within a function */
+			if (ptr_ps->return_label_name == GARBAGE_INT) {
+				int ret_label = get_label_name(ptr_ps);
+				ptr_ps->return_label_name = ret_label;
+				gen_return_with_label(ret_label);
+			} else {
+				gen_return_with_label(ptr_ps->return_label_name);
+			}
+
+			return;
 		}
 	} else if (tokvec[0].kind == RES_DO) {
 		++tokvec;
@@ -769,14 +768,13 @@ void parse_statement(struct ParserState *ptr_ps,
 
 	} else {
 		parse_expression(ptr_ps, &tokvec);
-		if (tokvec[0].kind == SEMICOLON) {
-			gen_discard();
-			++tokvec;
-			*ptr_to_tokvec = tokvec;
-			return;
-		} else {
+		if (tokvec[0].kind != SEMICOLON) {
 			error_unexpected_token(tokvec[0], "semicolon after an expression");
 		}
+		gen_discard();
+		++tokvec;
+		*ptr_to_tokvec = tokvec;
+		return;
 	}
 	*ptr_to_tokvec = tokvec;
 }
@@ -784,11 +782,10 @@ void parse_statement(struct ParserState *ptr_ps,
 void parse_final(const struct Token **ptr_to_tokvec)
 {
 	const struct Token *tokvec = *ptr_to_tokvec;
-	if (tokvec[0].kind == END) {
-		return;
-	} else {
+	if (tokvec[0].kind != END) {
 		error_unexpected_token(tokvec[0], "the end of file");
 	}
+	return;
 }
 
 struct vector_Token read_all_tokens(const char *str)
@@ -868,15 +865,14 @@ void parse_function_definition(struct ParserState *ptr_ps,
 			const char *regs[] = {"edi", "esi", "edx", "ecx", "r8d", "r9d"};
 			int counter = 0;
 
-			if (tokvec[0].kind == IDENT_OR_RESERVED) {
-				gen_write_register_to_local(
-				    regs[counter], from_name(*ptr_ps, tokvec[0].ident_str));
-				++counter;
-				++tokvec;
-			} else {
+			if (tokvec[0].kind != IDENT_OR_RESERVED) {
 				error_unexpected_token(tokvec[0],
 				                       "identifier in the arglist of funcdef");
 			}
+			gen_write_register_to_local(
+			    regs[counter], from_name(*ptr_ps, tokvec[0].ident_str));
+			++counter;
+			++tokvec;
 
 			while (1) {
 				enum TokenKind kind = tokvec[0].kind;
@@ -885,28 +881,28 @@ void parse_function_definition(struct ParserState *ptr_ps,
 				}
 				++tokvec;
 
-				if (tokvec[0].kind == IDENT_OR_RESERVED) {
-					if (counter > 5) {
-						fprintf(stderr, "6-or-more args not implemented!\n");
-					}
-					gen_write_register_to_local(
-					    regs[counter], from_name(*ptr_ps, tokvec[0].ident_str));
-					++counter;
-					++tokvec;
-				} else {
+				if (tokvec[0].kind != IDENT_OR_RESERVED) {
 					error_unexpected_token(
 					    tokvec[0], "identifier in the arglist of funcdef");
 				}
+
+				if (counter > 5) {
+					fprintf(stderr, "6-or-more args not implemented!\n");
+				}
+				gen_write_register_to_local(
+				    regs[counter], from_name(*ptr_ps, tokvec[0].ident_str));
+				++counter;
+				++tokvec;
 			}
 			*ptr_to_tokvec = tokvec;
 
-			if (tokvec[0].kind == RIGHT_PAREN) {
-				++tokvec;
-				*ptr_to_tokvec = tokvec;
-			} else {
+			if (tokvec[0].kind != RIGHT_PAREN) {
 				error_unexpected_token(
 				    tokvec[0], "closing parenthesis of function definition");
 			}
+
+			++tokvec;
+			*ptr_to_tokvec = tokvec;
 
 			parse_compound_statement(ptr_ps, &tokvec);
 			gen_epilogue(ptr_ps->return_label_name);
