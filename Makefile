@@ -81,5 +81,6 @@ full_compile:
 	./test_ret4.sh 058 'main(){a = 0; b = 0; while(a <= 10) {b += a; a += 1;}return b;}' 55 out/compiler.out
 	./test_ret4.sh 059 'main(){a = 3;while (a) {a = 2;if (a - 3) {break;}a += 3;}return 174;}' 174 out/compiler.out
 	./test_ret4.sh 060 'main(){ a = 3; b = 5; c = 0;while(a){while(b) {c += b;b-=1;if(b == 3) break;}b = 7;a-=1;if(a == 1) break;} return a*7+b*15+c*2;}' 174 out/compiler.out
-
+	./test_ret4.sh 061 'main(){a = 3;while (a) {a = 2;if (a - 3) {break;}a += 3;}return 174;}' 174 out/compiler.out
+	./test_ret4.sh 062 'main(){a=11; b=0; while(a){a-=1;b+=a;if(a)continue;break; a+=100;} return b;}' 55 out/compiler.out
 

@@ -32,7 +32,7 @@ void gen_if_else_part3(int label1, int label2);
 void gen_label(int label1);
 void gen_do_while_final(int label1, int label2);
 void gen_while_part2(int label1, int label2);
-void gen_while_part3(int label1, int label2);
+void gen_while_part3(int label1, int label2, int label3);
 void gen_discard();
 
 #define GARBAGE_INT 0xCCCCCCCC
@@ -88,6 +88,7 @@ enum TokenKind {
 	RES_DO,
 	RES_WHILE,
 	RES_BREAK,
+	RES_CONTINUE,
 };
 
 struct Token{

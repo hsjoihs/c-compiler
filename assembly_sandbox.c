@@ -31,6 +31,7 @@ int main()
 
 		int label1 = 7;
 		int label2 = 6;
+		int label3 = 8;
 		/* a == foo() */
 		printf(".L%d:\n", label1);
 		gen_push_from_local(-4);
@@ -43,7 +44,7 @@ int main()
 		gen_write_to_local(-4);
 		gen_op_ints("movl");
 
-		gen_while_part3(label1, label2);
+		gen_while_part3(label1, label2, label3);
 
 		gen_push_int(174);
 	}

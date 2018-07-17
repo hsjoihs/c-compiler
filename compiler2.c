@@ -9,8 +9,10 @@
 struct ParserState {
 	struct int_map var_table;
 	int final_label_name;
-	int return_label_name; /* the label at the end of the function */
-	int break_label_name;  /* the label at the end of the current loop */
+	int return_label_name;   /* the label at the end of the function */
+	int break_label_name;    /* the label at the end of the current loop */
+	int continue_label_name; /* the label at the beginning of the current loop
+	                          */
 };
 
 void error_unexpected_token(const struct Token *tokvec, const char *str);
@@ -134,6 +136,7 @@ void binary_op(enum TokenKind kind)
 		case RES_DO:
 		case RES_BREAK:
 		case BEGINNING:
+		case RES_CONTINUE:
 			assert("failure!!! not a binary op!!!!" && 0);
 	}
 
@@ -720,16 +723,20 @@ void parse_statement(struct ParserState *ptr_ps,
 	} else if (tokvec[0].kind == RES_DO) {
 
 		int stashed_break_label = ptr_ps->break_label_name;
+		int stashed_continue_label = ptr_ps->continue_label_name;
 
 		++tokvec;
 		*ptr_to_tokvec = tokvec;
 		int label1 = get_new_label_name(ptr_ps);
 		int label2 = get_new_label_name(ptr_ps);
+		int label3 = get_new_label_name(ptr_ps);
 
 		ptr_ps->break_label_name = label2;
+		ptr_ps->continue_label_name = label3;
 
 		gen_label(label1);
 		parse_statement(ptr_ps, &tokvec);
+		gen_label(label3);
 
 		expect_and_consume(&tokvec, RES_WHILE, "`while` of do-while");
 		expect_and_consume(&tokvec, LEFT_PAREN, "left parenthesis of do-while");
@@ -744,10 +751,12 @@ void parse_statement(struct ParserState *ptr_ps,
 		gen_do_while_final(label1, label2);
 
 		ptr_ps->break_label_name = stashed_break_label;
+		ptr_ps->continue_label_name = stashed_continue_label;
 
 	} else if (tokvec[0].kind == RES_WHILE) {
 
 		int stashed_break_label = ptr_ps->break_label_name;
+		int stashed_continue_label = ptr_ps->continue_label_name;
 
 		++tokvec;
 		*ptr_to_tokvec = tokvec;
@@ -756,7 +765,9 @@ void parse_statement(struct ParserState *ptr_ps,
 
 		int label1 = get_new_label_name(ptr_ps);
 		int label2 = get_new_label_name(ptr_ps);
+		int label3 = get_new_label_name(ptr_ps);
 		ptr_ps->break_label_name = label2;
+		ptr_ps->continue_label_name = label3;
 
 		gen_label(label1);
 
@@ -768,11 +779,12 @@ void parse_statement(struct ParserState *ptr_ps,
 
 		parse_statement(ptr_ps, &tokvec);
 
-		gen_while_part3(label1, label2);
+		gen_while_part3(label1, label2, label3);
 
 		*ptr_to_tokvec = tokvec;
 
 		ptr_ps->break_label_name = stashed_break_label;
+		ptr_ps->continue_label_name = stashed_continue_label;
 
 	} else if (tokvec[0].kind == RES_BREAK) {
 
@@ -786,6 +798,21 @@ void parse_statement(struct ParserState *ptr_ps,
 		} else {
 			printf("//break;\n");
 			printf("  jmp .L%d\n", ptr_ps->break_label_name);
+		}
+
+		return;
+	} else if (tokvec[0].kind == RES_CONTINUE) {
+
+		++tokvec;
+		expect_and_consume(&tokvec, SEMICOLON, "semicolon after `continue`");
+		*ptr_to_tokvec = tokvec;
+
+		if (ptr_ps->continue_label_name == GARBAGE_INT) {
+			fprintf(stderr, "invalid `continue`; no loop\n");
+			exit(EXIT_FAILURE);
+		} else {
+			printf("//continue;\n");
+			printf("  jmp .L%d\n", ptr_ps->continue_label_name);
 		}
 
 		return;
