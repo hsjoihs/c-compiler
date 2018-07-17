@@ -14,6 +14,8 @@ struct ParserState {
 
 void error_unexpected_token(struct Token token, const char *str);
 int get_label_name(struct ParserState *ptr_ps);
+void expect_and_consume(const struct Token **ptr_to_tokvec, enum TokenKind kind,
+                        const char *str);
 
 void print_unary_prefix_op(enum TokenKind kind)
 {
@@ -300,13 +302,8 @@ void parse_conditional_expression(struct ParserState *ptr_ps,
 
 		gen_ternary_part2(label1, label2);
 
-		if (tokvec[0].kind != COLON) {
+		expect_and_consume(&tokvec, COLON, "colon of the conditional operator");
 
-			error_unexpected_token(tokvec[0],
-			                       "colon of the conditional operator");
-		}
-
-		++tokvec;
 		*ptr_to_tokvec = tokvec;
 		parse_conditional_expression(ptr_ps, &tokvec);
 
@@ -579,11 +576,9 @@ void parse_postfix_expression(struct ParserState *ptr_ps,
 			gen_push_ret_of(ident_str);
 			*ptr_to_tokvec = tokvec;
 
-			if (tokvec[0].kind != RIGHT_PAREN) {
-				error_unexpected_token(tokvec[0],
-				                       "closing parenthesis of function call");
-			}
-			++tokvec;
+			expect_and_consume(&tokvec, RIGHT_PAREN,
+			                   "closing parenthesis of function call");
+
 			*ptr_to_tokvec = tokvec;
 		}
 
@@ -610,11 +605,8 @@ void parse_primary_expression(struct ParserState *ptr_ps,
 		++tokvec;
 		*ptr_to_tokvec = tokvec;
 		parse_expression(ptr_ps, &tokvec);
-		if (tokvec[0].kind != RIGHT_PAREN) {
+		expect_and_consume(&tokvec, RIGHT_PAREN, "right paren");
 
-			error_unexpected_token(tokvec[0], "right paren");
-		}
-		++tokvec;
 		*ptr_to_tokvec = tokvec;
 		return;
 	}
@@ -636,6 +628,18 @@ int get_label_name(struct ParserState *ptr_ps)
 	return ++(ptr_ps->final_label_name);
 }
 
+void expect_and_consume(const struct Token **ptr_to_tokvec, enum TokenKind kind,
+                        const char *str)
+{
+	const struct Token *tokvec = *ptr_to_tokvec;
+
+	if (tokvec[0].kind != kind) {
+		error_unexpected_token(tokvec[0], str);
+	}
+	++tokvec;
+	*ptr_to_tokvec = tokvec;
+}
+
 void parse_statement(struct ParserState *ptr_ps,
                      const struct Token **ptr_to_tokvec)
 {
@@ -646,18 +650,14 @@ void parse_statement(struct ParserState *ptr_ps,
 	} else if (tokvec[0].kind == RES_IF) { /* or SWITCH */
 		int label1 = get_label_name(ptr_ps);
 		int label2 = get_label_name(ptr_ps);
+		++tokvec;
 
-		if (tokvec[1].kind != LEFT_PAREN) {
-			error_unexpected_token(tokvec[1],
-			                       "left parenthesis immediately after `if`");
-		}
-		tokvec += 2;
+		expect_and_consume(&tokvec, LEFT_PAREN,
+		                   "left parenthesis immediately after `if`");
+
 		parse_expression(ptr_ps, &tokvec);
 
-		if (tokvec[0].kind != RIGHT_PAREN) {
-			error_unexpected_token(tokvec[0], "right parenthesis of `if`");
-		}
-		++tokvec;
+		expect_and_consume(&tokvec, RIGHT_PAREN, "right parenthesis of `if`");
 
 		gen_if_else_part1(label1, label2);
 
@@ -682,13 +682,11 @@ void parse_statement(struct ParserState *ptr_ps,
 			assert("`return;` unimplemented" && 0);
 		} else {
 			parse_expression(ptr_ps, &tokvec);
-			if (tokvec[0].kind != SEMICOLON) {
-				error_unexpected_token(
-				    tokvec[0],
-				    "semicolon after `return` followed by an expression");
-			}
 
-			++tokvec;
+			expect_and_consume(
+			    &tokvec, SEMICOLON,
+			    "semicolon after `return` followed by an expression");
+
 			*ptr_to_tokvec = tokvec;
 
 			/* the first occurrence of return within a function */
@@ -709,31 +707,14 @@ void parse_statement(struct ParserState *ptr_ps,
 		gen_label(label1);
 		parse_statement(ptr_ps, &tokvec);
 
-		if (tokvec[0].kind != RES_WHILE) {
-			error_unexpected_token(tokvec[0], "`while` of do-while");
-		}
-
-		++tokvec;
-
-		if (tokvec[0].kind != LEFT_PAREN) {
-			error_unexpected_token(tokvec[0], "left parenthesis of do-while");
-		}
-
-		++tokvec;
-		*ptr_to_tokvec = tokvec;
+		expect_and_consume(&tokvec, RES_WHILE, "`while` of do-while");
+		expect_and_consume(&tokvec, LEFT_PAREN, "left parenthesis of do-while");
 
 		parse_expression(ptr_ps, &tokvec);
 
-		if (tokvec[0].kind != RIGHT_PAREN) {
-			error_unexpected_token(tokvec[0], "right parenthesis of do-while");
-		}
-		++tokvec;
-
-		if (tokvec[0].kind != SEMICOLON) {
-			error_unexpected_token(tokvec[0], "semicolon after do-while");
-		}
-
-		++tokvec;
+		expect_and_consume(&tokvec, RIGHT_PAREN,
+		                   "right parenthesis of do-while");
+		expect_and_consume(&tokvec, SEMICOLON, "semicolon after do-while");
 		*ptr_to_tokvec = tokvec;
 
 		gen_do_while_final(label1);
@@ -742,11 +723,7 @@ void parse_statement(struct ParserState *ptr_ps,
 		++tokvec;
 		*ptr_to_tokvec = tokvec;
 
-		if (tokvec[0].kind != LEFT_PAREN) {
-			error_unexpected_token(tokvec[0], "left parenthesis of while");
-		}
-
-		++tokvec;
+		expect_and_consume(&tokvec, LEFT_PAREN, "left parenthesis of while");
 
 		int label1 = get_label_name(ptr_ps);
 		int label2 = get_label_name(ptr_ps);
@@ -755,11 +732,7 @@ void parse_statement(struct ParserState *ptr_ps,
 
 		parse_expression(ptr_ps, &tokvec);
 
-		if (tokvec[0].kind != RIGHT_PAREN) {
-			error_unexpected_token(tokvec[0], "left parenthesis of while");
-		}
-
-		++tokvec;
+		expect_and_consume(&tokvec, RIGHT_PAREN, "left parenthesis of while");
 
 		gen_while_part2(label1, label2);
 
@@ -771,11 +744,9 @@ void parse_statement(struct ParserState *ptr_ps,
 
 	} else {
 		parse_expression(ptr_ps, &tokvec);
-		if (tokvec[0].kind != SEMICOLON) {
-			error_unexpected_token(tokvec[0], "semicolon after an expression");
-		}
+		expect_and_consume(&tokvec, SEMICOLON, "semicolon after an expression");
+
 		gen_discard();
-		++tokvec;
 		*ptr_to_tokvec = tokvec;
 		return;
 	}
@@ -785,9 +756,7 @@ void parse_statement(struct ParserState *ptr_ps,
 void parse_final(const struct Token **ptr_to_tokvec)
 {
 	const struct Token *tokvec = *ptr_to_tokvec;
-	if (tokvec[0].kind != END) {
-		error_unexpected_token(tokvec[0], "the end of file");
-	}
+	expect_and_consume(&tokvec, END, "the end of file");
 	return;
 }
 
@@ -899,12 +868,9 @@ void parse_function_definition(struct ParserState *ptr_ps,
 			}
 			*ptr_to_tokvec = tokvec;
 
-			if (tokvec[0].kind != RIGHT_PAREN) {
-				error_unexpected_token(
-				    tokvec[0], "closing parenthesis of function definition");
-			}
+			expect_and_consume(&tokvec, RIGHT_PAREN,
+			                   "closing parenthesis of function definition");
 
-			++tokvec;
 			*ptr_to_tokvec = tokvec;
 
 			parse_compound_statement(ptr_ps, &tokvec);
