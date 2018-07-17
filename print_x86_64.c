@@ -60,6 +60,19 @@ void gen_discard()
 	printf("  addq $4, %%rsp\n");
 }
 
+void gen_while_part2(int label1, int label2)
+{
+	printf("  addq $4, %%rsp\n"
+	       "  cmpl $0, -4(%%rsp)\n");
+	printf("  je .L%d\n", label2);
+}
+
+void gen_while_part3(int label1, int label2)
+{
+	printf("  jmp .L%d\n", label1);
+	printf(".L%d:\n", label2);
+}
+
 /* push what's on local mem */
 void gen_push_from_local(int offset)
 {

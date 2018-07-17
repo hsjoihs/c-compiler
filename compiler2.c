@@ -736,6 +736,37 @@ void parse_statement(struct ParserState *ptr_ps,
 
 		gen_do_while_final(label1);
 
+	} else if (tokvec[0].kind == RES_WHILE) {
+		++tokvec;
+		*ptr_to_tokvec = tokvec;
+
+		if (tokvec[0].kind != LEFT_PAREN) {
+			error_unexpected_token(tokvec[0], "left parenthesis of while");
+		}
+
+		++tokvec;
+
+		int label1 = get_label_name(ptr_ps);
+		int label2 = get_label_name(ptr_ps);
+
+		gen_label(label1);
+
+		parse_expression(ptr_ps, &tokvec);
+
+		if (tokvec[0].kind != RIGHT_PAREN) {
+			error_unexpected_token(tokvec[0], "left parenthesis of while");
+		}
+
+		++tokvec;
+
+		gen_while_part2(label1, label2);
+
+		parse_statement(ptr_ps, &tokvec);
+
+		gen_while_part3(label1, label2);
+
+		*ptr_to_tokvec = tokvec;
+
 	} else {
 		parse_expression(ptr_ps, &tokvec);
 		if (tokvec[0].kind == SEMICOLON) {
