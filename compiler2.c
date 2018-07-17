@@ -937,6 +937,8 @@ void parse_function_definition(struct ParserState *ptr_ps,
 		print_token(tokvec[0]);
 		fprintf(stderr, "\nnext token: ");
 		print_token(tokvec[1]);
+		fprintf(stderr, "\nprevious token: ");
+		print_token(tokvec[-1]);
 		fprintf(stderr, "\n");
 		exit(EXIT_FAILURE);
 	}
