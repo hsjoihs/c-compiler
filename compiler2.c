@@ -131,6 +131,7 @@ void binary_op(enum TokenKind kind)
 		case RES_ELSE:
 		case RES_WHILE:
 		case RES_DO:
+		case RES_BREAK:
 			assert("failure!!! not a binary op!!!!" && 0);
 	}
 
@@ -742,6 +743,14 @@ void parse_statement(struct ParserState *ptr_ps,
 
 		*ptr_to_tokvec = tokvec;
 
+	} else if (tokvec[0].kind == RES_BREAK) {
+#warning FIXME
+		fprintf(stderr, "break unimplemented\n");
+		printf("BREAK\n");
+		++tokvec;
+		expect_and_consume(&tokvec, SEMICOLON, "semicolon after `break`");
+		*ptr_to_tokvec = tokvec;
+		return;
 	} else {
 		parse_expression(ptr_ps, &tokvec);
 		expect_and_consume(&tokvec, SEMICOLON, "semicolon after an expression");

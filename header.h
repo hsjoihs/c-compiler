@@ -86,6 +86,7 @@ enum TokenKind {
 	RES_ELSE,
 	RES_DO,
 	RES_WHILE,
+	RES_BREAK,
 };
 
 struct Token{
