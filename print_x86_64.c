@@ -45,13 +45,15 @@ void gen_label(int label1)
 	printf(".L%d:\n", label1);
 }
 
-void gen_do_while_final(int label1)
+void gen_do_while_final(int label1, int label2)
 {
+	printf("//gen_do_while_final(%d, %d)\n", label1, label2);
 	printf("  addq $4, %%rsp\n"
 	       "  cmpl $0, -4(%%rsp)\n"
 	       "  jne .L%d\n"
-	       "  addq $4, %%rsp\n",
-	       label1);
+	       "  addq $4, %%rsp\n"
+	       ".L%d:\n",
+	       label1, label2);
 }
 
 void gen_discard()
