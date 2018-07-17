@@ -22,6 +22,7 @@ intmap_check:
 
 full_compile:
 	gcc -Wall compiler2.c intmap.c vector.c print_x86_64.c lexer.c -o out/compiler.out
+	./test_ret4.sh 074 'main(){a =0; b=0; do{a-=1;b+=a;}while(a+3); return b*a;}' 18 out/compiler.out
 	./test_ret4.sh 073 'main(){a =0; b=0; do{a-=1;b+=a;}while(a+3); return a*b;}' 18 out/compiler.out
 	./test_ret4.sh 072 'main(){a =0; b=0; do{a-=1;b+=a;if(!a)break;}while(a+3); return a*b;}' 18 out/compiler.out
 	./test_ret4.sh 071 'main(){a =0; b=0; do{a-=1;b+=a;if(a)continue;break;}while(a+3); return a*b;}' 18 out/compiler.out
