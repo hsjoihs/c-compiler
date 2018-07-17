@@ -628,7 +628,7 @@ void error_unexpected_token(struct Token token, const char *str)
 	fprintf(stderr, "Unexpected token: `");
 	print_token(token);
 	fprintf(stderr, "` while expecting %s. Aborting.\n", str);
-	abort();
+	exit(EXIT_FAILURE);
 }
 
 int get_label_name(struct ParserState *ptr_ps)
@@ -914,7 +914,7 @@ void parse_function_definition(struct ParserState *ptr_ps,
 		fprintf(stderr, "\nnext token: ");
 		print_token(tokvec[1]);
 		fprintf(stderr, "\n");
-		abort();
+		exit(EXIT_FAILURE);
 	}
 	*ptr_to_tokvec = tokvec;
 }
