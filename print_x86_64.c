@@ -64,6 +64,7 @@ void gen_discard()
 
 void gen_while_part2(int label1, int label2)
 {
+	printf("//gen_while_part2(%d, %d)\n", label1, label2);
 	printf("  addq $4, %%rsp\n"
 	       "  cmpl $0, -4(%%rsp)\n");
 	printf("  je .L%d\n", label2);
@@ -71,6 +72,7 @@ void gen_while_part2(int label1, int label2)
 
 void gen_while_part3(int label1, int label2)
 {
+	printf("//gen_while_part3(%d, %d)\n", label1, label2);
 	printf("  jmp .L%d\n", label1);
 	printf(".L%d:\n", label2);
 }
@@ -275,6 +277,7 @@ void gen_logical_AND_final(int final_depth, int label1, int label2)
 /* consumes the top of the stack and branch */
 void gen_if_else_part1(int label1, int label2)
 {
+	printf("//gen_if_else_part1(%d, %d);\n", label1, label2);
 	printf("  cmpl $0, (%%rsp)\n"
 	       "  je .L%d\n"
 	       "  addq $4, %%rsp\n",
@@ -283,13 +286,18 @@ void gen_if_else_part1(int label1, int label2)
 
 void gen_if_else_part2(int label1, int label2)
 {
+	printf("//gen_if_else_part2(%d, %d);\n", label1, label2);
 	printf("  jmp .L%d\n"
 	       ".L%d:\n"
 	       "  addq $4, %%rsp\n",
 	       label2, label1);
 }
 
-void gen_if_else_part3(int label1, int label2) { printf(".L%d:\n", label2); }
+void gen_if_else_part3(int label1, int label2)
+{
+	printf("//gen_if_else_part3(%d, %d);\n", label1, label2);
+	printf(".L%d:\n", label2);
+}
 
 /*
 sall: left shift
