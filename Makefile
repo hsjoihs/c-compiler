@@ -22,6 +22,9 @@ intmap_check:
 
 full_compile:
 	gcc -Wall compiler2.c intmap.c vector.c print_x86_64.c lexer.c -o out/compiler.out
+	./test_ret4.sh 070 'main(){a =0; b=0; do{a-=1;b+=a;if(a)continue;break; a+=100;}while(a+3); return b*a*10;}' 180 out/compiler.out
+	./test_ret4.sh 069 'main(){a =0; b=0; do{a-=1;b+=a;if(a)continue;break; a+=100;}while(a+3); return b*a;}' 18 out/compiler.out
+	./test_ret4.sh 068 'main(){a =0; b=0; do{a-=1;b+=a;if(a)continue;break; a+=100;}while(a+3); return a*b;}' 18 out/compiler.out
 	./test_ret4.sh 001 'main(){return 123;}' 123 out/compiler.out
 	./test_ret4.sh 010 'main(){return (123);}' 123 out/compiler.out
 	./test_ret4.sh 011 'main(){return ((((123))));}' 123 out/compiler.out
@@ -86,4 +89,5 @@ full_compile:
 	./test_ret4.sh 063 'main(){a =0; b=0; do{a-=1;b+=a;if(a)continue;break; a+=100;}while(a+3); return -a;}' 3 out/compiler.out
 	./test_ret4.sh 064 'main(){a =0; b=0; do{a-=1;b+=a;if(a)continue;break; a+=100;}while(a+3); return -b;}' 6 out/compiler.out
 	./test_ret4.sh 065 'main(){a =-3; b=-6; return a*b*10+a+b+3;}' 174 out/compiler.out
+	./test_ret4.sh 067 'main(){a =0; b=0; do{a-=1;b+=a;if(a)continue;break; a+=100;}while(a+3); return a*b*10;}' 180 out/compiler.out
 	./test_ret4.sh 066 'main(){a =0; b=0; do{a-=1;b+=a;if(a)continue;break; a+=100;}while(a+3); return a*b*10+a+b+3;}' 174 out/compiler.out
