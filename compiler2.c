@@ -569,7 +569,7 @@ void parse_postfix_expression(struct ParserState *ptr_ps,
 					fprintf(
 					    stderr,
 					    "calling with 7 or more arguments is unimplemented!\n");
-					abort();
+					exit(EXIT_FAILURE);
 				}
 				gen_pop_to_reg(regs[counter]);
 				counter++;
