@@ -787,7 +787,7 @@ void parse_function_definition(struct ParserState *ptr_ps,
 	if (tokvec[0].kind == IDENT_OR_RESERVED && tokvec[1].kind == LEFT_PAREN) {
 		const char *ident_str = tokvec[0].ident_str;
 
-		int v = -4;
+		int capacity = 0;
 		struct map map_ = init_int_map();
 
 		struct VarInfo *offset_vec = calloc(100, sizeof(struct VarInfo));
@@ -801,7 +801,7 @@ void parse_function_definition(struct ParserState *ptr_ps,
 				continue;
 			}
 
-			v -= 4;
+			capacity += 4;
 		}
 
 		int current_offset = -4;
@@ -828,8 +828,6 @@ void parse_function_definition(struct ParserState *ptr_ps,
 		ptr_ps->old_var_table = map_;
 		ptr_ps->return_label_name = GARBAGE_INT; /* INITIALIZE */
 		ptr_ps->break_label_name = GARBAGE_INT;  /* INITIALIZE */
-
-		int capacity = -v - 4;
 
 		if (tokvec[2].kind == RIGHT_PAREN) {
 			gen_prologue(capacity, ident_str);
