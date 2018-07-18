@@ -549,6 +549,26 @@ void parse_unary_expression(struct ParserState *ptr_ps,
 	*ptr_to_tokvec = tokvec;
 }
 
+const char *get_reg_name_from_arg_pos(int counter)
+{
+	switch (counter) {
+		case 0:
+			return "edi";
+		case 1:
+			return "esi";
+		case 2:
+			return "edx";
+		case 3:
+			return "ecx";
+		case 4:
+			return "r8d";
+		case 5:
+			return "r9d";
+		default:
+			assert("cannot happen" && 0);
+	}
+}
+
 void parse_postfix_expression(struct ParserState *ptr_ps,
                               const struct Token **ptr_to_tokvec)
 {
@@ -559,12 +579,11 @@ void parse_postfix_expression(struct ParserState *ptr_ps,
 			gen_push_ret_of(ident_str);
 			tokvec += 3;
 		} else {
-			const char *regs[] = {"edi", "esi", "edx", "ecx", "r8d", "r9d"};
 			tokvec += 2;
 			int counter = 0;
 
 			parse_assignment_expression(ptr_ps, &tokvec);
-			gen_pop_to_reg(regs[counter]);
+			gen_pop_to_reg(get_reg_name_from_arg_pos(counter));
 			counter++;
 			while (1) {
 				enum TokenKind kind = tokvec[0].kind;
@@ -579,7 +598,7 @@ void parse_postfix_expression(struct ParserState *ptr_ps,
 					    "calling with 7 or more arguments is unimplemented!\n");
 					exit(EXIT_FAILURE);
 				}
-				gen_pop_to_reg(regs[counter]);
+				gen_pop_to_reg(get_reg_name_from_arg_pos(counter));
 				counter++;
 			}
 
@@ -1022,7 +1041,6 @@ void parse_function_definition(struct ParserState *ptr_ps,
 
 			tokvec += 2;
 
-			const char *regs[] = {"edi", "esi", "edx", "ecx", "r8d", "r9d"};
 			int counter = 0;
 
 			if (tokvec[0].kind != IDENT_OR_RESERVED) {
@@ -1030,7 +1048,8 @@ void parse_function_definition(struct ParserState *ptr_ps,
 				                       "identifier in the arglist of funcdef");
 			}
 			gen_write_register_to_local(
-			    regs[counter], from_name(*ptr_ps, tokvec[0].ident_str));
+			    get_reg_name_from_arg_pos(counter),
+			    from_name(*ptr_ps, tokvec[0].ident_str));
 			++counter;
 			++tokvec;
 
@@ -1050,7 +1069,8 @@ void parse_function_definition(struct ParserState *ptr_ps,
 					fprintf(stderr, "6-or-more args not implemented!\n");
 				}
 				gen_write_register_to_local(
-				    regs[counter], from_name(*ptr_ps, tokvec[0].ident_str));
+				    get_reg_name_from_arg_pos(counter),
+				    from_name(*ptr_ps, tokvec[0].ident_str));
 				++counter;
 				++tokvec;
 			}
@@ -1092,9 +1112,12 @@ void inc_or_dec(struct ParserState *ptr_ps, const char *name,
 	gen_write_to_local(from_name(*ptr_ps, name));
 }
 
-int main(int argc, char const *argv[])
+int main(int argc, char const **argv)
 {
-	char str[1000];
+	char *str;
+
+	str = calloc(10000, sizeof(char));
+
 	/* const char* str = "123+456-789"; */
 	scanf("%[^\n]s", str); /* VULNERABLE!!! */
 	if (argc == 2) {
