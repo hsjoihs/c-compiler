@@ -12,6 +12,7 @@ struct VarTable2 {
 
 struct ParserState {
 	struct VarTable2 old_var_table;
+	int newest_offset;
 	int final_label_name;
 	int return_label_name;   /* the label at the end of the function */
 	int break_label_name;    /* the label at the end of the current loop */
@@ -834,6 +835,7 @@ void parse_function_definition(struct ParserState *ptr_ps,
 		ptr_ps->old_var_table.var_table = map_;
 		ptr_ps->return_label_name = GARBAGE_INT; /* INITIALIZE */
 		ptr_ps->break_label_name = GARBAGE_INT;  /* INITIALIZE */
+		ptr_ps->newest_offset = 0;
 
 		if (tokvec[2].kind == RIGHT_PAREN) {
 			gen_prologue(capacity, ident_str);
