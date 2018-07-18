@@ -207,7 +207,7 @@ void parse_expression(struct ParserState *ptr_ps,
 	*ptr_tokvec = tokvec;
 }
 
-int from_name(struct ParserState ps, const char *str)
+int get_offset_from_name(struct ParserState ps, const char *str)
 {
 	if (!isElem(ps.var_table, str)) {
 		assert("cannot happen" && 0);
@@ -276,7 +276,7 @@ void parse_assignment_expression(struct ParserState *ptr_ps,
 
 		if (opkind != OP_EQ) {
 			printf("//load from `%s`\n", name);
-			gen_push_from_local(from_name(*ptr_ps, name));
+			gen_push_from_local(get_offset_from_name(*ptr_ps, name));
 		}
 
 		parse_assignment_expression(ptr_ps, &tokvec);
@@ -287,7 +287,7 @@ void parse_assignment_expression(struct ParserState *ptr_ps,
 		}
 
 		printf("//assign to `%s`\n", name);
-		gen_write_to_local(from_name(*ptr_ps, name));
+		gen_write_to_local(get_offset_from_name(*ptr_ps, name));
 	} else {
 		parse_conditional_expression(ptr_ps, &tokvec);
 	}
@@ -670,7 +670,7 @@ void parse_primary_expression(struct ParserState *ptr_ps,
 	} else if (tokvec[0].kind == IDENT_OR_RESERVED) {
 		++*ptr_tokvec;
 		printf("//`%s` as rvalue\n", tokvec[0].ident_str);
-		gen_push_from_local(from_name(*ptr_ps, tokvec[0].ident_str));
+		gen_push_from_local(get_offset_from_name(*ptr_ps, tokvec[0].ident_str));
 		return;
 	} else if (tokvec[0].kind == LEFT_PAREN) {
 		++tokvec;
@@ -1094,7 +1094,7 @@ void parse_function_definition(struct ParserState *ptr_ps,
 			}
 			gen_write_register_to_local(
 			    get_reg_name_from_arg_pos(counter),
-			    from_name(*ptr_ps, tokvec[0].ident_str));
+			    get_offset_from_name(*ptr_ps, tokvec[0].ident_str));
 			++counter;
 			++tokvec;
 
@@ -1115,7 +1115,7 @@ void parse_function_definition(struct ParserState *ptr_ps,
 				}
 				gen_write_register_to_local(
 				    get_reg_name_from_arg_pos(counter),
-				    from_name(*ptr_ps, tokvec[0].ident_str));
+				    get_offset_from_name(*ptr_ps, tokvec[0].ident_str));
 				++counter;
 				++tokvec;
 			}
@@ -1147,14 +1147,14 @@ void inc_or_dec(struct ParserState *ptr_ps, const char *name,
                 enum TokenKind opkind)
 {
 	printf("//load from `%s`\n", name);
-	gen_push_from_local(from_name(*ptr_ps, name));
+	gen_push_from_local(get_offset_from_name(*ptr_ps, name));
 	gen_push_int(1);
 
 	printf("//before assigning to `%s`:\n", name);
 	before_assign(opkind);
 
 	printf("//assign to `%s`\n", name);
-	gen_write_to_local(from_name(*ptr_ps, name));
+	gen_write_to_local(get_offset_from_name(*ptr_ps, name));
 }
 
 int main(int argc, char const **argv)
