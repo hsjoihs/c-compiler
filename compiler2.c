@@ -64,7 +64,7 @@ void parse_expression(struct ParserState *ptr_ps,
 	*ptr_tokvec = tokvec;
 }
 
-int foo(struct VarTableList t, const char *str)
+int resolve_name(struct VarTableList t, const char *str)
 {
 	if (isElem(t.var_table, str)) {
 		return (int)lookup(t.var_table, str);
@@ -73,13 +73,13 @@ int foo(struct VarTableList t, const char *str)
 		fprintf(stderr, "%s is not declared\n", str);
 		exit(EXIT_FAILURE);
 	} else {
-		return foo(*(t.outer), str);
+		return resolve_name(*(t.outer), str);
 	}
 }
 
 int get_offset_from_name(struct ParserState ps, const char *str)
 {
-	return foo(ps.scope_chain, str);
+	return resolve_name(ps.scope_chain, str);
 }
 
 void before_assign(enum TokenKind kind)
