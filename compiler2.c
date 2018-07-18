@@ -68,19 +68,19 @@ void parse_expression(struct ParserState *ptr_ps,
 	*ptr_tokvec = tokvec;
 }
 
-struct VarInfo *from_name(struct ParserState ps, const char *str)
+/*struct VarInfo *from_name(struct ParserState ps, const char *str)
 {
-	if (!isElem(ps.old_var_table.var_table, str)) {
-		assert("cannot happen" && 0);
-	}
+    if (!isElem(ps.old_var_table.var_table, str)) {
+        assert("cannot happen" && 0);
+    }
 
-	struct VarInfo *info = lookup(ps.old_var_table.var_table, str);
-	return info;
-}
+    struct VarInfo *info = lookup(ps.old_var_table.var_table, str);
+    return info;
+}*/
 
 int get_offset_from_name(struct ParserState ps, const char *str)
 {
-	struct VarInfo *info = from_name(ps, str);
+	struct VarInfo *info = lookup(ps.old_var_table.var_table, str);
 	if (0) { /* FIXME: if not declared */
 		fprintf(stderr, "%s is not declared\n", str);
 		exit(EXIT_FAILURE);
@@ -747,7 +747,7 @@ void parse_compound_statement(struct ParserState *ptr_ps,
 				return;
 			} else if (can_start_a_type(tokvec)) {
 				const char *str = parse_declaration(ptr_ps, &tokvec);
-				struct VarInfo *info = from_name(*ptr_ps, str);
+				// struct VarInfo *info = from_name(*ptr_ps, str);
 				/*info->isDeclared = 1;*/
 			} else {
 				parse_statement(ptr_ps, &tokvec);
@@ -773,7 +773,7 @@ void parse_parameter_declaration(struct ParserState *ptr_ps,
 		fprintf(stderr, "6-or-more args not implemented!\n");
 	}
 
-	struct VarInfo *info = from_name(*ptr_ps, tokvec[0].ident_str);
+	// struct VarInfo *info = from_name(*ptr_ps, tokvec[0].ident_str);
 	/*info->isDeclared = 1;*/
 
 	gen_write_register_to_local(
