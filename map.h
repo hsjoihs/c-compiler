@@ -1,7 +1,7 @@
 struct map {
 	int _length;
-	int _allocated_length;
-	struct _charptANDint* _internal;
+	int _alloc;
+	struct _mapchip* _vec;
 };
 
 void insert(struct map *map_ptr, const char *key, void *value);

@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-struct _charptANDint {
+struct _mapchip {
 	const char *ptr;
 	void *value;
 };
@@ -13,47 +13,43 @@ struct _charptANDint {
 #define GARBAGE_INT 0xCCCCCCCC
 
 /* it overrides; it does not overwrite. */
-void insert(struct map *map_ptr, const char *key, void *value)
+void insert(struct map *ptr, const char *key, void *value)
 {
-	struct _charptANDint a;
+	struct _mapchip a;
 	a.ptr = key;
 	a.value = value;
 
-	if (map_ptr->_allocated_length < map_ptr->_length + 1) {
+	if (ptr->_alloc < ptr->_length + 1) {
 
-		map_ptr->_internal =
-		    realloc(map_ptr->_internal, map_ptr->_allocated_length * 2 *
-		                                    sizeof(struct _charptANDint));
+		ptr->_vec =
+		    realloc(ptr->_vec, ptr->_alloc * 2 * sizeof(struct _mapchip));
 
-		map_ptr->_allocated_length *= 2;
+		ptr->_alloc *= 2;
 	}
 
-	map_ptr->_internal[map_ptr->_length] = a;
-	++(map_ptr->_length);
+	ptr->_vec[ptr->_length] = a;
+	++(ptr->_length);
 }
 
-void *lookup(const struct map map, const char *key)
+void *lookup(const struct map m, const char *key)
 {
-	for (int i = (map._length) - 1; i >= 0; --i) {
-		if (strcmp(map._internal[i].ptr, key) == 0) {
-			return map._internal[i].value;
+	for (int i = (m._length) - 1; i >= 0; --i) {
+		if (strcmp(m._vec[i].ptr, key) == 0) {
+			return m._vec[i].value;
 		}
 	}
 	return 0;
 }
 
-int isElem(const struct map map, const char *key)
-{
-	return lookup(map, key) != 0;
-}
+int isElem(const struct map m, const char *key) { return lookup(m, key) != 0; }
 
-void deletion(struct map *map_ptr, const char *key) { insert(map_ptr, key, 0); }
+void deletion(struct map *ptr, const char *key) { insert(ptr, key, 0); }
 
 struct map init_int_map(void)
 {
 	struct map res;
 	res._length = 0;
-	res._allocated_length = 256;
-	res._internal = calloc(res._allocated_length, sizeof(struct _charptANDint));
+	res._alloc = 256;
+	res._vec = calloc(res._alloc, sizeof(struct _mapchip));
 	return res;
 }
