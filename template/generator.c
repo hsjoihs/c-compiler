@@ -3,8 +3,8 @@
 
 #define bufSize 1024
 
-const char *typelist[] = {"Token", "charptANDint", "Int"};
-const char *typelist2[] = {"struct Token", "struct charptANDint", "struct Int"};
+const char *typelist[] = {"Token", "charptANDint", "Int", "int", "voidptr"};
+const char *typelist2[] = {"struct Token", "struct charptANDint", "struct Int", "int", "void*"};
 
 void foo(FILE *output, const char *path, const char *replacer, const char *replacer2)
 {
