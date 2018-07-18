@@ -5,7 +5,7 @@
 int main()
 {
 	struct int_map map = init_int_map();
-	assert(GARBAGE_INT == lookup(map, "ffjkl"));
+	assert(!isElem(map, "ffjkl"));
 	insert(&map, "abc", 3);
 	assert(3 == lookup(map, "kabc" + 1));
 	assert(3 == lookup(map, "QQabc" + 2));
@@ -16,8 +16,8 @@ int main()
 	assert(45 == lookup(map, "QQqrs" + 2));
 	assert(45 == lookup(map, "kqrs" + 1));
 	deletion(&map, "abc");
-	assert(GARBAGE_INT == lookup(map, "abc"));
-	assert(GARBAGE_INT == lookup(map, "ffjkl"));
+	assert(!isElem(map, "abc"));
+	assert(!isElem(map, "ffjkl"));
 	assert(45 == lookup(map, "QQqrs" + 2));
 	assert(45 == lookup(map, "kqrs" + 1));
 
