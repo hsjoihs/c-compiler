@@ -224,6 +224,9 @@ void parse_expression(struct ParserState *ptr_ps,
 
 int from_name(struct ParserState ps, const char *str)
 {
+	if (!elem(ps.var_table, str)) {
+		assert("cannot happen" && 0);
+	}
 	return lookup(ps.var_table, str);
 }
 
@@ -941,8 +944,7 @@ void parse_function_definition(struct ParserState *ptr_ps,
 				continue;
 			}
 
-			if (lookup(map, tokvec[i].ident_str) ==
-			    GARBAGE_INT) { // newly found
+			if (!elem(map, tokvec[i].ident_str)) { // newly found
 				insert(&map, tokvec[i].ident_str, v);
 				v -= 4;
 			}
