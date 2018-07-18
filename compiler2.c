@@ -123,6 +123,8 @@ void binary_op(enum TokenKind kind)
 		case COLON:
 		case OP_NOT:
 		case OP_TILDA:
+		case OP_PLUS_PLUS:
+		case OP_MINUS_MINUS:
 		case IDENT_OR_RESERVED:
 		case LEFT_PAREN:
 		case RIGHT_PAREN:
@@ -228,9 +230,11 @@ void before_assign(enum TokenKind kind)
 {
 	switch (kind) {
 		case OP_PLUS_EQ:
+		case OP_PLUS_PLUS:
 			binary_op(OP_PLUS);
 			return;
 		case OP_MINUS_EQ:
+		case OP_MINUS_MINUS:
 			binary_op(OP_MINUS);
 			return;
 		case OP_ASTERISK_EQ:
@@ -546,6 +550,23 @@ void parse_unary_expression(struct ParserState *ptr_ps,
 		++tokvec;
 		parse_cast_expression(ptr_ps, &tokvec);
 		print_unary_prefix_op(kind);
+	} else if ((tokvec[0].kind == OP_PLUS_PLUS ||
+	            tokvec[0].kind == OP_MINUS_MINUS) &&
+	           tokvec[1].kind == IDENT_OR_RESERVED) {
+		const char *name = tokvec[1].ident_str;
+		enum TokenKind opkind = tokvec[0].kind;
+		tokvec += 2;
+		*ptr_to_tokvec = tokvec;
+		printf("//load from `%s`\n", name);
+		gen_push_from_local(from_name(*ptr_ps, name));
+		gen_push_int(1);
+
+		printf("//before assigning to `%s`:\n", name);
+		before_assign(opkind);
+
+		printf("//assign to `%s`\n", name);
+		gen_write_to_local(from_name(*ptr_ps, name));
+
 	} else {
 		parse_postfix_expression(ptr_ps, &tokvec);
 	}

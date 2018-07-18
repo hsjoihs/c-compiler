@@ -132,6 +132,12 @@ void print_token(struct Token tok)
 		case OP_OR_EQ:
 			fprintf(stderr, "|=");
 			break;
+		case OP_PLUS_PLUS:
+			fprintf(stderr, "++");
+			break;
+		case OP_MINUS_MINUS:
+			fprintf(stderr, "--");
+			break;
 		case IDENT_OR_RESERVED:
 			fprintf(stderr, "%s", tok.ident_str);
 			break;
@@ -186,6 +192,10 @@ struct Token get_token(const char **ptr_to_str)
 				t.kind = OP_PLUS_EQ;
 				*ptr_to_str += 2;
 				return t;
+			case '+':
+				t.kind = OP_PLUS_PLUS;
+				*ptr_to_str += 2;
+				return t;
 			default:
 				t.kind = OP_PLUS;
 				++*ptr_to_str;
@@ -196,6 +206,10 @@ struct Token get_token(const char **ptr_to_str)
 		switch (str[1]) {
 			case '=':
 				t.kind = OP_MINUS_EQ;
+				*ptr_to_str += 2;
+				return t;
+			case '-':
+				t.kind = OP_MINUS_MINUS;
 				*ptr_to_str += 2;
 				return t;
 			default:

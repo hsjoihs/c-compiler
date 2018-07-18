@@ -89,6 +89,8 @@ enum TokenKind {
 	RES_WHILE,
 	RES_BREAK,
 	RES_CONTINUE,
+	OP_PLUS_PLUS,
+	OP_MINUS_MINUS,
 };
 
 struct Token{
