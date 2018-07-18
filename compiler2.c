@@ -254,6 +254,11 @@ void parse_logical_AND_expression(struct ParserState *ptr_ps,
 }
 
 
+void parse_cast_expression(struct ParserState *ptr_ps,
+                           const struct Token **ptr_tokvec)
+{
+	parse_unary_expression(ptr_ps, ptr_tokvec);
+}
 
 void parse_type_name(struct ParserState *ptr_ps,
                      const struct Token **ptr_tokvec)

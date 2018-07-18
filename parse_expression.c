@@ -5,6 +5,24 @@
 #include <stdlib.h>
 #include <string.h>
 
+void parse_additive_expression(struct ParserState *ptr_ps,
+                               const struct Token **ptr_tokvec);
+void parse_multiplicative_expression(struct ParserState *ptr_ps,
+                                     const struct Token **ptr_tokvec);
+
+void parse_exclusive_OR_expression(struct ParserState *ptr_ps,
+                                   const struct Token **ptr_tokvec);
+void parse_OR_expression(struct ParserState *ptr_ps,
+                          const struct Token **ptr_tokvec);
+void parse_AND_expression(struct ParserState *ptr_ps,
+                          const struct Token **ptr_tokvec);
+void parse_equality_expression(struct ParserState *ptr_ps,
+                               const struct Token **ptr_tokvec);
+void parse_relational_expression(struct ParserState *ptr_ps,
+                                 const struct Token **ptr_tokvec);
+void parse_shift_expression(struct ParserState *ptr_ps,
+                            const struct Token **ptr_tokvec);
+
 
 void binary_op(enum TokenKind kind)
 {
@@ -249,11 +267,6 @@ void parse_multiplicative_expression(struct ParserState *ptr_ps,
 	*ptr_tokvec = tokvec;
 }
 
-void parse_cast_expression(struct ParserState *ptr_ps,
-                           const struct Token **ptr_tokvec)
-{
-	parse_unary_expression(ptr_ps, ptr_tokvec);
-}
 
 
 void parse_unary_expression(struct ParserState *ptr_ps,
