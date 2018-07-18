@@ -12,16 +12,16 @@ clean:
 
 assembly_sandbox:
 	make format
-	gcc -Wall assembly_sandbox.c vector.c print_x86_64.c -o out/assembly_sandbox.out
+	gcc -Wall assembly_sandbox.c print_x86_64.c -o out/assembly_sandbox.out
 	./test_ret3.sh '' s/assembly_sandbox.s out/assembly_sandbox.out 174 out/assembly_sandbox.out
 
 intmap_check:
-	gcc -Wall intmap.c intmap_check.c vector.c -o out/intmap_check.out
+	gcc -Wall intmap.c intmap_check.c -o out/intmap_check.out
 	./out/intmap_check.out
 
 
 full_compile:
-	gcc -Wall compiler2.c intmap.c vector.c print_x86_64.c lexer.c -o out/compiler.out
+	gcc -Wall compiler2.c intmap.c print_x86_64.c lexer.c -o out/compiler.out
 	./test_ret4.sh 076 'main(){a =0; b=0; do{b+=--a;}while(a+3); return b*a;}' 18 out/compiler.out
 	./test_ret4.sh 075 'main(){a=3; b=0; b+= a++; return !(b-3)+!(a-4)+172;}' 174 out/compiler.out
 	./test_ret4.sh 074 'main(){a=3; b=0; b+= ++a; return a*b*11-2;}' 174 out/compiler.out

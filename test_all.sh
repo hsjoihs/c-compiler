@@ -1,5 +1,5 @@
 #!/bin/bash
-cd template/; make; cd ../
+# cd template/; make; cd ../
 make format
 make intmap_check
 make assembly_sandbox
