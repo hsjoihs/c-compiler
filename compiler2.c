@@ -14,6 +14,10 @@ struct ParserState {
 	                          */
 };
 
+struct VarInfo {
+	int offset;
+};
+
 void error_unexpected_token(const struct Token *tokvec, const char *str);
 int get_new_label_name(struct ParserState *ptr_ps);
 void expect_and_consume(const struct Token **ptr_tokvec, enum TokenKind kind,
@@ -208,7 +212,9 @@ int from_name(struct ParserState ps, const char *str)
 	if (!isElem(ps.var_table, str)) {
 		assert("cannot happen" && 0);
 	}
-	return *(int *)(lookup(ps.var_table, str));
+
+	struct VarInfo *info = lookup(ps.var_table, str);
+	return info->offset;
 }
 
 void before_assign(enum TokenKind kind)
@@ -1042,7 +1048,7 @@ void parse_function_definition(struct ParserState *ptr_ps,
 		int v = -4;
 		struct int_map map = init_int_map();
 
-		int *offset_vec = calloc(100, sizeof(int));
+		struct VarInfo *offset_vec = calloc(100, sizeof(struct VarInfo));
 
 		int j = 0;
 		for (int i = 0;; i++) {
@@ -1054,7 +1060,9 @@ void parse_function_definition(struct ParserState *ptr_ps,
 			}
 
 			if (!isElem(map, tokvec[i].ident_str)) { // newly found
-				offset_vec[j] = v;
+				struct VarInfo info;
+				info.offset = v;
+				offset_vec[j] = info;
 				insert(&map, tokvec[i].ident_str, (void *)(&offset_vec[j]));
 				j++;
 				v -= 4;
