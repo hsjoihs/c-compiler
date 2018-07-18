@@ -5,6 +5,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+struct Type {
+	enum { INT_, PTR_ } type;
+	struct Type *pointer_of;
+};
+
 struct VarTableList {
 	struct map var_table;
 	struct VarTableList *outer;
