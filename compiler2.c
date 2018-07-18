@@ -5,8 +5,13 @@
 #include <stdlib.h>
 #include <string.h>
 
+struct VarTable2 {
+	struct map var_table;
+	struct VarTable2 *outer;
+};
+
 struct ParserState {
-	struct map old_var_table;
+	struct VarTable2 old_var_table;
 	int final_label_name;
 	int return_label_name;   /* the label at the end of the function */
 	int break_label_name;    /* the label at the end of the current loop */
@@ -65,11 +70,11 @@ void parse_expression(struct ParserState *ptr_ps,
 
 struct VarInfo *from_name(struct ParserState ps, const char *str)
 {
-	if (!isElem(ps.old_var_table, str)) {
+	if (!isElem(ps.old_var_table.var_table, str)) {
 		assert("cannot happen" && 0);
 	}
 
-	struct VarInfo *info = lookup(ps.old_var_table, str);
+	struct VarInfo *info = lookup(ps.old_var_table.var_table, str);
 	return info;
 }
 
@@ -825,7 +830,8 @@ void parse_function_definition(struct ParserState *ptr_ps,
 			}
 		}
 
-		ptr_ps->old_var_table = map_;
+		ptr_ps->old_var_table.outer = 0; /* most outer scope */
+		ptr_ps->old_var_table.var_table = map_;
 		ptr_ps->return_label_name = GARBAGE_INT; /* INITIALIZE */
 		ptr_ps->break_label_name = GARBAGE_INT;  /* INITIALIZE */
 
