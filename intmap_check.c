@@ -4,22 +4,27 @@
 
 int main()
 {
-	struct map map = init_int_map();
-	assert(!isElem(map, "ffjkl"));
-	insert(&map, "abc", (void *)3);
-	assert((void *)3 == lookup(map, "kabc" + 1));
-	assert((void *)3 == lookup(map, "QQabc" + 2));
-	insert(&map, "abc", (void *)12);
-	assert((void *)12 == lookup(map, "QQabc" + 2));
-	assert((void *)12 == lookup(map, "kabc" + 1));
-	insert(&map, "pqrs" + 1, (void *)45);
-	assert((void *)45 == lookup(map, "QQqrs" + 2));
-	assert((void *)45 == lookup(map, "kqrs" + 1));
-	deletion(&map, "abc");
-	assert(!isElem(map, "abc"));
-	assert(!isElem(map, "ffjkl"));
-	assert((void *)45 == lookup(map, "QQqrs" + 2));
-	assert((void *)45 == lookup(map, "kqrs" + 1));
+	struct map map_ = init_int_map();
+	assert(!isElem(map_, "ffjkl"));
+
+	int v = 3;
+	int w = 12;
+	int x = 45;
+
+	insert(&map_, "abc", &v);
+	assert(3 == *(int *)lookup(map_, "kabc" + 1));
+	assert(3 == *(int *)lookup(map_, "QQabc" + 2));
+	insert(&map_, "abc", &w);
+	assert(12 == *(int *)lookup(map_, "QQabc" + 2));
+	assert(12 == *(int *)lookup(map_, "kabc" + 1));
+	insert(&map_, "pqrs" + 1, &x);
+	assert(45 == *(int *)lookup(map_, "QQqrs" + 2));
+	assert(45 == *(int *)lookup(map_, "kqrs" + 1));
+	deletion(&map_, "abc");
+	assert(!isElem(map_, "abc"));
+	assert(!isElem(map_, "ffjkl"));
+	assert(45 == *(int *)lookup(map_, "QQqrs" + 2));
+	assert(45 == *(int *)lookup(map_, "kqrs" + 1));
 
 	fprintf(stderr, "\033[32mPASS\033[m\n");
 	return 0;
