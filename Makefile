@@ -75,9 +75,9 @@ full_compile:
 	./test_ret4.sh 031 'main(){return always87() + ((always8()* subtract(12,1)) -1);}' 174 out/compiler.out
 	./test_ret4.sh 032 'main(){3; {5; 7; 11; } return 175^1;}' 174 out/compiler.out
 	./test_ret4.sh 033 'always87_(){return 87;} main(){return (3, always87() + always87_());}' 174 out/compiler.out
-	./test_ret4.sh 034 'add_(x,y){4; return x+y;} main(){3; return add_(87,87);}' 174 out/compiler.out
-	./test_ret4.sh 035 'fib(n){ return n < 2? n : fib(n - 1) + fib(n - 2); } main(){3; return fib(10);}' 55 out/compiler.out
-	./test_ret4.sh 036 'tarai(x,y,z){ return x <= y? y : tarai(tarai(x-1, y, z), tarai(y-1, z, x), tarai(z-1, x, y)); } main(){return tarai(12,6,0);}' 12 out/compiler.out
+	./test_ret4.sh 034 'add_(int x, int y){4; return x+y;} main(){3; return add_(87,87);}' 174 out/compiler.out
+	./test_ret4.sh 035 'fib(int n){ return n < 2? n : fib(n - 1) + fib(n - 2); } main(){3; return fib(10);}' 55 out/compiler.out
+	./test_ret4.sh 036 'tarai(int x,int y,int z){ return x <= y? y : tarai(tarai(x-1, y, z), tarai(y-1, z, x), tarai(z-1, x, y)); } main(){return tarai(12,6,0);}' 12 out/compiler.out
 	./test_ret4.sh 037 'main() { return (3 && 2 && 5) + 173; }' 174 out/compiler.out
 	./test_ret4.sh 038 'main() { return (3 && 2) + !(3 && 0) + !(0 && 3)+ !(0 && 0) + 170; }' 174 out/compiler.out
 	./test_ret4.sh 039 'main() { return (3 || 2 || 5) + 173; }' 174 out/compiler.out

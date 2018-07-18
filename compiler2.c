@@ -223,6 +223,7 @@ int get_offset_from_name(struct ParserState ps, const char *str)
 	struct VarInfo *info = from_name(ps, str);
 	if (!(info->isDeclared)) {
 		fprintf(stderr, "%s is not declared\n", str);
+		exit(EXIT_FAILURE);
 	}
 	return info->offset;
 }
@@ -1056,6 +1057,9 @@ void parse_parameter_declaration(struct ParserState *ptr_ps,
 {
 	const struct Token *tokvec = *ptr_tokvec;
 	int counter = *ptr_counter;
+
+	parse_type_name(ptr_ps, &tokvec);
+
 	if (tokvec[0].kind != IDENT_OR_RESERVED) {
 		error_unexpected_token(tokvec, "identifier in the arglist of funcdef");
 	}
