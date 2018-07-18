@@ -5,16 +5,21 @@
 #include <stdlib.h>
 #include <string.h>
 
-struct vector_charptANDint init_vector_charptANDint(int initial_length)
+struct int_map init_vector_charptANDint(int initial_length);
+void extend_vector_charptANDint(struct int_map* ptr);
+void push_vector_charptANDint(struct int_map* ptr, struct charptANDint tok);
+struct charptANDint pop_vector_charptANDint(struct int_map* ptr);
+
+struct int_map init_vector_charptANDint(int initial_length)
 {
-	struct vector_charptANDint res;
+	struct int_map res;
 	res.length = initial_length;
 	res._allocated_length = (initial_length > 128 ? initial_length : 128) * 2;
 	res.vector = calloc(res._allocated_length, sizeof(struct charptANDint));
 	return res;
 }
 
-void extend_vector_charptANDint(struct vector_charptANDint *ptr)
+void extend_vector_charptANDint(struct int_map *ptr)
 {
 	if (ptr->_allocated_length < ptr->length + 1) {
 
@@ -31,15 +36,14 @@ void extend_vector_charptANDint(struct vector_charptANDint *ptr)
 	}
 }
 
-void push_vector_charptANDint(struct vector_charptANDint *ptr,
-                              struct charptANDint tok)
+void push_vector_charptANDint(struct int_map *ptr, struct charptANDint tok)
 {
 	extend_vector_charptANDint(ptr);
 	ptr->vector[ptr->length] = tok;
 	++(ptr->length);
 }
 
-struct charptANDint pop_vector_charptANDint(struct vector_charptANDint *ptr)
+struct charptANDint pop_vector_charptANDint(struct int_map *ptr)
 {
 	if (ptr->length == 0) {
 		assert("tried to pop an empty vector of type `struct charptANDint`" &&
