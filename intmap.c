@@ -5,19 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-struct int_map init_vector_charptANDint(int initial_length);
-void extend_vector_charptANDint(struct int_map* ptr);
-void push_vector_charptANDint(struct int_map* ptr, struct charptANDint tok);
-struct charptANDint pop_vector_charptANDint(struct int_map* ptr);
-
-struct int_map init_vector_charptANDint(int initial_length)
-{
-	struct int_map res;
-	res.length = initial_length;
-	res._allocated_length = (initial_length > 128 ? initial_length : 128) * 2;
-	res.vector = calloc(res._allocated_length, sizeof(struct charptANDint));
-	return res;
-}
+void extend_vector_charptANDint(struct int_map *ptr);
+struct charptANDint pop_vector_charptANDint(struct int_map *ptr);
 
 void extend_vector_charptANDint(struct int_map *ptr)
 {
@@ -36,12 +25,6 @@ void extend_vector_charptANDint(struct int_map *ptr)
 	}
 }
 
-void push_vector_charptANDint(struct int_map *ptr, struct charptANDint tok)
-{
-	extend_vector_charptANDint(ptr);
-	ptr->vector[ptr->length] = tok;
-	++(ptr->length);
-}
 
 struct charptANDint pop_vector_charptANDint(struct int_map *ptr)
 {
@@ -60,7 +43,9 @@ void insert(struct int_map *map_ptr, const char *key, int value)
 	struct charptANDint a;
 	a.ptr = key;
 	a.value = value;
-	push_vector_charptANDint(map_ptr, a);
+	extend_vector_charptANDint(map_ptr);
+	map_ptr->vector[map_ptr->length] = a;
+	++(map_ptr->length);
 }
 
 /* returns garbage (0xCCCCCCCC == GARBAGE_INT) if not found. */
@@ -79,4 +64,11 @@ void deletion(struct int_map *map_ptr, const char *key)
 	insert(map_ptr, key, GARBAGE_INT);
 }
 
-struct int_map init_int_map(void) { return init_vector_charptANDint(0); }
+struct int_map init_int_map(void)
+{
+	struct int_map res;
+	res.length = 0;
+	res._allocated_length = 256;
+	res.vector = calloc(res._allocated_length, sizeof(struct charptANDint));
+	return res;
+}
