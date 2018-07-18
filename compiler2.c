@@ -5,13 +5,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-struct VarTable2 {
+struct VarTableList {
 	struct map var_table;
-	struct VarTable2 *outer;
+	struct VarTableList *outer;
 };
 
 struct ParserState {
-	struct VarTable2 old_var_table;
+	struct VarTableList scope_chain;
 	int newest_offset;
 	int final_label_name;
 	int return_label_name;   /* the label at the end of the function */
@@ -64,7 +64,7 @@ void parse_expression(struct ParserState *ptr_ps,
 	*ptr_tokvec = tokvec;
 }
 
-int foo(struct VarTable2 t, const char *str)
+int foo(struct VarTableList t, const char *str)
 {
 	if (isElem(t.var_table, str)) {
 		return (int)lookup(t.var_table, str);
@@ -79,7 +79,7 @@ int foo(struct VarTable2 t, const char *str)
 
 int get_offset_from_name(struct ParserState ps, const char *str)
 {
-	return foo(ps.old_var_table, str);
+	return foo(ps.scope_chain, str);
 }
 
 void before_assign(enum TokenKind kind)
@@ -733,13 +733,13 @@ void parse_compound_statement(struct ParserState *ptr_ps,
 	const struct Token *tokvec = *ptr_tokvec;
 	if (tokvec[0].kind == LEFT_BRACE) {
 
-		struct VarTable2 current_table = ptr_ps->old_var_table;
+		struct VarTableList current_table = ptr_ps->scope_chain;
 
-		struct VarTable2 new_table;
+		struct VarTableList new_table;
 		new_table.var_table = init_int_map();
 		new_table.outer = &current_table;
 
-		ptr_ps->old_var_table = new_table;
+		ptr_ps->scope_chain = new_table;
 
 		++tokvec;
 		*ptr_tokvec = tokvec;
@@ -747,18 +747,18 @@ void parse_compound_statement(struct ParserState *ptr_ps,
 			if (tokvec[0].kind == RIGHT_BRACE) {
 				++tokvec;
 				*ptr_tokvec = tokvec;
-				ptr_ps->old_var_table = current_table;
+				ptr_ps->scope_chain = current_table;
 
 				return;
 			} else if (can_start_a_type(tokvec)) {
 				ptr_ps->newest_offset -= 4;
 				const char *str = parse_declaration(ptr_ps, &tokvec);
 
-				struct map map_ = ptr_ps->old_var_table.var_table;
+				struct map map_ = ptr_ps->scope_chain.var_table;
 
 				insert(&map_, str, (void *)(size_t)ptr_ps->newest_offset);
 
-				ptr_ps->old_var_table.var_table = map_;
+				ptr_ps->scope_chain.var_table = map_;
 			} else {
 				parse_statement(ptr_ps, &tokvec);
 			}
@@ -785,11 +785,11 @@ void parse_parameter_declaration(struct ParserState *ptr_ps,
 
 	ptr_ps->newest_offset -= 4;
 
-	struct map map_ = ptr_ps->old_var_table.var_table;
+	struct map map_ = ptr_ps->scope_chain.var_table;
 
 	insert(&map_, tokvec[0].ident_str, (void *)(size_t)ptr_ps->newest_offset);
 
-	ptr_ps->old_var_table.var_table = map_;
+	ptr_ps->scope_chain.var_table = map_;
 
 	gen_write_register_to_local(
 	    get_reg_name_from_arg_pos(counter),
@@ -821,8 +821,8 @@ void parse_function_definition(struct ParserState *ptr_ps,
 			capacity += 4;
 		}
 
-		ptr_ps->old_var_table.outer = 0; /* most outer scope */
-		ptr_ps->old_var_table.var_table = map_;
+		ptr_ps->scope_chain.outer = 0; /* most outer scope */
+		ptr_ps->scope_chain.var_table = map_;
 		ptr_ps->return_label_name = GARBAGE_INT; /* INITIALIZE */
 		ptr_ps->break_label_name = GARBAGE_INT;  /* INITIALIZE */
 		ptr_ps->newest_offset = 0;
