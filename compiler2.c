@@ -894,7 +894,8 @@ void parse_statement(struct ParserState *ptr_ps,
 		} else {
 			const struct Token *tokvec2 = tokvec;
 
-			/* parse, but do not output */
+			/* parse, but do not output. no problems regarding nested comments
+			 * arises, since parse_expression can never have `for` within it */
 			printf("/* commenting out, to handle expression3 of `for`\n");
 			parse_expression(ptr_ps, &tokvec2);
 			printf("*/\n");
