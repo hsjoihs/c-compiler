@@ -1,4 +1,4 @@
-#include "intmap.h"
+#include "map.h"
 #include <assert.h>
 #include <stdio.h>
 
