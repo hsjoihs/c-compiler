@@ -741,9 +741,14 @@ void parse_compound_statement(struct ParserState *ptr_ps,
 				*ptr_tokvec = tokvec;
 				return;
 			} else if (can_start_a_type(tokvec)) {
+				ptr_ps->newest_offset -= 4;
 				const char *str = parse_declaration(ptr_ps, &tokvec);
-				// struct VarInfo *info = from_name(*ptr_ps, str);
-				/*info->isDeclared = 1;*/
+
+				struct map map_ = ptr_ps->old_var_table.var_table;
+
+				insert(&map_, str, (void *)(size_t)ptr_ps->newest_offset);
+
+				ptr_ps->old_var_table.var_table = map_;
 			} else {
 				parse_statement(ptr_ps, &tokvec);
 			}
@@ -768,8 +773,13 @@ void parse_parameter_declaration(struct ParserState *ptr_ps,
 		fprintf(stderr, "6-or-more args not implemented!\n");
 	}
 
-	// struct VarInfo *info = from_name(*ptr_ps, tokvec[0].ident_str);
-	/*info->isDeclared = 1;*/
+	ptr_ps->newest_offset -= 4;
+
+	struct map map_ = ptr_ps->old_var_table.var_table;
+
+	insert(&map_, tokvec[0].ident_str, (void *)(size_t)ptr_ps->newest_offset);
+
+	ptr_ps->old_var_table.var_table = map_;
 
 	gen_write_register_to_local(
 	    get_reg_name_from_arg_pos(counter),
@@ -799,24 +809,6 @@ void parse_function_definition(struct ParserState *ptr_ps,
 			}
 
 			capacity += 4;
-		}
-
-		int current_offset = -4;
-
-		for (int i = 0;; i++) {
-			if (tokvec[i].kind == END) {
-				break;
-			}
-			if (tokvec[i].kind != IDENT_OR_RESERVED) {
-				continue;
-			}
-
-			if (!isElem(map_, tokvec[i].ident_str)) { // newly found
-
-				insert(&map_, tokvec[i].ident_str,
-				       (void *)(size_t)current_offset);
-				current_offset -= 4;
-			}
 		}
 
 		ptr_ps->old_var_table.outer = 0; /* most outer scope */
