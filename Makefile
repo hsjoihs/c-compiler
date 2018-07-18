@@ -24,6 +24,8 @@ notest:
 
 full_compile:
 	gcc -Wall compiler2.c intmap.c print_x86_64.c lexer.c -o out/compiler.out
+	./test_ret4.sh 082 'main(){for(a=0,b=0;a <= 10;a++) {b += a;}return b;}' 55 out/compiler.out
+	./test_ret4.sh 081 'main(){for(a=0,b=0;a <= 10;++a) {b += a;}return b;}' 55 out/compiler.out
 	./test_ret4.sh 080 'main(){for(a=11, b=0;a;){a-=1;b+=a;if(a)continue;break; a+=100;} return b;}' 55 out/compiler.out
 	./test_ret4.sh 079 'main(){for(a=0,b=0;a <= 10;) {b += a; a += 1;}return b;}' 55 out/compiler.out
 	./test_ret4.sh 078 'main(){for (a = 3;;) {a = 2;if (a - 3) {break;}a += 3;}return 174;}' 174 out/compiler.out

@@ -882,22 +882,43 @@ void parse_statement(struct ParserState *ptr_ps,
 		gen_while_part2(label1, label2);
 
 		if (tokvec[0].kind == RIGHT_PAREN) { /* expression3 is missing */
-			;
-			/* do nothing */
+			expect_and_consume(&tokvec, RIGHT_PAREN,
+			                   "right parenthesis of `for`");
+
+			parse_statement(ptr_ps, &tokvec);
+
+			gen_while_part3(label1, label2, label3);
+
+			*ptr_to_tokvec = tokvec;
+
 		} else {
-			/* FIXME */
-			assert("`for` with expression3 is unimplemented" && 0);
+			const struct Token *tokvec2 = tokvec;
+
+			/* parse, but do not output */
+			printf("/* commenting out, to handle expression3 of `for`\n");
+			parse_expression(ptr_ps, &tokvec2);
+			printf("*/\n");
+
+			expect_and_consume(&tokvec2, RIGHT_PAREN,
+			                   "right parenthesis of `for`");
+
+			parse_statement(ptr_ps, &tokvec2);
+
+			printf("//gen_for_part3(%d, %d, %d)\n", label1, label2, label3);
+			printf(".L%d:\n", label3);
+
+			printf("// what was previously ignored\n");
+
+			parse_expression(ptr_ps, &tokvec);
+			expect_and_consume(&tokvec, RIGHT_PAREN,
+			                   "right parenthesis of `for`");
+			gen_discard();
+
+			printf("  jmp .L%d\n", label1);
+			printf(".L%d:\n", label2);
+
+			tokvec = tokvec2;
 		}
-
-		expect_and_consume(&tokvec, RIGHT_PAREN, "right parenthesis of `for`");
-
-		parse_statement(ptr_ps, &tokvec);
-
-		gen_while_part3(label1, label2, label3);
-		/* FIXME; should be a new function that can handle continue even when
-		 * expression3 exists */
-
-		*ptr_to_tokvec = tokvec;
 
 		ptr_ps->break_label_name = stashed_break_label;
 		ptr_ps->continue_label_name = stashed_continue_label;

@@ -18,6 +18,7 @@ int main() {
 */
 int main()
 {
+	printf("/*\nji:klsdfklc;,_sdxcgi:kmldfgcopa]szdaji[*/\n");
 	gen_prologue(0, "foo");
 	gen_write_register_to_local("edi", -4);
 	gen_push_from_local(-4);
