@@ -1,9 +1,9 @@
 #include "header.h"
 
 struct int_map {
-	int length;
+	int _length;
 	int _allocated_length;
-	struct charptANDint* vector;
+	struct charptANDint* _internal;
 };
 
 #define GARBAGE_INT 0xCCCCCCCC
