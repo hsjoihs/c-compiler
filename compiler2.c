@@ -208,7 +208,7 @@ int from_name(struct ParserState ps, const char *str)
 	if (!isElem(ps.var_table, str)) {
 		assert("cannot happen" && 0);
 	}
-	return lookup(ps.var_table, str);
+	return (int)(lookup(ps.var_table, str));
 }
 
 void before_assign(enum TokenKind kind)
@@ -1051,7 +1051,7 @@ void parse_function_definition(struct ParserState *ptr_ps,
 			}
 
 			if (!isElem(map, tokvec[i].ident_str)) { // newly found
-				insert(&map, tokvec[i].ident_str, v);
+				insert(&map, tokvec[i].ident_str, (void *)(size_t)v);
 				v -= 4;
 			}
 		}
