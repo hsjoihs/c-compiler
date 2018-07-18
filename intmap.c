@@ -5,10 +5,15 @@
 #include <stdlib.h>
 #include <string.h>
 
+struct _charptANDint {
+	const char* ptr;
+	int value;
+};
+
 /* it overrides; it does not overwrite. */
 void insert(struct int_map *map_ptr, const char *key, int value)
 {
-	struct charptANDint a;
+	struct _charptANDint a;
 	a.ptr = key;
 	a.value = value;
 
@@ -16,7 +21,7 @@ void insert(struct int_map *map_ptr, const char *key, int value)
 
 		map_ptr->_internal =
 		    realloc(map_ptr->_internal, map_ptr->_allocated_length * 2 *
-		                                    sizeof(struct charptANDint));
+		                                    sizeof(struct _charptANDint));
 
 		map_ptr->_allocated_length *= 2;
 	}
@@ -51,6 +56,6 @@ struct int_map init_int_map(void)
 	struct int_map res;
 	res._length = 0;
 	res._allocated_length = 256;
-	res._internal = calloc(res._allocated_length, sizeof(struct charptANDint));
+	res._internal = calloc(res._allocated_length, sizeof(struct _charptANDint));
 	return res;
 }

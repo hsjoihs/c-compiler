@@ -1,12 +1,7 @@
-struct charptANDint {
-	const char* ptr;
-	int value;
-};
-
 struct int_map {
 	int _length;
 	int _allocated_length;
-	struct charptANDint* _internal;
+	struct _charptANDint* _internal;
 };
 
 #define GARBAGE_INT 0xCCCCCCCC
