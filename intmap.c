@@ -6,9 +6,11 @@
 #include <string.h>
 
 struct _charptANDint {
-	const char* ptr;
+	const char *ptr;
 	int value;
 };
+
+#define GARBAGE_INT 0xCCCCCCCC
 
 /* it overrides; it does not overwrite. */
 void insert(struct int_map *map_ptr, const char *key, int value)
@@ -41,7 +43,7 @@ int lookup(const struct int_map map, const char *key)
 	return GARBAGE_INT;
 }
 
-int elem(const struct int_map map, const char *key)
+int isElem(const struct int_map map, const char *key)
 {
 	return lookup(map, key) != GARBAGE_INT;
 }

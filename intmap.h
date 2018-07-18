@@ -4,10 +4,8 @@ struct int_map {
 	struct _charptANDint* _internal;
 };
 
-#define GARBAGE_INT 0xCCCCCCCC
-
 void insert(struct int_map *map_ptr, const char *key, int value);
 int lookup(const struct int_map map, const char *key);
 void deletion(struct int_map *map_ptr, const char *key);
 struct int_map init_int_map(void);
-int elem(const struct int_map map, const char *key);
+int isElem(const struct int_map map, const char *key);
