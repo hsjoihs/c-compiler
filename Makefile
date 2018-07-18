@@ -24,6 +24,8 @@ notest:
 
 full_compile:
 	gcc -Wall compiler2.c parse_expression.c map.c print_x86_64.c lexer.c -o out/compiler.out
+	./test_ret4.sh 086 'main(){int a; a = 3; { a = 174;} return a;}' 174 out/compiler.out
+	./test_ret4.sh 085 'main(){int a; a = 174; {int a; a = 3;} return a;}' 174 out/compiler.out
 	./test_ret4.sh 084 'main(){int a; int b; for(a=0,b=0;a<10;a++){ if(a ==5)continue;b+=a;} return b;}' 40 out/compiler.out
 	./test_ret4.sh 083 'main(){int a; int b; int c; int d; d=0; b = 5; c = 0;for(a = 3;a;d++){for(;b;++d) {c += b;b-=1;if(b == 3) break;}b = 7;a-=1;if(a == 1) break;} return a*7+b*15+c*2;}' 174 out/compiler.out
 	./test_ret4.sh 082 'main(){int a; int b; for(a=0,b=0;a <= 10;a++) {b += a;}return b;}' 55 out/compiler.out
