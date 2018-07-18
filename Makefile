@@ -98,11 +98,11 @@ full_compile:
 	./test_ret4.sh 054 'main(){int a; a=0;do{a+=1;}while(a && a < 174);return a;}' 174 out/compiler.out
 	./test_ret4.sh 055 'main(){int a; a=-8;do{a+=1;}while(a);return a+174;}' 174 out/compiler.out
 	./test_ret4.sh 056 'foo(){return 3;}main() {int a; a = 0;while(a == foo()) {a = 3;}return 174;}' 174 out/compiler.out
-	./test_ret4.sh 057 'main(){int a; a = 0; b = 0; while(a <= 10) {b += a; a += 1;}return b;}' 55 out/compiler.out
+	./test_ret4.sh 057 'main(){int a; int b; a = 0; b = 0; while(a <= 10) {b += a; a += 1;}return b;}' 55 out/compiler.out
 	./test_ret4.sh 058 'main(){int a; a = 3;while (a) {a = 2;if (a - 3) {break;}a += 3;}return 174;}' 174 out/compiler.out
 	./test_ret4.sh 059 'main(){int a; int b; int c; a = 3; b = 5; c = 0;while(a){while(b) {c += b;b-=1;if(b == 3) break;}b = 7;a-=1;if(a == 1) break;} return a*7+b*15+c*2;}' 174 out/compiler.out
 	./test_ret4.sh 060 'main(){int a; a = 3;while (a) {a = 2;if (a - 3) {break;}a += 3;}return 174;}' 174 out/compiler.out
-	./test_ret4.sh 061 'main(){int a; a=11; b=0; while(a){a-=1;b+=a;if(a)continue;break; a+=100;} return b;}' 55 out/compiler.out
+	./test_ret4.sh 061 'main(){int a; int b; a=11; b=0; while(a){a-=1;b+=a;if(a)continue;break; a+=100;} return b;}' 55 out/compiler.out
 	./test_ret4.sh 062 'main(){int a; int b; a =0; b=0; do{a-=1;b+=a;if(a)continue;break; a+=100;}while(a+3); return -a;}' 3 out/compiler.out
 	./test_ret4.sh 063 'main(){int a; int b; a =0; b=0; do{a-=1;b+=a;if(a)continue;break; a+=100;}while(a+3); return -b;}' 6 out/compiler.out
 	./test_ret4.sh 064 'main(){int a; int b; a =-3; b=-6; return a*b*10+a+b+3;}' 174 out/compiler.out
