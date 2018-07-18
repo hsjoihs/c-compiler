@@ -80,12 +80,11 @@ void parse_expression(struct ParserState *ptr_ps,
 
 int get_offset_from_name(struct ParserState ps, const char *str)
 {
-	struct VarInfo *info = lookup(ps.old_var_table.var_table, str);
+	return (int)lookup(ps.old_var_table.var_table, str);
 	if (0) { /* FIXME: if not declared */
 		fprintf(stderr, "%s is not declared\n", str);
 		exit(EXIT_FAILURE);
 	}
-	return info->offset;
 }
 
 void before_assign(enum TokenKind kind)
@@ -820,11 +819,9 @@ void parse_function_definition(struct ParserState *ptr_ps,
 			}
 
 			if (!isElem(map_, tokvec[i].ident_str)) { // newly found
-				struct VarInfo info;
-				info.offset = current_offset;
-				/*info.isDeclared = 0;*/
-				offset_vec[j] = info;
-				insert(&map_, tokvec[i].ident_str, (void *)(&offset_vec[j]));
+
+				insert(&map_, tokvec[i].ident_str,
+				       (void *)(size_t)current_offset);
 				j++;
 				current_offset -= 4;
 			}
