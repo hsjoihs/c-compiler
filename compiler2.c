@@ -1050,8 +1050,9 @@ void parse_compound_statement(struct ParserState *ptr_ps,
 	}
 }
 
-void parse_arg_def(struct ParserState *ptr_ps, const struct Token **ptr_tokvec,
-                   int *ptr_counter)
+void parse_parameter_declaration(struct ParserState *ptr_ps,
+                                 const struct Token **ptr_tokvec,
+                                 int *ptr_counter)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 	int counter = *ptr_counter;
@@ -1126,7 +1127,7 @@ void parse_function_definition(struct ParserState *ptr_ps,
 
 			int counter = 0;
 
-			parse_arg_def(ptr_ps, &tokvec, &counter);
+			parse_parameter_declaration(ptr_ps, &tokvec, &counter);
 
 			while (1) {
 				enum TokenKind kind = tokvec[0].kind;
@@ -1135,7 +1136,7 @@ void parse_function_definition(struct ParserState *ptr_ps,
 				}
 				++tokvec;
 
-				parse_arg_def(ptr_ps, &tokvec, &counter);
+				parse_parameter_declaration(ptr_ps, &tokvec, &counter);
 			}
 			*ptr_tokvec = tokvec;
 
