@@ -19,8 +19,6 @@ void insert(struct int_map *map_ptr, const char *key, int value)
 		                                 sizeof(struct charptANDint));
 
 		if (!(map_ptr->_internal)) { /* fails when the memory runs out */
-			fprintf(stderr, "memory ran out when trying to reallocate an empty "
-			                "_internal of type charptANDint");
 			abort();
 		}
 
@@ -53,5 +51,6 @@ struct int_map init_int_map(void)
 	res._length = 0;
 	res._allocated_length = 256;
 	res._internal = calloc(res._allocated_length, sizeof(struct charptANDint));
+	if(!(res._internal)) abort();
 	return res;
 }
