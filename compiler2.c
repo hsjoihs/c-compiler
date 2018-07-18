@@ -19,6 +19,8 @@ void error_unexpected_token(const struct Token *tokvec, const char *str);
 int get_new_label_name(struct ParserState *ptr_ps);
 void expect_and_consume(const struct Token **ptr_to_tokvec, enum TokenKind kind,
                         const char *str);
+void inc_or_dec(struct ParserState *ptr_ps, const char *name,
+                enum TokenKind opkind);
 
 void print_unary_prefix_op(enum TokenKind kind)
 {
@@ -557,15 +559,8 @@ void parse_unary_expression(struct ParserState *ptr_ps,
 		enum TokenKind opkind = tokvec[0].kind;
 		tokvec += 2;
 		*ptr_to_tokvec = tokvec;
-		printf("//load from `%s`\n", name);
-		gen_push_from_local(from_name(*ptr_ps, name));
-		gen_push_int(1);
 
-		printf("//before assigning to `%s`:\n", name);
-		before_assign(opkind);
-
-		printf("//assign to `%s`\n", name);
-		gen_write_to_local(from_name(*ptr_ps, name));
+		inc_or_dec(ptr_ps, name, opkind);
 
 	} else {
 		parse_postfix_expression(ptr_ps, &tokvec);
@@ -616,6 +611,18 @@ void parse_postfix_expression(struct ParserState *ptr_ps,
 			*ptr_to_tokvec = tokvec;
 		}
 
+	} else if (tokvec[0].kind == IDENT_OR_RESERVED &&
+	           (tokvec[1].kind == OP_PLUS_PLUS ||
+	            tokvec[1].kind == OP_MINUS_MINUS)) {
+		const char *name = tokvec[0].ident_str;
+		enum TokenKind opkind = tokvec[1].kind;
+		tokvec += 2;
+		*ptr_to_tokvec = tokvec;
+
+		inc_or_dec(ptr_ps, name, opkind);
+
+		gen_push_int(-1);
+		before_assign(opkind);
 	} else {
 		parse_primary_expression(ptr_ps, &tokvec);
 	}
@@ -1013,6 +1020,20 @@ void parse_function_definition(struct ParserState *ptr_ps,
 		exit(EXIT_FAILURE);
 	}
 	*ptr_to_tokvec = tokvec;
+}
+
+void inc_or_dec(struct ParserState *ptr_ps, const char *name,
+                enum TokenKind opkind)
+{
+	printf("//load from `%s`\n", name);
+	gen_push_from_local(from_name(*ptr_ps, name));
+	gen_push_int(1);
+
+	printf("//before assigning to `%s`:\n", name);
+	before_assign(opkind);
+
+	printf("//assign to `%s`\n", name);
+	gen_write_to_local(from_name(*ptr_ps, name));
 }
 
 int main(int argc, char const *argv[])

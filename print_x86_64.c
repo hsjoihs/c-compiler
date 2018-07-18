@@ -55,7 +55,7 @@ void gen_do_while_final(int label1, int label2)
 	       label1, label2);
 }
 
-void gen_discard()
+void gen_discard(void)
 {
 	printf("//gen_discard()\n");
 	printf("  addq $4, %%rsp\n");
