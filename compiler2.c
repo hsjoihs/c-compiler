@@ -804,6 +804,8 @@ void parse_function_definition(struct ParserState *ptr_ps,
                                const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
+
+	parse_type_name(ptr_ps, &tokvec);
 	if (tokvec[0].kind == IDENT_OR_RESERVED && tokvec[1].kind == LEFT_PAREN) {
 		const char *ident_str = tokvec[0].ident_str;
 
