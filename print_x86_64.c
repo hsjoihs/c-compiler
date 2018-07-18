@@ -51,7 +51,6 @@ void gen_do_while_final(int label1, int label2)
 	printf("  addq $4, %%rsp\n"
 	       "  cmpl $0, -4(%%rsp)\n"
 	       "  jne .L%d\n"
-	       "  addq $4, %%rsp\n"
 	       ".L%d:\n",
 	       label1, label2);
 }
