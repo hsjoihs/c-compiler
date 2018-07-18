@@ -16,7 +16,7 @@ void insert(struct int_map *map_ptr, const char *key, int value)
 
 		map_ptr->_internal =
 		    realloc(map_ptr->_internal, map_ptr->_allocated_length * 2 *
-		                                 sizeof(struct charptANDint));
+		                                    sizeof(struct charptANDint));
 
 		if (!(map_ptr->_internal)) { /* fails when the memory runs out */
 			abort();
@@ -40,6 +40,11 @@ int lookup(const struct int_map map, const char *key)
 	return GARBAGE_INT;
 }
 
+int elem(const struct int_map map, const char *key)
+{
+	return lookup(map, key) != GARBAGE_INT;
+}
+
 void deletion(struct int_map *map_ptr, const char *key)
 {
 	insert(map_ptr, key, GARBAGE_INT);
@@ -51,6 +56,7 @@ struct int_map init_int_map(void)
 	res._length = 0;
 	res._allocated_length = 256;
 	res._internal = calloc(res._allocated_length, sizeof(struct charptANDint));
-	if(!(res._internal)) abort();
+	if (!(res._internal))
+		abort();
 	return res;
 }
