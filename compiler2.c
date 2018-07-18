@@ -1105,6 +1105,10 @@ void parse_function_definition(struct ParserState *ptr_ps,
 				error_unexpected_token(tokvec,
 				                       "identifier in the arglist of funcdef");
 			}
+
+			struct VarInfo *info = from_name(*ptr_ps, tokvec[0].ident_str);
+			info->isDeclared = 1;
+
 			gen_write_register_to_local(
 			    get_reg_name_from_arg_pos(counter),
 			    get_offset_from_name(*ptr_ps, tokvec[0].ident_str));
@@ -1126,6 +1130,10 @@ void parse_function_definition(struct ParserState *ptr_ps,
 				if (counter > 5) {
 					fprintf(stderr, "6-or-more args not implemented!\n");
 				}
+
+				struct VarInfo *info = from_name(*ptr_ps, tokvec[0].ident_str);
+				info->isDeclared = 1;
+
 				gen_write_register_to_local(
 				    get_reg_name_from_arg_pos(counter),
 				    get_offset_from_name(*ptr_ps, tokvec[0].ident_str));
