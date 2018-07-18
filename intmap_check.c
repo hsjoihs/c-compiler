@@ -4,7 +4,7 @@
 
 int main()
 {
-	struct int_map map = init_int_map();
+	struct map map = init_int_map();
 	assert(!isElem(map, "ffjkl"));
 	insert(&map, "abc", (void *)3);
 	assert((void *)3 == lookup(map, "kabc" + 1));

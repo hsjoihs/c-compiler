@@ -13,7 +13,7 @@ void parse_multiplicative_expression(struct ParserState *ptr_ps,
 void parse_exclusive_OR_expression(struct ParserState *ptr_ps,
                                    const struct Token **ptr_tokvec);
 void parse_OR_expression(struct ParserState *ptr_ps,
-                          const struct Token **ptr_tokvec);
+                         const struct Token **ptr_tokvec);
 void parse_AND_expression(struct ParserState *ptr_ps,
                           const struct Token **ptr_tokvec);
 void parse_equality_expression(struct ParserState *ptr_ps,
@@ -22,7 +22,6 @@ void parse_relational_expression(struct ParserState *ptr_ps,
                                  const struct Token **ptr_tokvec);
 void parse_shift_expression(struct ParserState *ptr_ps,
                             const struct Token **ptr_tokvec);
-
 
 void binary_op(enum TokenKind kind)
 {
@@ -127,8 +126,6 @@ void print_unary_prefix_op(enum TokenKind kind)
 	}
 	assert("unimplemented!!!!" && 0);
 }
-
-
 
 void parse_inclusive_OR_expression(struct ParserState *ptr_ps,
                                    const struct Token **ptr_tokvec)
@@ -266,8 +263,6 @@ void parse_multiplicative_expression(struct ParserState *ptr_ps,
 	}
 	*ptr_tokvec = tokvec;
 }
-
-
 
 void parse_unary_expression(struct ParserState *ptr_ps,
                             const struct Token **ptr_tokvec)

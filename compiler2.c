@@ -6,7 +6,7 @@
 #include <string.h>
 
 struct ParserState {
-	struct int_map var_table;
+	struct map var_table;
 	int final_label_name;
 	int return_label_name;   /* the label at the end of the function */
 	int break_label_name;    /* the label at the end of the current loop */
@@ -45,7 +45,6 @@ void read_all_tokens_debug(const char *str)
 		}
 	} while (1);
 }
-
 
 void parse_expression(struct ParserState *ptr_ps,
                       const struct Token **ptr_tokvec)
@@ -252,7 +251,6 @@ void parse_logical_AND_expression(struct ParserState *ptr_ps,
 
 	*ptr_tokvec = tokvec;
 }
-
 
 void parse_cast_expression(struct ParserState *ptr_ps,
                            const struct Token **ptr_tokvec)
@@ -780,7 +778,7 @@ void parse_function_definition(struct ParserState *ptr_ps,
 		const char *ident_str = tokvec[0].ident_str;
 
 		int v = -4;
-		struct int_map map = init_int_map();
+		struct map map_ = init_int_map();
 
 		struct VarInfo *offset_vec = calloc(100, sizeof(struct VarInfo));
 
@@ -793,18 +791,18 @@ void parse_function_definition(struct ParserState *ptr_ps,
 				continue;
 			}
 
-			if (!isElem(map, tokvec[i].ident_str)) { // newly found
+			if (!isElem(map_, tokvec[i].ident_str)) { // newly found
 				struct VarInfo info;
 				info.offset = v;
 				info.isDeclared = 0;
 				offset_vec[j] = info;
-				insert(&map, tokvec[i].ident_str, (void *)(&offset_vec[j]));
+				insert(&map_, tokvec[i].ident_str, (void *)(&offset_vec[j]));
 				j++;
 				v -= 4;
 			}
 		}
 
-		ptr_ps->var_table = map;
+		ptr_ps->var_table = map_;
 		ptr_ps->return_label_name = GARBAGE_INT; /* INITIALIZE */
 		ptr_ps->break_label_name = GARBAGE_INT;  /* INITIALIZE */
 

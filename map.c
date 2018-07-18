@@ -13,7 +13,7 @@ struct _charptANDint {
 #define GARBAGE_INT 0xCCCCCCCC
 
 /* it overrides; it does not overwrite. */
-void insert(struct int_map *map_ptr, const char *key, void *value)
+void insert(struct map *map_ptr, const char *key, void *value)
 {
 	struct _charptANDint a;
 	a.ptr = key;
@@ -32,7 +32,7 @@ void insert(struct int_map *map_ptr, const char *key, void *value)
 	++(map_ptr->_length);
 }
 
-void *lookup(const struct int_map map, const char *key)
+void *lookup(const struct map map, const char *key)
 {
 	for (int i = (map._length) - 1; i >= 0; --i) {
 		if (strcmp(map._internal[i].ptr, key) == 0) {
@@ -42,19 +42,16 @@ void *lookup(const struct int_map map, const char *key)
 	return 0;
 }
 
-int isElem(const struct int_map map, const char *key)
+int isElem(const struct map map, const char *key)
 {
 	return lookup(map, key) != 0;
 }
 
-void deletion(struct int_map *map_ptr, const char *key)
-{
-	insert(map_ptr, key, 0);
-}
+void deletion(struct map *map_ptr, const char *key) { insert(map_ptr, key, 0); }
 
-struct int_map init_int_map(void)
+struct map init_int_map(void)
 {
-	struct int_map res;
+	struct map res;
 	res._length = 0;
 	res._allocated_length = 256;
 	res._internal = calloc(res._allocated_length, sizeof(struct _charptANDint));
