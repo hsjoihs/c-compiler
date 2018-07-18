@@ -3,8 +3,8 @@
 
 #define bufSize 1024
 
-const char *typelist[] = { "charptANDint"/*, "int", "voidptr"*/};
-const char *typelist2[] = {"struct charptANDint"/*, "int", "void*"*/};
+const char *typelist[] = { /*"charptANDint", "int", "voidptr"*/};
+const char *typelist2[] = {/*"struct charptANDint", "int", "void*"*/};
 
 void foo(FILE *output, const char *path, const char *replacer, const char *replacer2)
 {
