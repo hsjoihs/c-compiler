@@ -207,13 +207,19 @@ void parse_expression(struct ParserState *ptr_ps,
 	*ptr_tokvec = tokvec;
 }
 
-int get_offset_from_name(struct ParserState ps, const char *str)
+struct VarInfo *from_name(struct ParserState ps, const char *str)
 {
 	if (!isElem(ps.var_table, str)) {
 		assert("cannot happen" && 0);
 	}
 
 	struct VarInfo *info = lookup(ps.var_table, str);
+	return info;
+}
+
+int get_offset_from_name(struct ParserState ps, const char *str)
+{
+	struct VarInfo *info = from_name(ps, str);
 	return info->offset;
 }
 
