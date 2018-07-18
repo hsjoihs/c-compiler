@@ -18,45 +18,55 @@ int main() {
 */
 int main()
 {
-	puts(
+	gen_prologue(0, "foo");
+	gen_write_register_to_local("edi", -4);
+	gen_push_from_local(-4);
+	gen_epilogue(123);
 
-	    "_foo:\n"
-	    "  pushq %rbp\n"
-	    "  movq %rsp, %rbp\n"
-	    "  movl %edi, -4(%rbp)\n"
-	    "  movl -4(%rbp), %eax\n"
-	    "  popq %rbp\n"
-	    "  ret\n"
-	    ".global _main\n"
-	    "_main:\n"
-	    "  pushq %rbp\n"
-	    "  movq %rsp, %rbp\n"
-	    "  subq $16, %rsp\n"
-	    "  movl $0, -8(%rbp)\n"
-	    "  movl $0, -12(%rbp)\n"
-	    "  movl $0, -4(%rbp)\n"
-	    "  jmp .L4\n"
-	    ".L5:\n"
-	    "  movl -4(%rbp), %eax\n"
-	    "  addl $2, %eax\n"
-	    "  addl %eax, -8(%rbp)\n"
-	    "  addl $1, -4(%rbp)\n"
-	    ".L4:\n"
-	    "  cmpl $9, -4(%rbp)\n"
-	    "  setle %al\n"
-	    "  movzbl %al, %eax\n"
-	    "  movl %eax, %edi\n"
-	    "  call _foo\n"
-	    "  movl %eax, %edx\n"
-	    "  movl -12(%rbp), %eax\n"
-	    "  addl %edx, %eax\n"
-	    "  testl %eax, %eax\n"
-	    "  jne .L5\n"
-	    "  movl -4(%rbp), %edx\n"
-	    "  movl -8(%rbp), %eax\n"
-	    "  addl %edx, %eax\n"
-	    "  leave\n"
-	    "  ret\n");
+	gen_prologue(16, "main");
+	gen_push_int(0);
+	gen_write_to_local(-8);
+	gen_discard();
+	gen_push_int(0);
+	gen_write_to_local(-12);
+	gen_discard();
+	gen_push_int(0);
+
+	/* a = 0 */
+	gen_write_to_local(-4); /* a */
+	gen_discard();
+
+	puts("  jmp .L4\n"
+	     ".L5:\n");
+
+	/*  b += a + 2; */
+	gen_push_from_local(-4); /* a */
+	gen_push_int(2);
+	gen_op_ints("addl");
+	gen_push_from_local(-8); /* b */
+	gen_op_ints("addl");
+	gen_write_to_local(-8);
+	gen_discard();
+
+	/* a++ */
+	puts("  addl $1, -4(%rbp)\n");
+
+	puts(".L4:\n"
+	     "  cmpl $9, -4(%rbp)\n"
+	     "  setle %al\n"
+	     "  movzbl %al, %eax\n"
+	     "  movl %eax, %edi\n"
+	     "  call _foo\n"
+	     "  movl %eax, %edx\n"
+	     "  movl -12(%rbp), %eax\n"
+	     "  addl %edx, %eax\n"
+	     "  testl %eax, %eax\n"
+	     "  jne .L5\n"
+	     "  movl -4(%rbp), %edx\n"
+	     "  movl -8(%rbp), %eax\n"
+	     "  addl %edx, %eax\n"
+	     "  leave\n"
+	     "  ret\n");
 
 	return 0;
 }
