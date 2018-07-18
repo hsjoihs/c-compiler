@@ -64,23 +64,22 @@ void parse_expression(struct ParserState *ptr_ps,
 	*ptr_tokvec = tokvec;
 }
 
-/*struct VarInfo *from_name(struct ParserState ps, const char *str)
+int foo(struct VarTable2 t, const char *str)
 {
-    if (!isElem(ps.old_var_table.var_table, str)) {
-        assert("cannot happen" && 0);
-    }
-
-    struct VarInfo *info = lookup(ps.old_var_table.var_table, str);
-    return info;
-}*/
+	if (isElem(t.var_table, str)) {
+		return (int)lookup(t.var_table, str);
+	} else if (t.outer == 0) {
+		/* most outer, but cannot be found */
+		fprintf(stderr, "%s is not declared\n", str);
+		exit(EXIT_FAILURE);
+	} else {
+		return foo(*(t.outer), str);
+	}
+}
 
 int get_offset_from_name(struct ParserState ps, const char *str)
 {
-	return (int)lookup(ps.old_var_table.var_table, str);
-	if (0) { /* FIXME: if not declared */
-		fprintf(stderr, "%s is not declared\n", str);
-		exit(EXIT_FAILURE);
-	}
+	return foo(ps.old_var_table, str);
 }
 
 void before_assign(enum TokenKind kind)
@@ -733,12 +732,23 @@ void parse_compound_statement(struct ParserState *ptr_ps,
 {
 	const struct Token *tokvec = *ptr_tokvec;
 	if (tokvec[0].kind == LEFT_BRACE) {
+
+		struct VarTable2 current_table = ptr_ps->old_var_table;
+
+		struct VarTable2 new_table;
+		new_table.var_table = init_int_map();
+		new_table.outer = &current_table;
+
+		ptr_ps->old_var_table = new_table;
+
 		++tokvec;
 		*ptr_tokvec = tokvec;
 		while (1) {
 			if (tokvec[0].kind == RIGHT_BRACE) {
 				++tokvec;
 				*ptr_tokvec = tokvec;
+				ptr_ps->old_var_table = current_table;
+
 				return;
 			} else if (can_start_a_type(tokvec)) {
 				ptr_ps->newest_offset -= 4;
