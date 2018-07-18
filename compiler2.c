@@ -855,20 +855,42 @@ void parse_final(const struct Token **ptr_to_tokvec)
 	return;
 }
 
-struct vector_Token read_all_tokens(const char *str)
+int count_all_tokens(const char *str)
 {
 	struct Token tok;
-	struct vector_Token tokvec = init_vector_Token(0);
+	int count = 1;
+
+	while (1) {
+		tok = get_token(&str);
+		++count;
+		if (tok.kind == END) {
+			break;
+		}
+	}
+	return count;
+}
+
+struct Token *read_all_tokens_(const char *str)
+{
+	struct Token tok;
+	int tok_num;
+	{
+		const char *str2 = str;
+		tok_num = count_all_tokens(str2);
+	}
+
+	struct Token *tokvec = calloc(tok_num, sizeof(struct Token));
 
 	tok.kind = BEGINNING;
 	tok.int_value = GARBAGE_INT;
 	tok.ident_str = 0;
 
-	push_vector_Token(&tokvec, tok);
-
+	tokvec[0] = tok;
+	int i = 0;
 	while (1) {
 		tok = get_token(&str);
-		push_vector_Token(&tokvec, tok);
+		++i;
+		tokvec[i] = tok;
 		if (tok.kind == END) {
 			break;
 		}
@@ -1003,8 +1025,7 @@ int main(int argc, char const *argv[])
 			read_all_tokens_debug(str);
 		}
 	} else {
-		struct vector_Token tokvec_ = read_all_tokens(str);
-		const struct Token *tokvec = tokvec_.vector;
+		const struct Token *tokvec = read_all_tokens_(str);
 
 		++tokvec; /* skip the dummy token BEGINNING */
 

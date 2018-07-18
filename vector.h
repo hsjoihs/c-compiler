@@ -2,16 +2,6 @@
 #pragma once 
 #include "header.h"
 
-struct vector_Token {
-	int length;
-	int _allocated_length;
-	struct Token* vector;
-};
-struct vector_Token init_vector_Token(int initial_length);
-void extend_vector_Token(struct vector_Token* ptr);
-void push_vector_Token(struct vector_Token* ptr, struct Token tok);
-struct Token pop_vector_Token(struct vector_Token* ptr);
-
 struct vector_charptANDint {
 	int length;
 	int _allocated_length;
