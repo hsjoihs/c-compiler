@@ -759,15 +759,15 @@ void parse_statement(struct ParserState *ptr_ps,
 		++tokvec;
 		*ptr_to_tokvec = tokvec;
 		int label1 = get_new_label_name(ptr_ps);
-		int label2 = get_new_label_name(ptr_ps);
-		int label3 = get_new_label_name(ptr_ps);
+		int break_label = get_new_label_name(ptr_ps);
+		int cont_label = get_new_label_name(ptr_ps);
 
-		ptr_ps->break_label_name = label2;
-		ptr_ps->continue_label_name = label3;
+		ptr_ps->break_label_name = break_label;
+		ptr_ps->continue_label_name = cont_label;
 
 		gen_label(label1);
 		parse_statement(ptr_ps, &tokvec);
-		gen_label(label3);
+		gen_label(cont_label);
 
 		expect_and_consume(&tokvec, RES_WHILE, "`while` of do-while");
 		expect_and_consume(&tokvec, LEFT_PAREN, "left parenthesis of do-while");
@@ -779,7 +779,7 @@ void parse_statement(struct ParserState *ptr_ps,
 		expect_and_consume(&tokvec, SEMICOLON, "semicolon after do-while");
 		*ptr_to_tokvec = tokvec;
 
-		gen_do_while_final(label1, label2);
+		gen_do_while_final(label1, break_label);
 
 		ptr_ps->break_label_name = stashed_break_label;
 		ptr_ps->continue_label_name = stashed_continue_label;
@@ -795,10 +795,10 @@ void parse_statement(struct ParserState *ptr_ps,
 		expect_and_consume(&tokvec, LEFT_PAREN, "left parenthesis of while");
 
 		int label1 = get_new_label_name(ptr_ps);
-		int label2 = get_new_label_name(ptr_ps);
-		int label3 = get_new_label_name(ptr_ps);
-		ptr_ps->break_label_name = label2;
-		ptr_ps->continue_label_name = label3;
+		int break_label = get_new_label_name(ptr_ps);
+		int cont_label = get_new_label_name(ptr_ps);
+		ptr_ps->break_label_name = break_label;
+		ptr_ps->continue_label_name = cont_label;
 
 		gen_label(label1);
 
@@ -806,11 +806,11 @@ void parse_statement(struct ParserState *ptr_ps,
 
 		expect_and_consume(&tokvec, RIGHT_PAREN, "left parenthesis of while");
 
-		gen_while_part2(label1, label2);
+		gen_while_part2(label1, break_label);
 
 		parse_statement(ptr_ps, &tokvec);
 
-		gen_while_part3(label1, label2, label3);
+		gen_while_part3(label1, break_label, cont_label);
 
 		*ptr_to_tokvec = tokvec;
 
