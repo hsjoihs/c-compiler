@@ -6,7 +6,7 @@
 #include <string.h>
 
 struct ParserState {
-	struct map var_table;
+	struct map old_var_table;
 	int final_label_name;
 	int return_label_name;   /* the label at the end of the function */
 	int break_label_name;    /* the label at the end of the current loop */
@@ -65,11 +65,11 @@ void parse_expression(struct ParserState *ptr_ps,
 
 struct VarInfo *from_name(struct ParserState ps, const char *str)
 {
-	if (!isElem(ps.var_table, str)) {
+	if (!isElem(ps.old_var_table, str)) {
 		assert("cannot happen" && 0);
 	}
 
-	struct VarInfo *info = lookup(ps.var_table, str);
+	struct VarInfo *info = lookup(ps.old_var_table, str);
 	return info;
 }
 
@@ -801,18 +801,31 @@ void parse_function_definition(struct ParserState *ptr_ps,
 				continue;
 			}
 
+			v -= 4;
+		}
+
+		int current_offset = -4;
+
+		for (int i = 0;; i++) {
+			if (tokvec[i].kind == END) {
+				break;
+			}
+			if (tokvec[i].kind != IDENT_OR_RESERVED) {
+				continue;
+			}
+
 			if (!isElem(map_, tokvec[i].ident_str)) { // newly found
 				struct VarInfo info;
-				info.offset = v;
+				info.offset = current_offset;
 				info.isDeclared = 0;
 				offset_vec[j] = info;
 				insert(&map_, tokvec[i].ident_str, (void *)(&offset_vec[j]));
 				j++;
-				v -= 4;
+				current_offset -= 4;
 			}
 		}
 
-		ptr_ps->var_table = map_;
+		ptr_ps->old_var_table = map_;
 		ptr_ps->return_label_name = GARBAGE_INT; /* INITIALIZE */
 		ptr_ps->break_label_name = GARBAGE_INT;  /* INITIALIZE */
 
