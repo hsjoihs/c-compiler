@@ -91,6 +91,7 @@ enum TokenKind {
 	RES_CONTINUE,
 	OP_PLUS_PLUS,
 	OP_MINUS_MINUS,
+	RES_FOR,
 };
 
 struct Token{

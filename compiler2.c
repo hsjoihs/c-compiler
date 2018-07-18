@@ -140,6 +140,7 @@ void binary_op(enum TokenKind kind)
 		case RES_BREAK:
 		case BEGINNING:
 		case RES_CONTINUE:
+		case RES_FOR:
 			assert("failure!!! not a binary op!!!!" && 0);
 	}
 
@@ -846,6 +847,60 @@ void parse_statement(struct ParserState *ptr_ps,
 		}
 
 		return;
+
+	} else if (tokvec[0].kind == RES_FOR) {
+		int stashed_break_label = ptr_ps->break_label_name;
+		int stashed_continue_label = ptr_ps->continue_label_name;
+		int label1 = get_new_label_name(ptr_ps);
+		int label2 = get_new_label_name(ptr_ps);
+		int label3 = get_new_label_name(ptr_ps);
+		ptr_ps->break_label_name = label2;
+		ptr_ps->continue_label_name = label3;
+
+		++tokvec;
+		expect_and_consume(&tokvec, LEFT_PAREN, "left parenthesis of `for`");
+
+		if (tokvec[0].kind == SEMICOLON) { /* expression1 is missing */
+			                               /* do nothing */
+		} else {
+			parse_expression(ptr_ps, &tokvec); /* expression1 */
+			gen_discard();
+		}
+
+		expect_and_consume(&tokvec, SEMICOLON, "first semicolon of `for`");
+
+		gen_label(label1);
+
+		if (tokvec[0].kind == SEMICOLON) { /* expression2 is missing */
+			gen_push_int(1);
+		} else {
+			parse_expression(ptr_ps, &tokvec); /* expression2 */
+		}
+
+		expect_and_consume(&tokvec, SEMICOLON, "second semicolon of `for`");
+
+		gen_while_part2(label1, label2);
+
+		if (tokvec[0].kind == RIGHT_PAREN) { /* expression3 is missing */
+			;
+			/* do nothing */
+		} else {
+			/* FIXME */
+			assert("`for` with expression3 is unimplemented" && 0);
+		}
+
+		expect_and_consume(&tokvec, RIGHT_PAREN, "right parenthesis of `for`");
+
+		parse_statement(ptr_ps, &tokvec);
+
+		gen_while_part3(label1, label2, label3);
+		/* FIXME; should be a new function that can handle continue even when
+		 * expression3 exists */
+
+		*ptr_to_tokvec = tokvec;
+
+		ptr_ps->break_label_name = stashed_break_label;
+		ptr_ps->continue_label_name = stashed_continue_label;
 	} else {
 		parse_expression(ptr_ps, &tokvec);
 		expect_and_consume(&tokvec, SEMICOLON, "semicolon after an expression");
