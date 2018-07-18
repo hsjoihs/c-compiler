@@ -22,6 +22,13 @@ intmap_check:
 
 full_compile:
 	gcc -Wall compiler2.c intmap.c vector.c print_x86_64.c lexer.c -o out/compiler.out
+	./test_ret4.sh 074 'main(){a =0; b=0; do{a-=1;b+=a;}while(a+3); return b*a;}' 18 out/compiler.out
+	./test_ret4.sh 073 'main(){a =0; b=0; do{a-=1;b+=a;}while(a+3); return a*b;}' 18 out/compiler.out
+	./test_ret4.sh 072 'main(){a =0; b=0; do{a-=1;b+=a;if(!a)break;}while(a+3); return a*b;}' 18 out/compiler.out
+	./test_ret4.sh 071 'main(){a =0; b=0; do{a-=1;b+=a;if(a)continue;break;}while(a+3); return a*b;}' 18 out/compiler.out
+	./test_ret4.sh 070 'main(){a =0; b=0; do{a-=1;b+=a;if(a)continue;break; a+=100;}while(a+3); return b*a*10;}' 180 out/compiler.out
+	./test_ret4.sh 069 'main(){a =0; b=0; do{a-=1;b+=a;if(a)continue;break; a+=100;}while(a+3); return b*a;}' 18 out/compiler.out
+	./test_ret4.sh 068 'main(){a =0; b=0; do{a-=1;b+=a;if(a)continue;break; a+=100;}while(a+3); return a*b;}' 18 out/compiler.out
 	./test_ret4.sh 001 'main(){return 123;}' 123 out/compiler.out
 	./test_ret4.sh 010 'main(){return (123);}' 123 out/compiler.out
 	./test_ret4.sh 011 'main(){return ((((123))));}' 123 out/compiler.out
@@ -83,4 +90,8 @@ full_compile:
 	./test_ret4.sh 060 'main(){ a = 3; b = 5; c = 0;while(a){while(b) {c += b;b-=1;if(b == 3) break;}b = 7;a-=1;if(a == 1) break;} return a*7+b*15+c*2;}' 174 out/compiler.out
 	./test_ret4.sh 061 'main(){a = 3;while (a) {a = 2;if (a - 3) {break;}a += 3;}return 174;}' 174 out/compiler.out
 	./test_ret4.sh 062 'main(){a=11; b=0; while(a){a-=1;b+=a;if(a)continue;break; a+=100;} return b;}' 55 out/compiler.out
-
+	./test_ret4.sh 063 'main(){a =0; b=0; do{a-=1;b+=a;if(a)continue;break; a+=100;}while(a+3); return -a;}' 3 out/compiler.out
+	./test_ret4.sh 064 'main(){a =0; b=0; do{a-=1;b+=a;if(a)continue;break; a+=100;}while(a+3); return -b;}' 6 out/compiler.out
+	./test_ret4.sh 065 'main(){a =-3; b=-6; return a*b*10+a+b+3;}' 174 out/compiler.out
+	./test_ret4.sh 067 'main(){a =0; b=0; do{a-=1;b+=a;if(a)continue;break; a+=100;}while(a+3); return a*b*10;}' 180 out/compiler.out
+	./test_ret4.sh 066 'main(){a =0; b=0; do{a-=1;b+=a;if(a)continue;break; a+=100;}while(a+3); return a*b*10+a+b+3;}' 174 out/compiler.out
