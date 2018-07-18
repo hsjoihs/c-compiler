@@ -19,6 +19,8 @@ intmap_check:
 	gcc -Wall intmap.c intmap_check.c -o out/intmap_check.out
 	./out/intmap_check.out
 
+notest:
+	gcc -Wall compiler2.c intmap.c print_x86_64.c lexer.c -o out/compiler.out
 
 full_compile:
 	gcc -Wall compiler2.c intmap.c print_x86_64.c lexer.c -o out/compiler.out
