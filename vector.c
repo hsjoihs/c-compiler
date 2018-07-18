@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+
 struct vector_Token init_vector_Token(int initial_length)
 {
 	struct vector_Token res;
@@ -45,6 +46,7 @@ struct Token pop_vector_Token(struct vector_Token *ptr)
 	return ptr->vector[ptr->length]; /* safe, since it is not yet released or
 	                                    anything */
 }
+
 struct vector_charptANDint init_vector_charptANDint(int initial_length)
 {
 	struct vector_charptANDint res;
@@ -89,6 +91,7 @@ struct charptANDint pop_vector_charptANDint(struct vector_charptANDint *ptr)
 	return ptr->vector[ptr->length]; /* safe, since it is not yet released or
 	                                    anything */
 }
+
 struct vector_int init_vector_int(int initial_length)
 {
 	struct vector_int res;
@@ -131,6 +134,7 @@ int pop_vector_int(struct vector_int *ptr)
 	return ptr->vector[ptr->length]; /* safe, since it is not yet released or
 	                                    anything */
 }
+
 struct vector_voidptr init_vector_voidptr(int initial_length)
 {
 	struct vector_voidptr res;

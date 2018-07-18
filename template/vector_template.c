@@ -40,3 +40,4 @@ U pop_vector_T(struct vector_T *ptr)
 	return ptr->vector[ptr->length]; /* safe, since it is not yet released or
 	                                    anything */
 }
+
