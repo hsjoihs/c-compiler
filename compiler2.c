@@ -118,29 +118,7 @@ void binary_op(enum TokenKind kind)
 		case OP_OR_OR:
 			assert("failure!!! must be handled separately!!!!" && 0);
 
-		case LEFT_BRACE:
-		case RIGHT_BRACE:
-		case QUESTION:
-		case COLON:
-		case OP_NOT:
-		case OP_TILDA:
-		case OP_PLUS_PLUS:
-		case OP_MINUS_MINUS:
-		case IDENT_OR_RESERVED:
-		case LEFT_PAREN:
-		case RIGHT_PAREN:
-		case END:
-		case LIT_DEC_INTEGER:
-		case RES_RETURN:
-		case SEMICOLON:
-		case RES_IF:
-		case RES_ELSE:
-		case RES_WHILE:
-		case RES_DO:
-		case RES_BREAK:
-		case BEGINNING:
-		case RES_CONTINUE:
-		case RES_FOR:
+		default:
 			assert("failure!!! not a binary op!!!!" && 0);
 	}
 
