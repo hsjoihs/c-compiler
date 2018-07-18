@@ -779,6 +779,7 @@ void parse_parameter_declaration(struct ParserState *ptr_ps,
 
 	if (counter > 5) {
 		fprintf(stderr, "6-or-more args not implemented!\n");
+		exit(EXIT_FAILURE);
 	}
 
 	ptr_ps->newest_offset -= 4;
