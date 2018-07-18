@@ -168,6 +168,9 @@ void print_token(struct Token tok)
 		case RES_FOR:
 			fprintf(stderr, "for");
 			break;
+		case RES_INT:
+			fprintf(stderr, "int");
+			break;
 	}
 }
 
@@ -502,6 +505,9 @@ struct Token get_token(const char **ptr_to_str)
 			t.int_value = GARBAGE_INT;
 		} else if (strcmp(new_str, "for") == 0) {
 			t.kind = RES_FOR;
+			t.int_value = GARBAGE_INT;
+		} else if (strcmp(new_str, "int") == 0) {
+			t.kind = RES_INT;
 			t.int_value = GARBAGE_INT;
 		} else {
 			t.ident_str = new_str;

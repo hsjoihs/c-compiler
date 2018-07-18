@@ -20,6 +20,8 @@ void expect_and_consume(const struct Token **ptr_tokvec, enum TokenKind kind,
                         const char *str);
 void inc_or_dec(struct ParserState *ptr_ps, const char *name,
                 enum TokenKind opkind);
+void parse_type_name(struct ParserState *ptr_ps,
+                     const struct Token **ptr_tokvec);
 
 void print_unary_prefix_op(enum TokenKind kind)
 {
@@ -521,6 +523,12 @@ void parse_cast_expression(struct ParserState *ptr_ps,
 	parse_unary_expression(ptr_ps, ptr_tokvec);
 }
 
+void parse_type_name(struct ParserState *ptr_ps,
+                     const struct Token **ptr_tokvec)
+{
+	expect_and_consume(ptr_tokvec, RES_INT, "type name `int`");
+}
+
 void parse_unary_expression(struct ParserState *ptr_ps,
                             const struct Token **ptr_tokvec)
 {
@@ -627,6 +635,22 @@ void parse_postfix_expression(struct ParserState *ptr_ps,
 		parse_primary_expression(ptr_ps, &tokvec);
 	}
 	*ptr_tokvec = tokvec;
+}
+
+/* returns the identifier */
+const char *parse_declaration(struct ParserState *ptr_ps,
+                              const struct Token **ptr_tokvec)
+{
+	const struct Token *tokvec = *ptr_tokvec;
+	parse_type_name(ptr_ps, &tokvec);
+	expect_and_consume(&tokvec, IDENT_OR_RESERVED,
+	                   "identifier as variable name");
+	const char *str = tokvec[-1].ident_str;
+	expect_and_consume(&tokvec, SEMICOLON,
+	                   "semicolon at the end of variable definition");
+	*ptr_tokvec = tokvec;
+
+	return str;
 }
 
 void parse_primary_expression(struct ParserState *ptr_ps,
@@ -858,7 +882,8 @@ void parse_statement(struct ParserState *ptr_ps,
 		expect_and_consume(&tokvec, LEFT_PAREN, "left parenthesis of `for`");
 
 		if (tokvec[0].kind == SEMICOLON) { /* expression1 is missing */
-			                               /* do nothing */
+			;
+			/* do nothing */
 		} else {
 			parse_expression(ptr_ps, &tokvec); /* expression1 */
 			gen_discard();
@@ -981,6 +1006,11 @@ struct Token *read_all_tokens_(const char *str)
 	return tokvec;
 }
 
+int can_start_a_type(const struct Token *tokvec)
+{
+	return tokvec[0].kind == RES_INT;
+}
+
 void parse_compound_statement(struct ParserState *ptr_ps,
                               const struct Token **ptr_tokvec)
 {
@@ -993,6 +1023,8 @@ void parse_compound_statement(struct ParserState *ptr_ps,
 				++tokvec;
 				*ptr_tokvec = tokvec;
 				return;
+			} else if (can_start_a_type(tokvec)) {
+				parse_declaration(ptr_ps, &tokvec);
 			} else {
 				parse_statement(ptr_ps, &tokvec);
 			}
