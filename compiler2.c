@@ -1050,6 +1050,31 @@ void parse_compound_statement(struct ParserState *ptr_ps,
 	}
 }
 
+void parse_arg_def(struct ParserState *ptr_ps, const struct Token **ptr_tokvec,
+                   int *ptr_counter)
+{
+	const struct Token *tokvec = *ptr_tokvec;
+	int counter = *ptr_counter;
+	if (tokvec[0].kind != IDENT_OR_RESERVED) {
+		error_unexpected_token(tokvec, "identifier in the arglist of funcdef");
+	}
+
+	if (counter > 5) {
+		fprintf(stderr, "6-or-more args not implemented!\n");
+	}
+
+	struct VarInfo *info = from_name(*ptr_ps, tokvec[0].ident_str);
+	info->isDeclared = 1;
+
+	gen_write_register_to_local(
+	    get_reg_name_from_arg_pos(counter),
+	    get_offset_from_name(*ptr_ps, tokvec[0].ident_str));
+	++counter;
+	++tokvec;
+	*ptr_tokvec = tokvec;
+	*ptr_counter = counter;
+}
+
 void parse_function_definition(struct ParserState *ptr_ps,
                                const struct Token **ptr_tokvec)
 {
@@ -1101,19 +1126,7 @@ void parse_function_definition(struct ParserState *ptr_ps,
 
 			int counter = 0;
 
-			if (tokvec[0].kind != IDENT_OR_RESERVED) {
-				error_unexpected_token(tokvec,
-				                       "identifier in the arglist of funcdef");
-			}
-
-			struct VarInfo *info = from_name(*ptr_ps, tokvec[0].ident_str);
-			info->isDeclared = 1;
-
-			gen_write_register_to_local(
-			    get_reg_name_from_arg_pos(counter),
-			    get_offset_from_name(*ptr_ps, tokvec[0].ident_str));
-			++counter;
-			++tokvec;
+			parse_arg_def(ptr_ps, &tokvec, &counter);
 
 			while (1) {
 				enum TokenKind kind = tokvec[0].kind;
@@ -1122,23 +1135,7 @@ void parse_function_definition(struct ParserState *ptr_ps,
 				}
 				++tokvec;
 
-				if (tokvec[0].kind != IDENT_OR_RESERVED) {
-					error_unexpected_token(
-					    tokvec, "identifier in the arglist of funcdef");
-				}
-
-				if (counter > 5) {
-					fprintf(stderr, "6-or-more args not implemented!\n");
-				}
-
-				struct VarInfo *info = from_name(*ptr_ps, tokvec[0].ident_str);
-				info->isDeclared = 1;
-
-				gen_write_register_to_local(
-				    get_reg_name_from_arg_pos(counter),
-				    get_offset_from_name(*ptr_ps, tokvec[0].ident_str));
-				++counter;
-				++tokvec;
+				parse_arg_def(ptr_ps, &tokvec, &counter);
 			}
 			*ptr_tokvec = tokvec;
 
