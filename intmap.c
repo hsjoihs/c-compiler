@@ -5,45 +5,27 @@
 #include <stdlib.h>
 #include <string.h>
 
-void extend_vector_charptANDint(struct int_map *ptr);
-struct charptANDint pop_vector_charptANDint(struct int_map *ptr);
-
-void extend_vector_charptANDint(struct int_map *ptr)
-{
-	if (ptr->_allocated_length < ptr->length + 1) {
-
-		ptr->vector = realloc(ptr->vector, ptr->_allocated_length * 2 *
-		                                       sizeof(struct charptANDint));
-
-		if (!(ptr->vector)) { /* fails when the memory runs out */
-			fprintf(stderr, "memory ran out when trying to reallocate an empty "
-			                "vector of type charptANDint");
-			abort();
-		}
-
-		ptr->_allocated_length *= 2;
-	}
-}
-
-
-struct charptANDint pop_vector_charptANDint(struct int_map *ptr)
-{
-	if (ptr->length == 0) {
-		assert("tried to pop an empty vector of type `struct charptANDint`" &&
-		       0);
-	}
-	--(ptr->length);
-	return ptr->vector[ptr->length]; /* safe, since it is not yet released or
-	                                    anything */
-}
-
 /* it overrides; it does not overwrite. */
 void insert(struct int_map *map_ptr, const char *key, int value)
 {
 	struct charptANDint a;
 	a.ptr = key;
 	a.value = value;
-	extend_vector_charptANDint(map_ptr);
+
+	if (map_ptr->_allocated_length < map_ptr->length + 1) {
+
+		map_ptr->vector = realloc(map_ptr->vector, map_ptr->_allocated_length * 2 *
+		                                       sizeof(struct charptANDint));
+
+		if (!(map_ptr->vector)) { /* fails when the memory runs out */
+			fprintf(stderr, "memory ran out when trying to reallocate an empty "
+			                "vector of type charptANDint");
+			abort();
+		}
+
+		map_ptr->_allocated_length *= 2;
+	}
+
 	map_ptr->vector[map_ptr->length] = a;
 	++(map_ptr->length);
 }
