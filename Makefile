@@ -26,7 +26,7 @@ notest:
 	gcc -Wall compiler2.c parse_expression.c map.c print_x86_64.c lexer.c -o out/compiler.out
 
 full_compile:
-	gcc -Wall compiler2.c parse_expression.c map.c print_x86_64.c lexer.c -o out/compiler.out
+	make notest
 	./test_ret4.sh 086 'int main(){int a; a = 3; { a = 174;} return a;}' 174 out/compiler.out
 	./test_ret4.sh 085 'int main(){int a; a = 174; {int a; a = 3;} return a;}' 174 out/compiler.out
 	./test_ret4.sh 084 'int main(){int a; int b; for(a=0,b=0;a<10;a++){ if(a ==5)continue;b+=a;} return b;}' 40 out/compiler.out
@@ -113,3 +113,38 @@ full_compile:
 	./test_ret4.sh 064 'int main(){int a; int b; a =-3; b=-6; return a*b*10+a+b+3;}' 174 out/compiler.out
 	./test_ret4.sh 065 'int main(){int a; int b; a =0; b=0; do{a-=1;b+=a;if(a)continue;break; a+=100;}while(a+3); return a*b*10;}' 180 out/compiler.out
 	./test_ret4.sh 066 'int main(){int a; int b; a =0; b=0; do{a-=1;b+=a;if(a)continue;break; a+=100;}while(a+3); return a*b*10+a+b+3;}' 174 out/compiler.out
+
+check_error:
+	make notest
+	./test_compile_error.sh 'int main(){int a; {int b;} return b;}'
+	./test_compile_error.sh 'int main(){main(1}'
+	./test_compile_error.sh 'int main(){return (123}'
+	./test_compile_error.sh 'int main(){return 123}'
+	./test_compile_error.sh 'int main(){if a}'
+	./test_compile_error.sh 'int main(){do {}}'
+	./test_compile_error.sh 'int main(){do {}while}'
+	./test_compile_error.sh 'int main(){do {}while(}'
+	./test_compile_error.sh 'int main(){do {}while(1}'
+	./test_compile_error.sh 'int main(){do {}while(1)}'
+	./test_compile_error.sh 'int main(){do {}while();}'
+	./test_compile_error.sh 'int main(){while}'
+	./test_compile_error.sh 'int main(){while(}'
+	./test_compile_error.sh 'int main(){while()}'
+	./test_compile_error.sh 'int main(){while(1}'
+	./test_compile_error.sh 'int main(){while(1)}'
+	./test_compile_error.sh 'int main(){while(1){break}}'
+	./test_compile_error.sh 'int main(){break;}'
+	./test_compile_error.sh 'int main(){while(1){continue}}'
+	./test_compile_error.sh 'int main(){continue;}'
+	./test_compile_error.sh 'int main(){for}'
+	./test_compile_error.sh 'int main(){for(}'
+	./test_compile_error.sh 'int main(){for(1)}'
+	./test_compile_error.sh 'int main(){for(1;1)}'
+	./test_compile_error.sh 'int main(){for(1;1;1)}'
+	./test_compile_error.sh 'int main(){for(1;1;1}'
+	./test_compile_error.sh 'int main(){1}'
+	./test_compile_error.sh 'int main('
+	./test_compile_error.sh 'int main(int a'
+
+
+
