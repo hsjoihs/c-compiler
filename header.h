@@ -102,7 +102,3 @@ struct Token{
 void print_token(struct Token tok);
 struct Token get_token(const char** ptr_to_str);
 
-struct charptANDint {
-	const char* ptr;
-	int value;
-};

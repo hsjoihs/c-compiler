@@ -1,4 +1,7 @@
-#include "header.h"
+struct charptANDint {
+	const char* ptr;
+	int value;
+};
 
 struct int_map {
 	int _length;
