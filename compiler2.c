@@ -284,6 +284,25 @@ const char *get_reg_name_from_arg_pos(int counter)
 	}
 }
 
+void parse_argument_expression(struct ParserState *ptr_ps,
+                               const struct Token **ptr_tokvec,
+                               int *ptr_counter)
+{
+	const struct Token *tokvec = *ptr_tokvec;
+	int counter = *ptr_counter;
+
+	parse_assignment_expression(ptr_ps, &tokvec);
+	if (counter > 5) {
+		fprintf(stderr, "calling with 7 or more arguments is unimplemented!\n");
+		exit(EXIT_FAILURE);
+	}
+	gen_pop_to_reg(get_reg_name_from_arg_pos(counter));
+	counter++;
+
+	*ptr_tokvec = tokvec;
+	*ptr_counter = counter;
+}
+
 void parse_postfix_expression(struct ParserState *ptr_ps,
                               const struct Token **ptr_tokvec)
 {
@@ -297,24 +316,15 @@ void parse_postfix_expression(struct ParserState *ptr_ps,
 			tokvec += 2;
 			int counter = 0;
 
-			parse_assignment_expression(ptr_ps, &tokvec);
-			gen_pop_to_reg(get_reg_name_from_arg_pos(counter));
-			counter++;
+			parse_argument_expression(ptr_ps, &tokvec, &counter);
+
 			while (1) {
 				enum TokenKind kind = tokvec[0].kind;
 				if (kind != OP_COMMA) {
 					break;
 				}
 				++tokvec;
-				parse_assignment_expression(ptr_ps, &tokvec);
-				if (counter > 5) {
-					fprintf(
-					    stderr,
-					    "calling with 7 or more arguments is unimplemented!\n");
-					exit(EXIT_FAILURE);
-				}
-				gen_pop_to_reg(get_reg_name_from_arg_pos(counter));
-				counter++;
+				parse_argument_expression(ptr_ps, &tokvec, &counter);
 			}
 
 			gen_push_ret_of(ident_str);
