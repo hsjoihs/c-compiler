@@ -20,10 +20,6 @@ struct ParserState {
 	                          */
 };
 
-struct VarInfo {
-	int offset;
-};
-
 void error_unexpected_token(const struct Token *tokvec, const char *str);
 int get_new_label_name(struct ParserState *ptr_ps);
 void expect_and_consume(const struct Token **ptr_tokvec, enum TokenKind kind,
@@ -794,9 +790,6 @@ void parse_function_definition(struct ParserState *ptr_ps,
 		int capacity = 0;
 		struct map map_ = init_int_map();
 
-		struct VarInfo *offset_vec = calloc(100, sizeof(struct VarInfo));
-
-		int j = 0;
 		for (int i = 0;; i++) {
 			if (tokvec[i].kind == END) {
 				break;
@@ -822,7 +815,6 @@ void parse_function_definition(struct ParserState *ptr_ps,
 
 				insert(&map_, tokvec[i].ident_str,
 				       (void *)(size_t)current_offset);
-				j++;
 				current_offset -= 4;
 			}
 		}
