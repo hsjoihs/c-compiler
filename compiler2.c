@@ -22,7 +22,6 @@ struct ParserState {
 
 struct VarInfo {
 	int offset;
-	int isDeclared;
 };
 
 void error_unexpected_token(const struct Token *tokvec, const char *str);
@@ -82,7 +81,7 @@ struct VarInfo *from_name(struct ParserState ps, const char *str)
 int get_offset_from_name(struct ParserState ps, const char *str)
 {
 	struct VarInfo *info = from_name(ps, str);
-	if (!(info->isDeclared)) {
+	if (0) { /* FIXME: if not declared */
 		fprintf(stderr, "%s is not declared\n", str);
 		exit(EXIT_FAILURE);
 	}
@@ -749,7 +748,7 @@ void parse_compound_statement(struct ParserState *ptr_ps,
 			} else if (can_start_a_type(tokvec)) {
 				const char *str = parse_declaration(ptr_ps, &tokvec);
 				struct VarInfo *info = from_name(*ptr_ps, str);
-				info->isDeclared = 1;
+				/*info->isDeclared = 1;*/
 			} else {
 				parse_statement(ptr_ps, &tokvec);
 			}
@@ -775,7 +774,7 @@ void parse_parameter_declaration(struct ParserState *ptr_ps,
 	}
 
 	struct VarInfo *info = from_name(*ptr_ps, tokvec[0].ident_str);
-	info->isDeclared = 1;
+	/*info->isDeclared = 1;*/
 
 	gen_write_register_to_local(
 	    get_reg_name_from_arg_pos(counter),
@@ -823,7 +822,7 @@ void parse_function_definition(struct ParserState *ptr_ps,
 			if (!isElem(map_, tokvec[i].ident_str)) { // newly found
 				struct VarInfo info;
 				info.offset = current_offset;
-				info.isDeclared = 0;
+				/*info.isDeclared = 0;*/
 				offset_vec[j] = info;
 				insert(&map_, tokvec[i].ident_str, (void *)(&offset_vec[j]));
 				j++;
