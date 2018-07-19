@@ -215,6 +215,7 @@ void gen_unary(const char *str)
 
 void gen_ternary_part1(int label1, int label2)
 {
+	(void)label2;
 	printf("//ternary: part1\n"
 	       "  cmpl $0, (%%rsp)\n"
 	       "  je .L%d\n",
@@ -233,6 +234,7 @@ void gen_ternary_part2(int label1, int label2)
 
 void gen_ternary_part3(int label1, int label2)
 {
+	(void)label1;
 	printf("//ternary: part3\n"
 	       "  movl (%%rsp), %%eax\n"
 	       "  addq $4, %%rsp\n"

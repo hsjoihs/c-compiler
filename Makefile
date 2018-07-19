@@ -15,15 +15,15 @@ supplement:
 
 assembly_sandbox:
 	make format
-	gcc -Wall assembly_sandbox.c print_x86_64.c -o out/assembly_sandbox.out
+	gcc -Wall -Wextra assembly_sandbox.c print_x86_64.c -o out/assembly_sandbox.out
 	./test_ret3.sh '' s/assembly_sandbox.s out/assembly_sandbox.out 75 out/assembly_sandbox.out
 
 intmap_check:
-	gcc -Wall map.c intmap_check.c -o out/intmap_check.out
+	gcc -Wall -Wextra map.c intmap_check.c -o out/intmap_check.out
 	./out/intmap_check.out
 
 notest:
-	gcc -Wall compiler2.c parse_expression.c map.c print_x86_64.c lexer.c -o out/compiler.out
+	gcc -Wall -Wextra compiler2.c parse_expression.c map.c print_x86_64.c lexer.c -o out/compiler.out
 
 full_compile:
 	make notest
