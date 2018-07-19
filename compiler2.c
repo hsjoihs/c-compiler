@@ -787,7 +787,7 @@ void parse_compound_statement(struct ParserState *ptr_ps,
 
 				return;
 			} else if (can_start_a_type(tokvec)) {
-				ptr_ps->newest_offset -= 4;
+				ptr_ps->newest_offset -= 8;
 				const char *str = parse_declaration(ptr_ps, &tokvec);
 
 				struct map map_ = ptr_ps->scope_chain.var_table;
@@ -820,7 +820,7 @@ void parse_parameter_declaration(struct ParserState *ptr_ps,
 		exit(EXIT_FAILURE);
 	}
 
-	ptr_ps->newest_offset -= 4;
+	ptr_ps->newest_offset -= 8;
 
 	struct map map_ = ptr_ps->scope_chain.var_table;
 
@@ -857,7 +857,7 @@ void parse_function_definition(struct ParserState *ptr_ps,
 				continue;
 			}
 
-			capacity += 4;
+			capacity += 8;
 		}
 
 		ptr_ps->scope_chain.outer = 0; /* most outer scope */
