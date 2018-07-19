@@ -275,11 +275,25 @@ void parse_cast_expression(struct ParserState *ptr_ps,
 struct Type parse_type_name(struct ParserState *ptr_ps,
                             const struct Token **ptr_tokvec)
 {
-	expect_and_consume(ptr_tokvec, RES_INT, "type name `int`");
+	const struct Token *tokvec = *ptr_tokvec;
+	expect_and_consume(&tokvec, RES_INT, "type name `int`");
+
 	struct Type ans;
 	ans.type = INT_;
 	ans.pointer_of = 0;
-	return ans;
+
+	while (1) {
+		if (tokvec[0].kind == OP_ASTERISK) {
+			struct Type *ptr_to_current_type = calloc(1, sizeof(struct Type));
+			*ptr_to_current_type = ans;
+			ans.type = PTR_;
+			ans.pointer_of = ptr_to_current_type;
+			++tokvec;
+		} else {
+			*ptr_tokvec = tokvec;
+			return ans;
+		}
+	}
 }
 
 const char *get_reg_name_from_arg_pos(int counter)
