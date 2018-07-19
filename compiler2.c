@@ -10,6 +10,16 @@ struct Type {
 	struct Type *pointer_of;
 };
 
+int size_of(struct Type type)
+{
+	switch (type.type) {
+		case INT_:
+			return 4;
+		case PTR_:
+			return 8;
+	}
+}
+
 struct VarTableList {
 	struct map var_table;
 	struct VarTableList *outer;
@@ -29,8 +39,8 @@ void error_unexpected_token(const struct Token *tokvec, const char *str);
 int get_new_label_name(struct ParserState *ptr_ps);
 void expect_and_consume(const struct Token **ptr_tokvec, enum TokenKind kind,
                         const char *str);
-void parse_type_name(struct ParserState *ptr_ps,
-                     const struct Token **ptr_tokvec);
+struct Type parse_type_name(struct ParserState *ptr_ps,
+                            const struct Token **ptr_tokvec);
 
 void read_all_tokens_debug(const char *str)
 {
@@ -262,10 +272,14 @@ void parse_cast_expression(struct ParserState *ptr_ps,
 	parse_unary_expression(ptr_ps, ptr_tokvec);
 }
 
-void parse_type_name(struct ParserState *ptr_ps,
-                     const struct Token **ptr_tokvec)
+struct Type parse_type_name(struct ParserState *ptr_ps,
+                            const struct Token **ptr_tokvec)
 {
 	expect_and_consume(ptr_tokvec, RES_INT, "type name `int`");
+	struct Type ans;
+	ans.type = INT_;
+	ans.pointer_of = 0;
+	return ans;
 }
 
 const char *get_reg_name_from_arg_pos(int counter)
