@@ -754,6 +754,11 @@ void parse_compound_statement(struct ParserState *ptr_ps,
 
 		struct VarTableList new_table;
 		new_table.var_table = init_int_map();
+
+		/* current_table disappears at the end of this function,
+		   but there is no problem because new_table itself gets overwritten at
+		   the end of this function.
+		 */
 		new_table.outer = &current_table;
 
 		ptr_ps->scope_chain = new_table;
