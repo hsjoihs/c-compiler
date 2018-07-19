@@ -37,7 +37,7 @@ void gen_discard(void);
 void gen_for_part3(int label1, int label2, int label3);
 void gen_for_part4(int label1, int label2, int label3);
 
-#define GARBAGE_INT 0xCCCCCCCC
+#define GARBAGE_INT ((int)0xCCCCCCCC)
 #define BOOL int
 
 enum TokenKind {
