@@ -10,6 +10,11 @@ struct Type {
 	struct Type *pointer_of;
 };
 
+struct VarInfo {
+	struct Type type;
+	int offset;
+};
+
 int size_of(struct Type type)
 {
 	switch (type.type) {
@@ -82,7 +87,8 @@ void parse_expression(struct ParserState *ptr_ps,
 int resolve_name(struct VarTableList t, const char *str)
 {
 	if (isElem(t.var_table, str)) {
-		return (int)lookup(t.var_table, str);
+		struct VarInfo *ptr_varinfo = lookup(t.var_table, str);
+		return ptr_varinfo->offset;
 	} else if (t.outer == 0) {
 		/* most outer, but cannot be found */
 		fprintf(stderr, "%s is not declared\n", str);
@@ -792,7 +798,9 @@ void parse_compound_statement(struct ParserState *ptr_ps,
 
 				struct map map_ = ptr_ps->scope_chain.var_table;
 
-				insert(&map_, str, (void *)(size_t)ptr_ps->newest_offset);
+				struct VarInfo *ptr_varinfo = calloc(1, sizeof(struct VarInfo));
+				ptr_varinfo->offset = ptr_ps->newest_offset;
+				insert(&map_, str, ptr_varinfo);
 
 				ptr_ps->scope_chain.var_table = map_;
 			} else {
@@ -823,8 +831,10 @@ void parse_parameter_declaration(struct ParserState *ptr_ps,
 	ptr_ps->newest_offset -= 8;
 
 	struct map map_ = ptr_ps->scope_chain.var_table;
+	struct VarInfo *ptr_varinfo = calloc(1, sizeof(struct VarInfo));
+	ptr_varinfo->offset = ptr_ps->newest_offset;
 
-	insert(&map_, tokvec[0].ident_str, (void *)(size_t)ptr_ps->newest_offset);
+	insert(&map_, tokvec[0].ident_str, ptr_varinfo);
 
 	ptr_ps->scope_chain.var_table = map_;
 
