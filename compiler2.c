@@ -84,18 +84,24 @@ void parse_expression(struct ParserState *ptr_ps,
 	*ptr_tokvec = tokvec;
 }
 
-int resolve_name(struct VarTableList t, const char *str)
+struct VarInfo resolve_name_(struct VarTableList t, const char *str)
 {
 	if (isElem(t.var_table, str)) {
 		struct VarInfo *ptr_varinfo = lookup(t.var_table, str);
-		return ptr_varinfo->offset;
+		return *ptr_varinfo;
 	} else if (t.outer == 0) {
 		/* most outer, but cannot be found */
 		fprintf(stderr, "%s is not declared\n", str);
 		exit(EXIT_FAILURE);
 	} else {
-		return resolve_name(*(t.outer), str);
+		return resolve_name_(*(t.outer), str);
 	}
+}
+
+int resolve_name(struct VarTableList t, const char *str)
+{
+	struct VarInfo varinfo = resolve_name_(t, str);
+	return varinfo.offset;
 }
 
 int get_offset_from_name(struct ParserState ps, const char *str)
