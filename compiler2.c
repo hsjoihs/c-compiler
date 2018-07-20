@@ -972,6 +972,34 @@ void inc_or_dec(struct ParserState *ptr_ps, const char *name,
 	gen_write_to_local(get_offset_from_name(*ptr_ps, name));
 }
 
+void parse_unary_expression(struct ParserState *ptr_ps,
+                            const struct Token **ptr_tokvec)
+{
+	const struct Token *tokvec = *ptr_tokvec;
+
+	/* unary-operator cast-expression */
+	if (tokvec[0].kind == OP_NOT || tokvec[0].kind == OP_TILDA ||
+	    tokvec[0].kind == OP_PLUS || tokvec[0].kind == OP_MINUS) {
+		enum TokenKind kind = tokvec[0].kind;
+		++tokvec;
+		parse_cast_expression(ptr_ps, &tokvec);
+		print_unary_prefix_op(kind);
+	} else if ((tokvec[0].kind == OP_PLUS_PLUS ||
+	            tokvec[0].kind == OP_MINUS_MINUS) &&
+	           tokvec[1].kind == IDENT_OR_RESERVED) {
+		const char *name = tokvec[1].ident_str;
+		enum TokenKind opkind = tokvec[0].kind;
+		tokvec += 2;
+		*ptr_tokvec = tokvec;
+
+		inc_or_dec(ptr_ps, name, opkind);
+
+	} else {
+		parse_postfix_expression(ptr_ps, &tokvec);
+	}
+	*ptr_tokvec = tokvec;
+}
+
 int main(int argc, char const **argv)
 {
 	char *str;
