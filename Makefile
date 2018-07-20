@@ -16,7 +16,7 @@ supplement:
 assembly_sandbox:
 	make format
 	gcc -Wall -Wextra assembly_sandbox.c print_x86_64.c -o out/assembly_sandbox.out
-	./test_ret3.sh '' s/assembly_sandbox.s out/assembly_sandbox.out 75 out/assembly_sandbox.out
+	./test_ret3.sh '' s/assembly_sandbox.s out/assembly_sandbox.out 174 out/assembly_sandbox.out
 
 intmap_check:
 	gcc -Wall -Wextra map.c intmap_check.c -o out/intmap_check.out
