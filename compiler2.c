@@ -994,6 +994,12 @@ void parse_unary_expression(struct ParserState *ptr_ps,
 
 		inc_or_dec(ptr_ps, name, opkind);
 
+	} else if (tokvec[0].kind == OP_AND &&
+	           tokvec[1].kind == IDENT_OR_RESERVED) {
+		const char *name = tokvec[1].ident_str;
+		struct VarInfo info = resolve_name_(ptr_ps->scope_chain, name);
+		gen_push_address_of_local(info.offset);
+
 	} else {
 		parse_postfix_expression(ptr_ps, &tokvec);
 	}

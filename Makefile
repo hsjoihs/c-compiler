@@ -27,6 +27,7 @@ notest:
 
 full_compile:
 	make notest
+	./test_ret4.sh 089 'int main() {int a; a = 174; int *b; b = &a; return a;}' 174 out/compiler.out
 	./test_ret4.sh 088 'int main() {int *******b; int a; a = 3; a += 5;  return a + 166; }' 174 out/compiler.out
 	./test_ret4.sh 087 'int main() {int *b; int a; a = 3; a += 5;  return a + 166; }' 174 out/compiler.out
 	./test_ret4.sh 086 'int main(){int a; a = 3; { a = 174;} return a;}' 174 out/compiler.out
