@@ -5,25 +5,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-struct Type {
-	enum { INT_, PTR_ } type;
-	struct Type *pointer_of;
-};
-
 struct VarInfo {
 	struct Type type;
 	int offset;
 };
-
-int size_of(struct Type type)
-{
-	switch (type.type) {
-		case INT_:
-			return 4;
-		case PTR_:
-			return 8;
-	}
-}
 
 struct VarTableList {
 	struct map var_table;
