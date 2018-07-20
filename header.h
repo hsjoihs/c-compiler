@@ -36,6 +36,9 @@ void gen_while_part3(int label1, int label2, int label3);
 void gen_discard(void);
 void gen_for_part3(int label1, int label2, int label3);
 void gen_for_part4(int label1, int label2, int label3);
+void gen_push_address_of_local(int offset);
+void gen_write_to_local_8byte(int offset);
+void gen_push_from_local_8byte(int offset);
 
 #define GARBAGE_INT ((int)0xCCCCCCCC)
 #define BOOL int

@@ -31,6 +31,15 @@ void gen_write_to_local(int offset)
 	printf("  movl %%eax, %d(%%rbp)\n", offset);
 }
 
+/* write to local mem what's at the top of the stack. does not consume stack. */
+void gen_write_to_local_8byte(int offset)
+{
+	assert(offset < 0);
+	printf("//gen_write_to_local_8byte(%d)\n", offset);
+	printf("  movq (%%rsp), %%rax\n");
+	printf("  movq %%rax, %d(%%rbp)\n", offset);
+}
+
 /* write to local mem what's in the register */
 void gen_write_register_to_local(const char *str, int offset)
 {
@@ -96,6 +105,17 @@ void gen_push_from_local(int offset)
 	printf("  subq $8, %%rsp\n"
 	       "  movl %d(%%rbp), %%eax\n"
 	       "  movl %%eax, (%%rsp)\n",
+	       offset);
+}
+
+/* push what's on local mem */
+void gen_push_from_local_8byte(int offset)
+{
+	assert(offset < 0);
+	printf("//gen_push_from_local_8byte(%d)\n", offset);
+	printf("  subq $8, %%rsp\n"
+	       "  movq %d(%%rbp), %%rax\n"
+	       "  movq %%rax, (%%rsp)\n",
 	       offset);
 }
 
@@ -310,6 +330,16 @@ void gen_if_else_part3(int label1, int label2)
 {
 	printf("//gen_if_else_part3(%d, %d);\n", label1, label2);
 	printf(".L%d:\n", label2);
+}
+
+void gen_push_address_of_local(int offset)
+{
+	assert(offset < 0);
+	printf("//gen_push_address_of_local(%d);\n", offset);
+	printf("  subq $8, %%rsp\n"
+	       "  leaq %d(%%rbp), %%rax\n"
+	       "  movq %%rax, (%%rsp)\n",
+	       offset);
 }
 
 /*
