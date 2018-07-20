@@ -435,8 +435,22 @@ void parse_primary_expression(struct ParserState *ptr_ps,
 		return;
 	} else if (tokvec[0].kind == IDENT_OR_RESERVED) {
 		++*ptr_tokvec;
+
+		struct VarInfo info =
+		    resolve_name_(ptr_ps->scope_chain, tokvec[0].ident_str);
+
 		printf("//`%s` as rvalue\n", tokvec[0].ident_str);
-		gen_push_from_local(get_offset_from_name(*ptr_ps, tokvec[0].ident_str));
+		switch (size_of(info.type)) {
+			case 4:
+				gen_push_from_local(info.offset);
+				break;
+			case 8:
+				gen_push_from_local_8byte(info.offset);
+				break;
+			default:
+				fprintf(stderr, "sdfgjpk;l\n");
+				exit(EXIT_FAILURE);
+		}
 		return;
 	} else if (tokvec[0].kind == LEFT_PAREN) {
 		++tokvec;
