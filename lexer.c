@@ -454,15 +454,15 @@ struct Token get_token(const char **ptr_to_str)
 		} while (1);
 	}
 
-	if (*str == '_' || (*str >= 'a' && *str <= 'z') ||
-	    (*str >= 'A' && *str <= 'Z')) { /* no one uses EBCDIC */
+	if (strchr("_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", *str) !=
+	    NULL) {
 		t.kind = IDENT_OR_RESERVED;
 		int i = 1;
 
 		for (;; ++i) {
-			if (str[i] != '_' && !(str[i] >= 'a' && str[i] <= 'z') &&
-			    !(str[i] >= 'A' && str[i] <= 'Z') &&
-			    !(str[i] >= '0' && str[i] <= '9')) {
+			if (strchr("_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+			           "0123456789",
+			           str[i]) == NULL) {
 				break;
 			}
 		}
@@ -535,7 +535,7 @@ int from_hex(char c)
 		case '9':
 			return c - '0';
 
-		/* you know, no one uses EBCDIC */
+		/* works for EBCDIC, too! */
 		case 'a':
 		case 'b':
 		case 'c':
