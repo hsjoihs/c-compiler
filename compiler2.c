@@ -98,15 +98,10 @@ struct VarInfo resolve_name_(struct VarTableList t, const char *str)
 	}
 }
 
-int resolve_name(struct VarTableList t, const char *str)
-{
-	struct VarInfo varinfo = resolve_name_(t, str);
-	return varinfo.offset;
-}
-
 int get_offset_from_name(struct ParserState ps, const char *str)
 {
-	return resolve_name(ps.scope_chain, str);
+	struct VarInfo varinfo = resolve_name_(ps.scope_chain, str);
+	return varinfo.offset;
 }
 
 void before_assign(enum TokenKind kind)
