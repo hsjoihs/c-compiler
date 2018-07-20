@@ -398,12 +398,13 @@ void parse_postfix_expression(struct ParserState *ptr_ps,
 	*ptr_tokvec = tokvec;
 }
 
-/* returns the identifier */
+/* returns the identifier; returns type thru pointer */
 const char *parse_declaration(struct ParserState *ptr_ps,
-                              const struct Token **ptr_tokvec)
+                              const struct Token **ptr_tokvec,
+                              struct Type *ret_ptr_type)
 {
 	const struct Token *tokvec = *ptr_tokvec;
-	parse_type_name(ptr_ps, &tokvec);
+	*ret_ptr_type = parse_type_name(ptr_ps, &tokvec);
 	expect_and_consume(&tokvec, IDENT_OR_RESERVED,
 	                   "identifier as variable name");
 	const char *str = tokvec[-1].ident_str;
@@ -800,12 +801,14 @@ void parse_compound_statement(struct ParserState *ptr_ps,
 				return;
 			} else if (can_start_a_type(tokvec)) {
 				ptr_ps->newest_offset -= 8;
-				const char *str = parse_declaration(ptr_ps, &tokvec);
+				struct Type vartype;
+				const char *str = parse_declaration(ptr_ps, &tokvec, &vartype);
 
 				struct map map_ = ptr_ps->scope_chain.var_table;
 
 				struct VarInfo *ptr_varinfo = calloc(1, sizeof(struct VarInfo));
 				ptr_varinfo->offset = ptr_ps->newest_offset;
+				ptr_varinfo->type = vartype;
 				insert(&map_, str, ptr_varinfo);
 
 				ptr_ps->scope_chain.var_table = map_;
