@@ -26,11 +26,11 @@ int main()
 	gen_write_to_local_8byte(-8);
 	gen_discard();
 
+	/* return *y; */
 	gen_push_from_local_8byte(-8);
+	gen_peek_and_dereference();
+	gen_return_with_label(123);
 
-	puts("  movq (%rsp), %rax \n"
-	     "  movl (%rax), %eax\n"
-	     "  movl  %eax, (%rsp)\n");
 	gen_epilogue(123);
 	return 0;
 }

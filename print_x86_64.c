@@ -108,6 +108,24 @@ void gen_push_from_local(int offset)
 	       offset);
 }
 
+/* dereference what's at the top of the stack */
+void gen_peek_and_dereference(void)
+{
+	printf("//gen_peek_and_dereference()\n");
+	puts("  movq (%rsp), %rax \n"
+	     "  movl (%rax), %eax\n"
+	     "  movl  %eax, (%rsp)\n");
+}
+
+/* dereference what's at the top of the stack */
+void gen_peek_and_dereference_8byte(void)
+{
+	printf("//gen_peek_and_dereference()\n");
+	puts("  movq (%rsp), %rax \n"
+	     "  movq (%rax), %rax\n"
+	     "  movq  %rax, (%rsp)\n");
+}
+
 /* push what's on local mem */
 void gen_push_from_local_8byte(int offset)
 {
