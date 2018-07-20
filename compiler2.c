@@ -160,10 +160,18 @@ void parse_assignment_expression(struct ParserState *ptr_ps,
 		const char *name = tokvec[0].ident_str;
 		tokvec += 2;
 		*ptr_tokvec = tokvec;
+		struct VarInfo info = resolve_name_(ptr_ps->scope_chain, name);
 
 		if (opkind != OP_EQ) {
 			printf("//load from `%s`\n", name);
-			gen_push_from_local(get_offset_from_name(*ptr_ps, name));
+			switch (size_of(info.type)) {
+				case 4:
+					gen_push_from_local(info.offset);
+					break;
+				case 8:
+					gen_push_from_local_8byte(info.offset);
+					break;
+			}
 		}
 
 		parse_assignment_expression(ptr_ps, &tokvec);
@@ -174,7 +182,14 @@ void parse_assignment_expression(struct ParserState *ptr_ps,
 		}
 
 		printf("//assign to `%s`\n", name);
-		gen_write_to_local(get_offset_from_name(*ptr_ps, name));
+		switch (size_of(info.type)) {
+			case 4:
+				gen_write_to_local(info.offset);
+				break;
+			case 8:
+				gen_write_to_local_8byte(info.offset);
+				break;
+		}
 	} else {
 		parse_conditional_expression(ptr_ps, &tokvec);
 	}
