@@ -1006,9 +1006,10 @@ struct ExprInfo parse_unary_expression(struct ParserState *ptr_ps,
 	} else if (tokvec[0].kind == OP_PLUS_PLUS ||
 	           tokvec[0].kind == OP_MINUS_MINUS) {
 		enum TokenKind opkind = tokvec[0].kind;
-		if (tokvec[1].kind == IDENT_OR_RESERVED) {
-			const char *name = tokvec[1].ident_str;
-			tokvec += 2;
+		++tokvec;
+		if (tokvec[0].kind == IDENT_OR_RESERVED) {
+			const char *name = tokvec[0].ident_str;
+			++tokvec;
 			*ptr_tokvec = tokvec;
 
 			inc_or_dec(ptr_ps, name, opkind);
