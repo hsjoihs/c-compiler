@@ -185,7 +185,7 @@ struct ExprInfo parse_conditional_expression(struct ParserState *ptr_ps,
                                              const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
-	parse_logical_OR_expression(ptr_ps, &tokvec);
+	struct ExprInfo expr_info = parse_logical_OR_expression(ptr_ps, &tokvec);
 	if (tokvec[0].kind == QUESTION) {
 		int label1 = get_new_label_name(ptr_ps);
 		int label2 = get_new_label_name(ptr_ps);
@@ -193,19 +193,25 @@ struct ExprInfo parse_conditional_expression(struct ParserState *ptr_ps,
 		gen_ternary_part1(label1, label2);
 		++tokvec;
 		*ptr_tokvec = tokvec;
-		parse_expression(ptr_ps, &tokvec);
+		struct ExprInfo true_branch_info = parse_expression(ptr_ps, &tokvec);
 
 		gen_ternary_part2(label1, label2);
 
 		expect_and_consume(&tokvec, COLON, "colon of the conditional operator");
 
 		*ptr_tokvec = tokvec;
-		parse_conditional_expression(ptr_ps, &tokvec);
+		struct ExprInfo false_branch_info =
+		    parse_conditional_expression(ptr_ps, &tokvec);
 
 		gen_ternary_part3(label1, label2);
+
+		*ptr_tokvec = tokvec;
+
+		expect_type(false_branch_info, true_branch_info.type);
+		return remove_leftiness(true_branch_info);
 	}
 	*ptr_tokvec = tokvec;
-	return FIXME;
+	return expr_info;
 }
 
 struct ExprInfo parse_logical_OR_expression(struct ParserState *ptr_ps,
