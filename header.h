@@ -163,7 +163,6 @@ struct VarTableList {
 
 struct TypeCheckerState {
 	struct vector type_stack;
-	int stack_length;
 };
 
 void typecheck_push_int(struct TypeCheckerState *ptr_tcs, int num);
