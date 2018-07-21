@@ -423,7 +423,13 @@ struct ExprInfo parse_primary_expression(struct ParserState *ptr_ps,
 	if (tokvec[0].kind == LIT_DEC_INTEGER) {
 		++*ptr_tokvec;
 		gen_push_int(tokvec[0].int_value);
-		return FIXME;
+
+		struct ExprInfo info;
+		info.info = NOT_ASSIGNABLE;
+		info.type = INT_TYPE;
+		info.offset = GARBAGE_INT;
+		return info;
+
 	} else if (tokvec[0].kind == IDENT_OR_RESERVED) {
 		++*ptr_tokvec;
 
@@ -442,15 +448,20 @@ struct ExprInfo parse_primary_expression(struct ParserState *ptr_ps,
 				fprintf(stderr, "sdfgjpk;l\n");
 				exit(EXIT_FAILURE);
 		}
-		return FIXME;
+
+		struct ExprInfo expr_info;
+		expr_info.info = LOCAL_VAR;
+		expr_info.type = info.type;
+		expr_info.offset = info.offset;
+		return expr_info;
 	} else if (tokvec[0].kind == LEFT_PAREN) {
 		++tokvec;
 		*ptr_tokvec = tokvec;
-		parse_expression(ptr_ps, &tokvec);
+		struct ExprInfo expr_info = parse_expression(ptr_ps, &tokvec);
 		expect_and_consume(&tokvec, RIGHT_PAREN, "right paren");
 
 		*ptr_tokvec = tokvec;
-		return FIXME;
+		return expr_info;
 	}
 
 	error_unexpected_token(tokvec, "the beginning of parse_primary_expression");

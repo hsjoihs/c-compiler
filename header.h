@@ -172,3 +172,5 @@ struct ExprInfo {
 };
 
 extern struct ExprInfo FIXME;
+extern struct Type INT_TYPE;
+
