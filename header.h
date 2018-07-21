@@ -138,7 +138,6 @@ void parse_logical_AND_expression(struct ParserState *ptr_ps,
 void inc_or_dec(struct ParserState *ptr_ps, const char *name,
                 enum TokenKind opkind);
 
-void binary_op(enum TokenKind kind);
 void print_unary_prefix_op(enum TokenKind kind);
 
 enum typ_ { INT_, PTR_ };
@@ -166,5 +165,21 @@ struct TypeCheckerState {
 };
 
 void typecheck_push_int(struct TypeCheckerState *ptr_tcs, int num);
+void typecheck_op_ints(struct TypeCheckerState *ptr_tcs, const char *str);
+void typecheck_mul_ints(struct TypeCheckerState *ptr_tcs);
+void typecheck_div_ints(struct TypeCheckerState *ptr_tcs);
+void typecheck_rem_ints(struct TypeCheckerState *ptr_tcs);
 
+void binary_op(struct TypeCheckerState *ptr_tcs, enum TokenKind kind);
+
+struct ParserState {
+	struct VarTableList scope_chain;
+	struct TypeCheckerState tcs;
+	int newest_offset;
+	int final_label_name;
+	int return_label_name;   /* the label at the end of the function */
+	int break_label_name;    /* the label at the end of the current loop */
+	int continue_label_name; /* the label at the beginning of the current loop
+	                          */
+};
 

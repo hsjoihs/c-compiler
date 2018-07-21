@@ -23,26 +23,26 @@ void parse_relational_expression(struct ParserState *ptr_ps,
 void parse_shift_expression(struct ParserState *ptr_ps,
                             const struct Token **ptr_tokvec);
 
-void binary_op(enum TokenKind kind)
+void binary_op(struct TypeCheckerState *ptr_tcs, enum TokenKind kind)
 {
 	switch (kind) {
 		case OP_PLUS:
-			gen_op_ints("addl");
+			typecheck_op_ints(ptr_tcs, "addl");
 			return;
 		case OP_MINUS:
-			gen_op_ints("subl");
+			typecheck_op_ints(ptr_tcs, "subl");
 			return;
 		case OP_ASTERISK:
-			gen_mul_ints();
+			typecheck_mul_ints(ptr_tcs);
 			return;
 		case OP_SLASH:
-			gen_div_ints();
+			typecheck_div_ints(ptr_tcs);
 			return;
 		case OP_PERCENT:
-			gen_rem_ints();
+			typecheck_rem_ints(ptr_tcs);
 			return;
 		case OP_COMMA:
-			gen_op_ints("movl");
+			typecheck_op_ints(ptr_tcs, "movl");
 			return;
 		case OP_LT:
 			gen_compare_ints("setl");
@@ -63,10 +63,10 @@ void binary_op(enum TokenKind kind)
 			gen_shift_ints("sarl");
 			return;
 		case OP_AND:
-			gen_op_ints("andl");
+			typecheck_op_ints(ptr_tcs, "andl");
 			return;
 		case OP_OR:
-			gen_op_ints("orl");
+			typecheck_op_ints(ptr_tcs, "orl");
 			return;
 		case OP_EQ_EQ:
 			gen_compare_ints("sete");
@@ -75,7 +75,7 @@ void binary_op(enum TokenKind kind)
 			gen_compare_ints("setne");
 			return;
 		case OP_HAT:
-			gen_op_ints("xorl");
+			typecheck_op_ints(ptr_tcs, "xorl");
 			return;
 
 		case OP_EQ:
@@ -139,7 +139,9 @@ void parse_inclusive_OR_expression(struct ParserState *ptr_ps,
 		}
 		++tokvec;
 		parse_exclusive_OR_expression(ptr_ps, &tokvec);
-		binary_op(kind);
+		struct TypeCheckerState tcs = ptr_ps->tcs;
+		binary_op(&tcs, kind);
+		ptr_ps->tcs = tcs;
 	}
 	*ptr_tokvec = tokvec;
 }
@@ -156,7 +158,9 @@ void parse_exclusive_OR_expression(struct ParserState *ptr_ps,
 		}
 		++tokvec;
 		parse_AND_expression(ptr_ps, &tokvec);
-		binary_op(kind);
+		struct TypeCheckerState tcs = ptr_ps->tcs;
+		binary_op(&tcs, kind);
+		ptr_ps->tcs = tcs;
 	}
 	*ptr_tokvec = tokvec;
 }
@@ -173,7 +177,9 @@ void parse_AND_expression(struct ParserState *ptr_ps,
 		}
 		++tokvec;
 		parse_equality_expression(ptr_ps, &tokvec);
-		binary_op(kind);
+		struct TypeCheckerState tcs = ptr_ps->tcs;
+		binary_op(&tcs, kind);
+		ptr_ps->tcs = tcs;
 	}
 	*ptr_tokvec = tokvec;
 }
@@ -190,7 +196,9 @@ void parse_equality_expression(struct ParserState *ptr_ps,
 		}
 		++tokvec;
 		parse_relational_expression(ptr_ps, &tokvec);
-		binary_op(kind);
+		struct TypeCheckerState tcs = ptr_ps->tcs;
+		binary_op(&tcs, kind);
+		ptr_ps->tcs = tcs;
 	}
 	*ptr_tokvec = tokvec;
 }
@@ -208,7 +216,9 @@ void parse_relational_expression(struct ParserState *ptr_ps,
 		}
 		++tokvec;
 		parse_shift_expression(ptr_ps, &tokvec);
-		binary_op(kind);
+		struct TypeCheckerState tcs = ptr_ps->tcs;
+		binary_op(&tcs, kind);
+		ptr_ps->tcs = tcs;
 	}
 	*ptr_tokvec = tokvec;
 }
@@ -225,7 +235,9 @@ void parse_shift_expression(struct ParserState *ptr_ps,
 		}
 		++tokvec;
 		parse_additive_expression(ptr_ps, &tokvec);
-		binary_op(kind);
+		struct TypeCheckerState tcs = ptr_ps->tcs;
+		binary_op(&tcs, kind);
+		ptr_ps->tcs = tcs;
 	}
 	*ptr_tokvec = tokvec;
 }
@@ -242,7 +254,9 @@ void parse_additive_expression(struct ParserState *ptr_ps,
 		}
 		++tokvec;
 		parse_multiplicative_expression(ptr_ps, &tokvec);
-		binary_op(kind);
+		struct TypeCheckerState tcs = ptr_ps->tcs;
+		binary_op(&tcs, kind);
+		ptr_ps->tcs = tcs;
 	}
 	*ptr_tokvec = tokvec;
 }
@@ -259,7 +273,9 @@ void parse_multiplicative_expression(struct ParserState *ptr_ps,
 		}
 		++tokvec;
 		parse_cast_expression(ptr_ps, &tokvec);
-		binary_op(kind);
+		struct TypeCheckerState tcs = ptr_ps->tcs;
+		binary_op(&tcs, kind);
+		ptr_ps->tcs = tcs;
 	}
 	*ptr_tokvec = tokvec;
 }

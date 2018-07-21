@@ -5,17 +5,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-struct ParserState {
-	struct VarTableList scope_chain;
-	struct TypeCheckerState tcs;
-	int newest_offset;
-	int final_label_name;
-	int return_label_name;   /* the label at the end of the function */
-	int break_label_name;    /* the label at the end of the current loop */
-	int continue_label_name; /* the label at the beginning of the current loop
-	                          */
-};
-
 void error_unexpected_token(const struct Token *tokvec, const char *str);
 int get_new_label_name(struct ParserState *ptr_ps);
 void expect_and_consume(const struct Token **ptr_tokvec, enum TokenKind kind,
@@ -55,7 +44,9 @@ void parse_expression(struct ParserState *ptr_ps,
 		}
 		++tokvec;
 		parse_assignment_expression(ptr_ps, &tokvec);
-		binary_op(OP_COMMA);
+		struct TypeCheckerState tcs = ptr_ps->tcs;
+		binary_op(&tcs, kind);
+		ptr_ps->tcs = tcs;
 	}
 	*ptr_tokvec = tokvec;
 }
@@ -80,40 +71,40 @@ int get_offset_from_name(struct ParserState ps, const char *str)
 	return varinfo.offset;
 }
 
-void before_assign(enum TokenKind kind)
+void before_assign(struct TypeCheckerState *ptr_tcs, enum TokenKind kind)
 {
 	switch (kind) {
 		case OP_PLUS_EQ:
 		case OP_PLUS_PLUS:
-			binary_op(OP_PLUS);
+			binary_op(ptr_tcs, OP_PLUS);
 			return;
 		case OP_MINUS_EQ:
 		case OP_MINUS_MINUS:
-			binary_op(OP_MINUS);
+			binary_op(ptr_tcs, OP_MINUS);
 			return;
 		case OP_ASTERISK_EQ:
-			binary_op(OP_ASTERISK);
+			binary_op(ptr_tcs, OP_ASTERISK);
 			return;
 		case OP_SLASH_EQ:
-			binary_op(OP_SLASH);
+			binary_op(ptr_tcs, OP_SLASH);
 			return;
 		case OP_PERCENT_EQ:
-			binary_op(OP_PERCENT);
+			binary_op(ptr_tcs, OP_PERCENT);
 			return;
 		case OP_LSHIFT_EQ:
-			binary_op(OP_LSHIFT);
+			binary_op(ptr_tcs, OP_LSHIFT);
 			return;
 		case OP_RSHIFT_EQ:
-			binary_op(OP_RSHIFT);
+			binary_op(ptr_tcs, OP_RSHIFT);
 			return;
 		case OP_AND_EQ:
-			binary_op(OP_AND);
+			binary_op(ptr_tcs, OP_AND);
 			return;
 		case OP_HAT_EQ:
-			binary_op(OP_HAT);
+			binary_op(ptr_tcs, OP_HAT);
 			return;
 		case OP_OR_EQ:
-			binary_op(OP_OR);
+			binary_op(ptr_tcs, OP_OR);
 			return;
 		default:
 			assert("cannot happen" && 0);
@@ -154,7 +145,10 @@ void parse_assignment_expression(struct ParserState *ptr_ps,
 
 		if (opkind != OP_EQ) {
 			printf("//before assigning to `%s`:\n", name);
-			before_assign(opkind);
+
+			struct TypeCheckerState tcs = ptr_ps->tcs;
+			before_assign(&tcs, opkind);
+			ptr_ps->tcs = tcs;
 		}
 
 		printf("//assign to `%s`\n", name);
@@ -379,7 +373,9 @@ void parse_postfix_expression(struct ParserState *ptr_ps,
 		inc_or_dec(ptr_ps, name, opkind);
 
 		gen_push_int(-1);
-		before_assign(opkind);
+		struct TypeCheckerState tcs = ptr_ps->tcs;
+		before_assign(&tcs, opkind);
+		ptr_ps->tcs = tcs;
 	} else {
 		parse_primary_expression(ptr_ps, &tokvec);
 	}
@@ -409,7 +405,9 @@ void parse_primary_expression(struct ParserState *ptr_ps,
 	const struct Token *tokvec = *ptr_tokvec;
 	if (tokvec[0].kind == LIT_DEC_INTEGER) {
 		++*ptr_tokvec;
-		gen_push_int(tokvec[0].int_value);
+		struct TypeCheckerState tcs = ptr_ps->tcs;
+		typecheck_push_int(&tcs, tokvec[0].int_value);
+		ptr_ps->tcs = tcs;
 		return;
 	} else if (tokvec[0].kind == IDENT_OR_RESERVED) {
 		++*ptr_tokvec;
@@ -897,8 +895,6 @@ void parse_function_definition(struct ParserState *ptr_ps,
 		if (tokvec[2].kind == RIGHT_PAREN) {
 			gen_prologue(capacity, ident_str);
 			tokvec += 3;
-			parse_compound_statement(ptr_ps, &tokvec);
-			gen_epilogue(ptr_ps->return_label_name);
 		} else {
 
 			gen_prologue(capacity, ident_str);
@@ -924,9 +920,16 @@ void parse_function_definition(struct ParserState *ptr_ps,
 			                   "closing parenthesis of function definition");
 
 			*ptr_tokvec = tokvec;
+		}
+		parse_compound_statement(ptr_ps, &tokvec);
+		gen_epilogue(ptr_ps->return_label_name);
 
-			parse_compound_statement(ptr_ps, &tokvec);
-			gen_epilogue(ptr_ps->return_label_name);
+		if (ptr_ps->tcs.type_stack.length != 1) {
+			fprintf(stderr,
+			        "error: there should be 1 value of type int, but found %d "
+			        "value of type int.\n",
+			        ptr_ps->tcs.type_stack.length);
+			exit(EXIT_FAILURE);
 		}
 	} else {
 		fprintf(stderr, "expected function definition but could not find it\n");
@@ -950,7 +953,9 @@ void inc_or_dec(struct ParserState *ptr_ps, const char *name,
 	gen_push_int(1);
 
 	printf("//before assigning to `%s`:\n", name);
-	before_assign(opkind);
+	struct TypeCheckerState tcs = ptr_ps->tcs;
+	before_assign(&tcs, opkind);
+	ptr_ps->tcs = tcs;
 
 	printf("//assign to `%s`\n", name);
 	gen_write_to_local(get_offset_from_name(*ptr_ps, name));

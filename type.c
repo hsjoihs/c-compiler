@@ -62,6 +62,7 @@ struct Type *pop_type(struct TypeCheckerState *ptr_tcs)
 {
 	struct vector type_stack = ptr_tcs->type_stack;
 	struct Type *p_top_type = pop_vector(&type_stack);
+	ptr_tcs->type_stack = type_stack;
 	return p_top_type;
 }
 
@@ -83,4 +84,36 @@ void typecheck_push_int(struct TypeCheckerState *ptr_tcs, int num)
 {
 	push_type(ptr_tcs, INT_TYPE());
 	gen_push_int(num);
+}
+
+void typecheck_op_ints(struct TypeCheckerState *ptr_tcs, const char *str)
+{
+	pop_type_and_expect(ptr_tcs, INT_TYPE());
+	pop_type_and_expect(ptr_tcs, INT_TYPE());
+	push_type(ptr_tcs, INT_TYPE());
+	gen_op_ints(str);
+}
+
+void typecheck_mul_ints(struct TypeCheckerState *ptr_tcs)
+{
+	pop_type_and_expect(ptr_tcs, INT_TYPE());
+	pop_type_and_expect(ptr_tcs, INT_TYPE());
+	push_type(ptr_tcs, INT_TYPE());
+	gen_mul_ints();
+}
+
+void typecheck_div_ints(struct TypeCheckerState *ptr_tcs)
+{
+	pop_type_and_expect(ptr_tcs, INT_TYPE());
+	pop_type_and_expect(ptr_tcs, INT_TYPE());
+	push_type(ptr_tcs, INT_TYPE());
+	gen_div_ints();
+}
+
+void typecheck_rem_ints(struct TypeCheckerState *ptr_tcs)
+{
+	pop_type_and_expect(ptr_tcs, INT_TYPE());
+	pop_type_and_expect(ptr_tcs, INT_TYPE());
+	push_type(ptr_tcs, INT_TYPE());
+	gen_rem_ints();
 }
