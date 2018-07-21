@@ -12,7 +12,7 @@
 
 void gen_prologue(int alloc_size, const char *fname)
 {
-	printf("//print_prologue(%d, %s)\n", alloc_size, fname);
+	printf("//gen_prologue(%d, %s)\n", alloc_size, fname);
 	printf(".global " PREFIX "%s\n" PREFIX "%s:\n"
 	       "  pushq %%rbp\n"
 	       "  movq %%rsp, %%rbp\n",
@@ -26,7 +26,7 @@ void gen_prologue(int alloc_size, const char *fname)
 void gen_write_to_local(int offset)
 {
 	assert(offset < 0);
-	printf("//write_to_local(%d)\n", offset);
+	printf("//gen_write_to_local(%d)\n", offset);
 	printf("  movl (%%rsp), %%eax\n");
 	printf("  movl %%eax, %d(%%rbp)\n", offset);
 }
@@ -44,7 +44,7 @@ void gen_write_to_local_8byte(int offset)
 void gen_write_register_to_local(const char *str, int offset)
 {
 	assert(offset < 0);
-	printf("//write_register_to_local(%s, %d)\n", str, offset);
+	printf("//gen_write_register_to_local(%s, %d)\n", str, offset);
 	printf("  movl %%%s, %d(%%rbp)\n", str, offset);
 }
 
@@ -101,7 +101,7 @@ void gen_for_part4(int label1, int label2, int label3)
 void gen_push_from_local(int offset)
 {
 	assert(offset < 0);
-	printf("//push_from_local(%d)\n", offset);
+	printf("//gen_push_from_local(%d)\n", offset);
 	printf("  subq $8, %%rsp\n"
 	       "  movl %d(%%rbp), %%eax\n"
 	       "  movl %%eax, (%%rsp)\n",
@@ -139,7 +139,7 @@ void gen_push_from_local_8byte(int offset)
 
 void gen_push_int(int num)
 {
-	printf("//push_int(%d)\n", num);
+	printf("//gen_push_int(%d)\n", num);
 	printf("  subq $8, %%rsp\n"
 	       "  movl $%d, (%%rsp)\n",
 	       num);
@@ -147,7 +147,7 @@ void gen_push_int(int num)
 
 void gen_push_ret_of(const char *fname)
 {
-	printf("//push_ret_of(\"%s\")\n", fname);
+	printf("//gen_push_ret_of(\"%s\")\n", fname);
 	printf("  movl $0, %%eax\n"
 	       "  call " PREFIX "%s\n",
 	       fname);
@@ -157,21 +157,21 @@ void gen_push_ret_of(const char *fname)
 
 void gen_push_eax(void)
 {
-	printf("//push_eax()\n");
+	printf("//gen_push_eax()\n");
 	printf("  subq $8, %%rsp\n"
 	       "  movl %%eax, (%%rsp)\n");
 }
 
 void gen_pop_to_reg(const char *str)
 {
-	printf("//pop_to_reg(%s)\n", str);
+	printf("//gen_pop_to_reg(%s)\n", str);
 	printf("  movl (%%rsp), %%%s\n", str);
 	printf("  addq $8, %%rsp\n");
 }
 
 void gen_op_ints(const char *str)
 {
-	printf("//op_ints(\"%s\")\n", str);
+	printf("//gen_op_ints(\"%s\")\n", str);
 	printf("  movl (%%rsp), %%eax\n"
 	       "  %s %%eax, +8(%%rsp)\n"
 	       "  addq $8, %%rsp\n",
@@ -180,7 +180,7 @@ void gen_op_ints(const char *str)
 
 void gen_mul_ints(void)
 {
-	printf("//mul_ints()\n");
+	printf("//gen_mul_ints()\n");
 	printf("  movl +8(%%rsp), %%eax\n"
 	       "  imull (%%rsp), %%eax\n"
 	       "  movl %%eax, +8(%%rsp)\n"
@@ -196,7 +196,7 @@ void gen_return_with_label(int label)
 
 void gen_div_ints(void)
 {
-	printf("//div_ints()\n");
+	printf("//gen_div_ints()\n");
 	printf("  movl +8(%%rsp), %%eax\n"
 	       "  cltd\n"
 	       "  idivl (%%rsp)\n"
@@ -206,7 +206,7 @@ void gen_div_ints(void)
 
 void gen_rem_ints(void)
 {
-	printf("//rem_ints()\n");
+	printf("//gen_rem_ints()\n");
 	printf("  movl +8(%%rsp), %%eax\n"
 	       "  cltd\n"
 	       "  idivl (%%rsp)\n"
@@ -222,7 +222,7 @@ setge: greater than or eq
 */
 void gen_compare_ints(const char *str)
 {
-	printf("//compare_ints(\"%s\")\n", str);
+	printf("//gen_compare_ints(\"%s\")\n", str);
 	printf("  movl +8(%%rsp), %%eax\n"
 	       "  cmpl (%%rsp), %%eax\n"
 	       "  %s %%al\n"
@@ -234,7 +234,7 @@ void gen_compare_ints(const char *str)
 
 void gen_unary_not(void)
 {
-	printf("//unary_not()\n");
+	printf("//gen_unary_not()\n");
 	printf("  cmpl $0, (%%rsp)\n"
 	       "  sete %%al\n"
 	       "  movzbl %%al, %%eax\n"
@@ -247,23 +247,22 @@ negl: integer negation
 */
 void gen_unary(const char *str)
 {
-	printf("//unary(\"%s\")\n", str);
+	printf("//gen_unary(\"%s\")\n", str);
 	printf("  %s (%%rsp)\n", str);
 }
 
 void gen_ternary_part1(int label1, int label2)
 {
-	(void)label2;
-	printf("//ternary: part1\n"
-	       "  cmpl $0, (%%rsp)\n"
+	printf("//gen_ternary_part1(%d, %d)\n", label1, label2);
+	printf("  cmpl $0, (%%rsp)\n"
 	       "  je .L%d\n",
 	       label1);
 }
 
 void gen_ternary_part2(int label1, int label2)
 {
-	printf("//ternary: part2\n"
-	       "  movl (%%rsp), %%eax\n"
+	printf("//gen_ternary_part2(%d, %d)\n", label1, label2);
+	printf("  movl (%%rsp), %%eax\n"
 	       "  addq $8, %%rsp\n"
 	       "  jmp .L%d\n"
 	       ".L%d:\n",
@@ -272,9 +271,8 @@ void gen_ternary_part2(int label1, int label2)
 
 void gen_ternary_part3(int label1, int label2)
 {
-	(void)label1;
-	printf("//ternary: part3\n"
-	       "  movl (%%rsp), %%eax\n"
+	printf("//gen_ternary_part3(%d, %d)\n", label1, label2);
+	printf("  movl (%%rsp), %%eax\n"
 	       "  addq $8, %%rsp\n"
 	       ".L%d:\n"
 	       "  movl %%eax, (%%rsp)\n",
@@ -283,7 +281,7 @@ void gen_ternary_part3(int label1, int label2)
 
 void gen_logical_OR_set(int depth, int label1, int label2)
 {
-	printf("//logical_OR_set(%d, %d, %d);\n", depth, label1, label2);
+	printf("//gen_logical_OR_set(%d, %d, %d);\n", depth, label1, label2);
 	printf("  addq $%d, %%rsp\n", depth * 8);
 	printf("  cmpl $0, %d(%%rsp)\n", -depth * 8);
 	printf("  jne .L%d\n", label1);
@@ -292,7 +290,8 @@ void gen_logical_OR_set(int depth, int label1, int label2)
 
 void gen_logical_OR_final(int final_depth, int label1, int label2)
 {
-	printf("//logical_OR_final(%d, %d, %d);\n", final_depth, label1, label2);
+	printf("//gen_logical_OR_final(%d, %d, %d);\n", final_depth, label1,
+	       label2);
 	printf("  addq $%d, %%rsp\n", final_depth * 8);
 	printf("  movl $0, %%eax\n"
 	       "  jmp .L%d\n"
@@ -305,7 +304,7 @@ void gen_logical_OR_final(int final_depth, int label1, int label2)
 
 void gen_logical_AND_set(int depth, int label1, int label2)
 {
-	printf("//logical_AND_set(%d, %d, %d);\n", depth, label1, label2);
+	printf("//gen_logical_AND_set(%d, %d, %d);\n", depth, label1, label2);
 	printf("  addq $%d, %%rsp\n", depth * 8);
 	printf("  cmpl $0, %d(%%rsp)\n", -depth * 8);
 	printf("  je .L%d\n", label1);
@@ -314,7 +313,8 @@ void gen_logical_AND_set(int depth, int label1, int label2)
 
 void gen_logical_AND_final(int final_depth, int label1, int label2)
 {
-	printf("//logical_AND_final(%d, %d, %d);\n", final_depth, label1, label2);
+	printf("//gen_logical_AND_final(%d, %d, %d);\n", final_depth, label1,
+	       label2);
 	printf("  addq $%d, %%rsp\n", final_depth * 8);
 	printf("  movl $1, %%eax\n"
 	       "  jmp .L%d\n"
@@ -366,7 +366,7 @@ sarl: right shift
 */
 void gen_shift_ints(const char *str)
 {
-	printf("//shift_ints(\"%s\")\n", str);
+	printf("//gen_shift_ints(\"%s\")\n", str);
 	printf("  movl (%%rsp), %%eax\n"
 	       "  movl %%eax, %%ecx\n"
 	       "  %s %%cl, +8(%%rsp)\n"
@@ -376,7 +376,7 @@ void gen_shift_ints(const char *str)
 
 void gen_epilogue(int label)
 {
-	printf("//print_epilogue(%d)\n", label);
+	printf("//gen_epilogue(%d)\n", label);
 	printf(".L%d:"
 	       "  movl (%%rsp), %%eax\n"
 	       "  movq %%rbp, %%rsp\n"
