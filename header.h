@@ -162,7 +162,6 @@ struct VarTableList {
 
 
 struct TypeCheckerState {
-	struct VarTableList scope_chain;
 	struct vector type_stack;
 	int stack_length;
 };
