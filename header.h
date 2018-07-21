@@ -33,7 +33,6 @@ void gen_label(int label1);
 void gen_do_while_final(int label1, int label2);
 void gen_while_part2(int label1, int label2);
 void gen_discard(void);
-void gen_for_part3(int label1, int label2, int label3);
 void gen_for_part4(int label1, int label2, int label3);
 void gen_push_address_of_local(int offset);
 void gen_write_to_local_8byte(int offset);

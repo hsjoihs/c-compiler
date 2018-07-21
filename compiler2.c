@@ -594,7 +594,7 @@ void parse_statement(struct ParserState *ptr_ps,
 
 		parse_statement(ptr_ps, &tokvec);
 
-		gen_for_part3(label1, break_label, cont_label);
+		gen_label(cont_label);
 		gen_for_part4(label1, break_label, cont_label);
 
 		*ptr_tokvec = tokvec;
@@ -673,7 +673,7 @@ void parse_statement(struct ParserState *ptr_ps,
 
 			parse_statement(ptr_ps, &tokvec);
 
-			gen_for_part3(label1, label2, label3);
+			gen_label(label3);
 			gen_for_part4(label1, label2, label3);
 
 			*ptr_tokvec = tokvec;
@@ -692,7 +692,7 @@ void parse_statement(struct ParserState *ptr_ps,
 
 			parse_statement(ptr_ps, &tokvec2);
 
-			gen_for_part3(label1, label2, label3);
+			gen_label(label3);
 
 			printf("// what was previously ignored\n");
 
