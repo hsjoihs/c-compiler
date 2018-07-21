@@ -27,3 +27,16 @@ int is_equal(struct Type t1, struct Type t2)
 
 	return 0;
 }
+
+void debug_print_type(struct Type type)
+{
+	switch (type.type) {
+		case PTR_:
+			debug_print_type(*type.pointer_of);
+			fprintf(stderr, "*");
+			return;
+		case INT_:
+			fprintf(stderr, "int");
+			return;
+	}
+}
