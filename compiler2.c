@@ -22,6 +22,14 @@ void expect_and_consume(const struct Token **ptr_tokvec, enum TokenKind kind,
 struct Type parse_type_name(struct ParserState *ptr_ps,
                             const struct Token **ptr_tokvec);
 
+struct ExprInfo remove_leftiness(struct ExprInfo info)
+{
+	if (info.info == LOCAL_VAR) {
+		info.info = NOT_ASSIGNABLE;
+	}
+	return info;
+}
+
 void read_all_tokens_debug(const char *str)
 {
 	struct Token tok;
@@ -46,18 +54,18 @@ struct ExprInfo parse_expression(struct ParserState *ptr_ps,
                                  const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
-	parse_assignment_expression(ptr_ps, &tokvec);
+	struct ExprInfo info = parse_assignment_expression(ptr_ps, &tokvec);
 	while (1) {
 		enum TokenKind kind = tokvec[0].kind;
 		if (kind != OP_COMMA) {
 			break;
 		}
 		++tokvec;
-		parse_assignment_expression(ptr_ps, &tokvec);
+		info = remove_leftiness(parse_assignment_expression(ptr_ps, &tokvec));
 		binary_op(OP_COMMA);
 	}
 	*ptr_tokvec = tokvec;
-	return FIXME;
+	return info;
 }
 
 struct VarInfo resolve_name_(struct VarTableList t, const char *str)
