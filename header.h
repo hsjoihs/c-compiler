@@ -17,7 +17,6 @@ void gen_push_from_local(int offset);
 void gen_write_to_local(int offset);
 void gen_return_with_label(int label);
 void gen_epilogue(int label);
-void gen_push_eax(void);
 void gen_push_ret_of(const char* fname);
 void gen_pop_to_reg(const char *str);
 void gen_write_register_to_local(const char* str, int offset);
