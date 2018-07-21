@@ -5,23 +5,26 @@
 #include <stdlib.h>
 #include <string.h>
 
-void parse_additive_expression(struct ParserState *ptr_ps,
-                               const struct Token **ptr_tokvec);
-void parse_multiplicative_expression(struct ParserState *ptr_ps,
-                                     const struct Token **ptr_tokvec);
+struct ExprInfo FIXME = {FIXME__TYPE_UNKNOWN};
 
-void parse_exclusive_OR_expression(struct ParserState *ptr_ps,
-                                   const struct Token **ptr_tokvec);
-void parse_OR_expression(struct ParserState *ptr_ps,
-                         const struct Token **ptr_tokvec);
-void parse_AND_expression(struct ParserState *ptr_ps,
-                          const struct Token **ptr_tokvec);
-void parse_equality_expression(struct ParserState *ptr_ps,
-                               const struct Token **ptr_tokvec);
-void parse_relational_expression(struct ParserState *ptr_ps,
-                                 const struct Token **ptr_tokvec);
-void parse_shift_expression(struct ParserState *ptr_ps,
-                            const struct Token **ptr_tokvec);
+struct ExprInfo parse_additive_expression(struct ParserState *ptr_ps,
+                                          const struct Token **ptr_tokvec);
+struct ExprInfo
+parse_multiplicative_expression(struct ParserState *ptr_ps,
+                                const struct Token **ptr_tokvec);
+
+struct ExprInfo parse_exclusive_OR_expression(struct ParserState *ptr_ps,
+                                              const struct Token **ptr_tokvec);
+struct ExprInfo parse_OR_expression(struct ParserState *ptr_ps,
+                                    const struct Token **ptr_tokvec);
+struct ExprInfo parse_AND_expression(struct ParserState *ptr_ps,
+                                     const struct Token **ptr_tokvec);
+struct ExprInfo parse_equality_expression(struct ParserState *ptr_ps,
+                                          const struct Token **ptr_tokvec);
+struct ExprInfo parse_relational_expression(struct ParserState *ptr_ps,
+                                            const struct Token **ptr_tokvec);
+struct ExprInfo parse_shift_expression(struct ParserState *ptr_ps,
+                                       const struct Token **ptr_tokvec);
 
 void binary_op(enum TokenKind kind)
 {
@@ -127,8 +130,8 @@ void print_unary_prefix_op(enum TokenKind kind)
 	assert("unimplemented!!!!" && 0);
 }
 
-void parse_inclusive_OR_expression(struct ParserState *ptr_ps,
-                                   const struct Token **ptr_tokvec)
+struct ExprInfo parse_inclusive_OR_expression(struct ParserState *ptr_ps,
+                                              const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 	parse_exclusive_OR_expression(ptr_ps, &tokvec);
@@ -142,10 +145,11 @@ void parse_inclusive_OR_expression(struct ParserState *ptr_ps,
 		binary_op(kind);
 	}
 	*ptr_tokvec = tokvec;
+	return FIXME;
 }
 
-void parse_exclusive_OR_expression(struct ParserState *ptr_ps,
-                                   const struct Token **ptr_tokvec)
+struct ExprInfo parse_exclusive_OR_expression(struct ParserState *ptr_ps,
+                                              const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 	parse_AND_expression(ptr_ps, &tokvec);
@@ -159,10 +163,11 @@ void parse_exclusive_OR_expression(struct ParserState *ptr_ps,
 		binary_op(kind);
 	}
 	*ptr_tokvec = tokvec;
+	return FIXME;
 }
 
-void parse_AND_expression(struct ParserState *ptr_ps,
-                          const struct Token **ptr_tokvec)
+struct ExprInfo parse_AND_expression(struct ParserState *ptr_ps,
+                                     const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 	parse_equality_expression(ptr_ps, &tokvec);
@@ -176,10 +181,11 @@ void parse_AND_expression(struct ParserState *ptr_ps,
 		binary_op(kind);
 	}
 	*ptr_tokvec = tokvec;
+	return FIXME;
 }
 
-void parse_equality_expression(struct ParserState *ptr_ps,
-                               const struct Token **ptr_tokvec)
+struct ExprInfo parse_equality_expression(struct ParserState *ptr_ps,
+                                          const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 	parse_relational_expression(ptr_ps, &tokvec);
@@ -193,10 +199,11 @@ void parse_equality_expression(struct ParserState *ptr_ps,
 		binary_op(kind);
 	}
 	*ptr_tokvec = tokvec;
+	return FIXME;
 }
 
-void parse_relational_expression(struct ParserState *ptr_ps,
-                                 const struct Token **ptr_tokvec)
+struct ExprInfo parse_relational_expression(struct ParserState *ptr_ps,
+                                            const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 	parse_shift_expression(ptr_ps, &tokvec);
@@ -211,10 +218,11 @@ void parse_relational_expression(struct ParserState *ptr_ps,
 		binary_op(kind);
 	}
 	*ptr_tokvec = tokvec;
+	return FIXME;
 }
 
-void parse_shift_expression(struct ParserState *ptr_ps,
-                            const struct Token **ptr_tokvec)
+struct ExprInfo parse_shift_expression(struct ParserState *ptr_ps,
+                                       const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 	parse_additive_expression(ptr_ps, &tokvec);
@@ -228,10 +236,11 @@ void parse_shift_expression(struct ParserState *ptr_ps,
 		binary_op(kind);
 	}
 	*ptr_tokvec = tokvec;
+	return FIXME;
 }
 
-void parse_additive_expression(struct ParserState *ptr_ps,
-                               const struct Token **ptr_tokvec)
+struct ExprInfo parse_additive_expression(struct ParserState *ptr_ps,
+                                          const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 	parse_multiplicative_expression(ptr_ps, &tokvec);
@@ -245,10 +254,11 @@ void parse_additive_expression(struct ParserState *ptr_ps,
 		binary_op(kind);
 	}
 	*ptr_tokvec = tokvec;
+	return FIXME;
 }
 
-void parse_multiplicative_expression(struct ParserState *ptr_ps,
-                                     const struct Token **ptr_tokvec)
+struct ExprInfo parse_multiplicative_expression(struct ParserState *ptr_ps,
+                                                const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 	parse_cast_expression(ptr_ps, &tokvec);
@@ -262,4 +272,5 @@ void parse_multiplicative_expression(struct ParserState *ptr_ps,
 		binary_op(kind);
 	}
 	*ptr_tokvec = tokvec;
+	return FIXME;
 }

@@ -111,27 +111,27 @@ struct ParserState;
 void print_token(struct Token tok);
 struct Token get_token(const char** ptr_to_str);
 
-void parse_expression(struct ParserState *ptr_ps,
+struct ExprInfo parse_expression(struct ParserState *ptr_ps,
                       const struct Token **ptr_tokvec);
-void parse_assignment_expression(struct ParserState *ptr_ps,
+struct ExprInfo parse_assignment_expression(struct ParserState *ptr_ps,
                                  const struct Token **ptr_tokvec);
-void parse_primary_expression(struct ParserState *ptr_ps,
+struct ExprInfo parse_primary_expression(struct ParserState *ptr_ps,
                               const struct Token **ptr_tokvec);
-void parse_inclusive_OR_expression(struct ParserState *ptr_ps,
+struct ExprInfo parse_inclusive_OR_expression(struct ParserState *ptr_ps,
                                    const struct Token **ptr_tokvec);
-void parse_cast_expression(struct ParserState *ptr_ps,
+struct ExprInfo parse_cast_expression(struct ParserState *ptr_ps,
                            const struct Token **ptr_tokvec);
-void parse_unary_expression(struct ParserState *ptr_ps,
+struct ExprInfo parse_unary_expression(struct ParserState *ptr_ps,
                             const struct Token **ptr_tokvec);
-void parse_postfix_expression(struct ParserState *ptr_ps,
+struct ExprInfo parse_postfix_expression(struct ParserState *ptr_ps,
                               const struct Token **ptr_tokvec);
-void parse_conditional_expression(struct ParserState *ptr_ps,
+struct ExprInfo parse_conditional_expression(struct ParserState *ptr_ps,
                                   const struct Token **ptr_tokvec);
 void parse_compound_statement(struct ParserState *ptr_ps,
                               const struct Token **ptr_tokvec);
-void parse_logical_OR_expression(struct ParserState *ptr_ps,
+struct ExprInfo parse_logical_OR_expression(struct ParserState *ptr_ps,
                                  const struct Token **ptr_tokvec);
-void parse_logical_AND_expression(struct ParserState *ptr_ps,
+struct ExprInfo  parse_logical_AND_expression(struct ParserState *ptr_ps,
                                   const struct Token **ptr_tokvec);
 
 void inc_or_dec(struct ParserState *ptr_ps, const char *name,
@@ -171,3 +171,4 @@ struct ExprInfo {
 	int offset;
 };
 
+extern struct ExprInfo FIXME;
