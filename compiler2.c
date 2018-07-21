@@ -595,7 +595,7 @@ void parse_statement(struct ParserState *ptr_ps,
 		parse_statement(ptr_ps, &tokvec);
 
 		gen_label(cont_label);
-		gen_for_part4(label1, break_label, cont_label);
+		gen_for_part4(label1, break_label);
 
 		*ptr_tokvec = tokvec;
 
@@ -674,7 +674,7 @@ void parse_statement(struct ParserState *ptr_ps,
 			parse_statement(ptr_ps, &tokvec);
 
 			gen_label(label3);
-			gen_for_part4(label1, label2, label3);
+			gen_for_part4(label1, label2);
 
 			*ptr_tokvec = tokvec;
 
@@ -701,7 +701,7 @@ void parse_statement(struct ParserState *ptr_ps,
 			                   "right parenthesis of `for`");
 			gen_discard();
 
-			gen_for_part4(label1, label2, label3);
+			gen_for_part4(label1, label2);
 
 			tokvec = tokvec2;
 		}
