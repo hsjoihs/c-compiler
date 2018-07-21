@@ -117,3 +117,18 @@ void typecheck_rem_ints(struct TypeCheckerState *ptr_tcs)
 	push_type(ptr_tcs, INT_TYPE());
 	gen_rem_ints();
 }
+
+void typecheck_compare_ints(struct TypeCheckerState *ptr_tcs, const char *str)
+{
+	pop_type_and_expect(ptr_tcs, INT_TYPE());
+	pop_type_and_expect(ptr_tcs, INT_TYPE());
+	push_type(ptr_tcs, INT_TYPE());
+	gen_compare_ints(str);
+}
+void typecheck_shift_ints(struct TypeCheckerState *ptr_tcs, const char *str)
+{
+	pop_type_and_expect(ptr_tcs, INT_TYPE());
+	pop_type_and_expect(ptr_tcs, INT_TYPE());
+	push_type(ptr_tcs, INT_TYPE());
+	gen_shift_ints(str);
+}

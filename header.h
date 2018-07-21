@@ -169,6 +169,9 @@ void typecheck_op_ints(struct TypeCheckerState *ptr_tcs, const char *str);
 void typecheck_mul_ints(struct TypeCheckerState *ptr_tcs);
 void typecheck_div_ints(struct TypeCheckerState *ptr_tcs);
 void typecheck_rem_ints(struct TypeCheckerState *ptr_tcs);
+void typecheck_compare_ints(struct TypeCheckerState *ptr_tcs, const char *str);
+void typecheck_shift_ints(struct TypeCheckerState *ptr_tcs, const char *str);
+
 
 void binary_op(struct TypeCheckerState *ptr_tcs, enum TokenKind kind);
 

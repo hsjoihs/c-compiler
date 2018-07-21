@@ -45,22 +45,22 @@ void binary_op(struct TypeCheckerState *ptr_tcs, enum TokenKind kind)
 			typecheck_op_ints(ptr_tcs, "movl");
 			return;
 		case OP_LT:
-			gen_compare_ints("setl");
+			typecheck_compare_ints(ptr_tcs, "setl");
 			return;
 		case OP_LT_EQ:
-			gen_compare_ints("setle");
+			typecheck_compare_ints(ptr_tcs, "setle");
 			return;
 		case OP_LSHIFT:
-			gen_shift_ints("sall");
+			typecheck_shift_ints(ptr_tcs, "sall");
 			return;
 		case OP_GT:
-			gen_compare_ints("setg");
+			typecheck_compare_ints(ptr_tcs, "setg");
 			return;
 		case OP_GT_EQ:
-			gen_compare_ints("setge");
+			typecheck_compare_ints(ptr_tcs, "setge");
 			return;
 		case OP_RSHIFT:
-			gen_shift_ints("sarl");
+			typecheck_shift_ints(ptr_tcs, "sarl");
 			return;
 		case OP_AND:
 			typecheck_op_ints(ptr_tcs, "andl");
@@ -69,10 +69,10 @@ void binary_op(struct TypeCheckerState *ptr_tcs, enum TokenKind kind)
 			typecheck_op_ints(ptr_tcs, "orl");
 			return;
 		case OP_EQ_EQ:
-			gen_compare_ints("sete");
+			typecheck_compare_ints(ptr_tcs, "sete");
 			return;
 		case OP_NOT_EQ:
-			gen_compare_ints("setne");
+			typecheck_compare_ints(ptr_tcs, "setne");
 			return;
 		case OP_HAT:
 			typecheck_op_ints(ptr_tcs, "xorl");
