@@ -1003,22 +1003,22 @@ struct ExprInfo parse_unary_expression(struct ParserState *ptr_ps,
 
 		*ptr_tokvec = tokvec;
 		return expr_info;
-	} else if ((tokvec[0].kind == OP_PLUS_PLUS ||
-	            tokvec[0].kind == OP_MINUS_MINUS) &&
-	           tokvec[1].kind == IDENT_OR_RESERVED) {
-		const char *name = tokvec[1].ident_str;
+	} else if (tokvec[0].kind == OP_PLUS_PLUS ||
+	           tokvec[0].kind == OP_MINUS_MINUS) {
 		enum TokenKind opkind = tokvec[0].kind;
-		tokvec += 2;
-		*ptr_tokvec = tokvec;
+		if (tokvec[1].kind == IDENT_OR_RESERVED) {
+			const char *name = tokvec[1].ident_str;
+			tokvec += 2;
+			*ptr_tokvec = tokvec;
 
-		inc_or_dec(ptr_ps, name, opkind);
-
-	} else if (tokvec[0].kind == OP_AND &&
-	           tokvec[1].kind == IDENT_OR_RESERVED) {
-		const char *name = tokvec[1].ident_str;
-		struct VarInfo info = resolve_name_(ptr_ps->scope_chain, name);
-		gen_push_address_of_local(info.offset);
-
+			inc_or_dec(ptr_ps, name, opkind);
+		}
+	} else if (tokvec[0].kind == OP_AND) {
+		if (tokvec[1].kind == IDENT_OR_RESERVED) {
+			const char *name = tokvec[1].ident_str;
+			struct VarInfo info = resolve_name_(ptr_ps->scope_chain, name);
+			gen_push_address_of_local(info.offset);
+		}
 	} else {
 		parse_postfix_expression(ptr_ps, &tokvec);
 	}
