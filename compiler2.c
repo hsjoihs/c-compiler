@@ -637,10 +637,10 @@ void parse_statement(struct ParserState *ptr_ps,
 		int stashed_break_label = ptr_ps->break_label_name;
 		int stashed_continue_label = ptr_ps->continue_label_name;
 		int label1 = get_new_label_name(ptr_ps);
-		int label2 = get_new_label_name(ptr_ps);
-		int label3 = get_new_label_name(ptr_ps);
-		ptr_ps->break_label_name = label2;
-		ptr_ps->continue_label_name = label3;
+		int break_label = get_new_label_name(ptr_ps);
+		int cont_label = get_new_label_name(ptr_ps);
+		ptr_ps->break_label_name = break_label;
+		ptr_ps->continue_label_name = cont_label;
 
 		++tokvec;
 		expect_and_consume(&tokvec, LEFT_PAREN, "left parenthesis of `for`");
@@ -665,7 +665,7 @@ void parse_statement(struct ParserState *ptr_ps,
 
 		expect_and_consume(&tokvec, SEMICOLON, "second semicolon of `for`");
 
-		gen_while_part2(label1, label2);
+		gen_while_part2(label1, break_label);
 
 		if (tokvec[0].kind == RIGHT_PAREN) { /* expression3 is missing */
 			expect_and_consume(&tokvec, RIGHT_PAREN,
@@ -673,8 +673,8 @@ void parse_statement(struct ParserState *ptr_ps,
 
 			parse_statement(ptr_ps, &tokvec);
 
-			gen_label(label3);
-			gen_for_part4(label1, label2);
+			gen_label(cont_label);
+			gen_for_part4(label1, break_label);
 
 			*ptr_tokvec = tokvec;
 
@@ -692,7 +692,7 @@ void parse_statement(struct ParserState *ptr_ps,
 
 			parse_statement(ptr_ps, &tokvec2);
 
-			gen_label(label3);
+			gen_label(cont_label);
 
 			printf("// what was previously ignored\n");
 
@@ -701,7 +701,7 @@ void parse_statement(struct ParserState *ptr_ps,
 			                   "right parenthesis of `for`");
 			gen_discard();
 
-			gen_for_part4(label1, label2);
+			gen_for_part4(label1, break_label);
 
 			tokvec = tokvec2;
 		}
