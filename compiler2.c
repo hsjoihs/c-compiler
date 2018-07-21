@@ -7,6 +7,7 @@
 
 struct ParserState {
 	struct VarTableList scope_chain;
+	struct TypeCheckerState tcs;
 	int newest_offset;
 	int final_label_name;
 	int return_label_name;   /* the label at the end of the function */
@@ -888,6 +889,10 @@ void parse_function_definition(struct ParserState *ptr_ps,
 		ptr_ps->break_label_name = GARBAGE_INT;    /* INITIALIZE */
 		ptr_ps->continue_label_name = GARBAGE_INT; /* INITIALIZE */
 		ptr_ps->newest_offset = 0;
+
+		struct TypeCheckerState tcs;
+		tcs.type_stack = init_vector(0);
+		ptr_ps->tcs = tcs;
 
 		if (tokvec[2].kind == RIGHT_PAREN) {
 			gen_prologue(capacity, ident_str);
