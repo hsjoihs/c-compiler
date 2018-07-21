@@ -23,6 +23,7 @@ intmap_check:
 	./out/intmap_check.out
 
 notest:
+	make format
 	gcc -Wall -Wextra compiler2.c type.c parse_expression.c map.c print_x86_64.c lexer.c -o out/compiler.out
 
 full_compile:
