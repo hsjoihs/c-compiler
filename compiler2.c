@@ -272,6 +272,8 @@ void parse_cast_expression(struct ParserState *ptr_ps,
 struct Type parse_type_name(struct ParserState *ptr_ps,
                             const struct Token **ptr_tokvec)
 {
+	(void)ptr_ps;
+
 	const struct Token *tokvec = *ptr_tokvec;
 	expect_and_consume(&tokvec, RES_INT, "type name `int`");
 
