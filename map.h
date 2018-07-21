@@ -1,3 +1,5 @@
+#pragma once
+
 struct map {
 	int _length;
 	int _alloc;

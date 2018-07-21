@@ -5,16 +5,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-struct VarInfo {
-	struct Type type;
-	int offset;
-};
-
-struct VarTableList {
-	struct map var_table;
-	struct VarTableList *outer;
-};
-
 struct ParserState {
 	struct VarTableList scope_chain;
 	int newest_offset;

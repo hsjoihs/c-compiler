@@ -1,4 +1,5 @@
 #pragma once
+#include "map.h"
 
 
 void gen_prologue(int alloc_size, const char* fname);
@@ -149,3 +150,15 @@ struct Type {
 	struct Type *pointer_of;
 };
 int size_of(struct Type type);
+
+
+struct VarInfo {
+	struct Type type;
+	int offset;
+};
+
+struct VarTableList {
+	struct map var_table;
+	struct VarTableList *outer;
+};
+
