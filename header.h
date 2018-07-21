@@ -159,3 +159,15 @@ struct VarTableList {
 	struct VarTableList *outer;
 };
 
+enum expr_info_ {
+	FIXME__TYPE_UNKNOWN,
+	LOCAL_VAR,
+	NOT_ASSIGNABLE
+};
+
+struct ExprInfo {
+	enum expr_info_ info;
+	struct Type type;
+	int offset;
+};
+
