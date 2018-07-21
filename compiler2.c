@@ -984,8 +984,13 @@ struct ExprInfo parse_unary_expression(struct ParserState *ptr_ps,
 	    tokvec[0].kind == OP_PLUS || tokvec[0].kind == OP_MINUS) {
 		enum TokenKind kind = tokvec[0].kind;
 		++tokvec;
-		parse_cast_expression(ptr_ps, &tokvec);
+		struct ExprInfo expr_info =
+		    remove_leftiness(parse_cast_expression(ptr_ps, &tokvec));
+		expect_type(expr_info, INT_TYPE);
 		print_unary_prefix_op(kind);
+
+		*ptr_tokvec = tokvec;
+		return expr_info;
 	} else if ((tokvec[0].kind == OP_PLUS_PLUS ||
 	            tokvec[0].kind == OP_MINUS_MINUS) &&
 	           tokvec[1].kind == IDENT_OR_RESERVED) {
