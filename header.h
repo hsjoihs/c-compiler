@@ -174,3 +174,4 @@ struct ExprInfo {
 extern struct ExprInfo FIXME;
 extern struct Type INT_TYPE;
 
+void expect_type(struct ExprInfo expr_info, struct Type expected_type);

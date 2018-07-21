@@ -40,3 +40,15 @@ void debug_print_type(struct Type type)
 			return;
 	}
 }
+
+void expect_type(struct ExprInfo expr_info, struct Type expected_type)
+{
+	if (!is_equal(expr_info.type, expected_type)) {
+		fprintf(stderr, "Unmatched type: expected `");
+		debug_print_type(expected_type);
+		fprintf(stderr, "` but got `");
+		debug_print_type(expr_info.type);
+		fprintf(stderr, "`.\n");
+		exit(EXIT_FAILURE);
+	}
+}
