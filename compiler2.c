@@ -424,11 +424,7 @@ struct ExprInfo parse_primary_expression(struct ParserState *ptr_ps,
 		++*ptr_tokvec;
 		gen_push_int(tokvec[0].int_value);
 
-		struct ExprInfo info;
-		info.info = NOT_ASSIGNABLE;
-		info.type = INT_TYPE;
-		info.offset = GARBAGE_INT;
-		return info;
+		return UNASSIGNABLE_INT;
 
 	} else if (tokvec[0].kind == IDENT_OR_RESERVED) {
 		++*ptr_tokvec;
