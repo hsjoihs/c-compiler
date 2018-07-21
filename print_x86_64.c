@@ -155,13 +155,6 @@ void gen_push_ret_of(const char *fname)
 	       "  movl %%eax, (%%rsp)\n");
 }
 
-void gen_push_eax(void)
-{
-	printf("//gen_push_eax()\n");
-	printf("  subq $8, %%rsp\n"
-	       "  movl %%eax, (%%rsp)\n");
-}
-
 void gen_pop_to_reg(const char *str)
 {
 	printf("//gen_pop_to_reg(%s)\n", str);
