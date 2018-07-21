@@ -78,9 +78,9 @@ void gen_while_part2(int label1, int label2)
 	printf("  je .L%d\n", label2);
 }
 
-void gen_for_part4(int label1, int label2, int label3)
+void gen_for_part4(int label1, int label2)
 {
-	printf("//gen_for_part4(%d, %d, %d)\n", label1, label2, label3);
+	printf("//gen_for_part4(%d, %d)\n", label1, label2);
 	printf("  jmp .L%d\n", label1);
 	printf(".L%d:\n", label2);
 }
