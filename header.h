@@ -1,5 +1,6 @@
 #pragma once
 #include "map.h"
+#include "vector.h"
 
 
 void gen_prologue(int alloc_size, const char* fname);
@@ -161,4 +162,14 @@ struct VarTableList {
 	struct map var_table;
 	struct VarTableList *outer;
 };
+
+
+struct TypeCheckerState {
+	struct VarTableList scope_chain;
+	struct vector type_stack;
+	int stack_length;
+};
+
+void typecheck_push_int(struct TypeCheckerState *ptr_tcs, int num);
+
 

@@ -1,3 +1,5 @@
+#pragma once
+
 struct vector {
 	int length;
 	int _allocated_length;
