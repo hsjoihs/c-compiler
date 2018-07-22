@@ -140,7 +140,7 @@ void inc_or_dec(struct ParserState *ptr_ps, const char *name,
 void binary_op(enum TokenKind kind);
 void print_unary_prefix_op(enum TokenKind kind);
 
-enum typ_ { INT_, PTR_ };
+enum typ_ { INT_ = 1, PTR_ };
 
 struct Type {
 	enum typ_ type;

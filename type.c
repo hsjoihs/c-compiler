@@ -12,6 +12,9 @@ int size_of(struct Type type)
 			return 4;
 		case PTR_:
 			return 8;
+		default:
+			fprintf(stderr, "Unknown type with id %d\n", type.type);
+			exit(EXIT_FAILURE);
 	}
 }
 

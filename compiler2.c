@@ -873,7 +873,7 @@ void parse_parameter_declaration(struct ParserState *ptr_ps,
 	const struct Token *tokvec = *ptr_tokvec;
 	int counter = *ptr_counter;
 
-	parse_type_name(ptr_ps, &tokvec);
+	struct Type type = parse_type_name(ptr_ps, &tokvec);
 
 	if (tokvec[0].kind != IDENT_OR_RESERVED) {
 		error_unexpected_token(tokvec, "identifier in the arglist of funcdef");
@@ -889,6 +889,7 @@ void parse_parameter_declaration(struct ParserState *ptr_ps,
 	struct map map_ = ptr_ps->scope_chain.var_table;
 	struct VarInfo *ptr_varinfo = calloc(1, sizeof(struct VarInfo));
 	ptr_varinfo->offset = ptr_ps->newest_offset;
+	ptr_varinfo->type = type;
 
 	insert(&map_, tokvec[0].ident_str, ptr_varinfo);
 
