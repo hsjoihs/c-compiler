@@ -12,6 +12,9 @@ int size_of(struct Type type)
 			return 4;
 		case PTR_:
 			return 8;
+		default:
+			fprintf(stderr, "Unknown type with id %d\n", type.type);
+			exit(EXIT_FAILURE);
 	}
 }
 
@@ -38,5 +41,19 @@ void debug_print_type(struct Type type)
 		case INT_:
 			fprintf(stderr, "int");
 			return;
+	}
+}
+
+void expect_type(struct ExprInfo expr_info, struct Type expected_type, int id)
+{
+
+	if (!is_equal(expr_info.type, expected_type)) {
+		fprintf(stderr, "Unmatched type: expected `");
+		debug_print_type(expected_type);
+		fprintf(stderr, "` but got `");
+		debug_print_type(expr_info.type);
+		fprintf(stderr, "`.\n");
+		fprintf(stderr, "Debug info: my typecheck # is %d\n", id);
+		exit(EXIT_FAILURE);
 	}
 }
