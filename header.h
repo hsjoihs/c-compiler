@@ -175,7 +175,7 @@ extern struct ExprInfo FIXME;
 extern struct Type INT_TYPE;
 extern struct ExprInfo UNASSIGNABLE_INT;
 
-void expect_type(struct ExprInfo expr_info, struct Type expected_type);
+void expect_type(struct ExprInfo expr_info, struct Type expected_type, int id);
 struct ExprInfo remove_leftiness(struct ExprInfo info);
 
 struct ExprInfo UNASSIGNABLE(struct Type type);

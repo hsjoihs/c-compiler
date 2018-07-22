@@ -41,7 +41,7 @@ void debug_print_type(struct Type type)
 	}
 }
 
-void expect_type(struct ExprInfo expr_info, struct Type expected_type)
+void expect_type(struct ExprInfo expr_info, struct Type expected_type, int id)
 {
 	if (expr_info.info == FIXME__TYPE_UNKNOWN) {
 		fprintf(stderr, "expected `");
@@ -55,6 +55,7 @@ void expect_type(struct ExprInfo expr_info, struct Type expected_type)
 		fprintf(stderr, "` but got `");
 		debug_print_type(expr_info.type);
 		fprintf(stderr, "`.\n");
+		fprintf(stderr, "Debug info: my typecheck # is %d\n", id);
 		exit(EXIT_FAILURE);
 	}
 }

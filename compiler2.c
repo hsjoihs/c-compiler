@@ -160,7 +160,7 @@ struct ExprInfo parse_assignment_expression(struct ParserState *ptr_ps,
 
 		struct ExprInfo expr_info =
 		    parse_assignment_expression(ptr_ps, &tokvec);
-		expect_type(expr_info, info.type);
+		expect_type(expr_info, info.type, 0);
 
 		if (opkind != OP_EQ) {
 			printf("//before assigning to `%s`:\n", name);
@@ -212,7 +212,7 @@ struct ExprInfo parse_conditional_expression(struct ParserState *ptr_ps,
 
 		*ptr_tokvec = tokvec;
 
-		expect_type(false_branch_info, true_branch_info.type);
+		expect_type(false_branch_info, true_branch_info.type, 1);
 		return remove_leftiness(true_branch_info);
 	}
 	*ptr_tokvec = tokvec;
@@ -1009,7 +1009,7 @@ struct ExprInfo parse_unary_expression(struct ParserState *ptr_ps,
 		++tokvec;
 		struct ExprInfo expr_info =
 		    remove_leftiness(parse_cast_expression(ptr_ps, &tokvec));
-		expect_type(expr_info, INT_TYPE);
+		expect_type(expr_info, INT_TYPE, 2);
 		print_unary_prefix_op(kind);
 
 		*ptr_tokvec = tokvec;
