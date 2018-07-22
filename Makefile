@@ -157,6 +157,10 @@ check_error:
 	./test_compile_error.sh 'int main(int a'
 	./test_compile_error.sh 'int main() {int a; int *b; b = a; return a;}'
 	./test_compile_error.sh 'int main() {int a; int *b; 1? b : a; return a;}'
+	./test_compile_error.sh 'int main() {int a; *a;}'
+	./test_compile_error.sh 'int main(){int x; int *y; y = &x;int **z; z = y;}'
+	./test_compile_error.sh 'int main(){int x; int *y; y = &x; **y;}'
+	
 	
 
 

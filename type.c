@@ -50,7 +50,7 @@ void expect_type(struct ExprInfo expr_info, struct Type expected_type, int id)
 	if (!is_equal(expr_info.type, expected_type)) {
 		fprintf(stderr, "Unmatched type: expected `");
 		debug_print_type(expected_type);
-		fprintf(stderr, "` but got `");
+		fprintf(stderr, "`, but got `");
 		debug_print_type(expr_info.type);
 		fprintf(stderr, "`.\n");
 		fprintf(stderr, "Debug info: my typecheck # is %d\n", id);
@@ -65,7 +65,7 @@ struct Type deref_type(struct Type t)
 			return *t.pointer_of;
 
 		default:
-			fprintf(stderr, "Unmatched type: expected a pointer, but got`");
+			fprintf(stderr, "Unmatched type: expected a pointer, but got `");
 			debug_print_type(t);
 			fprintf(stderr, "`.\n");
 			exit(EXIT_FAILURE);
