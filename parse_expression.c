@@ -5,7 +5,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-struct ExprInfo FIXME = {FIXME__TYPE_UNKNOWN};
 struct Type INT_TYPE = {INT_, 0};
 struct ExprInfo UNASSIGNABLE_INT = {NOT_ASSIGNABLE, {INT_, 0}, GARBAGE_INT};
 
@@ -320,5 +319,5 @@ struct ExprInfo parse_multiplicative_expression(struct ParserState *ptr_ps,
 		binary_op(kind);
 	}
 	*ptr_tokvec = tokvec;
-	return FIXME;
+	return expr_info;
 }
