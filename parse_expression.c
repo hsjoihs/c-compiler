@@ -191,7 +191,7 @@ struct ExprInfo parse_AND_expression(struct ParserState *ptr_ps,
 		}
 		++tokvec;
 
-		/* expect_type(expr_info, INT_TYPE, 7); */ // intereferes with unary &
+		expect_type(expr_info, INT_TYPE, 7);
 
 		expr_info =
 		    remove_leftiness(parse_equality_expression(ptr_ps, &tokvec));

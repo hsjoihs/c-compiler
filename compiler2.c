@@ -1014,7 +1014,7 @@ struct ExprInfo parse_unary_expression(struct ParserState *ptr_ps,
 		print_unary_prefix_op(kind);
 
 		*ptr_tokvec = tokvec;
-		return expr_info;
+		return remove_leftiness(expr_info);
 	} else if (tokvec[0].kind == OP_PLUS_PLUS ||
 	           tokvec[0].kind == OP_MINUS_MINUS) {
 		enum TokenKind opkind = tokvec[0].kind;
@@ -1035,6 +1035,8 @@ struct ExprInfo parse_unary_expression(struct ParserState *ptr_ps,
 	} else if (tokvec[0].kind == OP_AND) {
 		if (tokvec[1].kind == IDENT_OR_RESERVED) {
 			const char *name = tokvec[1].ident_str;
+
+			tokvec += 2;
 			struct VarInfo info = resolve_name_(ptr_ps->scope_chain, name);
 			gen_push_address_of_local(info.offset);
 			*ptr_tokvec = tokvec;

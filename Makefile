@@ -32,6 +32,7 @@ full_compile:
 	./test_ret4.sh 086 'int main(){int a; a = 3; { a = 174;} return a;}' 174 out/compiler.out
 	./test_ret4.sh 085 'int main(){int a; a = 174; {int a; a = 3;} return a;}' 174 out/compiler.out
 	./test_ret4.sh 084 'int main(){int a; int b; for(a=0,b=0;a<10;a++){ if(a ==5)continue;b+=a;} return b;}' 40 out/compiler.out
+	./test_ret4.sh 089 'int main() {int a; a = 174; int *b; b = &a; return a;}' 174 out/compiler.out
 	./test_ret4.sh 083 'int main(){int a; int b; int c; int d; d=0; b = 5; c = 0;for(a = 3;a;d++){for(;b;++d) {c += b;b-=1;if(b == 3) break;}b = 7;a-=1;if(a == 1) break;} return a*7+b*15+c*2;}' 174 out/compiler.out
 	./test_ret4.sh 082 'int main(){int a; int b; for(a=0,b=0;a <= 10;a++) {b += a;}return b;}' 55 out/compiler.out
 	./test_ret4.sh 081 'int main(){int a; int b; for(a=0,b=0;a <= 10;++a) {b += a;}return b;}' 55 out/compiler.out
@@ -117,7 +118,6 @@ full_compile:
 	./test_ret4.sh 066 'int main(){int a; int b; a =0; b=0; do{a-=1;b+=a;if(a)continue;break; a+=100;}while(a+3); return a*b*10+a+b+3;}' 174 out/compiler.out
 	./test_ret4.sh 087 'int main() {int *b; int a; a = 3; a += 5;  return a + 166; }' 174 out/compiler.out
 	./test_ret4.sh 088 'int main() {int *******b; int a; a = 3; a += 5;  return a + 166; }' 174 out/compiler.out
-	#./test_ret4.sh 089 'int main() {int a; a = 174; int *b; b = &a; return a;}' 174 out/compiler.out
 	
 
 check_error:
