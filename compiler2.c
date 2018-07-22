@@ -158,7 +158,9 @@ struct ExprInfo parse_assignment_expression(struct ParserState *ptr_ps,
 			}
 		}
 
-		parse_assignment_expression(ptr_ps, &tokvec);
+		struct ExprInfo expr_info =
+		    parse_assignment_expression(ptr_ps, &tokvec);
+		expect_type(expr_info, info.type);
 
 		if (opkind != OP_EQ) {
 			printf("//before assigning to `%s`:\n", name);
@@ -174,11 +176,14 @@ struct ExprInfo parse_assignment_expression(struct ParserState *ptr_ps,
 				gen_write_to_local_8byte(info.offset);
 				break;
 		}
+		*ptr_tokvec = tokvec;
+		return UNASSIGNABLE(info.type);
 	} else {
-		parse_conditional_expression(ptr_ps, &tokvec);
+		struct ExprInfo expr_info =
+		    parse_conditional_expression(ptr_ps, &tokvec);
+		*ptr_tokvec = tokvec;
+		return expr_info;
 	}
-	*ptr_tokvec = tokvec;
-	return FIXME;
 }
 
 struct ExprInfo parse_conditional_expression(struct ParserState *ptr_ps,
@@ -1033,7 +1038,19 @@ struct ExprInfo parse_unary_expression(struct ParserState *ptr_ps,
 			gen_push_address_of_local(info.offset);
 			*ptr_tokvec = tokvec;
 
-			return FIXME;
+			struct Type *ptr_type = calloc(1, sizeof(struct Type));
+			*ptr_type = info.type;
+
+			struct ExprInfo expr_info;
+			expr_info.info = NOT_ASSIGNABLE;
+			expr_info.type.type = PTR_;
+			expr_info.type.pointer_of = ptr_type;
+			expr_info.offset = GARBAGE_INT;
+
+			return expr_info;
+		} else {
+			fprintf(stderr, "& followed by non-identifier: unimplemented!!!\n");
+			exit(EXIT_FAILURE);
 		}
 
 	} else {
@@ -1041,6 +1058,15 @@ struct ExprInfo parse_unary_expression(struct ParserState *ptr_ps,
 		*ptr_tokvec = tokvec;
 		return expr_info;
 	}
+}
+
+struct ExprInfo UNASSIGNABLE(struct Type type) {
+	struct ExprInfo expr_info;
+	expr_info.info = NOT_ASSIGNABLE;
+	expr_info.type = type;
+	expr_info.offset = GARBAGE_INT;
+
+	return expr_info;
 }
 
 int main(int argc, char const **argv)
