@@ -913,7 +913,8 @@ void parse_function_definition(struct ParserState *ptr_ps,
 	if (tokvec[0].kind == IDENT_OR_RESERVED && tokvec[1].kind == LEFT_PAREN) {
 		const char *ident_str = tokvec[0].ident_str;
 
-		int capacity = 0;
+		int capacity =
+		    8; /* 8 is the space to store the address to handle deref */
 		struct map map_ = init_int_map();
 
 		for (int i = 0;; i++) {
@@ -932,7 +933,7 @@ void parse_function_definition(struct ParserState *ptr_ps,
 		ptr_ps->return_label_name = GARBAGE_INT;   /* INITIALIZE */
 		ptr_ps->break_label_name = GARBAGE_INT;    /* INITIALIZE */
 		ptr_ps->continue_label_name = GARBAGE_INT; /* INITIALIZE */
-		ptr_ps->newest_offset = 0;
+		ptr_ps->newest_offset = -8;
 
 		if (tokvec[2].kind == RIGHT_PAREN) {
 			gen_prologue(capacity, ident_str);
