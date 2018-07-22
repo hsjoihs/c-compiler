@@ -46,12 +46,7 @@ void debug_print_type(struct Type type)
 
 void expect_type(struct ExprInfo expr_info, struct Type expected_type, int id)
 {
-	if (expr_info.info == FIXME__TYPE_UNKNOWN) {
-		fprintf(stderr, "expected `");
-		debug_print_type(expected_type);
-		fprintf(stderr, "` but got FIXME. Ignoring.\n");
-		return;
-	}
+
 	if (!is_equal(expr_info.type, expected_type)) {
 		fprintf(stderr, "Unmatched type: expected `");
 		debug_print_type(expected_type);

@@ -160,8 +160,7 @@ struct VarTableList {
 };
 
 enum expr_info_ {
-	FIXME__TYPE_UNKNOWN,
-	LOCAL_VAR,
+	LOCAL_VAR = 1,
 	NOT_ASSIGNABLE
 };
 
