@@ -31,6 +31,21 @@ void gen_write_to_local(int offset)
 	printf("  movl %%eax, %d(%%rbp)\n", offset);
 }
 
+/*
+    value = pop();
+    addr = pop();
+    *addr = value;
+    push(value);
+*/
+void gen_deref_and_write(void)
+{
+	puts("  movq 8(%rsp), %rbx\n"
+	     "  movl (%rsp), %eax\n"
+	     "  movl %eax, (%rbx)\n"
+	     "  addq $8, %rsp\n"
+	     "  movl %eax, (%rsp)\n");
+}
+
 /* write to local mem what's at the top of the stack. does not consume stack. */
 void gen_write_to_local_8byte(int offset)
 {
