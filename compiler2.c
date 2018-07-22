@@ -1019,18 +1019,28 @@ struct ExprInfo parse_unary_expression(struct ParserState *ptr_ps,
 			*ptr_tokvec = tokvec;
 
 			inc_or_dec(ptr_ps, name, opkind);
+		} else {
+			fprintf(stderr,
+			        "++ followed by non-identifier: unimplemented!!!\n");
+			exit(EXIT_FAILURE);
 		}
+		*ptr_tokvec = tokvec;
+		return UNASSIGNABLE_INT;
 	} else if (tokvec[0].kind == OP_AND) {
 		if (tokvec[1].kind == IDENT_OR_RESERVED) {
 			const char *name = tokvec[1].ident_str;
 			struct VarInfo info = resolve_name_(ptr_ps->scope_chain, name);
 			gen_push_address_of_local(info.offset);
+			*ptr_tokvec = tokvec;
+
+			return FIXME;
 		}
+
 	} else {
-		parse_postfix_expression(ptr_ps, &tokvec);
+		struct ExprInfo expr_info = parse_postfix_expression(ptr_ps, &tokvec);
+		*ptr_tokvec = tokvec;
+		return expr_info;
 	}
-	*ptr_tokvec = tokvec;
-	return FIXME;
 }
 
 int main(int argc, char const **argv)
