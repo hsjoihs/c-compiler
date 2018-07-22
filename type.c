@@ -57,3 +57,17 @@ void expect_type(struct ExprInfo expr_info, struct Type expected_type, int id)
 		exit(EXIT_FAILURE);
 	}
 }
+
+struct Type deref_type(struct Type t)
+{
+	switch (t.type) {
+		case PTR_:
+			return *t.pointer_of;
+
+		default:
+			fprintf(stderr, "Unmatched type: expected a pointer, but got`");
+			debug_print_type(t);
+			fprintf(stderr, "`.\n");
+			exit(EXIT_FAILURE);
+	}
+}

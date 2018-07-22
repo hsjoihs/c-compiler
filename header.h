@@ -161,6 +161,7 @@ struct VarTableList {
 
 enum expr_info_ {
 	LOCAL_VAR = 1,
+	DEREFERENCED_ADDRESS,
 	NOT_ASSIGNABLE
 };
 
@@ -178,3 +179,5 @@ void expect_type(struct ExprInfo expr_info, struct Type expected_type, int id);
 struct ExprInfo remove_leftiness(struct ExprInfo info);
 
 struct ExprInfo UNASSIGNABLE(struct Type type);
+
+struct Type deref_type(struct Type t);
