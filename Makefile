@@ -151,6 +151,9 @@ check_error:
 	./test_compile_error.sh 'int main(){1}'
 	./test_compile_error.sh 'int main('
 	./test_compile_error.sh 'int main(int a'
+	./test_compile_error.sh 'int main() {int a; int *b; b = a; return a;}'
+	./test_compile_error.sh 'int main() {int a; int *b; 1? b : a; return a;}'
+	
 
 
 
