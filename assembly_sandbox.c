@@ -8,13 +8,14 @@ int main() {
     int *y;
     x = 3;
     y = &x;
-    *y = 174;
+    *y = 171;
+    *y += 3;
     return x;
 }
 */
 int main()
 {
-	gen_prologue(0, "main");
+	gen_prologue(24, "main");
 
 	/* x = 3; */
 	gen_push_int(3);
@@ -26,14 +27,25 @@ int main()
 	gen_write_to_local_8byte(-8);
 	gen_discard();
 
+	/* *y = 171; */
 	gen_push_from_local_8byte(-8);
-	gen_push_int(174);
+	gen_push_int(171);
 	gen_deref_and_write();
-
 	gen_discard();
 
-	/* return x;*/
+	gen_push_from_local_8byte(-8);
+	/* *y */
+	gen_push_from_local_8byte(-8);
+	gen_peek_and_dereference();
+	/* 3 */
+	gen_push_int(3);
+	/* + */
+	gen_op_ints("addl");
+
+	gen_deref_and_write();
+
 	gen_push_from_local(-12);
+
 	gen_epilogue(12345);
 	return 0;
 }
