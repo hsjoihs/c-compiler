@@ -1056,6 +1056,31 @@ struct ExprInfo parse_unary_expression(struct ParserState *ptr_ps,
 			exit(EXIT_FAILURE);
 		}
 
+	} else if (tokvec[0].kind == OP_ASTERISK) {
+		++tokvec;
+		struct ExprInfo expr_info =
+		    remove_leftiness(parse_cast_expression(ptr_ps, &tokvec));
+		struct Type type = deref_type(expr_info.type);
+
+		switch (size_of(type)) {
+			case 4:
+				gen_peek_and_dereference();
+				break;
+			case 8:
+				gen_peek_and_dereference_8byte();
+				break;
+			default:
+				fprintf(stderr, "Unsupported width\n");
+				exit(EXIT_FAILURE);
+		}
+
+		struct ExprInfo new_expr_info;
+		new_expr_info.info = DEREFERENCED_ADDRESS;
+		new_expr_info.type = type;
+		new_expr_info.offset = GARBAGE_INT;
+
+		*ptr_tokvec = tokvec;
+		return new_expr_info;
 	} else {
 		struct ExprInfo expr_info = parse_postfix_expression(ptr_ps, &tokvec);
 		*ptr_tokvec = tokvec;

@@ -288,11 +288,11 @@ struct ExprInfo parse_additive_expression(struct ParserState *ptr_ps,
 		}
 		++tokvec;
 
-		expect_type(expr_info, INT_TYPE, 15);
-
-		expr_info =
+		struct ExprInfo expr_info2 =
 		    remove_leftiness(parse_multiplicative_expression(ptr_ps, &tokvec));
-		expect_type(expr_info, INT_TYPE, 16);
+		expect_type(expr_info, INT_TYPE, 15);
+		expect_type(expr_info2, INT_TYPE, 16);
+		expr_info2 = expr_info;
 		binary_op(kind);
 	}
 	*ptr_tokvec = tokvec;
@@ -312,10 +312,11 @@ struct ExprInfo parse_multiplicative_expression(struct ParserState *ptr_ps,
 		}
 		++tokvec;
 
+		struct ExprInfo expr_info2 =
+		    remove_leftiness(parse_cast_expression(ptr_ps, &tokvec));
 		expect_type(expr_info, INT_TYPE, 17);
-
-		expr_info = remove_leftiness(parse_cast_expression(ptr_ps, &tokvec));
 		expect_type(expr_info, INT_TYPE, 18);
+		expr_info2 = expr_info;
 		binary_op(kind);
 	}
 	*ptr_tokvec = tokvec;
