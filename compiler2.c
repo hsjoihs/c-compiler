@@ -975,15 +975,17 @@ void parse_function_definition(struct ParserState *ptr_ps,
 void inc_or_dec(struct ParserState *ptr_ps, const char *name,
                 enum TokenKind opkind)
 {
+	struct VarInfo info = resolve_name_(ptr_ps->scope_chain, name);
+
 	printf("//load from `%s`\n", name);
-	gen_push_from_local(get_offset_from_name(*ptr_ps, name));
+	gen_push_from_local(info.offset);
 	gen_push_int(1);
 
 	printf("//before assigning to `%s`:\n", name);
 	before_assign(opkind);
 
 	printf("//assign to `%s`\n", name);
-	gen_write_to_local(get_offset_from_name(*ptr_ps, name));
+	gen_write_to_local(info.offset);
 }
 
 struct ExprInfo parse_unary_expression(struct ParserState *ptr_ps,
