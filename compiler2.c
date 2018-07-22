@@ -391,6 +391,8 @@ struct ExprInfo parse_postfix_expression(struct ParserState *ptr_ps,
 
 			*ptr_tokvec = tokvec;
 		}
+		*ptr_tokvec = tokvec;
+		return UNASSIGNABLE_INT;
 
 	} else if (tokvec[0].kind == IDENT_OR_RESERVED &&
 	           (tokvec[1].kind == OP_PLUS_PLUS ||
@@ -404,11 +406,13 @@ struct ExprInfo parse_postfix_expression(struct ParserState *ptr_ps,
 
 		gen_push_int(-1);
 		before_assign(opkind);
+		*ptr_tokvec = tokvec;
+		return UNASSIGNABLE_INT;
 	} else {
-		parse_primary_expression(ptr_ps, &tokvec);
+		struct ExprInfo expr_info = parse_primary_expression(ptr_ps, &tokvec);
+		*ptr_tokvec = tokvec;
+		return expr_info;
 	}
-	*ptr_tokvec = tokvec;
-	return FIXME;
 }
 
 /* returns the identifier; returns type thru pointer */
