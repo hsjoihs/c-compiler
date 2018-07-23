@@ -184,9 +184,22 @@ struct ExprInfo parse_assignment_expression(struct ParserState *ptr_ps,
 		return UNASSIGNABLE(info.type);
 	}
 
-	struct ExprInfo expr_info = parse_conditional_expression(ptr_ps, &tokvec);
-	*ptr_tokvec = tokvec;
-	return expr_info;
+	int label = get_new_label_name(ptr_ps);
+
+	const struct Token *tokvec2 = tokvec;
+	struct ParserState *ptr_ps2 = ptr_ps;
+	printf(" jmp .L%d\n", label);
+	parse_unary_expression(ptr_ps2, &tokvec2);
+	printf(".L%d:\n", label);
+	if (!isAssign(tokvec2[0].kind)) {
+		struct ExprInfo expr_info =
+		    parse_conditional_expression(ptr_ps, &tokvec);
+		*ptr_tokvec = tokvec;
+		return expr_info;
+	} else {
+		fprintf(stderr, "unimplemented!!!!!\n");
+		exit(EXIT_FAILURE);
+	}
 }
 
 struct ExprInfo parse_conditional_expression(struct ParserState *ptr_ps,
