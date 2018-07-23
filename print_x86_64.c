@@ -130,10 +130,11 @@ void gen_peek_and_dereference_8byte(void)
 */
 void gen_assign_to_backed_up_address(void)
 {
-	puts("  movq (%rsp), %rax\n");
-	puts("  movq -8(%rbp), %rbx\n");
-	puts("  movl %eax, (%rbx)\n"
-	     "  movl %eax, (%rsp)\n");
+	printf("//gen_assign_to_backed_up_address()\n");
+	puts("  movq (%rsp), %rax\n"
+	     "  movq -8(%rbp), %rbx\n"
+	     "  movq %rax, (%rbx)\n"
+	     "  movq %rax, (%rsp)");
 }
 
 /* push what's on local mem */
