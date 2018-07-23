@@ -29,6 +29,7 @@ notest:
 full_compile:
 	make supplement
 	make notest
+	./test_ret4.sh 098 'int foo(int* p){return 3;} int main(){int x; return 174;}' 174 out/compiler.out
 	./test_ret4.sh 090 'int main(){int x;x = 86;int *y;y = &x; return (*y) + x + 2;}' 174 out/compiler.out
 	./test_ret4.sh 091 'int main(){int x;x = 86;int *y;y = &x; return (*y) + (*y) + 2;}' 174 out/compiler.out
 	./test_ret4.sh 092 'int main(){int x;x = 86;int *y;y = &x;int **z;z = &y;return (*y) + (**z) + 2;}' 174 out/compiler.out
