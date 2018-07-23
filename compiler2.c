@@ -188,8 +188,7 @@ struct ExprInfo parse_assignment_expression(struct ParserState *ptr_ps,
 
 	const struct Token *tokvec2 = tokvec;
 	struct ParserState *ptr_ps2 = ptr_ps;
-	printf("  jmp .L%d\n", label);
-	printf("// commenting out\n");
+	gen_jump(label, "commenting out");
 	parse_unary_expression(ptr_ps2, &tokvec2);
 	printf("// comment finishes\n");
 	printf("  .L%d:\n", label);
@@ -625,9 +624,9 @@ void parse_statement(struct ParserState *ptr_ps,
 			if (ptr_ps->return_label_name == GARBAGE_INT) {
 				int ret_label = get_new_label_name(ptr_ps);
 				ptr_ps->return_label_name = ret_label;
-				gen_return_with_label(ret_label);
+				gen_jump(ret_label, "return");
 			} else {
-				gen_return_with_label(ptr_ps->return_label_name);
+				gen_jump(ptr_ps->return_label_name, "return");
 			}
 
 			return;
@@ -709,8 +708,7 @@ void parse_statement(struct ParserState *ptr_ps,
 			fprintf(stderr, "invalid `break`; no loop, no switch\n");
 			exit(EXIT_FAILURE);
 		} else {
-			printf("//break;\n");
-			printf("  jmp .L%d\n", ptr_ps->break_label_name);
+			gen_jump(ptr_ps->break_label_name, "break");
 		}
 
 		return;
@@ -724,8 +722,7 @@ void parse_statement(struct ParserState *ptr_ps,
 			fprintf(stderr, "invalid `continue`; no loop\n");
 			exit(EXIT_FAILURE);
 		} else {
-			printf("//continue;\n");
-			printf("  jmp .L%d\n", ptr_ps->continue_label_name);
+			gen_jump(ptr_ps->continue_label_name, "continue");
 		}
 
 		return;
@@ -782,8 +779,7 @@ void parse_statement(struct ParserState *ptr_ps,
 
 			/* parse, but do not output. no problems regarding nested comments
 			 * arises, since parse_expression can never have `for` within it */
-			printf(" jmp .L%d\n", lab);
-			printf("// commenting out, to handle expression3 of `for`\n");
+			gen_jump(lab, "commenting out, to handle expression3 of `for`");
 			parse_expression(ptr_ps, &tokvec2);
 			printf("// comment finishes\n");
 			printf(".L%d:\n", lab);

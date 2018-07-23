@@ -14,7 +14,6 @@ void gen_unary_not(void);
 void gen_unary(const char* str);
 void gen_push_from_local(int offset);
 void gen_write_to_local(int offset);
-void gen_return_with_label(int label);
 void gen_epilogue(int label);
 void gen_push_ret_of(const char* fname);
 void gen_pop_to_reg(const char *str);
@@ -40,6 +39,7 @@ void gen_push_from_local_8byte(int offset);
 void gen_peek_and_dereference(void);
 void gen_peek_and_dereference_8byte(void);
 void gen_assign_to_backed_up_address(void);
+void gen_jump(int label, const char *comment);
 
 #define GARBAGE_INT ((int)0xCCCCCCCC)
 #define BOOL int

@@ -190,11 +190,10 @@ void gen_mul_ints(void)
 	       "  addq $8, %%rsp\n");
 }
 
-void gen_return_with_label(int label)
+void gen_jump(int label, const char *comment)
 {
-	printf("//return \n"
-	       "  jmp .L%d\n",
-	       label);
+	printf("//comment: %s\n", comment);
+	printf("  jmp .L%d\n", label);
 }
 
 void gen_div_ints(void)
