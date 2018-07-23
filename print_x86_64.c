@@ -106,7 +106,7 @@ void gen_peek_and_dereference(void)
 	puts("  movq (%rsp), %rax \n"
 	     "  movq %rax, -8(%rbp) //backup\n"
 	     "  movl (%rax), %eax\n"
-	     "  movl  %eax, (%rsp)\n");
+	     "  movl  %eax, (%rsp)");
 }
 
 /*
@@ -119,7 +119,7 @@ void gen_peek_and_dereference_8byte(void)
 	puts("  movq (%rsp), %rax \n"
 	     "  movq %rax, -8(%rbp) //backup\n"
 	     "  movq (%rax), %rax\n"
-	     "  movq  %rax, (%rsp)\n");
+	     "  movq  %rax, (%rsp)");
 }
 
 /*
