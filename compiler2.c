@@ -128,6 +128,15 @@ void before_assign(enum TokenKind kind)
 	}
 }
 
+int isAssign(enum TokenKind opkind)
+{
+	return (opkind == OP_EQ || opkind == OP_PLUS_EQ || opkind == OP_MINUS_EQ ||
+	        opkind == OP_ASTERISK_EQ || opkind == OP_SLASH_EQ ||
+	        opkind == OP_PERCENT_EQ || opkind == OP_LSHIFT_EQ ||
+	        opkind == OP_RSHIFT_EQ || opkind == OP_AND_EQ ||
+	        opkind == OP_HAT_EQ || opkind == OP_OR_EQ);
+}
+
 struct ExprInfo parse_assignment_expression(struct ParserState *ptr_ps,
                                             const struct Token **ptr_tokvec)
 {
@@ -135,12 +144,7 @@ struct ExprInfo parse_assignment_expression(struct ParserState *ptr_ps,
 
 	enum TokenKind opkind = tokvec[1].kind;
 
-	if (tokvec[0].kind == IDENT_OR_RESERVED &&
-	    (opkind == OP_EQ || opkind == OP_PLUS_EQ || opkind == OP_MINUS_EQ ||
-	     opkind == OP_ASTERISK_EQ || opkind == OP_SLASH_EQ ||
-	     opkind == OP_PERCENT_EQ || opkind == OP_LSHIFT_EQ ||
-	     opkind == OP_RSHIFT_EQ || opkind == OP_AND_EQ || opkind == OP_HAT_EQ ||
-	     opkind == OP_OR_EQ)) {
+	if (tokvec[0].kind == IDENT_OR_RESERVED && isAssign(opkind)) {
 		const char *name = tokvec[0].ident_str;
 		tokvec += 2;
 		*ptr_tokvec = tokvec;
