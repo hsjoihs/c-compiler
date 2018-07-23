@@ -216,16 +216,19 @@ struct ExprInfo parse_assignment_expression(struct ParserState *ptr_ps,
 		case DEREFERENCED_ADDRESS: {
 			enum TokenKind opkind = tokvec[0].kind;
 			++tokvec;
-			puts("  subq $8, %rsp\n"
-			     "  movq -8(%rbp), %rbx\n"
-			     "  movq %rbx, (%rsp)\n");
+
+			/* push the backup */
+			gen_push_from_local_8byte(-8);
+
 			struct ExprInfo expr_info2 =
 			    parse_assignment_expression(ptr_ps, &tokvec);
 			expect_type(expr_info, expr_info2.type, 19);
 
 			puts("  movq 8(%rsp), %rbx\n"
 			     "  movq %rbx, -8(%rbp)\n");
-			gen_op_ints("movl");
+			printf("  movl (%%rsp), %%eax\n"
+			       "  movl %%eax, +8(%%rsp)\n"
+			       "  addq $8, %%rsp\n");
 			if (opkind != OP_EQ) {
 				before_assign(opkind);
 			} else {
