@@ -31,6 +31,7 @@ int main()
 	gen_push_from_local_8byte(-8);
 	gen_peek_and_dereference();
 	gen_push_int(171);
+	gen_op_ints("movl");
 	gen_assign_to_backed_up_address();
 	gen_discard();
 

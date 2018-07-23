@@ -193,14 +193,42 @@ struct ExprInfo parse_assignment_expression(struct ParserState *ptr_ps,
 	parse_unary_expression(ptr_ps2, &tokvec2);
 	printf("// comment finishes\n");
 	printf(".L%d:\n", label);
+
+	/* parse failed */
 	if (!isAssign(tokvec2[0].kind)) {
 		struct ExprInfo expr_info =
 		    parse_conditional_expression(ptr_ps, &tokvec);
 		*ptr_tokvec = tokvec;
 		return expr_info;
-	} else {
-		fprintf(stderr, "unimplemented!!!!!\n");
-		exit(EXIT_FAILURE);
+	}
+
+	struct ExprInfo expr_info = parse_unary_expression(ptr_ps, &tokvec);
+
+	assert(isAssign(tokvec[0].kind));
+	switch (expr_info.info) {
+		case LOCAL_VAR:
+			assert("supposed to be handled separately, at least for now" && 0);
+			exit(EXIT_FAILURE);
+			break;
+		case NOT_ASSIGNABLE:
+			fprintf(stderr, "Expected an lvalue, but did not get one.\n");
+			exit(EXIT_FAILURE);
+			break;
+		case DEREFERENCED_ADDRESS: {
+			enum TokenKind opkind = tokvec[0].kind;
+			++tokvec;
+			struct ExprInfo expr_info2 = parse_assignment_expression(
+			    ptr_ps, &tokvec); /* FIXME: buggy! */
+			expect_type(expr_info, expr_info2.type, 19);
+			if (opkind != OP_EQ) {
+				before_assign(opkind);
+			} else {
+				gen_op_ints("movl");
+			}
+			gen_assign_to_backed_up_address();
+			*ptr_tokvec = tokvec;
+			return remove_leftiness(expr_info);
+		};
 	}
 }
 
