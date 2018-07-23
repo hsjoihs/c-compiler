@@ -48,6 +48,13 @@ void gen_write_register_to_local(const char *str, int offset)
 	printf("  movl %%%s, %d(%%rbp)\n", str, offset);
 }
 
+void gen_write_register_to_local_8byte(const char *str, int offset)
+{
+	assert(offset < 0);
+	printf("//gen_write_register_to_local_8byte(%s, %d)\n", str, offset);
+	printf("  movq %%%s, %d(%%rbp)\n", str, offset);
+}
+
 void gen_label(int label1)
 {
 	printf("//gen_label(%d)\n", label1);
@@ -170,6 +177,13 @@ void gen_pop_to_reg(const char *str)
 {
 	printf("//gen_pop_to_reg(%s)\n", str);
 	printf("  movl (%%rsp), %%%s\n", str);
+	printf("  addq $8, %%rsp\n");
+}
+
+void gen_pop_to_reg_8byte(const char *str)
+{
+	printf("//gen_pop_to_reg_8byte(%s)\n", str);
+	printf("  movq (%%rsp), %%%s\n", str);
 	printf("  addq $8, %%rsp\n");
 }
 

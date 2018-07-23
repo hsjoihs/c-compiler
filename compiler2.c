@@ -396,6 +396,26 @@ const char *get_reg_name_from_arg_pos(int counter)
 	}
 }
 
+const char *get_reg_name_from_arg_pos_8byte(int counter)
+{
+	switch (counter) {
+		case 0:
+			return "rdi";
+		case 1:
+			return "rsi";
+		case 2:
+			return "rdx";
+		case 3:
+			return "rcx";
+		case 4:
+			return "r8";
+		case 5:
+			return "r9";
+		default:
+			assert("cannot happen" && 0);
+	}
+}
+
 void parse_argument_expression(struct ParserState *ptr_ps,
                                const struct Token **ptr_tokvec,
                                int *ptr_counter)
@@ -403,12 +423,23 @@ void parse_argument_expression(struct ParserState *ptr_ps,
 	const struct Token *tokvec = *ptr_tokvec;
 	int counter = *ptr_counter;
 
-	parse_assignment_expression(ptr_ps, &tokvec);
+	struct ExprInfo expr_info = parse_assignment_expression(ptr_ps, &tokvec);
 	if (counter > 5) {
 		fprintf(stderr, "calling with 7 or more arguments is unimplemented!\n");
 		exit(EXIT_FAILURE);
 	}
-	gen_pop_to_reg(get_reg_name_from_arg_pos(counter));
+
+	switch (size_of(expr_info.type)) {
+		case 4:
+			gen_pop_to_reg(get_reg_name_from_arg_pos(counter));
+			break;
+		case 8:
+			gen_pop_to_reg_8byte(get_reg_name_from_arg_pos_8byte(counter));
+			break;
+		default:
+			fprintf(stderr, "Unsupported width.\n");
+			exit(EXIT_FAILURE);
+	}
 	counter++;
 
 	*ptr_tokvec = tokvec;
@@ -947,9 +978,19 @@ void parse_parameter_declaration(struct ParserState *ptr_ps,
 
 	ptr_ps->scope_chain.var_table = map_;
 
-	gen_write_register_to_local(
-	    get_reg_name_from_arg_pos(counter),
-	    get_offset_from_name(*ptr_ps, tokvec[0].ident_str));
+	switch (size_of(type)) {
+		case 4:
+			gen_write_register_to_local(
+			    get_reg_name_from_arg_pos(counter),
+			    get_offset_from_name(*ptr_ps, tokvec[0].ident_str));
+			break;
+		case 8:
+			gen_write_register_to_local_8byte(
+			    get_reg_name_from_arg_pos_8byte(counter),
+			    get_offset_from_name(*ptr_ps, tokvec[0].ident_str));
+			break;
+	}
+
 	++counter;
 	++tokvec;
 	*ptr_tokvec = tokvec;

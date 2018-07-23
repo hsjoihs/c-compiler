@@ -42,6 +42,8 @@ void gen_assign_to_backed_up_address(void);
 void gen_jump(int label, const char *comment);
 void gen_pop2nd_to_local_8byte(int offset);
 void gen_discard2nd_8byte(void);
+void gen_pop_to_reg_8byte(const char *str);
+void gen_write_register_to_local_8byte(const char *str, int offset);
 
 #define GARBAGE_INT ((int)0xCCCCCCCC)
 #define BOOL int
