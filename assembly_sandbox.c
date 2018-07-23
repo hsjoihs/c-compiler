@@ -31,8 +31,7 @@ int main()
 	gen_push_from_local_8byte(-8);
 	gen_peek_and_dereference();
 	gen_push_int(171);
-	gen_read_from_backup_and_prepare();
-	gen_deref_and_write();
+	gen_assign_to_backed_up_address();
 	gen_discard();
 
 	gen_push_from_local_8byte(-8);
@@ -43,9 +42,7 @@ int main()
 	/* + */
 	gen_op_ints("addl");
 
-	gen_read_from_backup_and_prepare();
-
-	gen_deref_and_write();
+	gen_assign_to_backed_up_address();
 
 	gen_push_from_local(-12);
 
