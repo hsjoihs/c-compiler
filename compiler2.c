@@ -178,12 +178,11 @@ struct ExprInfo parse_assignment_expression(struct ParserState *ptr_ps,
 		}
 		*ptr_tokvec = tokvec;
 		return UNASSIGNABLE(info.type);
-	} else {
-		struct ExprInfo expr_info =
-		    parse_conditional_expression(ptr_ps, &tokvec);
-		*ptr_tokvec = tokvec;
-		return expr_info;
 	}
+
+	struct ExprInfo expr_info = parse_conditional_expression(ptr_ps, &tokvec);
+	*ptr_tokvec = tokvec;
+	return expr_info;
 }
 
 struct ExprInfo parse_conditional_expression(struct ParserState *ptr_ps,
