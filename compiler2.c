@@ -188,11 +188,11 @@ struct ExprInfo parse_assignment_expression(struct ParserState *ptr_ps,
 
 	const struct Token *tokvec2 = tokvec;
 	struct ParserState *ptr_ps2 = ptr_ps;
-	printf(" jmp .L%d\n", label);
+	printf("  jmp .L%d\n", label);
 	printf("// commenting out\n");
 	parse_unary_expression(ptr_ps2, &tokvec2);
 	printf("// comment finishes\n");
-	printf(".L%d:\n", label);
+	printf("  .L%d:\n", label);
 
 	/* parse failed */
 	if (!isAssign(tokvec2[0].kind)) {
@@ -217,9 +217,16 @@ struct ExprInfo parse_assignment_expression(struct ParserState *ptr_ps,
 		case DEREFERENCED_ADDRESS: {
 			enum TokenKind opkind = tokvec[0].kind;
 			++tokvec;
-			struct ExprInfo expr_info2 = parse_assignment_expression(
-			    ptr_ps, &tokvec); /* FIXME: buggy! */
+			puts("  subq $8, %rsp\n"
+			     "  movq -8(%rbp), %rbx\n"
+			     "  movq %rbx, (%rsp)\n");
+			struct ExprInfo expr_info2 =
+			    parse_assignment_expression(ptr_ps, &tokvec);
 			expect_type(expr_info, expr_info2.type, 19);
+
+			puts("  movq 8(%rsp), %rbx\n"
+			     "  movq %rbx, -8(%rbp)\n");
+			gen_op_ints("movl");
 			if (opkind != OP_EQ) {
 				before_assign(opkind);
 			} else {

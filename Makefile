@@ -35,6 +35,7 @@ full_compile:
 	./test_ret4.sh 093 'int main(){int x;x = 86;int *y;y = &x;int **z;z = &y;return*y+**z+2;}' 174 out/compiler.out
 	./test_ret4.sh 094 'int main() {int x;int *y;x = 3;y = &x;*y = 174;return x;}' 174 out/compiler.out
 	./test_ret4.sh 095 'int main() {int x;int *y;x = 3;y = &x;*y = 171;*y += 3;return x;}' 174 out/compiler.out
+	./test_ret4.sh 096 'int main(){int x; int y; int *z; int*a; z=&x; a=&y; *z=*a=87; return(x+y);}' 174 out/compiler.out
 	./test_ret4.sh 086 'int main(){int a; a = 3; { a = 174;} return a;}' 174 out/compiler.out
 	./test_ret4.sh 085 'int main(){int a; a = 174; {int a; a = 3;} return a;}' 174 out/compiler.out
 	./test_ret4.sh 084 'int main(){int a; int b; for(a=0,b=0;a<10;a++){ if(a ==5)continue;b+=a;} return b;}' 40 out/compiler.out
