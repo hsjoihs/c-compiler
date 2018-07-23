@@ -46,7 +46,7 @@ void binary_op(enum TokenKind kind)
 			gen_rem_ints();
 			return;
 		case OP_COMMA:
-			gen_op_ints("movl");
+			gen_discard2nd_8byte();
 			return;
 		case OP_LT:
 			gen_compare_ints("setl");

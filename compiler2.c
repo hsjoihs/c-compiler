@@ -228,7 +228,7 @@ struct ExprInfo parse_assignment_expression(struct ParserState *ptr_ps,
 			if (opkind != OP_EQ) {
 				before_assign(opkind);
 			} else {
-				gen_op_ints("movl");
+				gen_discard2nd_8byte();
 			}
 			gen_assign_to_backed_up_address();
 			*ptr_tokvec = tokvec;

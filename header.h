@@ -41,6 +41,7 @@ void gen_peek_and_dereference_8byte(void);
 void gen_assign_to_backed_up_address(void);
 void gen_jump(int label, const char *comment);
 void gen_pop2nd_to_local_8byte(int offset);
+void gen_discard2nd_8byte(void);
 
 #define GARBAGE_INT ((int)0xCCCCCCCC)
 #define BOOL int

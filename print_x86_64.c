@@ -181,6 +181,14 @@ void gen_op_ints(const char *str)
 	       str);
 }
 
+void gen_discard2nd_8byte(void)
+{
+	printf("//gen_discard2nd_8byte()\n");
+	printf("  movq (%%rsp), %%rax\n"
+	       "  movq %%rax, +8(%%rsp)\n"
+	       "  addq $8, %%rsp\n");
+}
+
 void gen_mul_ints(void)
 {
 	printf("//gen_mul_ints()\n");
@@ -396,6 +404,7 @@ void gen_epilogue(int label)
 */
 void gen_pop2nd_to_local_8byte(int offset)
 {
+	printf("//gen_pop2nd_to_local_8byte(%d)\n", offset);
 	printf("  movq 8(%%rsp), %%rbx\n"
 	       "  movq %%rbx, %d(%%rbp)\n"
 	       "  movq (%%rsp), %%rax\n"
