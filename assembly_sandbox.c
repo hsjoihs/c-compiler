@@ -34,13 +34,14 @@ int main()
 	gen_discard();
 
 	gen_push_from_local_8byte(-8);
-	/* *y */
-	gen_push_from_local_8byte(-8);
 	gen_peek_and_dereference();
+	/* *y; y is backed up */
 	/* 3 */
 	gen_push_int(3);
 	/* + */
 	gen_op_ints("addl");
+
+	gen_read_from_backup_and_prepare();
 
 	gen_deref_and_write();
 

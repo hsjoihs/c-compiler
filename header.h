@@ -40,6 +40,7 @@ void gen_push_from_local_8byte(int offset);
 void gen_peek_and_dereference(void);
 void gen_peek_and_dereference_8byte(void);
 void gen_deref_and_write(void);
+void gen_read_from_backup_and_prepare(void);
 
 #define GARBAGE_INT ((int)0xCCCCCCCC)
 #define BOOL int
