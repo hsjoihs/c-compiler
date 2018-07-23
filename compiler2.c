@@ -189,7 +189,9 @@ struct ExprInfo parse_assignment_expression(struct ParserState *ptr_ps,
 	const struct Token *tokvec2 = tokvec;
 	struct ParserState *ptr_ps2 = ptr_ps;
 	printf(" jmp .L%d\n", label);
+	printf("// commenting out\n");
 	parse_unary_expression(ptr_ps2, &tokvec2);
+	printf("// comment finishes\n");
 	printf(".L%d:\n", label);
 	if (!isAssign(tokvec2[0].kind)) {
 		struct ExprInfo expr_info =
@@ -741,11 +743,15 @@ void parse_statement(struct ParserState *ptr_ps,
 		} else {
 			const struct Token *tokvec2 = tokvec;
 
+			int lab = get_new_label_name(ptr_ps);
+
 			/* parse, but do not output. no problems regarding nested comments
 			 * arises, since parse_expression can never have `for` within it */
-			printf("/* commenting out, to handle expression3 of `for`\n");
+			printf(" jmp .L%d\n", lab);
+			printf("// commenting out, to handle expression3 of `for`\n");
 			parse_expression(ptr_ps, &tokvec2);
-			printf("*/\n");
+			printf("// comment finishes\n");
+			printf(".L%d:\n", lab);
 
 			expect_and_consume(&tokvec2, RIGHT_PAREN,
 			                   "right parenthesis of `for`");
