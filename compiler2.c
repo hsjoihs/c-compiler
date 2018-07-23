@@ -643,7 +643,8 @@ void parse_statement(struct ParserState *ptr_ps,
 		if (tokvec[0].kind == SEMICOLON) {
 			assert("`return;` unimplemented" && 0);
 		} else {
-			parse_expression(ptr_ps, &tokvec);
+			struct ExprInfo expr_info = parse_expression(ptr_ps, &tokvec);
+			expect_type(expr_info, ptr_ps->func_ret_type, 20);
 
 			expect_and_consume(
 			    &tokvec, SEMICOLON,

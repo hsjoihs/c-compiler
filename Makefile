@@ -169,6 +169,9 @@ check_error:
 	./test_compile_error.sh 'int main(){int x; int *y; y = &x; **y;}'
 	./test_compile_error.sh 'int main(){int x;int *y;*y = &x; return x;}'
 	./test_compile_error.sh 'int main(){int x; int *y; y = &x;int **z; *z = x;}'
+	./test_compile_error.sh 'int *foo(){return 1;}int main(){return 0;}'
+	./test_compile_error.sh 'int *foo(){int x; return x;}int main(){return 0;}'
+	./test_compile_error.sh 'int foo(){int *x; return x;}int main(){return 0;}'
 
 
 
