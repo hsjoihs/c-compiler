@@ -226,8 +226,8 @@ struct ExprInfo parse_assignment_expression(struct ParserState *ptr_ps,
 
 			puts("  movq 8(%rsp), %rbx\n"
 			     "  movq %rbx, -8(%rbp)\n");
-			printf("  movl (%%rsp), %%eax\n"
-			       "  movl %%eax, +8(%%rsp)\n"
+			printf("  movq (%%rsp), %%rax\n"
+			       "  movq %%rax, +8(%%rsp)\n"
 			       "  addq $8, %%rsp\n");
 			if (opkind != OP_EQ) {
 				before_assign(opkind);
