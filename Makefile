@@ -172,6 +172,8 @@ check_error:
 	./test_compile_error.sh 'int *foo(){return 1;}int main(){return 0;}'
 	./test_compile_error.sh 'int *foo(){int x; return x;}int main(){return 0;}'
 	./test_compile_error.sh 'int foo(){int *x; return x;}int main(){return 0;}'
+	./test_compile_error.sh 'int *foo(){int *x; return x;}int main(){return foo();}'
+	./test_compile_error.sh 'int *foo(){int *x; return x;}int main(){int x; x= foo();}'
 
 
 

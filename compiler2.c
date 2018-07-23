@@ -7,6 +7,7 @@
 
 struct ParserState {
 	struct VarTableList scope_chain;
+	struct map func_ret_type_map;
 	int newest_offset;
 	int final_label_name;
 	int return_label_name; /* the label at the end of the function */
@@ -453,6 +454,19 @@ struct ExprInfo parse_postfix_expression(struct ParserState *ptr_ps,
 	const struct Token *tokvec = *ptr_tokvec;
 	if (tokvec[0].kind == IDENT_OR_RESERVED && tokvec[1].kind == LEFT_PAREN) {
 		const char *ident_str = tokvec[0].ident_str;
+
+		struct Type ret_type;
+		if (!isElem(ptr_ps->func_ret_type_map, ident_str)) {
+			fprintf(stderr, "Undeclared function `%s()` detected.\n",
+			        ident_str);
+			fprintf(stderr, "Assumes that `%s()` returns `int`\n", ident_str);
+			ret_type = INT_TYPE;
+		} else {
+			struct Type *ptr_type =
+			    lookup(ptr_ps->func_ret_type_map, ident_str);
+			ret_type = *ptr_type;
+		}
+
 		if (tokvec[2].kind == RIGHT_PAREN) {
 			gen_push_ret_of(ident_str);
 			tokvec += 3;
@@ -480,7 +494,7 @@ struct ExprInfo parse_postfix_expression(struct ParserState *ptr_ps,
 			*ptr_tokvec = tokvec;
 		}
 		*ptr_tokvec = tokvec;
-		return UNASSIGNABLE_INT;
+		return UNASSIGNABLE(ret_type);
 
 	} else if (tokvec[0].kind == IDENT_OR_RESERVED &&
 	           (tokvec[1].kind == OP_PLUS_PLUS ||
@@ -1031,6 +1045,14 @@ void parse_function_definition(struct ParserState *ptr_ps,
 		ptr_ps->newest_offset = -8;
 		ptr_ps->func_ret_type = ret_type;
 
+		struct map retmap = ptr_ps->func_ret_type_map;
+
+		struct Type *ptr_typ = calloc(1, sizeof(struct Type));
+		*ptr_typ = ret_type;
+		insert(&retmap, ident_str, ptr_typ);
+
+		ptr_ps->func_ret_type_map = retmap;
+
 		if (tokvec[2].kind == RIGHT_PAREN) {
 			gen_prologue(capacity, ident_str);
 			tokvec += 3;
@@ -1214,6 +1236,7 @@ int main(int argc, char const **argv)
 		struct ParserState ps;
 		ps.final_label_name = 1;
 		ps.return_label_name = GARBAGE_INT;
+		ps.func_ret_type_map = init_int_map();
 
 		while (1) {
 			if (tokvec[0].kind == END) {
