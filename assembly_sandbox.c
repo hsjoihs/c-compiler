@@ -15,38 +15,38 @@ int main() {
 */
 int main()
 {
-	gen_prologue(24, "main");
+	gen_prologue(32, "main");
 
 	/* x = 3; */
 	gen_push_int(3);
-	gen_write_to_local(-12);
+	gen_write_to_local(-16);
 	gen_discard();
 
 	/* y = &x; */
-	gen_push_address_of_local(-12);
-	gen_write_to_local_8byte(-8);
+	gen_push_address_of_local(-16);
+	gen_write_to_local_8byte(-24);
 	gen_discard();
 
 	/* *y = 171; */
-	gen_push_from_local_8byte(-8);
+	gen_push_from_local_8byte(-24);
 	gen_peek_and_dereference();
+	gen_push_from_local_8byte(-8);
 	gen_push_int(171);
-	gen_op_ints("movl");
+	gen_pop2nd_to_local_8byte(-8);
+	gen_discard2nd_8byte();
 	gen_assign_to_backed_up_address();
 	gen_discard();
 
-	gen_push_from_local_8byte(-8);
+	gen_push_from_local_8byte(-24);
 	gen_peek_and_dereference();
-	/* *y; y is backed up */
-	/* 3 */
+	gen_push_from_local_8byte(-8);
 	gen_push_int(3);
-	/* + */
+	gen_pop2nd_to_local_8byte(-8);
 	gen_op_ints("addl");
-
 	gen_assign_to_backed_up_address();
+	gen_discard();
 
-	gen_push_from_local(-12);
-
+	gen_push_from_local(-16);
 	gen_epilogue(12345);
 	return 0;
 }
