@@ -224,11 +224,7 @@ struct ExprInfo parse_assignment_expression(struct ParserState *ptr_ps,
 			    parse_assignment_expression(ptr_ps, &tokvec);
 			expect_type(expr_info, expr_info2.type, 19);
 
-			puts("  movq 8(%rsp), %rbx\n"
-			     "  movq %rbx, -8(%rbp)\n");
-			printf("  movq (%%rsp), %%rax\n"
-			       "  movq %%rax, +8(%%rsp)\n"
-			       "  addq $8, %%rsp\n");
+			gen_pop2nd_to_local_8byte(-8);
 			if (opkind != OP_EQ) {
 				before_assign(opkind);
 			} else {

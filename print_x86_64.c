@@ -387,3 +387,19 @@ void gen_epilogue(int label)
 	       "  ret\n",
 	       label);
 }
+
+/*
+    value = pop();
+    b = pop();
+    local[offset] = b;
+    push(value);
+*/
+void gen_pop2nd_to_local_8byte(int offset)
+{
+	printf("  movq 8(%%rsp), %%rbx\n"
+	       "  movq %%rbx, %d(%%rbp)\n"
+	       "  movq (%%rsp), %%rax\n"
+	       "  movq %%rax, +8(%%rsp)\n"
+	       "  addq $8, %%rsp\n",
+	       offset);
+}
