@@ -9,7 +9,8 @@ struct ParserState {
 	struct VarTableList scope_chain;
 	int newest_offset;
 	int final_label_name;
-	int return_label_name;   /* the label at the end of the function */
+	int return_label_name; /* the label at the end of the function */
+	struct Type func_ret_type;
 	int break_label_name;    /* the label at the end of the current loop */
 	int continue_label_name; /* the label at the beginning of the current loop
 	                          */
@@ -1002,7 +1003,7 @@ void parse_function_definition(struct ParserState *ptr_ps,
 {
 	const struct Token *tokvec = *ptr_tokvec;
 
-	parse_type_name(ptr_ps, &tokvec);
+	struct Type ret_type = parse_type_name(ptr_ps, &tokvec);
 	if (tokvec[0].kind == IDENT_OR_RESERVED && tokvec[1].kind == LEFT_PAREN) {
 		const char *ident_str = tokvec[0].ident_str;
 
@@ -1027,6 +1028,7 @@ void parse_function_definition(struct ParserState *ptr_ps,
 		ptr_ps->break_label_name = GARBAGE_INT;    /* INITIALIZE */
 		ptr_ps->continue_label_name = GARBAGE_INT; /* INITIALIZE */
 		ptr_ps->newest_offset = -8;
+		ptr_ps->func_ret_type = ret_type;
 
 		if (tokvec[2].kind == RIGHT_PAREN) {
 			gen_prologue(capacity, ident_str);
