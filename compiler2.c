@@ -468,7 +468,18 @@ struct ExprInfo parse_postfix_expression(struct ParserState *ptr_ps,
 		}
 
 		if (tokvec[2].kind == RIGHT_PAREN) {
-			gen_push_ret_of(ident_str);
+			switch (size_of(ret_type)) {
+				case 4:
+					gen_push_ret_of(ident_str);
+					break;
+				case 8:
+					gen_push_ret_of_8byte(ident_str);
+					break;
+				default:
+					fprintf(stderr, "Unsupported width\n");
+					exit(EXIT_FAILURE);
+			}
+
 			tokvec += 3;
 		} else {
 			tokvec += 2;
@@ -485,7 +496,17 @@ struct ExprInfo parse_postfix_expression(struct ParserState *ptr_ps,
 				parse_argument_expression(ptr_ps, &tokvec, &counter);
 			}
 
-			gen_push_ret_of(ident_str);
+			switch (size_of(ret_type)) {
+				case 4:
+					gen_push_ret_of(ident_str);
+					break;
+				case 8:
+					gen_push_ret_of_8byte(ident_str);
+					break;
+				default:
+					fprintf(stderr, "Unsupported width\n");
+					exit(EXIT_FAILURE);
+			}
 			*ptr_tokvec = tokvec;
 
 			expect_and_consume(&tokvec, RIGHT_PAREN,
@@ -1057,7 +1078,17 @@ void parse_function_definition(struct ParserState *ptr_ps,
 			gen_prologue(capacity, ident_str);
 			tokvec += 3;
 			parse_compound_statement(ptr_ps, &tokvec);
-			gen_epilogue(ptr_ps->return_label_name);
+			switch (size_of(ret_type)) {
+				case 4:
+					gen_epilogue(ptr_ps->return_label_name);
+					break;
+				case 8:
+					gen_epilogue_8byte(ptr_ps->return_label_name);
+					break;
+				default:
+					fprintf(stderr, "Unsupported width!\n");
+					exit(EXIT_FAILURE);
+			}
 		} else {
 
 			gen_prologue(capacity, ident_str);
@@ -1085,7 +1116,17 @@ void parse_function_definition(struct ParserState *ptr_ps,
 			*ptr_tokvec = tokvec;
 
 			parse_compound_statement(ptr_ps, &tokvec);
-			gen_epilogue(ptr_ps->return_label_name);
+			switch (size_of(ret_type)) {
+				case 4:
+					gen_epilogue(ptr_ps->return_label_name);
+					break;
+				case 8:
+					gen_epilogue_8byte(ptr_ps->return_label_name);
+					break;
+				default:
+					fprintf(stderr, "Unsupported width!\n");
+					exit(EXIT_FAILURE);
+			}
 		}
 	} else {
 		fprintf(stderr, "expected function definition but could not find it\n");

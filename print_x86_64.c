@@ -173,6 +173,14 @@ void gen_push_ret_of(const char *fname)
 	       "  movl %%eax, (%%rsp)\n");
 }
 
+void gen_push_ret_of_8byte(const char *fname)
+{
+	printf("//gen_push_ret_of_8byte(\"%s\")\n", fname);
+	printf("  call " PREFIX "%s\n", fname);
+	printf("  subq $8, %%rsp\n"
+	       "  movq %%rax, (%%rsp)\n");
+}
+
 void gen_pop_to_reg(const char *str)
 {
 	printf("//gen_pop_to_reg(%s)\n", str);
@@ -404,6 +412,18 @@ void gen_epilogue(int label)
 	printf("//gen_epilogue(%d)\n", label);
 	printf(".L%d:"
 	       "  movl (%%rsp), %%eax\n"
+	       "  movq %%rbp, %%rsp\n"
+	       "  addq $8, %%rsp\n"
+	       "  movq (%%rbp), %%rbp\n"
+	       "  ret\n",
+	       label);
+}
+
+void gen_epilogue_8byte(int label)
+{
+	printf("//gen_epilogue_8byte(%d)\n", label);
+	printf(".L%d:"
+	       "  movq (%%rsp), %%rax\n"
 	       "  movq %%rbp, %%rsp\n"
 	       "  addq $8, %%rsp\n"
 	       "  movq (%%rbp), %%rbp\n"
