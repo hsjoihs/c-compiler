@@ -10,7 +10,7 @@ clean:
 	rm out/*.out s/*.s
 
 supplement:
-	echo 'int always87() { return 87; }int always8() { return 8; }int add(int x, int y) { return x + y; }int subtract(int x, int y) { return x - y; }' | ./out/compiler.out > s/supplement.s
+	gcc supplement.c -S -o s/supplement.s
 
 
 assembly_sandbox:
