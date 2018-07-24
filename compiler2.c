@@ -1075,8 +1075,17 @@ void parse_function_definition(struct ParserState *ptr_ps,
 		ptr_ps->func_ret_type_map = retmap;
 
 		if (tokvec[2].kind == RIGHT_PAREN) {
-			gen_prologue(capacity, ident_str);
 			tokvec += 3;
+
+			if (tokvec[0].kind == SEMICOLON) { /* function prototype */
+				++tokvec;
+				/* do nothing, since the return value is already in the retmap
+				 */
+				*ptr_tokvec = tokvec;
+				return;
+			}
+
+			gen_prologue(capacity, ident_str);
 			parse_compound_statement(ptr_ps, &tokvec);
 			switch (size_of(ret_type)) {
 				case 4:

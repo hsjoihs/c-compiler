@@ -89,13 +89,13 @@ full_compile:
 	./test_ret4.sh 024 'int main(){return 175^1;}' 174 out/compiler.out
 	./test_ret4.sh 025 'int main(){return 2 + (1? 100 + 72 : 17);}' 174 out/compiler.out
 	./test_ret4.sh 026 'int main(){return (0? 234 : 2) + (1? 100 + 72 : 17);}' 174 out/compiler.out
-	./test_ret4.sh 027 'int main(){return (3, always87() + always87());}' 174 out/compiler.out
-	./test_ret4.sh 028 'int main(){return always87() + ((always8()* 11) -1);}' 174 out/compiler.out
-	./test_ret4.sh 029 'int main(){return add(170,4);}' 174 out/compiler.out
-	./test_ret4.sh 030 'int main(){return always87() + ((always8()* add(4,7)) -1);}' 174 out/compiler.out
-	./test_ret4.sh 031 'int main(){return always87() + ((always8()* subtract(12,1)) -1);}' 174 out/compiler.out
+	./test_ret4.sh 027 'int always87(); int main(){return (3, always87() + always87());}' 174 out/compiler.out
+	./test_ret4.sh 028 'int always87();int always8();int main(){return always87() + ((always8()* 11) -1);}' 174 out/compiler.out
+	./test_ret4.sh 029 'int add();int main(){return add(170,4);}' 174 out/compiler.out
+	./test_ret4.sh 030 'int always87();int always8();int add();int main(){return always87() + ((always8()* add(4,7)) -1);}' 174 out/compiler.out
+	./test_ret4.sh 031 'int always87();int always8();int subtract();int main(){return always87() + ((always8()* subtract(12,1)) -1);}' 174 out/compiler.out
 	./test_ret4.sh 032 'int main(){3; {5; 7; 11; } return 175^1;}' 174 out/compiler.out
-	./test_ret4.sh 033 'int always87_(){return 87;} int main(){return (3, always87() + always87_());}' 174 out/compiler.out
+	./test_ret4.sh 033 'int always87();int always87_(){return 87;} int main(){return (3, always87() + always87_());}' 174 out/compiler.out
 	./test_ret4.sh 034 'int add_(int x, int y){4; return x+y;} int main(){3; return add_(87,87);}' 174 out/compiler.out
 	./test_ret4.sh 035 'int fib(int n){ return n < 2? n : fib(n - 1) + fib(n - 2); } int main(){3; return fib(10);}' 55 out/compiler.out
 	./test_ret4.sh 036 'int tarai(int x,int y,int z){ return x <= y? y : tarai(tarai(x-1, y, z), tarai(y-1, z, x), tarai(z-1, x, y)); } int main(){return tarai(12,6,0);}' 12 out/compiler.out
