@@ -27,6 +27,7 @@ notest:
 	gcc -Wall -Wextra compiler2.c type.c parse_expression.c map.c print_x86_64.c lexer.c -o out/compiler.out
 
 full_compile:
+	rm out/*.out
 	make supplement
 	make notest
 	./test_ret4.sh 102 'int *foo(int *p){*p = 4;return p;} int main(){int x;int y;*foo(&x) += 170;return x;}' 174 out/compiler.out
