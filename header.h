@@ -46,6 +46,9 @@ void gen_pop_to_reg_8byte(const char *str);
 void gen_write_register_to_local_8byte(const char *str, int offset);
 void gen_epilogue_8byte(int label);
 void gen_push_ret_of_8byte(const char *fname);
+void gen_cltq(void);
+void gen_op_8byte(const char *str);
+void gen_mul_by_const(int mul);
 
 #define GARBAGE_INT ((int)0xCCCCCCCC)
 #define BOOL int

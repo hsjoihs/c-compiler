@@ -204,6 +204,15 @@ void gen_op_ints(const char *str)
 	       str);
 }
 
+void gen_op_8byte(const char *str)
+{
+	printf("//gen_op_8byte(\"%s\")\n", str);
+	printf("  movq (%%rsp), %%rax\n"
+	       "  %s %%rax, +8(%%rsp)\n"
+	       "  addq $8, %%rsp\n",
+	       str);
+}
+
 void gen_discard2nd_8byte(void)
 {
 	printf("//gen_discard2nd_8byte()\n");
@@ -446,4 +455,22 @@ void gen_pop2nd_to_local_8byte(int offset)
 	       "  movq %%rax, +8(%%rsp)\n"
 	       "  addq $8, %%rsp\n",
 	       offset);
+}
+
+void gen_cltq(void)
+{
+	printf("//gen_cltq()\n");
+	printf("  movl (%%rsp), %%eax\n"
+	       "  cltq\n"
+	       "  movq %%rax, (%%rsp)\n");
+}
+
+void gen_mul_by_const(int mul)
+{
+	assert(mul == 1 || mul == 2 || mul == 4 || mul == 8);
+	printf("//gen_mul_by_const(%d)\n", mul);
+	printf("  movq (%%rsp), %%rax\n"
+	       "  leaq 0(,%%rax,%d), %%rdx\n"
+	       "  movq %%rdx, (%%rsp)\n",
+	       mul);
 }
