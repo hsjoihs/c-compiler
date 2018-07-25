@@ -176,9 +176,43 @@ void gen_push_ret_of(const char *fname)
 void gen_push_ret_of_8byte(const char *fname)
 {
 	printf("//gen_push_ret_of_8byte(\"%s\")\n", fname);
-	printf("  call " PREFIX "%s\n", fname);
+
+	/* alignment */
+
+	/*
+	if it is already aligned:
+	    `subq $8, %rsp` will de-align; mod 16 gives 8.
+	    Thus, `subq %rax, %rsp\n` subtracts another 8.
+	    `movq %rax, (%rsp)` puts 8 on top of the stack.
+	*/
+
+	/*
+	if it is not aligned:
+	    `subq $8, %rsp` will align; mod 16 gives 0.
+	    Thus, `subq %rax, %rsp\n` will not subtract.
+	    `movq %rax, (%rsp)` puts 0 on top of the stack.
+	*/
 	printf("  subq $8, %%rsp\n"
+	       "  movq %%rsp, %%rax\n"
+	       "  andq $15, %%rax\n"
+	       "  subq %%rax, %%rsp\n"
 	       "  movq %%rax, (%%rsp)\n");
+	printf("  call " PREFIX "%s\n", fname);
+
+	/*
+	if it was already aligned:
+	    the top contains 8, and you must add 16 to the stack in order to resume.
+	    Since this function is a `push`, you need to subtract 8 to push the
+	returned value. Hence, you only need to add 8.
+	*/
+	/*
+	if it was not aligned:
+	    the top contains 0, and you must add 8 to the stack in order to resume.
+	    Since this function is a `push`, you need to subtract 8 to push the
+	returned value. Hence, you only need to add 0.
+	*/
+	printf("  addq (%%rsp), %%rsp\n");
+	printf("  movq %%rax, (%%rsp)\n");
 }
 
 void gen_pop_to_reg(const char *str)

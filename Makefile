@@ -34,6 +34,9 @@ full_compile:
 	./test_ret4.sh 104 'int *alloc4();int main(){int *p;int *r;p = alloc4(62, 8, 31, 85);int *q;q = p;return *q;}' 62 out/compiler.out
 	./test_ret4.sh 105 'int *alloc4();int main(){int *p;int *r;p = alloc4(62, 8, 31, 85);int *q;q = p + 2;return *q;}' 31 out/compiler.out
 	./test_ret4.sh 106 'int *alloc4();int main(){int *p;int c;int e;c = 2;int d;d = 1;p = alloc4(62, 8, 31, 85);int *q;q = p + c;return *(q+d) - *q + (*p-2)*2;}' 174 out/compiler.out
+	./test_ret4.sh 107 'int *alloc4();int main(){int *p;p = alloc4(62, 8, 31, 85);int *q;q = p;return *q;}' 62 out/compiler.out
+	./test_ret4.sh 108 'int *alloc4();int main(){int *p;p = alloc4(62, 8, 31, 85);int *q;q = p + 2;return *q;}' 31 out/compiler.out
+	./test_ret4.sh 109 'int *alloc4();int main(){int *p;int c;c = 2;int d;d = 1;p = alloc4(62, 8, 31, 85);int *q;q = p + c;return *(q+d) - *q + (*p-2)*2;}' 174 out/compiler.out
 	./test_ret4.sh 102 'int *foo(int *p){*p = 4;return p;} int main(){int x;int y;*foo(&x) += 170;return x;}' 174 out/compiler.out
 	./test_ret4.sh 101 'int *foo(int *p){*p = 4;return p;} int main(){int x;int *y;y = foo(&x); *y+= 170;return x;}' 174 out/compiler.out
 	./test_ret4.sh 100 'int foo(int* p){*p = 172; return *p+2;} int main(){int x; return foo(&x);}' 174 out/compiler.out
