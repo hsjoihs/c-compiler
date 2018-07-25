@@ -290,10 +290,22 @@ struct ExprInfo parse_additive_expression(struct ParserState *ptr_ps,
 
 		struct ExprInfo expr_info2 =
 		    remove_leftiness(parse_multiplicative_expression(ptr_ps, &tokvec));
-		expect_type(expr_info, INT_TYPE, 15);
-		expect_type(expr_info2, INT_TYPE, 16);
-		expr_info2 = expr_info;
-		binary_op(kind);
+		if (is_equal(expr_info.type, INT_TYPE)) {
+			if (is_equal(expr_info2.type, INT_TYPE)) {
+				expr_info2 = expr_info;
+				binary_op(kind);
+			} else if (is_pointer(expr_info2.type)) {
+				/* FIXME */
+			}
+
+		} else if (is_pointer(expr_info.type)) {
+			int size = size_of(deref_type(expr_info.type));
+			expect_type(expr_info2, INT_TYPE, 30);
+			/* cannot add a pointer to a pointer*/
+			gen_cltq();
+			gen_mul_by_const(size);
+			gen_op_8byte("addq");
+		}
 	}
 	*ptr_tokvec = tokvec;
 	return expr_info;

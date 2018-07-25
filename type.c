@@ -71,3 +71,5 @@ struct Type deref_type(struct Type t)
 			exit(EXIT_FAILURE);
 	}
 }
+
+int is_pointer(struct Type t) { return t.type == PTR_; }

@@ -191,3 +191,5 @@ struct ExprInfo remove_leftiness(struct ExprInfo info);
 struct ExprInfo UNASSIGNABLE(struct Type type);
 
 struct Type deref_type(struct Type t);
+int is_equal(struct Type t1, struct Type t2);
+int is_pointer(struct Type t);
