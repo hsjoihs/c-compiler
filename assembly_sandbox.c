@@ -34,43 +34,26 @@ int main()
 		gen_pop_to_reg("edi");
 		gen_push_ret_of_8byte("alloc4");
 
-		/* p = ...*/
-		gen_write_to_local_8byte(-16);
-
-		/* ; */
-		gen_discard();
+		gen_write_to_local_8byte(-16); /* p = ...*/
+		gen_discard();                 /* ; */
 	}
 
 	{
-		/* c */
-		gen_push_from_local(-4);
-		/* convert long to quad */
-		gen_cltq();
-
-		/* c * 4 */
-		gen_mul_by_const(4);
-
-		/* p */
-		gen_push_from_local_8byte(-16);
-
+		gen_push_from_local(-4);        /* c */
+		gen_cltq();                     /* convert long to quad */
+		gen_mul_by_const(4);            /* c * 4 */
+		gen_push_from_local_8byte(-16); /* p */
 		gen_op_8byte("addq");
-
-		/* q = ... */
-		gen_write_to_local_8byte(-24);
-
-		/* ; */
-		gen_discard();
+		gen_write_to_local_8byte(-24); /* q = ... */
+		gen_discard();                 /* ; */
 	}
 
-	/* d */
-	gen_push_from_local(-8);
-	/* convert long to quad */
+	gen_push_from_local(-8); /* d */
 	gen_cltq();
-
+	gen_mul_by_const(4);            /* d*4 */
+	gen_push_from_local_8byte(-24); /* q */
 	puts("  movq (%rsp), %rax\n"
-	     "  leaq 0(,%rax,4), %rdx\n");
-	gen_push_from_local_8byte(-24);
-	puts("  movq (%rsp), %rax\n"
+	     "  movq 8(%rsp), %rdx\n"
 	     "  addq %rdx, %rax\n"
 	     "  addq $8, %rsp\n"
 	     "  movl (%rax), %edx\n"
