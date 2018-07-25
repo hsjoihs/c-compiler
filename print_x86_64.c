@@ -163,19 +163,22 @@ void gen_push_int(int num)
 	       num);
 }
 
+void gen_push_ret_of_(const char *fname, int is8byte);
+
 void gen_push_ret_of(const char *fname)
 {
 	printf("//gen_push_ret_of(\"%s\")\n", fname);
-	printf("  movl $0, %%eax\n"
-	       "  call " PREFIX "%s\n",
-	       fname);
-	printf("  subq $8, %%rsp\n"
-	       "  movl %%eax, (%%rsp)\n");
+	gen_push_ret_of_(fname, 0);
 }
 
 void gen_push_ret_of_8byte(const char *fname)
 {
 	printf("//gen_push_ret_of_8byte(\"%s\")\n", fname);
+	gen_push_ret_of_(fname, 1);
+}
+
+void gen_push_ret_of_(const char *fname, int is8byte)
+{
 
 	/* alignment */
 
@@ -212,7 +215,11 @@ void gen_push_ret_of_8byte(const char *fname)
 	returned value. Hence, you only need to add 0.
 	*/
 	printf("  addq (%%rsp), %%rsp\n");
-	printf("  movq %%rax, (%%rsp)\n");
+	if (is8byte) {
+		printf("  movq %%rax, (%%rsp)\n");
+	} else {
+		printf("  movl %%eax, (%%rsp)\n");
+	}
 }
 
 void gen_pop_to_reg(const char *str)
