@@ -294,21 +294,46 @@ struct ExprInfo parse_additive_expression(struct ParserState *ptr_ps,
 			if (is_equal(expr_info2.type, INT_TYPE)) {
 				expr_info2 = expr_info;
 				binary_op(kind);
+				expr_info = remove_leftiness(expr_info); /* int */
 			} else if (is_pointer(expr_info2.type)) {
-				/* FIXME */
+				if (kind == OP_MINUS) {
+					fprintf(stderr,
+					        "cannot subtract a pointer from an integer.\n");
+					exit(EXIT_FAILURE);
+				}
+				int size = size_of(deref_type(expr_info2.type));
+				gen_swap();
+				gen_cltq();
+				gen_mul_by_const(size);
+
+				gen_op_8byte("addq");
+				expr_info = expr_info2; /* pointer */
 			}
 
 		} else if (is_pointer(expr_info.type)) {
 			int size = size_of(deref_type(expr_info.type));
-			expect_type(expr_info2, INT_TYPE, 30);
-			/* cannot add a pointer to a pointer*/
-			gen_cltq();
-			gen_mul_by_const(size);
-			gen_op_8byte("addq");
+			if (kind == OP_PLUS) {
+				expect_type(expr_info2, INT_TYPE, 30);
+				/* cannot add a pointer to a pointer*/
+				gen_cltq();
+				gen_mul_by_const(size);
+
+				gen_op_8byte("addq");
+				expr_info = remove_leftiness(expr_info); /* pointer */
+			} else if (is_equal(expr_info2.type, INT_TYPE)) {
+				gen_cltq();
+				gen_mul_by_const(size);
+
+				gen_op_8byte("subq");
+				expr_info = remove_leftiness(expr_info); /* pointer */
+			} else {
+				fprintf(stderr, "Unimplemented!!!\n");
+				exit(EXIT_FAILURE); /* FIXME */
+			}
 		}
 	}
 	*ptr_tokvec = tokvec;
-	return expr_info;
+	return expr_info; /* pointer */
 }
 
 struct ExprInfo parse_multiplicative_expression(struct ParserState *ptr_ps,

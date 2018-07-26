@@ -49,6 +49,7 @@ void gen_push_ret_of_8byte(const char *fname);
 void gen_cltq(void);
 void gen_op_8byte(const char *str);
 void gen_mul_by_const(int mul);
+void gen_swap(void);
 
 #define GARBAGE_INT ((int)0xCCCCCCCC)
 #define BOOL int
