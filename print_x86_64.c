@@ -517,10 +517,12 @@ void gen_cltq(void)
 
 void gen_mul_by_const(int mul)
 {
-	assert(mul == 1 || mul == 2 || mul == 4 || mul == 8);
 	printf("//gen_mul_by_const(%d)\n", mul);
-	printf("  movq (%%rsp), %%rax\n"
-	       "  leaq 0(,%%rax,%d), %%rdx\n"
-	       "  movq %%rdx, (%%rsp)\n",
+	printf("  movq (%%rsp), %%rax\n");
+	printf((mul == 1 || mul == 2 || mul == 4 || mul == 8)
+	           ? "  leaq 0(,%%rax,%d), %%rdx\n"
+	           : "  imulq $%d, %%rax, %%rdx\n",
 	       mul);
+
+	printf("  movq %%rdx, (%%rsp)\n");
 }
