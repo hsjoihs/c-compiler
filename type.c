@@ -12,6 +12,8 @@ int size_of(struct Type type)
 			return 4;
 		case PTR_:
 			return 8;
+		case ARRAY:
+			return type.array_length * size_of(*type.pointer_of);
 		default:
 			fprintf(stderr, "Unknown type with id %d\n", type.type_domain);
 			exit(EXIT_FAILURE);
@@ -35,11 +37,15 @@ void debug_print_type(struct Type type)
 {
 	switch (type.type_domain) {
 		case PTR_:
+			fprintf(stderr, "pointer of ");
 			debug_print_type(*type.pointer_of);
-			fprintf(stderr, "*");
 			return;
 		case INT_:
 			fprintf(stderr, "int");
+			return;
+		case ARRAY:
+			fprintf(stderr, "array (length %d) of ", type.array_length);
+			debug_print_type(*type.pointer_of);
 			return;
 	}
 }

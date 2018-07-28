@@ -363,6 +363,7 @@ struct Type parse_type_name(struct ParserState *ptr_ps,
 	struct Type ans;
 	ans.type_domain = INT_;
 	ans.pointer_of = 0;
+	ans.array_length = GARBAGE_INT;
 
 	while (1) {
 		if (tokvec[0].kind == OP_ASTERISK) {
@@ -370,6 +371,7 @@ struct Type parse_type_name(struct ParserState *ptr_ps,
 			*ptr_to_current_type = ans;
 			ans.type_domain = PTR_;
 			ans.pointer_of = ptr_to_current_type;
+			ans.array_length = GARBAGE_INT;
 			++tokvec;
 		} else {
 			*ptr_tokvec = tokvec;
@@ -1217,6 +1219,7 @@ struct ExprInfo parse_unary_expression(struct ParserState *ptr_ps,
 			expr_info.info = NOT_ASSIGNABLE;
 			expr_info.type.type_domain = PTR_;
 			expr_info.type.pointer_of = ptr_type;
+			expr_info.type.array_length = GARBAGE_INT;
 			expr_info.offset = GARBAGE_INT;
 
 			return expr_info;

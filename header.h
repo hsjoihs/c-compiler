@@ -152,11 +152,12 @@ void inc_or_dec(struct ParserState *ptr_ps, const char *name,
 void binary_op(enum TokenKind kind);
 void print_unary_prefix_op(enum TokenKind kind);
 
-enum typ_ { INT_ = 1, PTR_ };
+enum typ_ { INT_ = 1, PTR_, ARRAY };
 
 struct Type {
 	enum typ_ type_domain;
 	struct Type *pointer_of;
+	int array_length;
 };
 int size_of(struct Type type);
 
