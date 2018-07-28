@@ -39,6 +39,7 @@ full_compile:
 	./test_ret4.sh 109 'int *alloc4();int main(){int *p;int c;c = 2;int d;d = 1;p = alloc4(62, 8, 31, 85);int *q;q = p + c;return *(q+d) - *q + (*p-2)*2;}' 174 out/compiler.out
 	./test_ret4.sh 110 'int *alloc4();int main(){int *p;int c;c = 2;int d;d = 1;p = alloc4(62, 8, 31, 85);int *q;q = c + p;return *(d+q) - *q + (*p-2)*2;}' 174 out/compiler.out
 	./test_ret4.sh 111 'int *alloc4();int main(){int *p;int c;c = -2;int d;d = 1;p = alloc4(62, 8, 31, 85);int *q;q = p - c;return *(d+q) - *q + (*p-2)*2;}' 174 out/compiler.out
+	./test_ret4.sh 112 'int *alloc4();int main(){int *p; int *q; q = p+174; return q-p;}' 174 out/compiler.out
 	./test_ret4.sh 102 'int *foo(int *p){*p = 4;return p;} int main(){int x;int y;*foo(&x) += 170;return x;}' 174 out/compiler.out
 	./test_ret4.sh 101 'int *foo(int *p){*p = 4;return p;} int main(){int x;int *y;y = foo(&x); *y+= 170;return x;}' 174 out/compiler.out
 	./test_ret4.sh 100 'int foo(int* p){*p = 172; return *p+2;} int main(){int x; return foo(&x);}' 174 out/compiler.out
@@ -187,6 +188,7 @@ check_error:
 	./test_compile_error.sh 'int *foo(){int *x; return x;}int main(){return foo();}'
 	./test_compile_error.sh 'int *foo(){int *x; return x;}int main(){int x; x= foo();}'
 	./test_compile_error.sh 'int main(){int *x; int *y; x+y;}'
+	./test_compile_error.sh 'int *alloc4();int main(){int *p; int *q; q = p+174; return q-p;'
 
 
 

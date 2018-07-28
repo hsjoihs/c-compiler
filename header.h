@@ -50,6 +50,7 @@ void gen_cltq(void);
 void gen_op_8byte(const char *str);
 void gen_mul_by_const(int mul);
 void gen_swap(void);
+void gen_div_by_const(int num);
 
 #define GARBAGE_INT ((int)0xCCCCCCCC)
 #define BOOL int

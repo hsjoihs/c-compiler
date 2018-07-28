@@ -327,8 +327,10 @@ struct ExprInfo parse_additive_expression(struct ParserState *ptr_ps,
 				gen_op_8byte("subq");
 				expr_info = remove_leftiness(expr_info); /* pointer */
 			} else {
-				fprintf(stderr, "Unimplemented!!!\n");
-				exit(EXIT_FAILURE); /* FIXME */
+				/* subtract pointer */
+				gen_op_8byte("subq");
+				gen_div_by_const(size);
+				expr_info = UNASSIGNABLE_INT;
 			}
 		}
 	}

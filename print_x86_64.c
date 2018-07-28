@@ -1,6 +1,7 @@
 #include "header.h"
 #include <assert.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #define MACOS
 
@@ -525,4 +526,28 @@ void gen_mul_by_const(int mul)
 	       mul);
 
 	printf("  movq %%rdx, (%%rsp)\n");
+}
+
+void gen_div_by_const(int num)
+{
+	printf("//gen_div_by_const(%d)\n", num);
+	printf("  movq (%%rsp), %%rax\n");
+
+	switch (num) {
+		case 1: /* do nothing */
+			break;
+		case 2:
+			printf("  sarq $1, %%rax\n");
+			break;
+		case 4:
+			printf("  sarq $2, %%rax\n");
+			break;
+		case 8:
+			printf("  sarq $3, %%rax\n");
+			break;
+		default:
+			fprintf(stderr, "Unsupported width\n");
+			exit(EXIT_FAILURE);
+	}
+	printf("  movq %%rax, (%%rsp)\n");
 }
