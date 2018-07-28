@@ -7,24 +7,24 @@
 
 int size_of(struct Type type)
 {
-	switch (type.type) {
+	switch (type.type_domain) {
 		case INT_:
 			return 4;
 		case PTR_:
 			return 8;
 		default:
-			fprintf(stderr, "Unknown type with id %d\n", type.type);
+			fprintf(stderr, "Unknown type with id %d\n", type.type_domain);
 			exit(EXIT_FAILURE);
 	}
 }
 
 int is_equal(struct Type t1, struct Type t2)
 {
-	if (t1.type == INT_ && t2.type == INT_) {
+	if (t1.type_domain == INT_ && t2.type_domain == INT_) {
 		return 1;
 	}
 
-	if (t1.type == PTR_ && t2.type == PTR_) {
+	if (t1.type_domain == PTR_ && t2.type_domain == PTR_) {
 		return is_equal(*t1.pointer_of, *t2.pointer_of);
 	}
 
@@ -33,7 +33,7 @@ int is_equal(struct Type t1, struct Type t2)
 
 void debug_print_type(struct Type type)
 {
-	switch (type.type) {
+	switch (type.type_domain) {
 		case PTR_:
 			debug_print_type(*type.pointer_of);
 			fprintf(stderr, "*");
@@ -60,7 +60,7 @@ void expect_type(struct ExprInfo expr_info, struct Type expected_type, int id)
 
 struct Type deref_type(struct Type t)
 {
-	switch (t.type) {
+	switch (t.type_domain) {
 		case PTR_:
 			return *t.pointer_of;
 
@@ -72,4 +72,4 @@ struct Type deref_type(struct Type t)
 	}
 }
 
-int is_pointer(struct Type t) { return t.type == PTR_; }
+int is_pointer(struct Type t) { return t.type_domain == PTR_; }

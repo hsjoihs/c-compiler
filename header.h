@@ -155,7 +155,7 @@ void print_unary_prefix_op(enum TokenKind kind);
 enum typ_ { INT_ = 1, PTR_ };
 
 struct Type {
-	enum typ_ type;
+	enum typ_ type_domain;
 	struct Type *pointer_of;
 };
 int size_of(struct Type type);
