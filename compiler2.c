@@ -1059,104 +1059,103 @@ void parse_function_definition(struct ParserState *ptr_ps,
 		fprintf(stderr, "\n");
 		exit(EXIT_FAILURE);
 	}
-	{
-		const char *ident_str = tokvec[0].ident_str;
 
-		int capacity =
-		    8; /* 8 is the space to store the address to handle deref */
-		struct map map_ = init_int_map();
+	const char *ident_str = tokvec[0].ident_str;
 
-		for (int i = 0;; i++) {
-			if (tokvec[i].kind == END) {
+	int capacity = 8; /* 8 is the space to store the address to handle deref */
+	struct map map_ = init_int_map();
+
+	for (int i = 0;; i++) {
+		if (tokvec[i].kind == END) {
+			break;
+		}
+		if (tokvec[i].kind != IDENT_OR_RESERVED) {
+			continue;
+		}
+
+		capacity += 8;
+	}
+
+	ptr_ps->scope_chain.outer = 0; /* most outer scope */
+	ptr_ps->scope_chain.var_table = map_;
+	ptr_ps->return_label_name = GARBAGE_INT;   /* INITIALIZE */
+	ptr_ps->break_label_name = GARBAGE_INT;    /* INITIALIZE */
+	ptr_ps->continue_label_name = GARBAGE_INT; /* INITIALIZE */
+	ptr_ps->newest_offset = -8;
+	ptr_ps->func_ret_type = ret_type;
+
+	struct map retmap = ptr_ps->func_ret_type_map;
+
+	struct Type *ptr_typ = calloc(1, sizeof(struct Type));
+	*ptr_typ = ret_type;
+	insert(&retmap, ident_str, ptr_typ);
+
+	ptr_ps->func_ret_type_map = retmap;
+
+	if (tokvec[2].kind == RIGHT_PAREN) {
+		tokvec += 3;
+
+		if (tokvec[0].kind == SEMICOLON) { /* function prototype */
+			++tokvec;
+			/* do nothing, since the return value is already in the retmap
+			 */
+			*ptr_tokvec = tokvec;
+			return;
+		}
+
+		gen_prologue(capacity, ident_str);
+		parse_compound_statement(ptr_ps, &tokvec);
+		switch (size_of(ret_type)) {
+			case 4:
+				gen_epilogue(ptr_ps->return_label_name);
+				break;
+			case 8:
+				gen_epilogue_8byte(ptr_ps->return_label_name);
+				break;
+			default:
+				fprintf(stderr, "Unsupported width!\n");
+				exit(EXIT_FAILURE);
+		}
+	} else {
+
+		gen_prologue(capacity, ident_str);
+
+		tokvec += 2;
+
+		int counter = 0;
+
+		parse_parameter_declaration(ptr_ps, &tokvec, &counter);
+
+		while (1) {
+			enum TokenKind kind = tokvec[0].kind;
+			if (kind != OP_COMMA) {
 				break;
 			}
-			if (tokvec[i].kind != IDENT_OR_RESERVED) {
-				continue;
-			}
-
-			capacity += 8;
-		}
-
-		ptr_ps->scope_chain.outer = 0; /* most outer scope */
-		ptr_ps->scope_chain.var_table = map_;
-		ptr_ps->return_label_name = GARBAGE_INT;   /* INITIALIZE */
-		ptr_ps->break_label_name = GARBAGE_INT;    /* INITIALIZE */
-		ptr_ps->continue_label_name = GARBAGE_INT; /* INITIALIZE */
-		ptr_ps->newest_offset = -8;
-		ptr_ps->func_ret_type = ret_type;
-
-		struct map retmap = ptr_ps->func_ret_type_map;
-
-		struct Type *ptr_typ = calloc(1, sizeof(struct Type));
-		*ptr_typ = ret_type;
-		insert(&retmap, ident_str, ptr_typ);
-
-		ptr_ps->func_ret_type_map = retmap;
-
-		if (tokvec[2].kind == RIGHT_PAREN) {
-			tokvec += 3;
-
-			if (tokvec[0].kind == SEMICOLON) { /* function prototype */
-				++tokvec;
-				/* do nothing, since the return value is already in the retmap
-				 */
-				*ptr_tokvec = tokvec;
-				return;
-			}
-
-			gen_prologue(capacity, ident_str);
-			parse_compound_statement(ptr_ps, &tokvec);
-			switch (size_of(ret_type)) {
-				case 4:
-					gen_epilogue(ptr_ps->return_label_name);
-					break;
-				case 8:
-					gen_epilogue_8byte(ptr_ps->return_label_name);
-					break;
-				default:
-					fprintf(stderr, "Unsupported width!\n");
-					exit(EXIT_FAILURE);
-			}
-		} else {
-
-			gen_prologue(capacity, ident_str);
-
-			tokvec += 2;
-
-			int counter = 0;
+			++tokvec;
 
 			parse_parameter_declaration(ptr_ps, &tokvec, &counter);
+		}
+		*ptr_tokvec = tokvec;
 
-			while (1) {
-				enum TokenKind kind = tokvec[0].kind;
-				if (kind != OP_COMMA) {
-					break;
-				}
-				++tokvec;
+		expect_and_consume(&tokvec, RIGHT_PAREN,
+		                   "closing parenthesis of function definition");
 
-				parse_parameter_declaration(ptr_ps, &tokvec, &counter);
-			}
-			*ptr_tokvec = tokvec;
+		*ptr_tokvec = tokvec;
 
-			expect_and_consume(&tokvec, RIGHT_PAREN,
-			                   "closing parenthesis of function definition");
-
-			*ptr_tokvec = tokvec;
-
-			parse_compound_statement(ptr_ps, &tokvec);
-			switch (size_of(ret_type)) {
-				case 4:
-					gen_epilogue(ptr_ps->return_label_name);
-					break;
-				case 8:
-					gen_epilogue_8byte(ptr_ps->return_label_name);
-					break;
-				default:
-					fprintf(stderr, "Unsupported width!\n");
-					exit(EXIT_FAILURE);
-			}
+		parse_compound_statement(ptr_ps, &tokvec);
+		switch (size_of(ret_type)) {
+			case 4:
+				gen_epilogue(ptr_ps->return_label_name);
+				break;
+			case 8:
+				gen_epilogue_8byte(ptr_ps->return_label_name);
+				break;
+			default:
+				fprintf(stderr, "Unsupported width!\n");
+				exit(EXIT_FAILURE);
 		}
 	}
+
 	*ptr_tokvec = tokvec;
 }
 
