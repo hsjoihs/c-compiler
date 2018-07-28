@@ -539,21 +539,6 @@ struct ExprInfo parse_postfix_expression(struct ParserState *ptr_ps,
 	}
 }
 
-/* returns the identifier; returns type thru pointer */
-const char *parse_declaration(struct ParserState *ptr_ps,
-                              const struct Token **ptr_tokvec,
-                              struct Type *ret_ptr_type)
-{
-	const struct Token *tokvec = *ptr_tokvec;
-	const char *str;
-	*ret_ptr_type = parse_var_declarator(ptr_ps, &tokvec, &str);
-	expect_and_consume(&tokvec, SEMICOLON,
-	                   "semicolon at the end of variable definition");
-	*ptr_tokvec = tokvec;
-
-	return str;
-}
-
 struct ExprInfo parse_primary_expression(struct ParserState *ptr_ps,
                                          const struct Token **ptr_tokvec)
 {
@@ -968,7 +953,12 @@ void parse_compound_statement(struct ParserState *ptr_ps,
 			} else if (can_start_a_type(tokvec)) {
 				ptr_ps->newest_offset -= 8;
 				struct Type vartype;
-				const char *str = parse_declaration(ptr_ps, &tokvec, &vartype);
+
+				const char *str;
+				vartype = parse_var_declarator(ptr_ps, &tokvec, &str);
+				expect_and_consume(
+				    &tokvec, SEMICOLON,
+				    "semicolon at the end of variable definition");
 
 				struct map map_ = ptr_ps->scope_chain.var_table;
 
