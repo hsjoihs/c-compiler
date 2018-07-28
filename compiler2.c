@@ -361,17 +361,13 @@ struct Type parse_type_name(struct ParserState *ptr_ps,
 	expect_and_consume(&tokvec, RES_INT, "type name `int`");
 
 	struct Type ans;
-	ans.type_domain = INT_;
-	ans.pointer_of = 0;
-	ans.array_length = GARBAGE_INT;
+	ans = INT_TYPE;
 
 	while (1) {
 		if (tokvec[0].kind == OP_ASTERISK) {
 			struct Type *ptr_to_current_type = calloc(1, sizeof(struct Type));
 			*ptr_to_current_type = ans;
-			ans.type_domain = PTR_;
-			ans.pointer_of = ptr_to_current_type;
-			ans.array_length = GARBAGE_INT;
+			ans = ptr_of_type_to_ptr_to_type(ptr_to_current_type);
 			++tokvec;
 		} else {
 			*ptr_tokvec = tokvec;
@@ -1217,9 +1213,7 @@ struct ExprInfo parse_unary_expression(struct ParserState *ptr_ps,
 
 			struct ExprInfo expr_info;
 			expr_info.info = NOT_ASSIGNABLE;
-			expr_info.type.type_domain = PTR_;
-			expr_info.type.pointer_of = ptr_type;
-			expr_info.type.array_length = GARBAGE_INT;
+			expr_info.type = ptr_of_type_to_ptr_to_type(ptr_type);
 			expr_info.offset = GARBAGE_INT;
 
 			return expr_info;

@@ -79,3 +79,12 @@ struct Type deref_type(struct Type t)
 }
 
 int is_pointer(struct Type t) { return t.type_domain == PTR_; }
+
+struct Type ptr_of_type_to_ptr_to_type(struct Type *ptr_type)
+{
+	struct Type type;
+	type.type_domain = PTR_;
+	type.pointer_of = ptr_type;
+	type.array_length = GARBAGE_INT;
+	return type;
+}
