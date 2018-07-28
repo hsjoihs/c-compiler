@@ -997,6 +997,9 @@ void parse_parameter_declaration(struct ParserState *ptr_ps,
 		error_unexpected_token(tokvec, "identifier in the arglist of funcdef");
 	}
 
+	const char *ident_str = tokvec[0].ident_str;
+	++tokvec;
+
 	if (counter > 5) {
 		fprintf(stderr, "6-or-more args not implemented!\n");
 		exit(EXIT_FAILURE);
@@ -1009,7 +1012,7 @@ void parse_parameter_declaration(struct ParserState *ptr_ps,
 	ptr_varinfo->offset = ptr_ps->newest_offset;
 	ptr_varinfo->type = type;
 
-	insert(&map_, tokvec[0].ident_str, ptr_varinfo);
+	insert(&map_, ident_str, ptr_varinfo);
 
 	ptr_ps->scope_chain.var_table = map_;
 
@@ -1017,17 +1020,17 @@ void parse_parameter_declaration(struct ParserState *ptr_ps,
 		case 4:
 			gen_write_register_to_local(
 			    get_reg_name_from_arg_pos(counter),
-			    get_offset_from_name(*ptr_ps, tokvec[0].ident_str));
+			    get_offset_from_name(*ptr_ps, ident_str));
 			break;
 		case 8:
 			gen_write_register_to_local_8byte(
 			    get_reg_name_from_arg_pos_8byte(counter),
-			    get_offset_from_name(*ptr_ps, tokvec[0].ident_str));
+			    get_offset_from_name(*ptr_ps, ident_str));
 			break;
 	}
 
 	++counter;
-	++tokvec;
+
 	*ptr_tokvec = tokvec;
 	*ptr_counter = counter;
 }
