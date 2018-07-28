@@ -6,7 +6,6 @@
 #include <string.h>
 
 struct Type INT_TYPE = {INT_, 0};
-struct ExprInfo UNASSIGNABLE_INT = {NOT_ASSIGNABLE, {INT_, 0}, GARBAGE_INT};
 
 struct ExprInfo parse_additive_expression(struct ParserState *ptr_ps,
                                           const struct Token **ptr_tokvec);
@@ -330,7 +329,7 @@ struct ExprInfo parse_additive_expression(struct ParserState *ptr_ps,
 				/* subtract pointer */
 				gen_op_8byte("subq");
 				gen_div_by_const(size);
-				expr_info = UNASSIGNABLE_INT;
+				expr_info = UNASSIGNABLE(INT_TYPE);
 			}
 		}
 	}

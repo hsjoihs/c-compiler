@@ -302,7 +302,7 @@ struct ExprInfo parse_logical_OR_expression(struct ParserState *ptr_ps,
 	if (counter != 0) {
 		gen_logical_OR_final(counter, label1, label2);
 		*ptr_tokvec = tokvec;
-		return UNASSIGNABLE_INT;
+		return UNASSIGNABLE(INT_TYPE);
 	}
 
 	*ptr_tokvec = tokvec;
@@ -339,7 +339,7 @@ struct ExprInfo parse_logical_AND_expression(struct ParserState *ptr_ps,
 	if (counter != 0) {
 		gen_logical_AND_final(counter, label1, label2);
 		*ptr_tokvec = tokvec;
-		return UNASSIGNABLE_INT;
+		return UNASSIGNABLE(INT_TYPE);
 	}
 
 	*ptr_tokvec = tokvec;
@@ -530,7 +530,7 @@ struct ExprInfo parse_postfix_expression(struct ParserState *ptr_ps,
 		gen_push_int(-1);
 		before_assign(opkind);
 		*ptr_tokvec = tokvec;
-		return UNASSIGNABLE_INT;
+		return UNASSIGNABLE(INT_TYPE);
 	} else {
 		struct ExprInfo expr_info = parse_primary_expression(ptr_ps, &tokvec);
 		*ptr_tokvec = tokvec;
@@ -563,7 +563,7 @@ struct ExprInfo parse_primary_expression(struct ParserState *ptr_ps,
 		++*ptr_tokvec;
 		gen_push_int(tokvec[0].int_value);
 
-		return UNASSIGNABLE_INT;
+		return UNASSIGNABLE(INT_TYPE);
 
 	} else if (tokvec[0].kind == IDENT_OR_RESERVED) {
 		++*ptr_tokvec;
@@ -1200,7 +1200,7 @@ struct ExprInfo parse_unary_expression(struct ParserState *ptr_ps,
 			exit(EXIT_FAILURE);
 		}
 		*ptr_tokvec = tokvec;
-		return UNASSIGNABLE_INT;
+		return UNASSIGNABLE(INT_TYPE);
 	} else if (tokvec[0].kind == OP_AND) {
 		if (tokvec[1].kind == IDENT_OR_RESERVED) {
 			const char *name = tokvec[1].ident_str;
