@@ -1048,7 +1048,18 @@ void parse_function_definition(struct ParserState *ptr_ps,
 	const struct Token *tokvec = *ptr_tokvec;
 
 	struct Type ret_type = parse_type_name(ptr_ps, &tokvec);
-	if (tokvec[0].kind == IDENT_OR_RESERVED && tokvec[1].kind == LEFT_PAREN) {
+	if (tokvec[0].kind != IDENT_OR_RESERVED || tokvec[1].kind != LEFT_PAREN) {
+		fprintf(stderr, "expected function definition but could not find it\n");
+		fprintf(stderr, "current token: ");
+		print_token(tokvec[0]);
+		fprintf(stderr, "\nnext token: ");
+		print_token(tokvec[1]);
+		fprintf(stderr, "\nprevious token: ");
+		print_token(tokvec[-1]);
+		fprintf(stderr, "\n");
+		exit(EXIT_FAILURE);
+	}
+	{
 		const char *ident_str = tokvec[0].ident_str;
 
 		int capacity =
@@ -1145,16 +1156,6 @@ void parse_function_definition(struct ParserState *ptr_ps,
 					exit(EXIT_FAILURE);
 			}
 		}
-	} else {
-		fprintf(stderr, "expected function definition but could not find it\n");
-		fprintf(stderr, "current token: ");
-		print_token(tokvec[0]);
-		fprintf(stderr, "\nnext token: ");
-		print_token(tokvec[1]);
-		fprintf(stderr, "\nprevious token: ");
-		print_token(tokvec[-1]);
-		fprintf(stderr, "\n");
-		exit(EXIT_FAILURE);
 	}
 	*ptr_tokvec = tokvec;
 }
