@@ -23,6 +23,9 @@ void expect_and_consume(const struct Token **ptr_tokvec, enum TokenKind kind,
                         const char *str);
 struct Type parse_type_name(struct ParserState *ptr_ps,
                             const struct Token **ptr_tokvec);
+struct Type parse_var_declarator(struct ParserState *ptr_ps,
+                                 const struct Token **ptr_tokvec,
+                                 const char **ptr_to_ident_str);
 
 struct ExprInfo remove_leftiness(struct ExprInfo info)
 {
@@ -542,10 +545,8 @@ const char *parse_declaration(struct ParserState *ptr_ps,
                               struct Type *ret_ptr_type)
 {
 	const struct Token *tokvec = *ptr_tokvec;
-	*ret_ptr_type = parse_type_name(ptr_ps, &tokvec);
-	expect_and_consume(&tokvec, IDENT_OR_RESERVED,
-	                   "identifier as variable name");
-	const char *str = tokvec[-1].ident_str;
+	const char *str;
+	*ret_ptr_type = parse_var_declarator(ptr_ps, &tokvec, &str);
 	expect_and_consume(&tokvec, SEMICOLON,
 	                   "semicolon at the end of variable definition");
 	*ptr_tokvec = tokvec;
@@ -984,13 +985,12 @@ void parse_compound_statement(struct ParserState *ptr_ps,
 	}
 }
 
-void parse_parameter_declaration(struct ParserState *ptr_ps,
+/* `int a`, `int *a` */
+struct Type parse_var_declarator(struct ParserState *ptr_ps,
                                  const struct Token **ptr_tokvec,
-                                 int *ptr_counter)
+                                 const char **ptr_to_ident_str)
 {
 	const struct Token *tokvec = *ptr_tokvec;
-	int counter = *ptr_counter;
-
 	struct Type type = parse_type_name(ptr_ps, &tokvec);
 
 	if (tokvec[0].kind != IDENT_OR_RESERVED) {
@@ -998,7 +998,24 @@ void parse_parameter_declaration(struct ParserState *ptr_ps,
 	}
 
 	const char *ident_str = tokvec[0].ident_str;
+	*ptr_to_ident_str = ident_str;
 	++tokvec;
+
+	*ptr_tokvec = tokvec;
+
+	return type;
+}
+
+void parse_parameter_declaration(struct ParserState *ptr_ps,
+                                 const struct Token **ptr_tokvec,
+                                 int *ptr_counter)
+{
+	const struct Token *tokvec = *ptr_tokvec;
+	int counter = *ptr_counter;
+
+	const char *ident_str;
+
+	struct Type type = parse_var_declarator(ptr_ps, &tokvec, &ident_str);
 
 	if (counter > 5) {
 		fprintf(stderr, "6-or-more args not implemented!\n");
