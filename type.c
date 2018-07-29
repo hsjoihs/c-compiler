@@ -39,7 +39,7 @@ void debug_print_type(struct Type type)
 {
 	switch (type.type_domain) {
 		case PTR_:
-			fprintf(stderr, "pointer of ");
+			fprintf(stderr, "pointer to ");
 			debug_print_type(*type.pointer_of);
 			return;
 		case INT_:
