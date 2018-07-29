@@ -1063,24 +1063,12 @@ void parse_function_definition(struct ParserState *ptr_ps,
 	const char *ident_str = tokvec[0].ident_str;
 	tokvec += 2;
 
-	int capacity = 8; /* 8 is the space to store the address to handle deref */
-
-	for (int i = 0;; i++) {
-		if (tokvec[i].kind == END) {
-			break;
-		}
-		if (tokvec[i].kind != IDENT_OR_RESERVED) {
-			continue;
-		}
-
-		capacity += 8;
-	}
-
 	ptr_ps->scope_chain.outer = 0; /* most outer scope */
 	ptr_ps->scope_chain.var_table = init_int_map();
 	ptr_ps->return_label_name = GARBAGE_INT;   /* INITIALIZE */
 	ptr_ps->break_label_name = GARBAGE_INT;    /* INITIALIZE */
 	ptr_ps->continue_label_name = GARBAGE_INT; /* INITIALIZE */
+	/* 8 is the space to store the address to handle deref */
 	ptr_ps->newest_offset = -8;
 	ptr_ps->func_ret_type = ret_type;
 
@@ -1137,7 +1125,8 @@ void parse_function_definition(struct ParserState *ptr_ps,
 		*ptr_tokvec = tokvec;
 	}
 	parse_compound_statement(ptr_ps, &tokvec);
-	gen_before_epilogue(label1, label2, capacity);
+
+	gen_before_epilogue(label1, label2, -(ptr_ps->newest_offset));
 	switch (size_of(ret_type)) {
 		case 4:
 			gen_epilogue(ptr_ps->return_label_name);
