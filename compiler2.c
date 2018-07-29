@@ -918,7 +918,7 @@ void parse_parameter_declaration(struct ParserState *ptr_ps,
 	*ptr_counter = counter;
 }
 
-void parse_function_definition(struct ParserState *ptr_ps,
+void parse_toplevel_definition(struct ParserState *ptr_ps,
                                const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
@@ -1172,7 +1172,7 @@ int main(int argc, char const **argv)
 				parse_final(&tokvec);
 				return 0;
 			} else {
-				parse_function_definition(&ps, &tokvec);
+				parse_toplevel_definition(&ps, &tokvec);
 			}
 		}
 	}
