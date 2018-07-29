@@ -1207,12 +1207,7 @@ struct ExprInfo parse_unary_expression(struct ParserState *ptr_ps,
 			struct Type *ptr_type = calloc(1, sizeof(struct Type));
 			*ptr_type = info.type;
 
-			struct ExprInfo expr_info;
-			expr_info.info = NOT_ASSIGNABLE;
-			expr_info.type = ptr_of_type_to_ptr_to_type(ptr_type);
-			expr_info.offset = GARBAGE_INT;
-
-			return expr_info;
+			return UNASSIGNABLE(ptr_of_type_to_ptr_to_type(ptr_type));
 		} else {
 			fprintf(stderr, "& followed by non-identifier: unimplemented!!!\n");
 			exit(EXIT_FAILURE);
