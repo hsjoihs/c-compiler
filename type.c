@@ -93,18 +93,11 @@ struct Type parse_dcl(struct Type base_type, const struct Token **ptr_tokvec,
                       const char **ptr_to_ident_str)
 {
 	const struct Token *tokvec = *ptr_tokvec;
-	struct Type type;
 	struct Type ans = base_type;
 
 	int ns = 0;
-	while (1) {
-		if (tokvec[0].kind == OP_ASTERISK) {
-			ns++;
-
-			++tokvec;
-		} else {
-			break;
-		}
+	for (; tokvec[0].kind == OP_ASTERISK; ++tokvec) {
+		ns++;
 	}
 
 	if (tokvec[0].kind != IDENT_OR_RESERVED) {
@@ -122,8 +115,7 @@ struct Type parse_dcl(struct Type base_type, const struct Token **ptr_tokvec,
 		*ptr_to_current_type = ans;
 		ans = ptr_of_type_to_ptr_to_type(ptr_to_current_type);
 	}
-	type = ans;
-	return type;
+	return ans;
 }
 
 /* `int a`, `int *a` */
