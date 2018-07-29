@@ -984,7 +984,7 @@ struct Type parse_var_declarator(struct ParserState *ptr_ps,
 	struct Type type = parse_type_name(ptr_ps, &tokvec);
 
 	if (tokvec[0].kind != IDENT_OR_RESERVED) {
-		error_unexpected_token(tokvec, "identifier in the arglist of funcdef");
+		error_unexpected_token(tokvec, "identifier in the declarator");
 	}
 
 	const char *ident_str = tokvec[0].ident_str;
