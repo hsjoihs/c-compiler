@@ -95,14 +95,14 @@ struct Type parse_dcl(struct Type base_type, const struct Token **ptr_tokvec,
 	const struct Token *tokvec = *ptr_tokvec;
 	struct Type type;
 	struct Type ans = base_type;
+
+	int ns = 0;
 	while (1) {
 		if (tokvec[0].kind == OP_ASTERISK) {
-			struct Type *ptr_to_current_type = calloc(1, sizeof(struct Type));
-			*ptr_to_current_type = ans;
-			ans = ptr_of_type_to_ptr_to_type(ptr_to_current_type);
+			ns++;
+
 			++tokvec;
 		} else {
-			type = ans;
 			break;
 		}
 	}
@@ -117,6 +117,12 @@ struct Type parse_dcl(struct Type base_type, const struct Token **ptr_tokvec,
 
 	*ptr_tokvec = tokvec;
 
+	while (ns-- > 0) {
+		struct Type *ptr_to_current_type = calloc(1, sizeof(struct Type));
+		*ptr_to_current_type = ans;
+		ans = ptr_of_type_to_ptr_to_type(ptr_to_current_type);
+	}
+	type = ans;
 	return type;
 }
 
