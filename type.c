@@ -124,18 +124,10 @@ struct Type parse_dcl(struct Type base_type, const struct Token **ptr_tokvec,
 struct Type parse_var_declarator(const struct Token **ptr_tokvec,
                                  const char **ptr_to_ident_str)
 {
-	const struct Token *tokvec = *ptr_tokvec;
+	expect_and_consume(ptr_tokvec, RES_INT, "type name `int`");
+	struct Type base_type = INT_TYPE;
 
-	struct Type type;
-
-	expect_and_consume(&tokvec, RES_INT, "type name `int`");
-
-	struct Type ans;
-	ans = INT_TYPE;
-
-	type = parse_dcl(ans, &tokvec, ptr_to_ident_str);
-
-	*ptr_tokvec = tokvec;
+	struct Type type = parse_dcl(base_type, ptr_tokvec, ptr_to_ident_str);
 
 	return type;
 }
