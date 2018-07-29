@@ -23,6 +23,13 @@ void gen_prologue(int alloc_size, const char *fname)
 	}
 }
 
+void gen_after_prologue(int label1, int label2)
+{
+	printf("//gen_after_prologue(%d, %d)\n", label1, label2);
+	printf("  jmp .L%d\n", label1);
+	printf(".L%d:\n", label2);
+}
+
 /* write to local mem what's at the top of the stack. does not consume stack. */
 void gen_write_to_local(int offset)
 {
@@ -465,6 +472,14 @@ void gen_shift_ints(const char *str)
 	       "  %s %%cl, +8(%%rsp)\n"
 	       "  addq $8, %%rsp\n",
 	       str);
+}
+
+void gen_before_epilogue(int label1, int label2, int capacity)
+{
+	printf("//gen_before_epilogue(%d, %d, %d)\n", label1, label2, capacity);
+	printf(".L%d:\n", label1);
+	printf("  subq $%d, %%rsp\n", capacity);
+	printf("  jmp .L%d\n", label2);
 }
 
 void gen_epilogue(int label)

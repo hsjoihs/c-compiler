@@ -1092,6 +1092,8 @@ void parse_function_definition(struct ParserState *ptr_ps,
 
 	ptr_ps->func_ret_type_map = retmap;
 
+	int label1;
+	int label2;
 	if (tokvec[0].kind == RIGHT_PAREN) {
 		++tokvec;
 
@@ -1103,10 +1105,16 @@ void parse_function_definition(struct ParserState *ptr_ps,
 			return;
 		}
 
-		gen_prologue(capacity, ident_str);
+		label1 = get_new_label_name(ptr_ps);
+		label2 = get_new_label_name(ptr_ps);
+		gen_prologue(0, ident_str);
+		gen_after_prologue(label1, label2);
 
 	} else {
-		gen_prologue(capacity, ident_str);
+		label1 = get_new_label_name(ptr_ps);
+		label2 = get_new_label_name(ptr_ps);
+		gen_prologue(0, ident_str);
+		gen_after_prologue(label1, label2);
 
 		int counter = 0;
 
@@ -1129,6 +1137,7 @@ void parse_function_definition(struct ParserState *ptr_ps,
 		*ptr_tokvec = tokvec;
 	}
 	parse_compound_statement(ptr_ps, &tokvec);
+	gen_before_epilogue(label1, label2, capacity);
 	switch (size_of(ret_type)) {
 		case 4:
 			gen_epilogue(ptr_ps->return_label_name);
