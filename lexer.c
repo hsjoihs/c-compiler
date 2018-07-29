@@ -171,6 +171,12 @@ void print_token(struct Token tok)
 		case RES_INT:
 			fprintf(stderr, "int");
 			break;
+		case LEFT_BRACKET:
+			fprintf(stderr, "[");
+			break;
+		case RIGHT_BRACKET:
+			fprintf(stderr, "]");
+			break;
 	}
 }
 
@@ -399,6 +405,14 @@ struct Token get_token(const char **ptr_to_str)
 		}
 	} else if (*str == '~') {
 		t.kind = OP_TILDA;
+		++*ptr_to_str;
+		return t;
+	} else if (*str == '[') {
+		t.kind = LEFT_BRACKET;
+		++*ptr_to_str;
+		return t;
+	} else if (*str == ']') {
+		t.kind = RIGHT_BRACKET;
 		++*ptr_to_str;
 		return t;
 	}

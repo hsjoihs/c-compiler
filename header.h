@@ -112,6 +112,8 @@ enum TokenKind {
 	OP_MINUS_MINUS,
 	RES_FOR,
 	RES_INT,
+	LEFT_BRACKET,
+	RIGHT_BRACKET,
 };
 
 struct Token{
