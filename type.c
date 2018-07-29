@@ -123,7 +123,7 @@ struct Type3 {
 	const char *ident_str;
 };
 
-void push_Type3(struct Type3 *ptr, struct type3_elem tok)
+void push_to_type3(struct Type3 *ptr, struct type3_elem tok)
 {
 	if (ptr->_allocated_length < ptr->length + 1) {
 
@@ -190,7 +190,7 @@ void parse_dirdcl(const struct Token **ptr_tokvec, struct Type3 *ptr_type3)
 			struct type3_elem a;
 			a.type_domain = ARRAY_OF;
 			a.array_length = length;
-			push_Type3(ptr_type3, a);
+			push_to_type3(ptr_type3, a);
 		} else {
 			break;
 		}
@@ -211,7 +211,7 @@ void parse_dcl(const struct Token **ptr_tokvec, struct Type3 *ptr_type3)
 
 	while (ns-- > 0) {
 		struct type3_elem p = {POINTER_TO, GARBAGE_INT};
-		push_Type3(ptr_type3, p);
+		push_to_type3(ptr_type3, p);
 	}
 
 	*ptr_tokvec = tokvec;
@@ -234,7 +234,7 @@ struct Type parse_var_declarator(const struct Token **ptr_tokvec,
 	*ptr_to_ident_str = type3.ident_str;
 
 	struct type3_elem i = {INT_TYPE_, GARBAGE_INT};
-	push_Type3(&type3, i);
+	push_to_type3(&type3, i);
 
 	struct Type type = from_type3_to_type(type3.vector);
 
