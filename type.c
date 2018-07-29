@@ -49,6 +49,22 @@ void debug_print_type(struct Type type)
 			fprintf(stderr, "array (length %d) of ", type.array_length);
 			debug_print_type(*type.pointer_of);
 			return;
+		case FN:
+			fprintf(stderr, "function (");
+			if (!type.param_infos.param_vec) {
+				fprintf(stderr, "param: no info");
+			} else {
+				fprintf(stderr, "param:\n");
+				for (int i = 0; type.param_infos.param_vec[i]; i++) {
+					struct ParamInfo *ptr_paraminfo =
+					    type.param_infos.param_vec[i];
+					fprintf(stderr, "  %s: ", ptr_paraminfo->ident_str);
+					debug_print_type(ptr_paraminfo->param_type);
+					fprintf(stderr, "\n");
+				}
+			}
+			fprintf(stderr, ") returning ");
+			debug_print_type(*type.pointer_of);
 	}
 }
 
@@ -154,9 +170,19 @@ struct Type from_type3_to_type(const struct type3_elem *type3)
 			return ptr_of_type_to_arr_of_type(ptr_to_current_type,
 			                                  type3[-1].array_length);
 		}
-		default:
-			fprintf(stderr, "Unimplemented!!!!!\n");
-			exit(EXIT_FAILURE);
+		case FUNCTION_RETURNING: {
+			++type3;
+			struct Type *ptr_to_current_type = calloc(1, sizeof(struct Type));
+			*ptr_to_current_type = from_type3_to_type(type3);
+			struct ParamInfos param_infos = type3[-1].param_infos;
+
+			struct Type type;
+			type.type_domain = FN;
+			type.pointer_of = ptr_to_current_type;
+			type.array_length = GARBAGE_INT;
+			type.param_infos = param_infos;
+			return type;
+		}
 	}
 }
 
@@ -192,6 +218,15 @@ void parse_dirdcl(const struct Token **ptr_tokvec, struct Type3 *ptr_type3)
 			a.type_domain = ARRAY_OF;
 			a.array_length = length;
 			push_to_type3(ptr_type3, a);
+		} else if (tokvec[0].kind == LEFT_PAREN) {
+			++tokvec;
+			if (tokvec[0].kind == RIGHT_PAREN) {
+				++tokvec;
+				struct type3_elem f;
+				f.type_domain = FUNCTION_RETURNING;
+				f.param_infos.param_vec = (struct ParamInfo **)0;
+				push_to_type3(ptr_type3, f);
+			}
 		} else {
 			break;
 		}

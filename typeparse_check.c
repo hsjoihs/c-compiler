@@ -24,5 +24,9 @@ int main()
 	foo("int arr[13]");
 	foo("int (*daytab)[13]");
 	foo("int (*(*x[3])[2])[4]");
+	foo("int (*(*x())[2])()");
+	foo("int *comp()");
+	foo("int (*comp)()");
+	foo("int (*(*x())[2])()");
 	return 0;
 }
