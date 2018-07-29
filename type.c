@@ -170,13 +170,9 @@ void parse_dirdcl(const struct Token **ptr_tokvec, struct Type3 *ptr_type3)
 		parse_dcl(&tokvec, ptr_type3);
 		expect_and_consume(&tokvec, RIGHT_PAREN,
 		                   "closing ) while parsing a declaration");
-		*ptr_tokvec = tokvec;
 	} else if (tokvec[0].kind == IDENT_OR_RESERVED) {
-		const char *ident_str = tokvec[0].ident_str;
-
-		ptr_type3->ident_str = ident_str;
+		ptr_type3->ident_str = tokvec[0].ident_str;
 		++tokvec;
-		*ptr_tokvec = tokvec;
 	} else {
 		error_unexpected_token(tokvec, "( or an identifier in the declarator");
 		exit(EXIT_FAILURE); /* silence the warning */
@@ -200,7 +196,6 @@ void parse_dirdcl(const struct Token **ptr_tokvec, struct Type3 *ptr_type3)
 		}
 	}
 	*ptr_tokvec = tokvec;
-	return;
 }
 
 void parse_dcl(const struct Token **ptr_tokvec, struct Type3 *ptr_type3)
@@ -214,12 +209,12 @@ void parse_dcl(const struct Token **ptr_tokvec, struct Type3 *ptr_type3)
 
 	parse_dirdcl(&tokvec, ptr_type3);
 
-	*ptr_tokvec = tokvec;
-
 	while (ns-- > 0) {
 		struct type3_elem p = {POINTER_TO, GARBAGE_INT};
 		push_Type3(ptr_type3, p);
 	}
+
+	*ptr_tokvec = tokvec;
 }
 
 /* `int a`, `int *a` */
