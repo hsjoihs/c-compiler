@@ -1061,6 +1061,7 @@ void parse_function_definition(struct ParserState *ptr_ps,
 	}
 
 	const char *ident_str = tokvec[0].ident_str;
+	tokvec += 2;
 
 	int capacity = 8; /* 8 is the space to store the address to handle deref */
 	struct map map_ = init_int_map();
@@ -1092,8 +1093,8 @@ void parse_function_definition(struct ParserState *ptr_ps,
 
 	ptr_ps->func_ret_type_map = retmap;
 
-	if (tokvec[2].kind == RIGHT_PAREN) {
-		tokvec += 3;
+	if (tokvec[0].kind == RIGHT_PAREN) {
+		++tokvec;
 
 		if (tokvec[0].kind == SEMICOLON) { /* function prototype */
 			++tokvec;
@@ -1104,23 +1105,9 @@ void parse_function_definition(struct ParserState *ptr_ps,
 		}
 
 		gen_prologue(capacity, ident_str);
-		parse_compound_statement(ptr_ps, &tokvec);
-		switch (size_of(ret_type)) {
-			case 4:
-				gen_epilogue(ptr_ps->return_label_name);
-				break;
-			case 8:
-				gen_epilogue_8byte(ptr_ps->return_label_name);
-				break;
-			default:
-				fprintf(stderr, "Unsupported width!\n");
-				exit(EXIT_FAILURE);
-		}
+
 	} else {
-
 		gen_prologue(capacity, ident_str);
-
-		tokvec += 2;
 
 		int counter = 0;
 
@@ -1141,19 +1128,18 @@ void parse_function_definition(struct ParserState *ptr_ps,
 		                   "closing parenthesis of function definition");
 
 		*ptr_tokvec = tokvec;
-
-		parse_compound_statement(ptr_ps, &tokvec);
-		switch (size_of(ret_type)) {
-			case 4:
-				gen_epilogue(ptr_ps->return_label_name);
-				break;
-			case 8:
-				gen_epilogue_8byte(ptr_ps->return_label_name);
-				break;
-			default:
-				fprintf(stderr, "Unsupported width!\n");
-				exit(EXIT_FAILURE);
-		}
+	}
+	parse_compound_statement(ptr_ps, &tokvec);
+	switch (size_of(ret_type)) {
+		case 4:
+			gen_epilogue(ptr_ps->return_label_name);
+			break;
+		case 8:
+			gen_epilogue_8byte(ptr_ps->return_label_name);
+			break;
+		default:
+			fprintf(stderr, "Unsupported width!\n");
+			exit(EXIT_FAILURE);
 	}
 
 	*ptr_tokvec = tokvec;
