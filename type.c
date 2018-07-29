@@ -91,6 +91,15 @@ struct Type ptr_of_type_to_ptr_to_type(struct Type *ptr_type)
 	return type;
 }
 
+struct Type ptr_of_type_to_arr_of_type(struct Type *ptr_type, int length)
+{
+	struct Type type;
+	type.type_domain = ARRAY;
+	type.pointer_of = ptr_type;
+	type.array_length = length;
+	return type;
+}
+
 struct Type parse_dcl(struct Type base_type, const struct Token **ptr_tokvec,
                       const char **ptr_to_ident_str);
 
