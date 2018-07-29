@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-struct Type INT_TYPE = {INT_, 0, GARBAGE_INT};
+struct Type INT_TYPE = {INT_, 0, GARBAGE_INT, {(struct ParamInfo **)0}};
 
 int size_of(struct Type type)
 {
@@ -114,6 +114,7 @@ enum t2 {
 struct type3_elem {
 	enum t2 type_domain;
 	int array_length;
+	struct ParamInfos param_infos;
 };
 
 struct Type3 {
@@ -210,7 +211,8 @@ void parse_dcl(const struct Token **ptr_tokvec, struct Type3 *ptr_type3)
 	parse_dirdcl(&tokvec, ptr_type3);
 
 	while (ns-- > 0) {
-		struct type3_elem p = {POINTER_TO, GARBAGE_INT};
+		struct type3_elem p = {
+		    POINTER_TO, GARBAGE_INT, {(struct ParamInfo **)0}};
 		push_to_type3(ptr_type3, p);
 	}
 
@@ -233,7 +235,7 @@ struct Type parse_var_declarator(const struct Token **ptr_tokvec,
 
 	*ptr_to_ident_str = type3.ident_str;
 
-	struct type3_elem i = {INT_TYPE_, GARBAGE_INT};
+	struct type3_elem i = {INT_TYPE_, GARBAGE_INT, {(struct ParamInfo **)0}};
 	push_to_type3(&type3, i);
 
 	struct Type type = from_type3_to_type(type3.vector);

@@ -156,13 +156,33 @@ void inc_or_dec(struct ParserState *ptr_ps, const char *name,
 void binary_op(enum TokenKind kind);
 void print_unary_prefix_op(enum TokenKind kind);
 
-enum typ_ { INT_ = 1, PTR_, ARRAY };
+struct ParamInfo;
+
+struct ParamInfos {
+	struct ParamInfo **param_vec; 
+	/*
+	 points to the array of (ParamInfo*). 
+	 terminated by NULL. 
+	 if the param_vec itself is NULL, that means there is no info.
+	 */
+};
+
+
+
+enum typ_ { INT_ = 1, PTR_, ARRAY, FN };
 
 struct Type {
 	enum typ_ type_domain;
 	struct Type *pointer_of;
 	int array_length;
+	struct ParamInfos param_infos;
 };
+
+struct ParamInfo {
+	struct Type param_type;
+	const char *ident_str;
+};
+
 int size_of(struct Type type);
 
 
@@ -214,6 +234,6 @@ void debug_print_type(struct Type type);
 
 
 struct FuncInfo {
-	int dummy;
 	struct Type ret_type;
+	struct ParamInfos param_infos;
 };
