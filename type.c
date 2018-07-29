@@ -145,7 +145,15 @@ struct Type from_type3_to_type(const struct type3_elem *type3)
 			*ptr_to_current_type = from_type3_to_type(type3);
 			return ptr_of_type_to_ptr_to_type(ptr_to_current_type);
 		}
+		case ARRAY_OF: {
+			++type3;
+			struct Type *ptr_to_current_type = calloc(1, sizeof(struct Type));
+			*ptr_to_current_type = from_type3_to_type(type3);
+			return ptr_of_type_to_arr_of_type(ptr_to_current_type,
+			                                  type3[-1].array_length);
+		}
 		default:
+			fprintf(stderr, "Unimplemented!!!!!\n");
 			exit(EXIT_FAILURE);
 	}
 }
@@ -164,17 +172,35 @@ void parse_dirdcl(const struct Token **ptr_tokvec,
 		expect_and_consume(&tokvec, RIGHT_PAREN,
 		                   "closing ) while parsing a declaration");
 		*ptr_tokvec = tokvec;
-		return;
 	} else if (tokvec[0].kind == IDENT_OR_RESERVED) {
 		const char *ident_str = tokvec[0].ident_str;
 		*ptr_to_ident_str = ident_str;
 		++tokvec;
 		*ptr_tokvec = tokvec;
-		return;
 	} else {
 		error_unexpected_token(tokvec, "( or an identifier in the declarator");
 		exit(EXIT_FAILURE); /* silence the warning */
 	}
+
+	while (1) {
+		if (tokvec[0].kind == LEFT_BRACKET) {
+			++tokvec;
+			expect_and_consume(&tokvec, LIT_DEC_INTEGER,
+			                   "an integer while parsing a declaration");
+			int length = tokvec[-1].int_value;
+			expect_and_consume(&tokvec, RIGHT_BRACKET,
+			                   "closing ] while parsing a declaration");
+
+			struct type3_elem a;
+			a.type_domain = ARRAY_OF;
+			a.array_length = length;
+			push_Type3(ptr_type3, a);
+		} else {
+			break;
+		}
+	}
+	*ptr_tokvec = tokvec;
+	return;
 }
 
 void parse_dcl(const struct Token **ptr_tokvec, const char **ptr_to_ident_str,

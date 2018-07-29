@@ -21,5 +21,8 @@ int main()
 {
 	foo("int **argv");
 	foo("int (*(*argv))");
+	foo("int arr[13]");
+	foo("int (*daytab)[13]");
+	foo("int (*(*x[3])[2])[4]");
 	return 0;
 }
