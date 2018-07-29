@@ -96,23 +96,21 @@ struct Type parse_var_declarator(const struct Token **ptr_tokvec,
 	const struct Token *tokvec = *ptr_tokvec;
 
 	struct Type type;
-	{
-		expect_and_consume(&tokvec, RES_INT, "type name `int`");
 
-		struct Type ans;
-		ans = INT_TYPE;
+	expect_and_consume(&tokvec, RES_INT, "type name `int`");
 
-		while (1) {
-			if (tokvec[0].kind == OP_ASTERISK) {
-				struct Type *ptr_to_current_type =
-				    calloc(1, sizeof(struct Type));
-				*ptr_to_current_type = ans;
-				ans = ptr_of_type_to_ptr_to_type(ptr_to_current_type);
-				++tokvec;
-			} else {
-				type = ans;
-				break;
-			}
+	struct Type ans;
+	ans = INT_TYPE;
+
+	while (1) {
+		if (tokvec[0].kind == OP_ASTERISK) {
+			struct Type *ptr_to_current_type = calloc(1, sizeof(struct Type));
+			*ptr_to_current_type = ans;
+			ans = ptr_of_type_to_ptr_to_type(ptr_to_current_type);
+			++tokvec;
+		} else {
+			type = ans;
+			break;
 		}
 	}
 
