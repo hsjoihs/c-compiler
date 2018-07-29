@@ -100,35 +100,85 @@ struct Type ptr_of_type_to_arr_of_type(struct Type *ptr_type, int length)
 	return type;
 }
 
-struct Type parse_dcl(struct Type base_type, const struct Token **ptr_tokvec,
-                      const char **ptr_to_ident_str);
+/***************************************
+ * pure parsers with respect to types. *
+ ***************************************/
 
-struct Type parse_dirdcl(struct Type base_type, const struct Token **ptr_tokvec,
-                         const char **ptr_to_ident_str)
+enum t2 {
+	POINTER_TO,
+	ARRAY_OF,
+	FUNCTION_RETURNING,
+	INT_TYPE_,
+};
+
+struct type3_elem {
+	enum t2 type_domain;
+	int array_length;
+};
+
+struct Type3 {
+	int length;
+	int _allocated_length;
+	struct type3_elem *vector;
+};
+
+void push_Type3(struct Type3 *ptr, struct type3_elem tok)
+{
+	if (ptr->_allocated_length < ptr->length + 1) {
+
+		ptr->vector = realloc(ptr->vector, ptr->_allocated_length * 2 *
+		                                       sizeof(struct type3_elem));
+		ptr->_allocated_length *= 2;
+	}
+	ptr->vector[ptr->length] = tok;
+	++(ptr->length);
+}
+
+struct Type from_type3_to_type(const struct type3_elem *type3)
+{
+	switch (type3[0].type_domain) {
+		case INT_TYPE_:
+			return INT_TYPE;
+		case POINTER_TO: {
+			++type3;
+			struct Type *ptr_to_current_type = calloc(1, sizeof(struct Type));
+			*ptr_to_current_type = from_type3_to_type(type3);
+			return ptr_of_type_to_ptr_to_type(ptr_to_current_type);
+		}
+		default:
+			exit(EXIT_FAILURE);
+	}
+}
+
+void parse_dcl(const struct Token **ptr_tokvec, const char **ptr_to_ident_str,
+               struct Type3 *ptr_type3);
+
+void parse_dirdcl(const struct Token **ptr_tokvec,
+                  const char **ptr_to_ident_str, struct Type3 *ptr_type3)
 {
 	const struct Token *tokvec = *ptr_tokvec;
-	struct Type type;
+
 	if (tokvec[0].kind == LEFT_PAREN) {
 		++tokvec;
-		type = parse_dcl(base_type, &tokvec, ptr_to_ident_str);
+		parse_dcl(&tokvec, ptr_to_ident_str, ptr_type3);
 		expect_and_consume(&tokvec, RIGHT_PAREN,
 		                   "closing ) while parsing a declaration");
 		*ptr_tokvec = tokvec;
-		return type;
+		return;
 	} else if (tokvec[0].kind == IDENT_OR_RESERVED) {
 		const char *ident_str = tokvec[0].ident_str;
 		*ptr_to_ident_str = ident_str;
 		++tokvec;
 		*ptr_tokvec = tokvec;
-		return base_type;
+		return;
 	} else {
 		error_unexpected_token(tokvec, "( or an identifier in the declarator");
 		exit(EXIT_FAILURE); /* silence the warning */
 	}
 }
 
-struct Type parse_dcl(struct Type base_type, const struct Token **ptr_tokvec,
-                      const char **ptr_to_ident_str)
+void parse_dcl(const struct Token **ptr_tokvec, const char **ptr_to_ident_str,
+               struct Type3 *ptr_type3)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 
@@ -137,16 +187,14 @@ struct Type parse_dcl(struct Type base_type, const struct Token **ptr_tokvec,
 		ns++;
 	}
 
-	struct Type ans = parse_dirdcl(base_type, &tokvec, ptr_to_ident_str);
+	parse_dirdcl(&tokvec, ptr_to_ident_str, ptr_type3);
 
 	*ptr_tokvec = tokvec;
 
 	while (ns-- > 0) {
-		struct Type *ptr_to_current_type = calloc(1, sizeof(struct Type));
-		*ptr_to_current_type = ans;
-		ans = ptr_of_type_to_ptr_to_type(ptr_to_current_type);
+		struct type3_elem p = {POINTER_TO, GARBAGE_INT};
+		push_Type3(ptr_type3, p);
 	}
-	return ans;
 }
 
 /* `int a`, `int *a` */
@@ -154,9 +202,18 @@ struct Type parse_var_declarator(const struct Token **ptr_tokvec,
                                  const char **ptr_to_ident_str)
 {
 	expect_and_consume(ptr_tokvec, RES_INT, "type name `int`");
-	struct Type base_type = INT_TYPE;
 
-	struct Type type = parse_dcl(base_type, ptr_tokvec, ptr_to_ident_str);
+	struct Type3 type3;
+	type3.length = 0;
+	type3._allocated_length = 30;
+	type3.vector = calloc(30, sizeof(struct type3_elem));
+
+	parse_dcl(ptr_tokvec, ptr_to_ident_str, &type3);
+
+	struct type3_elem i = {INT_TYPE_, GARBAGE_INT};
+	push_Type3(&type3, i);
+
+	struct Type type = from_type3_to_type(type3.vector);
 
 	return type;
 }
