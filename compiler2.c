@@ -1064,7 +1064,6 @@ void parse_function_definition(struct ParserState *ptr_ps,
 	tokvec += 2;
 
 	int capacity = 8; /* 8 is the space to store the address to handle deref */
-	struct map map_ = init_int_map();
 
 	for (int i = 0;; i++) {
 		if (tokvec[i].kind == END) {
@@ -1078,7 +1077,7 @@ void parse_function_definition(struct ParserState *ptr_ps,
 	}
 
 	ptr_ps->scope_chain.outer = 0; /* most outer scope */
-	ptr_ps->scope_chain.var_table = map_;
+	ptr_ps->scope_chain.var_table = init_int_map();
 	ptr_ps->return_label_name = GARBAGE_INT;   /* INITIALIZE */
 	ptr_ps->break_label_name = GARBAGE_INT;    /* INITIALIZE */
 	ptr_ps->continue_label_name = GARBAGE_INT; /* INITIALIZE */
