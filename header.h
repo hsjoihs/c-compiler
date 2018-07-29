@@ -211,3 +211,9 @@ void error_unexpected_token(const struct Token *tokvec, const char *str);
 struct Token *read_all_tokens_(const char *str);
 int count_all_tokens(const char *str);
 void debug_print_type(struct Type type);
+
+
+struct FuncInfo {
+	int dummy;
+	struct Type ret_type;
+};

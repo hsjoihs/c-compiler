@@ -431,9 +431,9 @@ struct ExprInfo parse_postfix_expression(struct ParserState *ptr_ps,
 			fprintf(stderr, "Assumes that `%s()` returns `int`\n", ident_str);
 			ret_type = INT_TYPE;
 		} else {
-			struct Type *ptr_type =
+			struct FuncInfo *ptr_func_info =
 			    lookup(ptr_ps->func_ret_type_map, ident_str);
-			ret_type = *ptr_type;
+			ret_type = ptr_func_info->ret_type;
 		}
 
 		if (tokvec[2].kind == RIGHT_PAREN) {
@@ -968,9 +968,9 @@ void parse_toplevel_definition(struct ParserState *ptr_ps,
 
 	struct map retmap = ptr_ps->func_ret_type_map;
 
-	struct Type *ptr_typ = calloc(1, sizeof(struct Type));
-	*ptr_typ = ret_type;
-	insert(&retmap, ident_str, ptr_typ);
+	struct FuncInfo *ptr_func_info = calloc(1, sizeof(struct FuncInfo));
+	ptr_func_info->ret_type = ret_type;
+	insert(&retmap, ident_str, ptr_func_info);
 
 	ptr_ps->func_ret_type_map = retmap;
 
