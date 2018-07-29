@@ -19,8 +19,6 @@ struct ParserState {
 
 int get_new_label_name(struct ParserState *ptr_ps);
 
-struct Type parse_type_name(const struct Token **ptr_tokvec);
-
 struct ExprInfo remove_leftiness(struct ExprInfo info)
 {
 	if (info.info == LOCAL_VAR) {
@@ -347,27 +345,6 @@ struct ExprInfo parse_cast_expression(struct ParserState *ptr_ps,
                                       const struct Token **ptr_tokvec)
 {
 	return parse_unary_expression(ptr_ps, ptr_tokvec);
-}
-
-struct Type parse_type_name(const struct Token **ptr_tokvec)
-{
-	const struct Token *tokvec = *ptr_tokvec;
-	expect_and_consume(&tokvec, RES_INT, "type name `int`");
-
-	struct Type ans;
-	ans = INT_TYPE;
-
-	while (1) {
-		if (tokvec[0].kind == OP_ASTERISK) {
-			struct Type *ptr_to_current_type = calloc(1, sizeof(struct Type));
-			*ptr_to_current_type = ans;
-			ans = ptr_of_type_to_ptr_to_type(ptr_to_current_type);
-			++tokvec;
-		} else {
-			*ptr_tokvec = tokvec;
-			return ans;
-		}
-	}
 }
 
 const char *get_reg_name_from_arg_pos(int counter)
@@ -946,7 +923,25 @@ void parse_function_definition(struct ParserState *ptr_ps,
 {
 	const struct Token *tokvec = *ptr_tokvec;
 
-	struct Type ret_type = parse_type_name(&tokvec);
+	struct Type ret_type;
+
+	expect_and_consume(&tokvec, RES_INT, "type name `int`");
+
+	struct Type ans;
+	ans = INT_TYPE;
+
+	while (1) {
+		if (tokvec[0].kind == OP_ASTERISK) {
+			struct Type *ptr_to_current_type = calloc(1, sizeof(struct Type));
+			*ptr_to_current_type = ans;
+			ans = ptr_of_type_to_ptr_to_type(ptr_to_current_type);
+			++tokvec;
+		} else {
+			ret_type = ans;
+			break;
+		}
+	}
+
 	if (tokvec[0].kind != IDENT_OR_RESERVED || tokvec[1].kind != LEFT_PAREN) {
 		fprintf(stderr, "expected function definition but could not find it\n");
 		fprintf(stderr, "current token: ");
