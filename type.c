@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+struct Type INT_TYPE = {INT_, 0, GARBAGE_INT};
+
 int size_of(struct Type type)
 {
 	switch (type.type_domain) {

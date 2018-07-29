@@ -5,8 +5,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-struct Type INT_TYPE = {INT_, 0, GARBAGE_INT};
-
 struct ExprInfo parse_additive_expression(struct ParserState *ptr_ps,
                                           const struct Token **ptr_tokvec);
 struct ExprInfo
