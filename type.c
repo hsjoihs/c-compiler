@@ -89,18 +89,31 @@ struct Type ptr_of_type_to_ptr_to_type(struct Type *ptr_type)
 	return type;
 }
 
+struct Type parse_dcl(struct Type base_type, const struct Token **ptr_tokvec,
+                      const char **ptr_to_ident_str);
+
 struct Type parse_dirdcl(struct Type base_type, const struct Token **ptr_tokvec,
                          const char **ptr_to_ident_str)
 {
 	const struct Token *tokvec = *ptr_tokvec;
-	if (tokvec[0].kind == IDENT_OR_RESERVED) {
+	struct Type type;
+	if (tokvec[0].kind == LEFT_PAREN) {
+		++tokvec;
+		type = parse_dcl(base_type, &tokvec, ptr_to_ident_str);
+		expect_and_consume(&tokvec, RIGHT_PAREN,
+		                   "closing ) while parsing a declaration");
+		*ptr_tokvec = tokvec;
+		return type;
+	} else if (tokvec[0].kind == IDENT_OR_RESERVED) {
 		const char *ident_str = tokvec[0].ident_str;
 		*ptr_to_ident_str = ident_str;
 		++tokvec;
 		*ptr_tokvec = tokvec;
 		return base_type;
+	} else {
+		error_unexpected_token(tokvec, "( or an identifier in the declarator");
+		exit(EXIT_FAILURE); /* silence the warning */
 	}
-	error_unexpected_token(tokvec, "identifier in the declarator");
 }
 
 struct Type parse_dcl(struct Type base_type, const struct Token **ptr_tokvec,
