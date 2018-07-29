@@ -21,10 +21,8 @@ void error_unexpected_token(const struct Token *tokvec, const char *str);
 int get_new_label_name(struct ParserState *ptr_ps);
 void expect_and_consume(const struct Token **ptr_tokvec, enum TokenKind kind,
                         const char *str);
-struct Type parse_type_name(struct ParserState *ptr_ps,
-                            const struct Token **ptr_tokvec);
-struct Type parse_var_declarator(struct ParserState *ptr_ps,
-                                 const struct Token **ptr_tokvec,
+struct Type parse_type_name(const struct Token **ptr_tokvec);
+struct Type parse_var_declarator(const struct Token **ptr_tokvec,
                                  const char **ptr_to_ident_str);
 
 struct ExprInfo remove_leftiness(struct ExprInfo info)
@@ -355,11 +353,8 @@ struct ExprInfo parse_cast_expression(struct ParserState *ptr_ps,
 	return parse_unary_expression(ptr_ps, ptr_tokvec);
 }
 
-struct Type parse_type_name(struct ParserState *ptr_ps,
-                            const struct Token **ptr_tokvec)
+struct Type parse_type_name(const struct Token **ptr_tokvec)
 {
-	(void)ptr_ps;
-
 	const struct Token *tokvec = *ptr_tokvec;
 	expect_and_consume(&tokvec, RES_INT, "type name `int`");
 
@@ -954,7 +949,7 @@ void parse_compound_statement(struct ParserState *ptr_ps,
 				struct Type vartype;
 
 				const char *str;
-				vartype = parse_var_declarator(ptr_ps, &tokvec, &str);
+				vartype = parse_var_declarator(&tokvec, &str);
 				ptr_ps->newest_offset -= size_of(vartype);
 				expect_and_consume(
 				    &tokvec, SEMICOLON,
@@ -976,8 +971,7 @@ void parse_compound_statement(struct ParserState *ptr_ps,
 }
 
 /* `int a`, `int *a` */
-struct Type parse_var_declarator(struct ParserState *ptr_ps,
-                                 const struct Token **ptr_tokvec,
+struct Type parse_var_declarator(const struct Token **ptr_tokvec,
                                  const char **ptr_to_ident_str)
 {
 	const struct Token *tokvec = *ptr_tokvec;
@@ -1025,7 +1019,7 @@ void parse_parameter_declaration(struct ParserState *ptr_ps,
 
 	const char *ident_str;
 
-	struct Type type = parse_var_declarator(ptr_ps, &tokvec, &ident_str);
+	struct Type type = parse_var_declarator(&tokvec, &ident_str);
 
 	if (counter > 5) {
 		fprintf(stderr, "6-or-more args not implemented!\n");
@@ -1067,7 +1061,7 @@ void parse_function_definition(struct ParserState *ptr_ps,
 {
 	const struct Token *tokvec = *ptr_tokvec;
 
-	struct Type ret_type = parse_type_name(ptr_ps, &tokvec);
+	struct Type ret_type = parse_type_name(&tokvec);
 	if (tokvec[0].kind != IDENT_OR_RESERVED || tokvec[1].kind != LEFT_PAREN) {
 		fprintf(stderr, "expected function definition but could not find it\n");
 		fprintf(stderr, "current token: ");
