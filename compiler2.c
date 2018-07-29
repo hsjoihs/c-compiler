@@ -17,13 +17,9 @@ struct ParserState {
 	                          */
 };
 
-void error_unexpected_token(const struct Token *tokvec, const char *str);
 int get_new_label_name(struct ParserState *ptr_ps);
-void expect_and_consume(const struct Token **ptr_tokvec, enum TokenKind kind,
-                        const char *str);
+
 struct Type parse_type_name(const struct Token **ptr_tokvec);
-struct Type parse_var_declarator(const struct Token **ptr_tokvec,
-                                 const char **ptr_to_ident_str);
 
 struct ExprInfo remove_leftiness(struct ExprInfo info)
 {
@@ -968,46 +964,6 @@ void parse_compound_statement(struct ParserState *ptr_ps,
 			}
 		}
 	}
-}
-
-/* `int a`, `int *a` */
-struct Type parse_var_declarator(const struct Token **ptr_tokvec,
-                                 const char **ptr_to_ident_str)
-{
-	const struct Token *tokvec = *ptr_tokvec;
-
-	struct Type type;
-	{
-		expect_and_consume(&tokvec, RES_INT, "type name `int`");
-
-		struct Type ans;
-		ans = INT_TYPE;
-
-		while (1) {
-			if (tokvec[0].kind == OP_ASTERISK) {
-				struct Type *ptr_to_current_type =
-				    calloc(1, sizeof(struct Type));
-				*ptr_to_current_type = ans;
-				ans = ptr_of_type_to_ptr_to_type(ptr_to_current_type);
-				++tokvec;
-			} else {
-				type = ans;
-				break;
-			}
-		}
-	}
-
-	if (tokvec[0].kind != IDENT_OR_RESERVED) {
-		error_unexpected_token(tokvec, "identifier in the declarator");
-	}
-
-	const char *ident_str = tokvec[0].ident_str;
-	*ptr_to_ident_str = ident_str;
-	++tokvec;
-
-	*ptr_tokvec = tokvec;
-
-	return type;
 }
 
 void parse_parameter_declaration(struct ParserState *ptr_ps,
