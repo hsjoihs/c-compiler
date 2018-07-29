@@ -951,11 +951,11 @@ void parse_compound_statement(struct ParserState *ptr_ps,
 
 				return;
 			} else if (can_start_a_type(tokvec)) {
-				ptr_ps->newest_offset -= 8;
 				struct Type vartype;
 
 				const char *str;
 				vartype = parse_var_declarator(ptr_ps, &tokvec, &str);
+				ptr_ps->newest_offset -= size_of(vartype);
 				expect_and_consume(
 				    &tokvec, SEMICOLON,
 				    "semicolon at the end of variable definition");
@@ -1012,7 +1012,7 @@ void parse_parameter_declaration(struct ParserState *ptr_ps,
 		exit(EXIT_FAILURE);
 	}
 
-	ptr_ps->newest_offset -= 8;
+	ptr_ps->newest_offset -= size_of(type);
 
 	struct map map_ = ptr_ps->scope_chain.var_table;
 	struct VarInfo *ptr_varinfo = calloc(1, sizeof(struct VarInfo));
