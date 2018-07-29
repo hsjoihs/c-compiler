@@ -120,6 +120,7 @@ struct Type3 {
 	int length;
 	int _allocated_length;
 	struct type3_elem *vector;
+	const char *ident_str;
 };
 
 void push_Type3(struct Type3 *ptr, struct type3_elem tok)
@@ -158,23 +159,22 @@ struct Type from_type3_to_type(const struct type3_elem *type3)
 	}
 }
 
-void parse_dcl(const struct Token **ptr_tokvec, const char **ptr_to_ident_str,
-               struct Type3 *ptr_type3);
+void parse_dcl(const struct Token **ptr_tokvec, struct Type3 *ptr_type3);
 
-void parse_dirdcl(const struct Token **ptr_tokvec,
-                  const char **ptr_to_ident_str, struct Type3 *ptr_type3)
+void parse_dirdcl(const struct Token **ptr_tokvec, struct Type3 *ptr_type3)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 
 	if (tokvec[0].kind == LEFT_PAREN) {
 		++tokvec;
-		parse_dcl(&tokvec, ptr_to_ident_str, ptr_type3);
+		parse_dcl(&tokvec, ptr_type3);
 		expect_and_consume(&tokvec, RIGHT_PAREN,
 		                   "closing ) while parsing a declaration");
 		*ptr_tokvec = tokvec;
 	} else if (tokvec[0].kind == IDENT_OR_RESERVED) {
 		const char *ident_str = tokvec[0].ident_str;
-		*ptr_to_ident_str = ident_str;
+
+		ptr_type3->ident_str = ident_str;
 		++tokvec;
 		*ptr_tokvec = tokvec;
 	} else {
@@ -203,8 +203,7 @@ void parse_dirdcl(const struct Token **ptr_tokvec,
 	return;
 }
 
-void parse_dcl(const struct Token **ptr_tokvec, const char **ptr_to_ident_str,
-               struct Type3 *ptr_type3)
+void parse_dcl(const struct Token **ptr_tokvec, struct Type3 *ptr_type3)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 
@@ -213,7 +212,7 @@ void parse_dcl(const struct Token **ptr_tokvec, const char **ptr_to_ident_str,
 		ns++;
 	}
 
-	parse_dirdcl(&tokvec, ptr_to_ident_str, ptr_type3);
+	parse_dirdcl(&tokvec, ptr_type3);
 
 	*ptr_tokvec = tokvec;
 
@@ -233,8 +232,11 @@ struct Type parse_var_declarator(const struct Token **ptr_tokvec,
 	type3.length = 0;
 	type3._allocated_length = 30;
 	type3.vector = calloc(30, sizeof(struct type3_elem));
+	type3.ident_str = NULL;
 
-	parse_dcl(ptr_tokvec, ptr_to_ident_str, &type3);
+	parse_dcl(ptr_tokvec, &type3);
+
+	*ptr_to_ident_str = type3.ident_str;
 
 	struct type3_elem i = {INT_TYPE_, GARBAGE_INT};
 	push_Type3(&type3, i);
