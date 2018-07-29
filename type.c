@@ -89,17 +89,10 @@ struct Type ptr_of_type_to_ptr_to_type(struct Type *ptr_type)
 	return type;
 }
 
-struct Type parse_dcl(struct Type base_type, const struct Token **ptr_tokvec,
-                      const char **ptr_to_ident_str)
+struct Type parse_dirdcl(struct Type base_type, const struct Token **ptr_tokvec,
+                         const char **ptr_to_ident_str)
 {
 	const struct Token *tokvec = *ptr_tokvec;
-	struct Type ans = base_type;
-
-	int ns = 0;
-	for (; tokvec[0].kind == OP_ASTERISK; ++tokvec) {
-		ns++;
-	}
-
 	if (tokvec[0].kind != IDENT_OR_RESERVED) {
 		error_unexpected_token(tokvec, "identifier in the declarator");
 	}
@@ -107,6 +100,22 @@ struct Type parse_dcl(struct Type base_type, const struct Token **ptr_tokvec,
 	const char *ident_str = tokvec[0].ident_str;
 	*ptr_to_ident_str = ident_str;
 	++tokvec;
+
+	*ptr_tokvec = tokvec;
+	return base_type;
+}
+
+struct Type parse_dcl(struct Type base_type, const struct Token **ptr_tokvec,
+                      const char **ptr_to_ident_str)
+{
+	const struct Token *tokvec = *ptr_tokvec;
+
+	int ns = 0;
+	for (; tokvec[0].kind == OP_ASTERISK; ++tokvec) {
+		ns++;
+	}
+
+	struct Type ans = parse_dirdcl(base_type, &tokvec, ptr_to_ident_str);
 
 	*ptr_tokvec = tokvec;
 
