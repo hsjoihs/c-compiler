@@ -239,3 +239,6 @@ struct FuncInfo {
 };
 
 int can_start_a_type(const struct Token *tokvec);
+
+struct Type parse_declarator(const struct Token **ptr_tokvec,
+                                 const char **ptr_to_ident_str);

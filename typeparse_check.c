@@ -9,7 +9,7 @@ void check(const char *str)
 	++tokvec; /* skip the dummy token BEGINNING */
 
 	const char *ident_str;
-	struct Type type = parse_var_declarator(&tokvec, &ident_str);
+	struct Type type = parse_declarator(&tokvec, &ident_str);
 
 	fprintf(stderr, "%s: ", ident_str);
 	debug_print_type(type);

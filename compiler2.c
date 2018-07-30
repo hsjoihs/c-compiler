@@ -920,8 +920,7 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
 
 	const char *declarator_name;
 	const struct Token *tokvec2 = *ptr_tokvec;
-	struct Type declarator_type =
-	    parse_var_declarator(&tokvec2, &declarator_name);
+	struct Type declarator_type = parse_declarator(&tokvec2, &declarator_name);
 	if (declarator_type.type_category != FN) {
 		fprintf(stderr, "global variable is unimplemented....\n");
 		exit(EXIT_FAILURE);

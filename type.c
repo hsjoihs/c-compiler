@@ -299,8 +299,8 @@ void parse_dcl(const struct Token **ptr_tokvec, struct Type3 *ptr_type3)
 }
 
 /* `int a`, `int *a` */
-struct Type parse_var_declarator(const struct Token **ptr_tokvec,
-                                 const char **ptr_to_ident_str)
+struct Type parse_declarator(const struct Token **ptr_tokvec,
+                             const char **ptr_to_ident_str)
 {
 	expect_and_consume(ptr_tokvec, RES_INT, "type name `int`");
 
@@ -320,6 +320,19 @@ struct Type parse_var_declarator(const struct Token **ptr_tokvec,
 	struct Type type = from_type3_to_type(type3.vector);
 
 	return type;
+}
+
+struct Type parse_var_declarator(const struct Token **ptr_tokvec,
+                                 const char **ptr_to_ident_str)
+{
+	struct Type type = parse_declarator(ptr_tokvec, ptr_to_ident_str);
+	if (type.type_category == FN) {
+		fprintf(stderr,
+		        "Expected a non-function type, but got function type\n");
+		exit(EXIT_FAILURE);
+	} else {
+		return type;
+	}
 }
 
 int can_start_a_type(const struct Token *tokvec)
