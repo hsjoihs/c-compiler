@@ -943,6 +943,17 @@ void parse_toplevel_definition(struct ParserState *ptr_ps,
 	ptr_ps->newest_offset = -8;
 	ptr_ps->func_ret_type = ret_type;
 
+	struct map retmap = ptr_ps->func_ret_type_map;
+
+	struct FuncInfo *ptr_func_info = calloc(1, sizeof(struct FuncInfo));
+	ptr_func_info->ret_type = ret_type;
+	insert(&retmap, declarator_name, ptr_func_info);
+
+	ptr_ps->func_ret_type_map = retmap;
+
+	int label1;
+	int label2;
+
 	/*
 	partial parsing
 	*/
@@ -959,16 +970,6 @@ void parse_toplevel_definition(struct ParserState *ptr_ps,
 	partial parsing finished
 	*/
 
-	struct map retmap = ptr_ps->func_ret_type_map;
-
-	struct FuncInfo *ptr_func_info = calloc(1, sizeof(struct FuncInfo));
-	ptr_func_info->ret_type = ret_type;
-	insert(&retmap, declarator_name, ptr_func_info);
-
-	ptr_ps->func_ret_type_map = retmap;
-
-	int label1;
-	int label2;
 	if (tokvec[0].kind == RIGHT_PAREN) {
 		++tokvec;
 
