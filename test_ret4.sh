@@ -1,5 +1,5 @@
 #!/bin/bash
-echo -e $2 | ./$4 > s/full_compile$1.s
+echo -e $2 | ./out/compiler.out > s/full_compile$1.s
 gcc s/full_compile$1.s s/supplement.s -o out/task$1.out
 ./out/task$1.out
 res=$?
