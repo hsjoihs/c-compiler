@@ -15,7 +15,7 @@ int size_of(struct Type type)
 		case PTR_:
 			return 8;
 		case ARRAY:
-			return type.array_length * size_of(*type.pointer_of);
+			return type.array_length * size_of(*type.derived_from);
 		default:
 			fprintf(stderr, "Unknown type with id %d\n", type.type_domain);
 			exit(EXIT_FAILURE);
@@ -29,7 +29,7 @@ int is_equal(struct Type t1, struct Type t2)
 	}
 
 	if (t1.type_domain == PTR_ && t2.type_domain == PTR_) {
-		return is_equal(*t1.pointer_of, *t2.pointer_of);
+		return is_equal(*t1.derived_from, *t2.derived_from);
 	}
 
 	return 0;
@@ -40,14 +40,14 @@ void debug_print_type(struct Type type)
 	switch (type.type_domain) {
 		case PTR_:
 			fprintf(stderr, "pointer to ");
-			debug_print_type(*type.pointer_of);
+			debug_print_type(*type.derived_from);
 			return;
 		case INT_:
 			fprintf(stderr, "int");
 			return;
 		case ARRAY:
 			fprintf(stderr, "array (length %d) of ", type.array_length);
-			debug_print_type(*type.pointer_of);
+			debug_print_type(*type.derived_from);
 			return;
 		case FN:
 			fprintf(stderr, "function (");
@@ -69,7 +69,7 @@ void debug_print_type(struct Type type)
 				}
 			}
 			fprintf(stderr, ") returning ");
-			debug_print_type(*type.pointer_of);
+			debug_print_type(*type.derived_from);
 	}
 }
 
@@ -91,7 +91,7 @@ struct Type deref_type(struct Type t)
 {
 	switch (t.type_domain) {
 		case PTR_:
-			return *t.pointer_of;
+			return *t.derived_from;
 
 		default:
 			fprintf(stderr, "Unmatched type: expected a pointer, but got `");
@@ -107,7 +107,7 @@ struct Type ptr_of_type_to_ptr_to_type(struct Type *ptr_type)
 {
 	struct Type type;
 	type.type_domain = PTR_;
-	type.pointer_of = ptr_type;
+	type.derived_from = ptr_type;
 	type.array_length = GARBAGE_INT;
 	return type;
 }
@@ -116,7 +116,7 @@ struct Type ptr_of_type_to_arr_of_type(struct Type *ptr_type, int length)
 {
 	struct Type type;
 	type.type_domain = ARRAY;
-	type.pointer_of = ptr_type;
+	type.derived_from = ptr_type;
 	type.array_length = length;
 	return type;
 }
@@ -183,7 +183,7 @@ struct Type from_type3_to_type(const struct type3_elem *type3)
 
 			struct Type type;
 			type.type_domain = FN;
-			type.pointer_of = ptr_to_current_type;
+			type.derived_from = ptr_to_current_type;
 			type.array_length = GARBAGE_INT;
 			type.param_infos = param_infos;
 			return type;

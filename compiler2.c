@@ -928,7 +928,7 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
 	}
 
 	struct ParamInfos param_infos = declarator_type.param_infos;
-	struct Type ret_type = *declarator_type.pointer_of;
+	struct Type ret_type = *declarator_type.derived_from;
 
 	ptr_ps->scope_chain.outer = 0; /* most outer scope */
 	ptr_ps->scope_chain.var_table = init_int_map();
