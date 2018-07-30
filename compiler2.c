@@ -441,7 +441,8 @@ struct ExprInfo parseprint_postfix_expression(struct ParserState *ptr_ps,
 			ret_type = ptr_func_info->ret_type;
 		}
 
-		if (tokvec[2].kind == RIGHT_PAREN) {
+		tokvec += 2;
+		if (tokvec[0].kind == RIGHT_PAREN) {
 			switch (size_of(ret_type)) {
 				case 4:
 					gen_push_ret_of(ident_str);
@@ -450,13 +451,12 @@ struct ExprInfo parseprint_postfix_expression(struct ParserState *ptr_ps,
 					gen_push_ret_of_8byte(ident_str);
 					break;
 				default:
-					fprintf(stderr, "Unsupported width\n");
+					fprintf(stderr, "Unsupported width in the return type\n");
 					exit(EXIT_FAILURE);
 			}
 
-			tokvec += 3;
+			tokvec++;
 		} else {
-			tokvec += 2;
 			int counter = 0;
 
 			parseprint_argument_expression(ptr_ps, &tokvec, counter);
@@ -777,9 +777,6 @@ void parseprint_statement(struct ParserState *ptr_ps,
 
 			int lab = get_new_label_name(ptr_ps);
 
-			/* parse, but do not output. no problems regarding nested comments
-			 * arises, since parseprint_expression can never have `for` within
-			 * it */
 			gen_jump(lab, "commenting out, to handle expression3 of `for`");
 			parseprint_expression(ptr_ps, &tokvec2);
 			printf("// comment finishes\n");
