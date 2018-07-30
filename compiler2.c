@@ -814,11 +814,6 @@ void parse_final(const struct Token **ptr_tokvec)
 	return;
 }
 
-int can_start_a_type(const struct Token *tokvec)
-{
-	return tokvec[0].kind == RES_INT;
-}
-
 void parse_compound_statement(struct ParserState *ptr_ps,
                               const struct Token **ptr_tokvec)
 {

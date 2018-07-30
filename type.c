@@ -231,7 +231,7 @@ void parse_dirdcl(const struct Token **ptr_tokvec, struct Type3 *ptr_type3)
 				f.type_domain = FUNCTION_RETURNING;
 				f.param_infos.param_vec = (struct ParamInfo **)0;
 				push_to_type3(ptr_type3, f);
-			} else if (tokvec[0].kind == RES_INT) { /* can start a type */
+			} else if (can_start_a_type(tokvec)) { /* can start a type */
 				struct type3_elem f;
 				f.type_domain = FUNCTION_RETURNING;
 				f.param_infos.param_vec =
@@ -320,4 +320,9 @@ struct Type parse_var_declarator(const struct Token **ptr_tokvec,
 	struct Type type = from_type3_to_type(type3.vector);
 
 	return type;
+}
+
+int can_start_a_type(const struct Token *tokvec)
+{
+	return tokvec[0].kind == RES_INT;
 }

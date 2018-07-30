@@ -237,3 +237,5 @@ struct FuncInfo {
 	struct Type ret_type;
 	struct ParamInfos param_infos;
 };
+
+int can_start_a_type(const struct Token *tokvec);
