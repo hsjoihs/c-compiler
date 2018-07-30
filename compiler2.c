@@ -999,8 +999,7 @@ void parse_toplevel_definition(struct ParserState *ptr_ps,
 		print_parameter_declaration(ptr_ps, &counter, param_infos);
 
 		while (1) {
-			enum TokenKind kind = tokvec[0].kind;
-			if (kind != OP_COMMA) {
+			if (!param_infos.param_vec[counter]) {
 				break;
 			}
 			++tokvec;
