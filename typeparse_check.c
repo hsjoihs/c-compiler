@@ -1,7 +1,7 @@
 #include "header.h"
 #include <stdio.h>
 
-void foo(const char *str)
+void check(const char *str)
 {
 	fprintf(stderr, "Parsing: %s\n", str);
 	const struct Token *tokvec = read_all_tokens_(str);
@@ -19,16 +19,16 @@ void foo(const char *str)
 
 int main()
 {
-	foo("int **argv");
-	foo("int (*(*argv))");
-	foo("int arr[13]");
-	foo("int (*daytab)[13]");
-	foo("int (*(*x[3])[2])[4]");
-	foo("int (*(*x())[2])()");
-	foo("int *comp()");
-	foo("int (*comp)()");
-	foo("int (*(*x())[2])()");
-	foo("int atexit(int (*func)(int a))");
-	foo("int (*signal(int sig, int (*func)(int a)))(int b)");
+	check("int **argv");
+	check("int (*(*argv))");
+	check("int arr[13]");
+	check("int (*daytab)[13]");
+	check("int (*(*x[3])[2])[4]");
+	check("int (*(*x())[2])()");
+	check("int *comp()");
+	check("int (*comp)()");
+	check("int (*(*x())[2])()");
+	check("int atexit(int (*func)(int a))");
+	check("int (*signal(int sig, int (*func)(int a)))(int b)");
 	return 0;
 }

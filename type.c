@@ -231,7 +231,7 @@ void parse_dirdcl(const struct Token **ptr_tokvec, struct Type3 *ptr_type3)
 				f.type_category = FUNCTION_RETURNING;
 				f.param_infos.param_vec = (struct ParamInfo **)0;
 				push_to_type3(ptr_type3, f);
-			} else if (can_start_a_type(tokvec)) { /* can start a type */
+			} else if (can_start_a_type(tokvec)) {
 				struct type3_elem f;
 				f.type_category = FUNCTION_RETURNING;
 				f.param_infos.param_vec =
