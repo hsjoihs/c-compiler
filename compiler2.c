@@ -872,9 +872,10 @@ void parse_compound_statement(struct ParserState *ptr_ps,
 	}
 }
 
-void parse_parameter_declaration(struct ParserState *ptr_ps,
+void print_parameter_declaration(struct ParserState *ptr_ps,
                                  const struct Token **ptr_tokvec,
-                                 int *ptr_counter)
+                                 int *ptr_counter,
+                                 struct ParamInfos param_infos)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 	int counter = *ptr_counter;
@@ -932,6 +933,7 @@ void parse_toplevel_definition(struct ParserState *ptr_ps,
 		exit(EXIT_FAILURE);
 	}
 
+	struct ParamInfos param_infos = declarator_type.param_infos;
 	struct Type ret_type = *declarator_type.pointer_of;
 
 	ptr_ps->scope_chain.outer = 0; /* most outer scope */
@@ -994,7 +996,7 @@ void parse_toplevel_definition(struct ParserState *ptr_ps,
 
 		int counter = 0;
 
-		parse_parameter_declaration(ptr_ps, &tokvec, &counter);
+		print_parameter_declaration(ptr_ps, &tokvec, &counter, param_infos);
 
 		while (1) {
 			enum TokenKind kind = tokvec[0].kind;
@@ -1003,7 +1005,7 @@ void parse_toplevel_definition(struct ParserState *ptr_ps,
 			}
 			++tokvec;
 
-			parse_parameter_declaration(ptr_ps, &tokvec, &counter);
+			print_parameter_declaration(ptr_ps, &tokvec, &counter, param_infos);
 		}
 		*ptr_tokvec = tokvec;
 
