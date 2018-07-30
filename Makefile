@@ -1,7 +1,13 @@
 .PHONY: test_all_
 
 test_all_:
-	./test_all.sh
+	make format
+	make supplement
+	make intmap_check
+	make typeparse_check
+	make assembly_sandbox
+	make full_compile
+	make check_error
 
 format:
 	clang-format -i *.c -style=file
