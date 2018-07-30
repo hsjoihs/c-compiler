@@ -923,6 +923,17 @@ void parse_toplevel_definition(struct ParserState *ptr_ps,
 {
 	const struct Token *tokvec = *ptr_tokvec;
 
+	{
+		const char *ident_str;
+		const struct Token *tokvec2 = *ptr_tokvec;
+		struct Type declarator_type =
+		    parse_var_declarator(&tokvec2, &ident_str);
+		if (declarator_type.type_domain != FN) {
+			fprintf(stderr, "unimplemented....\n");
+			exit(EXIT_FAILURE);
+		}
+	}
+
 	struct Type ret_type;
 
 	expect_and_consume(&tokvec, RES_INT, "type name `int`");
