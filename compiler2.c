@@ -396,10 +396,9 @@ const char *get_reg_name_from_arg_pos_8byte(int counter)
 
 void parseprint_argument_expression(struct ParserState *ptr_ps,
                                     const struct Token **ptr_tokvec,
-                                    int *ptr_counter)
+                                    int counter)
 {
 	const struct Token *tokvec = *ptr_tokvec;
-	int counter = *ptr_counter;
 
 	struct ExprInfo expr_info =
 	    parseprint_assignment_expression(ptr_ps, &tokvec);
@@ -419,10 +418,8 @@ void parseprint_argument_expression(struct ParserState *ptr_ps,
 			fprintf(stderr, "Unsupported width.\n");
 			exit(EXIT_FAILURE);
 	}
-	counter++;
 
 	*ptr_tokvec = tokvec;
-	*ptr_counter = counter;
 }
 
 struct ExprInfo parseprint_postfix_expression(struct ParserState *ptr_ps,
@@ -462,7 +459,8 @@ struct ExprInfo parseprint_postfix_expression(struct ParserState *ptr_ps,
 			tokvec += 2;
 			int counter = 0;
 
-			parseprint_argument_expression(ptr_ps, &tokvec, &counter);
+			parseprint_argument_expression(ptr_ps, &tokvec, counter);
+			++counter;
 
 			while (1) {
 				enum TokenKind kind = tokvec[0].kind;
@@ -470,7 +468,8 @@ struct ExprInfo parseprint_postfix_expression(struct ParserState *ptr_ps,
 					break;
 				}
 				++tokvec;
-				parseprint_argument_expression(ptr_ps, &tokvec, &counter);
+				parseprint_argument_expression(ptr_ps, &tokvec, counter);
+				++counter;
 			}
 
 			switch (size_of(ret_type)) {
@@ -878,10 +877,9 @@ void parseprint_compound_statement(struct ParserState *ptr_ps,
 	}
 }
 
-void print_parameter_declaration(struct ParserState *ptr_ps, int *ptr_counter,
+void print_parameter_declaration(struct ParserState *ptr_ps, int counter,
                                  struct ParamInfos param_infos)
 {
-	int counter = *ptr_counter;
 
 	struct ParamInfo param_info = *(param_infos.param_vec[counter]);
 	const char *ident_str;
@@ -917,10 +915,6 @@ void print_parameter_declaration(struct ParserState *ptr_ps, int *ptr_counter,
 			    get_offset_from_name(*ptr_ps, ident_str));
 			break;
 	}
-
-	++counter;
-
-	*ptr_counter = counter;
 }
 
 void parseprint_toplevel_definition(struct ParserState *ptr_ps,
@@ -982,7 +976,8 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
 		int counter = 0;
 
 		do {
-			print_parameter_declaration(ptr_ps, &counter, param_infos);
+			print_parameter_declaration(ptr_ps, counter, param_infos);
+			++counter;
 		} while (param_infos.param_vec[counter]);
 	}
 
