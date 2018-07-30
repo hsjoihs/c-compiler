@@ -9,7 +9,7 @@ struct Type INT_TYPE = {INT_, 0, GARBAGE_INT, {(struct ParamInfo **)0}};
 
 int size_of(struct Type type)
 {
-	switch (type.type_domain) {
+	switch (type.type_category) {
 		case INT_:
 			return 4;
 		case PTR_:
@@ -17,18 +17,18 @@ int size_of(struct Type type)
 		case ARRAY:
 			return type.array_length * size_of(*type.derived_from);
 		default:
-			fprintf(stderr, "Unknown type with id %d\n", type.type_domain);
+			fprintf(stderr, "Unknown type with id %d\n", type.type_category);
 			exit(EXIT_FAILURE);
 	}
 }
 
 int is_equal(struct Type t1, struct Type t2)
 {
-	if (t1.type_domain == INT_ && t2.type_domain == INT_) {
+	if (t1.type_category == INT_ && t2.type_category == INT_) {
 		return 1;
 	}
 
-	if (t1.type_domain == PTR_ && t2.type_domain == PTR_) {
+	if (t1.type_category == PTR_ && t2.type_category == PTR_) {
 		return is_equal(*t1.derived_from, *t2.derived_from);
 	}
 
@@ -37,7 +37,7 @@ int is_equal(struct Type t1, struct Type t2)
 
 void debug_print_type(struct Type type)
 {
-	switch (type.type_domain) {
+	switch (type.type_category) {
 		case PTR_:
 			fprintf(stderr, "pointer to ");
 			debug_print_type(*type.derived_from);
@@ -89,7 +89,7 @@ void expect_type(struct ExprInfo expr_info, struct Type expected_type, int id)
 
 struct Type deref_type(struct Type t)
 {
-	switch (t.type_domain) {
+	switch (t.type_category) {
 		case PTR_:
 			return *t.derived_from;
 
@@ -101,12 +101,12 @@ struct Type deref_type(struct Type t)
 	}
 }
 
-int is_pointer(struct Type t) { return t.type_domain == PTR_; }
+int is_pointer(struct Type t) { return t.type_category == PTR_; }
 
 struct Type ptr_of_type_to_ptr_to_type(struct Type *ptr_type)
 {
 	struct Type type;
-	type.type_domain = PTR_;
+	type.type_category = PTR_;
 	type.derived_from = ptr_type;
 	type.array_length = GARBAGE_INT;
 	return type;
@@ -115,7 +115,7 @@ struct Type ptr_of_type_to_ptr_to_type(struct Type *ptr_type)
 struct Type ptr_of_type_to_arr_of_type(struct Type *ptr_type, int length)
 {
 	struct Type type;
-	type.type_domain = ARRAY;
+	type.type_category = ARRAY;
 	type.derived_from = ptr_type;
 	type.array_length = length;
 	return type;
@@ -133,7 +133,7 @@ enum t2 {
 };
 
 struct type3_elem {
-	enum t2 type_domain;
+	enum t2 type_category;
 	int array_length;
 	struct ParamInfos param_infos;
 };
@@ -159,7 +159,7 @@ void push_to_type3(struct Type3 *ptr, struct type3_elem tok)
 
 struct Type from_type3_to_type(const struct type3_elem *type3)
 {
-	switch (type3[0].type_domain) {
+	switch (type3[0].type_category) {
 		case INT_TYPE_:
 			return INT_TYPE;
 		case POINTER_TO: {
@@ -182,7 +182,7 @@ struct Type from_type3_to_type(const struct type3_elem *type3)
 			struct ParamInfos param_infos = type3[-1].param_infos;
 
 			struct Type type;
-			type.type_domain = FN;
+			type.type_category = FN;
 			type.derived_from = ptr_to_current_type;
 			type.array_length = GARBAGE_INT;
 			type.param_infos = param_infos;
@@ -220,7 +220,7 @@ void parse_dirdcl(const struct Token **ptr_tokvec, struct Type3 *ptr_type3)
 			                   "closing ] while parsing a declaration");
 
 			struct type3_elem a;
-			a.type_domain = ARRAY_OF;
+			a.type_category = ARRAY_OF;
 			a.array_length = length;
 			push_to_type3(ptr_type3, a);
 		} else if (tokvec[0].kind == LEFT_PAREN) {
@@ -228,12 +228,12 @@ void parse_dirdcl(const struct Token **ptr_tokvec, struct Type3 *ptr_type3)
 			if (tokvec[0].kind == RIGHT_PAREN) {
 				++tokvec;
 				struct type3_elem f;
-				f.type_domain = FUNCTION_RETURNING;
+				f.type_category = FUNCTION_RETURNING;
 				f.param_infos.param_vec = (struct ParamInfo **)0;
 				push_to_type3(ptr_type3, f);
 			} else if (can_start_a_type(tokvec)) { /* can start a type */
 				struct type3_elem f;
-				f.type_domain = FUNCTION_RETURNING;
+				f.type_category = FUNCTION_RETURNING;
 				f.param_infos.param_vec =
 				    calloc(100, sizeof(struct ParamInfo *));
 

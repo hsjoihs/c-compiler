@@ -172,7 +172,7 @@ struct ParamInfos {
 enum typ_ { INT_ = 1, PTR_, ARRAY, FN };
 
 struct Type {
-	enum typ_ type_domain;
+	enum typ_ type_category;
 	struct Type *derived_from;
 	int array_length;
 	struct ParamInfos param_infos;
