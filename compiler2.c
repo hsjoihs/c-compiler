@@ -936,14 +936,8 @@ void parse_toplevel_definition(struct ParserState *ptr_ps,
 
 	expect_and_consume(&tokvec, RES_INT, "type name `int`");
 
-	struct Type ans;
-	ans = INT_TYPE;
-
 	while (1) {
 		if (tokvec[0].kind == OP_ASTERISK) {
-			struct Type *ptr_to_current_type = calloc(1, sizeof(struct Type));
-			*ptr_to_current_type = ans;
-			ans = ptr_of_type_to_ptr_to_type(ptr_to_current_type);
 			++tokvec;
 		} else {
 			break;
@@ -962,7 +956,7 @@ void parse_toplevel_definition(struct ParserState *ptr_ps,
 		exit(EXIT_FAILURE);
 	}
 
-	const char *ident_str = tokvec[0].ident_str;
+	const char *ident_str = declarator_name;
 	tokvec += 2;
 
 	ptr_ps->scope_chain.outer = 0; /* most outer scope */
