@@ -54,13 +54,18 @@ void debug_print_type(struct Type type)
 			if (!type.param_infos.param_vec) {
 				fprintf(stderr, "param: no info");
 			} else {
-				fprintf(stderr, "param:\n");
-				for (int i = 0; type.param_infos.param_vec[i]; i++) {
-					struct ParamInfo *ptr_paraminfo =
-					    type.param_infos.param_vec[i];
-					fprintf(stderr, "  %s: ", ptr_paraminfo->ident_str);
-					debug_print_type(ptr_paraminfo->param_type);
-					fprintf(stderr, "\n");
+				struct ParamInfo **vec = type.param_infos.param_vec;
+				if (vec[0] && !vec[1]) {
+					fprintf(stderr, "%s: ", vec[0]->ident_str);
+					debug_print_type(vec[0]->param_type);
+				} else {
+					fprintf(stderr, "params: \n");
+					for (int i = 0; vec[i]; i++) {
+						struct ParamInfo *ptr_paraminfo = vec[i];
+						fprintf(stderr, "  %s: ", ptr_paraminfo->ident_str);
+						debug_print_type(ptr_paraminfo->param_type);
+						fprintf(stderr, "\n");
+					}
 				}
 			}
 			fprintf(stderr, ") returning ");
@@ -226,6 +231,45 @@ void parse_dirdcl(const struct Token **ptr_tokvec, struct Type3 *ptr_type3)
 				f.type_domain = FUNCTION_RETURNING;
 				f.param_infos.param_vec = (struct ParamInfo **)0;
 				push_to_type3(ptr_type3, f);
+			} else if (tokvec[0].kind == RES_INT) { /* can start a type */
+				struct type3_elem f;
+				f.type_domain = FUNCTION_RETURNING;
+				f.param_infos.param_vec =
+				    calloc(100, sizeof(struct ParamInfo *));
+
+				const char *ident_str;
+				struct ParamInfo *ptr_param_info =
+				    calloc(1, sizeof(struct ParamInfo));
+				ptr_param_info->param_type =
+				    parse_var_declarator(&tokvec, &ident_str);
+				ptr_param_info->ident_str = ident_str;
+
+				f.param_infos.param_vec[0] = ptr_param_info;
+
+				int i = 1;
+
+				while (1) {
+					enum TokenKind kind = tokvec[0].kind;
+					if (kind != OP_COMMA) {
+						break;
+					}
+					++tokvec;
+					const char *ident_str;
+					struct ParamInfo *ptr_param_info =
+					    calloc(1, sizeof(struct ParamInfo));
+					ptr_param_info->param_type =
+					    parse_var_declarator(&tokvec, &ident_str);
+					ptr_param_info->ident_str = ident_str;
+					f.param_infos.param_vec[i] = ptr_param_info;
+					i++;
+				}
+
+				f.param_infos.param_vec[i] = (struct ParamInfo *)0;
+
+				push_to_type3(ptr_type3, f);
+
+				expect_and_consume(&tokvec, RIGHT_PAREN,
+				                   "closing ) while parsing functional type");
 			}
 		} else {
 			break;

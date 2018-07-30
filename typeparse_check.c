@@ -28,5 +28,7 @@ int main()
 	foo("int *comp()");
 	foo("int (*comp)()");
 	foo("int (*(*x())[2])()");
+	foo("int atexit(int (*func)(int a))");
+	foo("int (*signal(int sig, int (*func)(int a)))(int b)");
 	return 0;
 }
