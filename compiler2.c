@@ -1014,6 +1014,8 @@ void parse_toplevel_definition(struct ParserState *ptr_ps,
 
 		*ptr_tokvec = tokvec;
 	}
+
+	tokvec = tokvec2;
 	parse_compound_statement(ptr_ps, &tokvec);
 
 	gen_before_epilogue(label1, label2, -(ptr_ps->newest_offset));
