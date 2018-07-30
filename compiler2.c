@@ -994,14 +994,9 @@ void parse_toplevel_definition(struct ParserState *ptr_ps,
 
 		int counter = 0;
 
-		print_parameter_declaration(ptr_ps, &counter, param_infos);
-
-		while (1) {
-			if (!param_infos.param_vec[counter]) {
-				break;
-			}
+		do {
 			print_parameter_declaration(ptr_ps, &counter, param_infos);
-		}
+		} while (param_infos.param_vec[counter]);
 	}
 
 	tokvec = tokvec2;
