@@ -934,31 +934,6 @@ void parse_toplevel_definition(struct ParserState *ptr_ps,
 
 	struct Type ret_type = *declarator_type.pointer_of;
 
-	expect_and_consume(&tokvec, RES_INT, "type name `int`");
-
-	while (1) {
-		if (tokvec[0].kind == OP_ASTERISK) {
-			++tokvec;
-		} else {
-			break;
-		}
-	}
-
-	if (tokvec[0].kind != IDENT_OR_RESERVED || tokvec[1].kind != LEFT_PAREN) {
-		fprintf(stderr, "expected function definition but could not find it\n");
-		fprintf(stderr, "current token: ");
-		print_token(tokvec[0]);
-		fprintf(stderr, "\nnext token: ");
-		print_token(tokvec[1]);
-		fprintf(stderr, "\nprevious token: ");
-		print_token(tokvec[-1]);
-		fprintf(stderr, "\n");
-		exit(EXIT_FAILURE);
-	}
-
-	const char *ident_str = declarator_name;
-	tokvec += 2;
-
 	ptr_ps->scope_chain.outer = 0; /* most outer scope */
 	ptr_ps->scope_chain.var_table = init_int_map();
 	ptr_ps->return_label_name = GARBAGE_INT;   /* INITIALIZE */
@@ -968,11 +943,27 @@ void parse_toplevel_definition(struct ParserState *ptr_ps,
 	ptr_ps->newest_offset = -8;
 	ptr_ps->func_ret_type = ret_type;
 
+	/*
+	partial parsing
+	*/
+	expect_and_consume(&tokvec, RES_INT, "type name `int`");
+	while (1) {
+		if (tokvec[0].kind == OP_ASTERISK) {
+			++tokvec;
+		} else {
+			break;
+		}
+	}
+	tokvec += 2; // parsed till the left paren
+	/*
+	partial parsing finished
+	*/
+
 	struct map retmap = ptr_ps->func_ret_type_map;
 
 	struct FuncInfo *ptr_func_info = calloc(1, sizeof(struct FuncInfo));
 	ptr_func_info->ret_type = ret_type;
-	insert(&retmap, ident_str, ptr_func_info);
+	insert(&retmap, declarator_name, ptr_func_info);
 
 	ptr_ps->func_ret_type_map = retmap;
 
@@ -991,13 +982,13 @@ void parse_toplevel_definition(struct ParserState *ptr_ps,
 
 		label1 = get_new_label_name(ptr_ps);
 		label2 = get_new_label_name(ptr_ps);
-		gen_prologue(0, ident_str);
+		gen_prologue(0, declarator_name);
 		gen_after_prologue(label1, label2);
 
 	} else {
 		label1 = get_new_label_name(ptr_ps);
 		label2 = get_new_label_name(ptr_ps);
-		gen_prologue(0, ident_str);
+		gen_prologue(0, declarator_name);
 		gen_after_prologue(label1, label2);
 
 		int counter = 0;
