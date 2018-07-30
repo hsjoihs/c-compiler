@@ -872,18 +872,14 @@ void parse_compound_statement(struct ParserState *ptr_ps,
 	}
 }
 
-void print_parameter_declaration(struct ParserState *ptr_ps,
-                                 const struct Token **ptr_tokvec,
-                                 int *ptr_counter,
+void print_parameter_declaration(struct ParserState *ptr_ps, int *ptr_counter,
                                  struct ParamInfos param_infos)
 {
-	const struct Token *tokvec = *ptr_tokvec;
 	int counter = *ptr_counter;
 
 	struct ParamInfo param_info = *(param_infos.param_vec[counter]);
 	const char *ident_str;
 
-	parse_var_declarator(&tokvec, &ident_str);
 	struct Type type = param_info.param_type;
 	ident_str = param_info.ident_str;
 
@@ -918,7 +914,6 @@ void print_parameter_declaration(struct ParserState *ptr_ps,
 
 	++counter;
 
-	*ptr_tokvec = tokvec;
 	*ptr_counter = counter;
 }
 
@@ -999,7 +994,9 @@ void parse_toplevel_definition(struct ParserState *ptr_ps,
 
 		int counter = 0;
 
-		print_parameter_declaration(ptr_ps, &tokvec, &counter, param_infos);
+		const char *ident_str_;
+		parse_var_declarator(&tokvec, &ident_str_);
+		print_parameter_declaration(ptr_ps, &counter, param_infos);
 
 		while (1) {
 			enum TokenKind kind = tokvec[0].kind;
@@ -1008,7 +1005,9 @@ void parse_toplevel_definition(struct ParserState *ptr_ps,
 			}
 			++tokvec;
 
-			print_parameter_declaration(ptr_ps, &tokvec, &counter, param_infos);
+			const char *ident_str_;
+			parse_var_declarator(&tokvec, &ident_str_);
+			print_parameter_declaration(ptr_ps, &counter, param_infos);
 		}
 	}
 
