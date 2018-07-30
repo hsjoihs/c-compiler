@@ -926,7 +926,7 @@ void parse_toplevel_definition(struct ParserState *ptr_ps,
 	struct Type declarator_type =
 	    parse_var_declarator(&tokvec2, &declarator_name);
 	if (declarator_type.type_domain != FN) {
-		fprintf(stderr, "unimplemented....\n");
+		fprintf(stderr, "global variable is unimplemented....\n");
 		exit(EXIT_FAILURE);
 	}
 
