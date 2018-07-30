@@ -361,7 +361,7 @@ parseprint_multiplicative_expression(struct ParserState *ptr_ps,
 		struct ExprInfo expr_info2 =
 		    remove_leftiness(parseprint_cast_expression(ptr_ps, &tokvec));
 		expect_type(expr_info, INT_TYPE, 17);
-		expect_type(expr_info, INT_TYPE, 18);
+		expect_type(expr_info2, INT_TYPE, 18);
 		expr_info2 = expr_info;
 		print_binary_op(kind);
 	}
