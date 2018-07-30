@@ -58,7 +58,7 @@ void gen_after_prologue(int label1, int label2);
 #define BOOL int
 
 enum TokenKind {
-	OP_PLUS,
+	OP_PLUS = 1,
 	OP_MINUS,
 	END,
 	BEGINNING,
