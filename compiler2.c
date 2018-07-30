@@ -954,24 +954,8 @@ void parse_toplevel_definition(struct ParserState *ptr_ps,
 	int label1;
 	int label2;
 
-	/*
-	partial parsing
-	*/
-	expect_and_consume(&tokvec, RES_INT, "type name `int`");
-	while (1) {
-		if (tokvec[0].kind == OP_ASTERISK) {
-			++tokvec;
-		} else {
-			break;
-		}
-	}
-	tokvec += 2; // parsed till the left paren
-	/*
-	partial parsing finished
-	*/
-
-	if (tokvec[0].kind == RIGHT_PAREN) {
-		++tokvec;
+	if (!param_infos.param_vec) { /* empty parameter */
+		tokvec = tokvec2;
 
 		if (tokvec[0].kind == SEMICOLON) { /* function prototype */
 			++tokvec;
