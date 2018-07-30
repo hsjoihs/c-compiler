@@ -1007,12 +1007,6 @@ void parse_toplevel_definition(struct ParserState *ptr_ps,
 
 			print_parameter_declaration(ptr_ps, &tokvec, &counter, param_infos);
 		}
-		*ptr_tokvec = tokvec;
-
-		expect_and_consume(&tokvec, RIGHT_PAREN,
-		                   "closing parenthesis of function definition");
-
-		*ptr_tokvec = tokvec;
 	}
 
 	tokvec = tokvec2;
