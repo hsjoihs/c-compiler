@@ -923,18 +923,16 @@ void parse_toplevel_definition(struct ParserState *ptr_ps,
 {
 	const struct Token *tokvec = *ptr_tokvec;
 
-	{
-		const char *ident_str;
-		const struct Token *tokvec2 = *ptr_tokvec;
-		struct Type declarator_type =
-		    parse_var_declarator(&tokvec2, &ident_str);
-		if (declarator_type.type_domain != FN) {
-			fprintf(stderr, "unimplemented....\n");
-			exit(EXIT_FAILURE);
-		}
+	const char *declarator_name;
+	const struct Token *tokvec2 = *ptr_tokvec;
+	struct Type declarator_type =
+	    parse_var_declarator(&tokvec2, &declarator_name);
+	if (declarator_type.type_domain != FN) {
+		fprintf(stderr, "unimplemented....\n");
+		exit(EXIT_FAILURE);
 	}
 
-	struct Type ret_type;
+	struct Type ret_type = *declarator_type.pointer_of;
 
 	expect_and_consume(&tokvec, RES_INT, "type name `int`");
 
@@ -948,7 +946,6 @@ void parse_toplevel_definition(struct ParserState *ptr_ps,
 			ans = ptr_of_type_to_ptr_to_type(ptr_to_current_type);
 			++tokvec;
 		} else {
-			ret_type = ans;
 			break;
 		}
 	}
