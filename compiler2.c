@@ -920,7 +920,6 @@ void print_parameter_declaration(struct ParserState *ptr_ps, int *ptr_counter,
 void parse_toplevel_definition(struct ParserState *ptr_ps,
                                const struct Token **ptr_tokvec)
 {
-	const struct Token *tokvec = *ptr_tokvec;
 
 	const char *declarator_name;
 	const struct Token *tokvec2 = *ptr_tokvec;
@@ -954,14 +953,12 @@ void parse_toplevel_definition(struct ParserState *ptr_ps,
 	int label1;
 	int label2;
 
-	if (!param_infos.param_vec) { /* empty parameter */
-		tokvec = tokvec2;
-
-		if (tokvec[0].kind == SEMICOLON) { /* function prototype */
-			++tokvec;
+	if (!param_infos.param_vec) {           /* empty parameter */
+		if (tokvec2[0].kind == SEMICOLON) { /* function prototype */
+			++tokvec2;
 			/* do nothing, since the return value is already in the retmap
 			 */
-			*ptr_tokvec = tokvec;
+			*ptr_tokvec = tokvec2;
 			return;
 		}
 
@@ -983,8 +980,7 @@ void parse_toplevel_definition(struct ParserState *ptr_ps,
 		} while (param_infos.param_vec[counter]);
 	}
 
-	tokvec = tokvec2;
-	parse_compound_statement(ptr_ps, &tokvec);
+	parse_compound_statement(ptr_ps, &tokvec2);
 
 	gen_before_epilogue(label1, label2, -(ptr_ps->newest_offset));
 	switch (size_of(ret_type)) {
@@ -999,7 +995,7 @@ void parse_toplevel_definition(struct ParserState *ptr_ps,
 			exit(EXIT_FAILURE);
 	}
 
-	*ptr_tokvec = tokvec;
+	*ptr_tokvec = tokvec2;
 }
 
 void inc_or_dec(struct ParserState *ptr_ps, const char *name,
