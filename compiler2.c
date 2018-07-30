@@ -880,9 +880,12 @@ void print_parameter_declaration(struct ParserState *ptr_ps,
 	const struct Token *tokvec = *ptr_tokvec;
 	int counter = *ptr_counter;
 
+	struct ParamInfo param_info = *(param_infos.param_vec[counter]);
 	const char *ident_str;
 
-	struct Type type = parse_var_declarator(&tokvec, &ident_str);
+	parse_var_declarator(&tokvec, &ident_str);
+	struct Type type = param_info.param_type;
+	ident_str = param_info.ident_str;
 
 	if (counter > 5) {
 		fprintf(stderr, "6-or-more args not implemented!\n");
