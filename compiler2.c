@@ -17,6 +17,7 @@ struct LocalVarTableList {
 
 struct ParserState {
 	struct LocalVarTableList scope_chain;
+	struct map global_vars_type_map;
 	struct map func_ret_type_map;
 	int newest_offset;
 	int final_label_name;
@@ -934,9 +935,19 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
 	const char *declarator_name;
 	const struct Token *tokvec2 = *ptr_tokvec;
 	struct Type declarator_type = parse_declarator(&tokvec2, &declarator_name);
-	if (declarator_type.type_category != FN) {
-		fprintf(stderr, "global variable is unimplemented....\n");
-		exit(EXIT_FAILURE);
+	if (declarator_type.type_category != FN && tokvec2[0].kind == SEMICOLON) {
+		++tokvec2; /* consume the semicolon */
+		struct map globalmap = ptr_ps->global_vars_type_map;
+
+		struct Type *ptr_type = calloc(1, sizeof(struct Type));
+		*ptr_type = declarator_type;
+		insert(&globalmap, declarator_name, ptr_type);
+		ptr_ps->global_vars_type_map = globalmap;
+
+		gen_global_declaration(declarator_name, size_of(declarator_type));
+
+		*ptr_tokvec = tokvec2;
+		return;
 	}
 
 	struct ParamInfos param_infos = declarator_type.param_infos;
@@ -1139,6 +1150,7 @@ int main(int argc, char const **argv)
 		ps.final_label_name = 1;
 		ps.return_label_name = GARBAGE_INT;
 		ps.func_ret_type_map = init_int_map();
+		ps.global_vars_type_map = init_int_map();
 
 		while (1) {
 			if (tokvec[0].kind == END) {

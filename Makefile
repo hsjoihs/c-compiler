@@ -52,6 +52,7 @@ full_compile:
 	./test_ret4.sh 112 'int *alloc4();int main(){int *p; int *q; q = p+174; return q-p;}' 174
 	./test_ret4.sh 113 'int *foo(int *(p)){*p = 4;return p;} int main(){int (x);int (y); int (*(*(z))); *foo(&x) += 170;return x;}' 174
 	./test_ret4.sh 114 'int main(){int a[2][3]; return 174;}' 174
+	./test_ret4.sh 115 'int x; int *y; int main(){return 174;}' 174
 	./test_ret4.sh 102 'int *foo(int *p){*p = 4;return p;} int main(){int x;int y;*foo(&x) += 170;return x;}' 174
 	./test_ret4.sh 101 'int *foo(int *p){*p = 4;return p;} int main(){int x;int *y;y = foo(&x); *y+= 170;return x;}' 174
 	./test_ret4.sh 100 'int foo(int* p){*p = 172; return *p+2;} int main(){int x; return foo(&x);}' 174
