@@ -185,16 +185,6 @@ struct ParamInfo {
 int size_of(struct Type type);
 
 
-struct VarInfo {
-	struct Type type;
-	int offset;
-};
-
-struct VarTableList {
-	struct map var_table;
-	struct VarTableList *outer;
-};
-
 enum expr_info_ {
 	LOCAL_VAR = 1,
 	DEREFERENCED_ADDRESS,
@@ -209,7 +199,6 @@ struct ExprInfo {
 
 extern struct ExprInfo FIXME;
 extern struct Type INT_TYPE;
-extern struct ExprInfo UNASSIGNABLE_INT;
 
 void expect_type(struct ExprInfo expr_info, struct Type expected_type, int id);
 struct ExprInfo remove_leftiness(struct ExprInfo info);
