@@ -104,12 +104,6 @@ struct LocalVarInfo resolve_name_locally(struct LocalVarTableList t,
 	}
 }
 
-int get_offset_from_name(struct ParserState ps, const char *str)
-{
-	struct LocalVarInfo varinfo = resolve_name_locally(ps.scope_chain, str);
-	return varinfo.offset;
-}
-
 void print_before_assign(enum TokenKind kind)
 {
 	switch (kind) {
@@ -932,12 +926,12 @@ void print_parameter_declaration(struct ParserState *ptr_ps, int counter,
 		case 4:
 			gen_write_register_to_local(
 			    get_reg_name_from_arg_pos(counter),
-			    get_offset_from_name(*ptr_ps, ident_str));
+			    resolve_name_locally(ptr_ps->scope_chain, ident_str).offset);
 			break;
 		case 8:
 			gen_write_register_to_local_8byte(
 			    get_reg_name_from_arg_pos_8byte(counter),
-			    get_offset_from_name(*ptr_ps, ident_str));
+			    resolve_name_locally(ptr_ps->scope_chain, ident_str).offset);
 			break;
 	}
 }
