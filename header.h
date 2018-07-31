@@ -52,6 +52,7 @@ void gen_swap(void);
 void gen_div_by_const(int num);
 void gen_before_epilogue(int label1, int label2, int capacity);
 void gen_after_prologue(int label1, int label2);
+void gen_write_to_global_8byte(const char *ident);
 
 #define GARBAGE_INT ((int)0xCCCCCCCC)
 #define BOOL int

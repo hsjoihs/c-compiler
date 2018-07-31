@@ -566,3 +566,10 @@ void gen_div_by_const(int num)
 	}
 	printf("  movq %%rax, (%%rsp)\n");
 }
+
+void gen_write_to_global_8byte(const char *ident)
+{
+	printf("  movq (%%rsp), %%rax\n"
+	       "  movq %%rax, _%s(%%rip)\n",
+	       ident);
+}
