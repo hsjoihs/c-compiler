@@ -9,11 +9,12 @@ int *alloc4(int a, int b, int c, int d);
 int main() { y = alloc4(1,2,3,174); return x + *(y+3); }
 
 */
+
 int main()
 {
 	puts(".comm _y,8\n");
 	puts(".comm _x,4\n");
-	gen_prologue(0, "main");
+	gen_prologue(16, "main");
 
 	gen_push_int(174);
 	gen_pop_to_reg("ecx");
@@ -33,17 +34,17 @@ int main()
 
 	gen_discard();
 
-	puts("  subq $8, %rsp\n"
-	     "  movq _y(%rip), %rax\n"
-	     "  movq %rax, (%rsp)\n"
-	     "  movq (%rsp), %rax\n"
-	     "  addq $8, %rsp\n"
-	     "  addq $12, %rax\n"
-	     "  movl (%rax), %edx\n"
-	     "  movl _x(%rip), %eax\n"
-	     "  addl %edx, %eax\n"
-	     "  subq $8, %rsp\n"
-	     "  movl %eax, (%rsp)\n");
+	gen_push_from_global_8byte("y");
+
+	gen_push_int(12);
+	gen_op_8byte("addq");
+
+	gen_peek_and_dereference();
+
+	gen_push_from_global_4byte("x");
+
+	gen_op_ints("addl");
+
 	gen_epilogue(1234);
 	return 0;
 }

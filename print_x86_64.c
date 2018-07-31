@@ -569,7 +569,26 @@ void gen_div_by_const(int num)
 
 void gen_write_to_global_8byte(const char *ident)
 {
+	printf("//gen_write_to_global_8byte(\"%s\")\n", ident);
 	printf("  movq (%%rsp), %%rax\n"
-	       "  movq %%rax, _%s(%%rip)\n",
+	       "  movq %%rax, " PREFIX "%s(%%rip)\n",
+	       ident);
+}
+
+void gen_push_from_global_8byte(const char *ident)
+{
+	printf("//gen_push_from_global_8byte(\"%s\")\n", ident);
+	printf("  subq $8, %%rsp\n"
+	       "  movq " PREFIX "%s(%%rip), %%rax\n"
+	       "  movq %%rax, (%%rsp)\n",
+	       ident);
+}
+
+void gen_push_from_global_4byte(const char *ident)
+{
+	printf("//gen_push_from_global_4byte(\"%s\")\n", ident);
+	printf("  subq $8, %%rsp\n"
+	       "  movl " PREFIX "%s(%%rip), %%eax\n"
+	       "  movl %%eax, (%%rsp)\n",
 	       ident);
 }
