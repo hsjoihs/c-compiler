@@ -854,6 +854,8 @@ void parseprint_compound_statement(struct ParserState *ptr_ps,
 
 				const char *str;
 				vartype = parse_var_declarator(&tokvec, &str);
+				/* while function prototypes are also allowed here, I will not
+				 * implement it here */
 				ptr_ps->newest_offset -= size_of(vartype);
 				expect_and_consume(
 				    &tokvec, SEMICOLON,

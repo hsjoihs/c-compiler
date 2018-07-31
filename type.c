@@ -16,8 +16,8 @@ int size_of(struct Type type)
 			return 8;
 		case ARRAY:
 			return type.array_length * size_of(*type.derived_from);
-		default:
-			fprintf(stderr, "Unknown type with id %d\n", type.type_category);
+		case FN:
+			fprintf(stderr, "function type does not have size\n");
 			exit(EXIT_FAILURE);
 	}
 }
