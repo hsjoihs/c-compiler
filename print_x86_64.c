@@ -575,6 +575,14 @@ void gen_write_to_global_8byte(const char *ident)
 	       ident);
 }
 
+void gen_write_to_global_4byte(const char *ident)
+{
+	printf("//gen_write_to_global_4byte(\"%s\")\n", ident);
+	printf("  movl (%%rsp), %%eax\n"
+	       "  movl %%eax, " PREFIX "%s(%%rip)\n",
+	       ident);
+}
+
 void gen_push_from_global_8byte(const char *ident)
 {
 	printf("//gen_push_from_global_8byte(\"%s\")\n", ident);
