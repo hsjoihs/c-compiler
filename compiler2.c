@@ -165,6 +165,11 @@ parseprint_assignment_expression(struct ParserState *ptr_ps,
 		const char *name = tokvec[0].ident_str;
 		tokvec += 2;
 		*ptr_tokvec = tokvec;
+
+		if (!is_local_var(ptr_ps->scope_chain, name)) {
+			fprintf(stderr, "unimplemented: assignment to a global variable\n");
+			exit(EXIT_FAILURE);
+		}
 		struct LocalVarInfo info =
 		    resolve_name_locally(ptr_ps->scope_chain, name);
 
@@ -547,6 +552,10 @@ struct ExprInfo parseprint_primary_expression(struct ParserState *ptr_ps,
 	} else if (tokvec[0].kind == IDENT_OR_RESERVED) {
 		++*ptr_tokvec;
 
+		if (!is_local_var(ptr_ps->scope_chain, tokvec[0].ident_str)) {
+			fprintf(stderr, "unimplemented: global var as a primary expression\n");
+			exit(EXIT_FAILURE);
+		}
 		struct LocalVarInfo info =
 		    resolve_name_locally(ptr_ps->scope_chain, tokvec[0].ident_str);
 
@@ -1030,6 +1039,9 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
 void print_inc_or_dec(struct ParserState *ptr_ps, const char *name,
                       enum TokenKind opkind)
 {
+	if (!is_local_var(ptr_ps->scope_chain, name)) {
+		fprintf(stderr, "unimplemented: incrementing or decrementing a global variable");
+	}
 	struct LocalVarInfo info = resolve_name_locally(ptr_ps->scope_chain, name);
 
 	printf("//load from `%s`\n", name);
@@ -1082,6 +1094,10 @@ struct ExprInfo parseprint_unary_expression(struct ParserState *ptr_ps,
 			const char *name = tokvec[1].ident_str;
 
 			tokvec += 2;
+
+			if(!is_local_var(ptr_ps->scope_chain, name)) {
+				fprintf(stderr, "unimplemented: & of a global variable\n");
+			}
 			struct LocalVarInfo info =
 			    resolve_name_locally(ptr_ps->scope_chain, name);
 			gen_push_address_of_local(info.offset);
