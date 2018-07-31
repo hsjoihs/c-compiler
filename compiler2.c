@@ -167,8 +167,7 @@ parseprint_assignment_expression(struct ParserState *ptr_ps,
 		*ptr_tokvec = tokvec;
 
 		if (!is_local_var(ptr_ps->scope_chain, name)) {
-			fprintf(stderr, "unimplemented: assignment to a global variable\n");
-			exit(EXIT_FAILURE);
+			unimplemented("assignment to a global variable");
 		}
 		struct LocalVarInfo info =
 		    resolve_name_locally(ptr_ps->scope_chain, name);
@@ -427,8 +426,7 @@ void parseprint_argument_expression(struct ParserState *ptr_ps,
 	struct ExprInfo expr_info =
 	    parseprint_assignment_expression(ptr_ps, &tokvec);
 	if (counter > 5) {
-		fprintf(stderr, "calling with 7 or more arguments is unimplemented!\n");
-		exit(EXIT_FAILURE);
+		unimplemented("calling with 7 or more arguments");
 	}
 
 	switch (size_of(expr_info.type)) {
@@ -439,8 +437,7 @@ void parseprint_argument_expression(struct ParserState *ptr_ps,
 			gen_pop_to_reg_8byte(get_reg_name_from_arg_pos_8byte(counter));
 			break;
 		default:
-			fprintf(stderr, "Unsupported width.\n");
-			exit(EXIT_FAILURE);
+			unimplemented("Unsupported width");
 	}
 
 	*ptr_tokvec = tokvec;
@@ -553,8 +550,7 @@ struct ExprInfo parseprint_primary_expression(struct ParserState *ptr_ps,
 		++*ptr_tokvec;
 
 		if (!is_local_var(ptr_ps->scope_chain, tokvec[0].ident_str)) {
-			fprintf(stderr, "unimplemented: global var as a primary expression\n");
-			exit(EXIT_FAILURE);
+			unimplemented("global var as a primary expression");
 		}
 		struct LocalVarInfo info =
 		    resolve_name_locally(ptr_ps->scope_chain, tokvec[0].ident_str);
@@ -568,8 +564,7 @@ struct ExprInfo parseprint_primary_expression(struct ParserState *ptr_ps,
 				gen_push_from_local_8byte(info.offset);
 				break;
 			default:
-				fprintf(stderr, "sdfgjpk;l\n");
-				exit(EXIT_FAILURE);
+				unimplemented("Unsupported width");
 		}
 
 		struct ExprInfo expr_info;
@@ -637,7 +632,7 @@ void parseprint_statement(struct ParserState *ptr_ps,
 		++tokvec;
 		*ptr_tokvec = tokvec;
 		if (tokvec[0].kind == SEMICOLON) {
-			assert("`return;` unimplemented" && 0);
+			unimplemented("`return;`");
 		} else {
 			struct ExprInfo expr_info = parseprint_expression(ptr_ps, &tokvec);
 			expect_type(expr_info, ptr_ps->func_ret_type, 20);
@@ -1040,7 +1035,7 @@ void print_inc_or_dec(struct ParserState *ptr_ps, const char *name,
                       enum TokenKind opkind)
 {
 	if (!is_local_var(ptr_ps->scope_chain, name)) {
-		fprintf(stderr, "unimplemented: incrementing or decrementing a global variable");
+		unimplemented("incrementing or decrementing a global variable");
 	}
 	struct LocalVarInfo info = resolve_name_locally(ptr_ps->scope_chain, name);
 
@@ -1083,9 +1078,7 @@ struct ExprInfo parseprint_unary_expression(struct ParserState *ptr_ps,
 
 			print_inc_or_dec(ptr_ps, name, opkind);
 		} else {
-			fprintf(stderr,
-			        "++ followed by non-identifier: unimplemented!!!\n");
-			exit(EXIT_FAILURE);
+			unimplemented("++ followed by non-identifier");
 		}
 		*ptr_tokvec = tokvec;
 		return UNASSIGNABLE(INT_TYPE);
@@ -1095,8 +1088,8 @@ struct ExprInfo parseprint_unary_expression(struct ParserState *ptr_ps,
 
 			tokvec += 2;
 
-			if(!is_local_var(ptr_ps->scope_chain, name)) {
-				fprintf(stderr, "unimplemented: & of a global variable\n");
+			if (!is_local_var(ptr_ps->scope_chain, name)) {
+				unimplemented("& of a global variable");
 			}
 			struct LocalVarInfo info =
 			    resolve_name_locally(ptr_ps->scope_chain, name);
@@ -1108,8 +1101,7 @@ struct ExprInfo parseprint_unary_expression(struct ParserState *ptr_ps,
 
 			return UNASSIGNABLE(ptr_of_type_to_ptr_to_type(ptr_type));
 		} else {
-			fprintf(stderr, "& followed by non-identifier: unimplemented!!!\n");
-			exit(EXIT_FAILURE);
+			unimplemented("& followed by non-identifier");
 		}
 
 	} else if (tokvec[0].kind == OP_ASTERISK) {

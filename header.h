@@ -161,7 +161,7 @@ struct Type parse_var_declarator(const struct Token **ptr_tokvec,
                                  const char **ptr_to_ident_str);
 void expect_and_consume(const struct Token **ptr_tokvec, enum TokenKind kind,
                         const char *str);
-void error_unexpected_token(const struct Token *tokvec, const char *str);
+_Noreturn void error_unexpected_token(const struct Token *tokvec, const char *str);
 
 struct Token *read_all_tokens_(const char *str);
 int count_all_tokens(const char *str);
@@ -177,3 +177,5 @@ int can_start_a_type(const struct Token *tokvec);
 
 struct Type parse_declarator(const struct Token **ptr_tokvec,
                                  const char **ptr_to_ident_str);
+
+_Noreturn void unimplemented(const char *str);

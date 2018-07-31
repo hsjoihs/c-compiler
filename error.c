@@ -2,7 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void error_unexpected_token(const struct Token *tokvec, const char *str)
+_Noreturn void error_unexpected_token(const struct Token *tokvec,
+                                      const char *str)
 {
 	fprintf(stderr, "Unexpected token: `");
 	print_token(tokvec[0]);
@@ -28,4 +29,10 @@ void expect_and_consume(const struct Token **ptr_tokvec, enum TokenKind kind,
 	}
 	++tokvec;
 	*ptr_tokvec = tokvec;
+}
+
+_Noreturn void unimplemented(const char *str)
+{
+	fprintf(stderr, "unimplemented: %s\n", str);
+	exit(EXIT_FAILURE);
 }
