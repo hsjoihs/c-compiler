@@ -193,6 +193,16 @@ struct Type from_type3_to_type(const struct type3_elem *type3)
 
 void parse_dcl(const struct Token **ptr_tokvec, struct Type3 *ptr_type3);
 
+void parse_param(const struct Token **ptr_tokvec, struct type3_elem *ptr_f,
+                 int i)
+{
+	const char *ident_str;
+	struct ParamInfo *ptr_param_info = calloc(1, sizeof(struct ParamInfo));
+	ptr_param_info->param_type = parse_var_declarator(ptr_tokvec, &ident_str);
+	ptr_param_info->ident_str = ident_str;
+	ptr_f->param_infos.param_vec[i] = ptr_param_info;
+}
+
 void parse_dirdcl(const struct Token **ptr_tokvec, struct Type3 *ptr_type3)
 {
 	const struct Token *tokvec = *ptr_tokvec;
@@ -237,14 +247,7 @@ void parse_dirdcl(const struct Token **ptr_tokvec, struct Type3 *ptr_type3)
 				f.param_infos.param_vec =
 				    calloc(100, sizeof(struct ParamInfo *));
 
-				const char *ident_str;
-				struct ParamInfo *ptr_param_info =
-				    calloc(1, sizeof(struct ParamInfo));
-				ptr_param_info->param_type =
-				    parse_var_declarator(&tokvec, &ident_str);
-				ptr_param_info->ident_str = ident_str;
-
-				f.param_infos.param_vec[0] = ptr_param_info;
+				parse_param(&tokvec, &f, 0);
 
 				int i = 1;
 
@@ -254,13 +257,8 @@ void parse_dirdcl(const struct Token **ptr_tokvec, struct Type3 *ptr_type3)
 						break;
 					}
 					++tokvec;
-					const char *ident_str;
-					struct ParamInfo *ptr_param_info =
-					    calloc(1, sizeof(struct ParamInfo));
-					ptr_param_info->param_type =
-					    parse_var_declarator(&tokvec, &ident_str);
-					ptr_param_info->ident_str = ident_str;
-					f.param_infos.param_vec[i] = ptr_param_info;
+
+					parse_param(&tokvec, &f, i);
 					i++;
 				}
 
