@@ -472,8 +472,7 @@ struct ExprInfo parseprint_postfix_expression(struct ParserState *ptr_ps,
 					gen_push_ret_of_8byte(ident_str);
 					break;
 				default:
-					fprintf(stderr, "Unsupported width in the return type\n");
-					exit(EXIT_FAILURE);
+					unimplemented("Unsupported width in the return type");
 			}
 
 			tokvec++;
@@ -501,8 +500,7 @@ struct ExprInfo parseprint_postfix_expression(struct ParserState *ptr_ps,
 					gen_push_ret_of_8byte(ident_str);
 					break;
 				default:
-					fprintf(stderr, "Unsupported width\n");
-					exit(EXIT_FAILURE);
+					unimplemented("Unsupported width");
 			}
 			*ptr_tokvec = tokvec;
 
@@ -911,8 +909,7 @@ void print_parameter_declaration(struct ParserState *ptr_ps, int counter,
 	ident_str = param_info.ident_str;
 
 	if (counter > 5) {
-		fprintf(stderr, "6-or-more args not implemented!\n");
-		exit(EXIT_FAILURE);
+		unimplemented("6-or-more args");
 	}
 
 	ptr_ps->newest_offset -= size_of(type);
@@ -1024,8 +1021,7 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
 			gen_epilogue_8byte(ptr_ps->return_label_name);
 			break;
 		default:
-			fprintf(stderr, "Unsupported width!\n");
-			exit(EXIT_FAILURE);
+			unimplemented("Unsupported width");
 	}
 
 	*ptr_tokvec = tokvec2;
@@ -1118,8 +1114,7 @@ struct ExprInfo parseprint_unary_expression(struct ParserState *ptr_ps,
 				gen_peek_and_dereference_8byte();
 				break;
 			default:
-				fprintf(stderr, "Unsupported width\n");
-				exit(EXIT_FAILURE);
+				unimplemented("Unsupported width");
 		}
 
 		struct ExprInfo new_expr_info;
