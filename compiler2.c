@@ -77,23 +77,24 @@ struct ExprInfo parseprint_expression(struct ParserState *ptr_ps,
 	return info;
 }
 
-struct LocalVarInfo resolve_name_(struct LocalVarTableList t, const char *str)
+struct LocalVarInfo resolve_name_locally(struct LocalVarTableList t,
+                                         const char *str)
 {
 	if (isElem(t.var_table, str)) {
 		struct LocalVarInfo *ptr_varinfo = lookup(t.var_table, str);
 		return *ptr_varinfo;
 	} else if (t.outer == 0) {
 		/* most outer, but cannot be found */
-		fprintf(stderr, "%s is not declared\n", str);
+		fprintf(stderr, "%s is not declared locally\n", str);
 		exit(EXIT_FAILURE);
 	} else {
-		return resolve_name_(*(t.outer), str);
+		return resolve_name_locally(*(t.outer), str);
 	}
 }
 
 int get_offset_from_name(struct ParserState ps, const char *str)
 {
-	struct LocalVarInfo varinfo = resolve_name_(ps.scope_chain, str);
+	struct LocalVarInfo varinfo = resolve_name_locally(ps.scope_chain, str);
 	return varinfo.offset;
 }
 
@@ -158,7 +159,8 @@ parseprint_assignment_expression(struct ParserState *ptr_ps,
 		const char *name = tokvec[0].ident_str;
 		tokvec += 2;
 		*ptr_tokvec = tokvec;
-		struct LocalVarInfo info = resolve_name_(ptr_ps->scope_chain, name);
+		struct LocalVarInfo info =
+		    resolve_name_locally(ptr_ps->scope_chain, name);
 
 		if (opkind != OP_EQ) {
 			printf("//load from `%s`\n", name);
@@ -540,7 +542,7 @@ struct ExprInfo parseprint_primary_expression(struct ParserState *ptr_ps,
 		++*ptr_tokvec;
 
 		struct LocalVarInfo info =
-		    resolve_name_(ptr_ps->scope_chain, tokvec[0].ident_str);
+		    resolve_name_locally(ptr_ps->scope_chain, tokvec[0].ident_str);
 
 		printf("//`%s` as rvalue\n", tokvec[0].ident_str);
 		switch (size_of(info.type)) {
@@ -1022,7 +1024,7 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
 void print_inc_or_dec(struct ParserState *ptr_ps, const char *name,
                       enum TokenKind opkind)
 {
-	struct LocalVarInfo info = resolve_name_(ptr_ps->scope_chain, name);
+	struct LocalVarInfo info = resolve_name_locally(ptr_ps->scope_chain, name);
 
 	printf("//load from `%s`\n", name);
 	gen_push_from_local(info.offset);
@@ -1074,7 +1076,8 @@ struct ExprInfo parseprint_unary_expression(struct ParserState *ptr_ps,
 			const char *name = tokvec[1].ident_str;
 
 			tokvec += 2;
-			struct LocalVarInfo info = resolve_name_(ptr_ps->scope_chain, name);
+			struct LocalVarInfo info =
+			    resolve_name_locally(ptr_ps->scope_chain, name);
 			gen_push_address_of_local(info.offset);
 			*ptr_tokvec = tokvec;
 
