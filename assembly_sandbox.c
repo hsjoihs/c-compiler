@@ -12,8 +12,8 @@ int main() { y = alloc4(1,2,3,174); return x + *(y+3); }
 
 int main()
 {
-	puts(".comm _y,8\n");
-	puts(".comm _x,4\n");
+	gen_global_declaration("y", 8);
+	gen_global_declaration("x", 4);
 	gen_prologue(16, "main");
 
 	gen_push_int(174);

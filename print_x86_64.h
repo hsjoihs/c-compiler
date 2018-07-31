@@ -53,3 +53,4 @@ void gen_write_to_global_8byte(const char *ident);
 void gen_push_from_global_8byte(const char *ident);
 void gen_push_from_global_4byte(const char *ident);
 void gen_write_to_global_4byte(const char *ident);
+void gen_global_declaration(const char *ident, int size);
