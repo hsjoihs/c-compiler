@@ -77,6 +77,18 @@ struct ExprInfo parseprint_expression(struct ParserState *ptr_ps,
 	return info;
 }
 
+int is_local_var(struct LocalVarTableList t, const char *str)
+{
+	if (isElem(t.var_table, str)) {
+		return 1;
+	} else if (t.outer == 0) {
+		/* most outer, but cannot be found */
+		return 0;
+	} else {
+		return is_local_var(*(t.outer), str);
+	}
+}
+
 struct LocalVarInfo resolve_name_locally(struct LocalVarTableList t,
                                          const char *str)
 {
