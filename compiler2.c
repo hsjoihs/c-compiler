@@ -4,18 +4,18 @@
 #include <stdlib.h>
 #include <string.h>
 
-struct VarInfo {
+struct LocalVarInfo {
 	struct Type type;
 	int offset;
 };
 
-struct VarTableList {
+struct LocalVarTableList {
 	struct map var_table;
-	struct VarTableList *outer;
+	struct LocalVarTableList *outer;
 };
 
 struct ParserState {
-	struct VarTableList scope_chain;
+	struct LocalVarTableList scope_chain;
 	struct map func_ret_type_map;
 	int newest_offset;
 	int final_label_name;
@@ -75,10 +75,10 @@ struct ExprInfo parseprint_expression(struct ParserState *ptr_ps,
 	return info;
 }
 
-struct VarInfo resolve_name_(struct VarTableList t, const char *str)
+struct LocalVarInfo resolve_name_(struct LocalVarTableList t, const char *str)
 {
 	if (isElem(t.var_table, str)) {
-		struct VarInfo *ptr_varinfo = lookup(t.var_table, str);
+		struct LocalVarInfo *ptr_varinfo = lookup(t.var_table, str);
 		return *ptr_varinfo;
 	} else if (t.outer == 0) {
 		/* most outer, but cannot be found */
@@ -91,7 +91,7 @@ struct VarInfo resolve_name_(struct VarTableList t, const char *str)
 
 int get_offset_from_name(struct ParserState ps, const char *str)
 {
-	struct VarInfo varinfo = resolve_name_(ps.scope_chain, str);
+	struct LocalVarInfo varinfo = resolve_name_(ps.scope_chain, str);
 	return varinfo.offset;
 }
 
@@ -156,7 +156,7 @@ parseprint_assignment_expression(struct ParserState *ptr_ps,
 		const char *name = tokvec[0].ident_str;
 		tokvec += 2;
 		*ptr_tokvec = tokvec;
-		struct VarInfo info = resolve_name_(ptr_ps->scope_chain, name);
+		struct LocalVarInfo info = resolve_name_(ptr_ps->scope_chain, name);
 
 		if (opkind != OP_EQ) {
 			printf("//load from `%s`\n", name);
@@ -537,7 +537,7 @@ struct ExprInfo parseprint_primary_expression(struct ParserState *ptr_ps,
 	} else if (tokvec[0].kind == IDENT_OR_RESERVED) {
 		++*ptr_tokvec;
 
-		struct VarInfo info =
+		struct LocalVarInfo info =
 		    resolve_name_(ptr_ps->scope_chain, tokvec[0].ident_str);
 
 		printf("//`%s` as rvalue\n", tokvec[0].ident_str);
@@ -836,9 +836,9 @@ void parseprint_compound_statement(struct ParserState *ptr_ps,
 	const struct Token *tokvec = *ptr_tokvec;
 	if (tokvec[0].kind == LEFT_BRACE) {
 
-		struct VarTableList current_table = ptr_ps->scope_chain;
+		struct LocalVarTableList current_table = ptr_ps->scope_chain;
 
-		struct VarTableList new_table;
+		struct LocalVarTableList new_table;
 		new_table.var_table = init_int_map();
 
 		/* current_table disappears at the end of this function,
@@ -872,7 +872,8 @@ void parseprint_compound_statement(struct ParserState *ptr_ps,
 
 				struct map map_ = ptr_ps->scope_chain.var_table;
 
-				struct VarInfo *ptr_varinfo = calloc(1, sizeof(struct VarInfo));
+				struct LocalVarInfo *ptr_varinfo =
+				    calloc(1, sizeof(struct LocalVarInfo));
 				ptr_varinfo->offset = ptr_ps->newest_offset;
 				ptr_varinfo->type = vartype;
 				insert(&map_, str, ptr_varinfo);
@@ -903,7 +904,7 @@ void print_parameter_declaration(struct ParserState *ptr_ps, int counter,
 	ptr_ps->newest_offset -= size_of(type);
 
 	struct map map_ = ptr_ps->scope_chain.var_table;
-	struct VarInfo *ptr_varinfo = calloc(1, sizeof(struct VarInfo));
+	struct LocalVarInfo *ptr_varinfo = calloc(1, sizeof(struct LocalVarInfo));
 	ptr_varinfo->offset = ptr_ps->newest_offset;
 	ptr_varinfo->type = type;
 
@@ -1009,7 +1010,7 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
 void print_inc_or_dec(struct ParserState *ptr_ps, const char *name,
                       enum TokenKind opkind)
 {
-	struct VarInfo info = resolve_name_(ptr_ps->scope_chain, name);
+	struct LocalVarInfo info = resolve_name_(ptr_ps->scope_chain, name);
 
 	printf("//load from `%s`\n", name);
 	gen_push_from_local(info.offset);
@@ -1061,7 +1062,7 @@ struct ExprInfo parseprint_unary_expression(struct ParserState *ptr_ps,
 			const char *name = tokvec[1].ident_str;
 
 			tokvec += 2;
-			struct VarInfo info = resolve_name_(ptr_ps->scope_chain, name);
+			struct LocalVarInfo info = resolve_name_(ptr_ps->scope_chain, name);
 			gen_push_address_of_local(info.offset);
 			*ptr_tokvec = tokvec;
 
