@@ -198,7 +198,21 @@ void parse_param(const struct Token **ptr_tokvec, struct type3_elem *ptr_f,
 {
 	const char *ident_str;
 	struct ParamInfo *ptr_param_info = calloc(1, sizeof(struct ParamInfo));
-	ptr_param_info->param_type = parse_var_declarator(ptr_tokvec, &ident_str);
+
+	struct Type type = parse_var_declarator(ptr_tokvec, &ident_str);
+	if (type.type_category == FN) {
+		/* shall be adjusted to `pointer to func`, according to the spec */
+		struct Type *ptr_type = calloc(1, sizeof(struct Type));
+		*ptr_type = type;
+		ptr_param_info->param_type = ptr_of_type_to_ptr_to_type(ptr_type);
+	} else {
+		/* convert to pointer */
+		if (type.type_category == ARRAY) {
+			type.type_category = PTR_;
+			type.array_length = GARBAGE_INT;
+		}
+		ptr_param_info->param_type = type;
+	}
 	ptr_param_info->ident_str = ident_str;
 	ptr_f->param_infos.param_vec[i] = ptr_param_info;
 }
