@@ -582,8 +582,6 @@ struct ExprInfo parseprint_primary_expression(struct ParserState *ptr_ps,
 
 	error_unexpected_token(tokvec,
 	                       "the beginning of parseprint_primary_expression");
-
-	assert("CANNOT REACH HERE" && 0); // suppress warning
 }
 
 int get_new_label_name(struct ParserState *ptr_ps)
