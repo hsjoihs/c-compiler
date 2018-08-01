@@ -286,6 +286,7 @@ parseprint_assignment_expression(struct ParserState *ptr_ps,
 	assert(isAssign(tokvec[0].kind));
 	switch (expr_info.info) {
 		case LOCAL_VAR:
+		case GLOBAL_VAR:
 			assert("supposed to be handled separately, at least for now" && 0);
 			exit(EXIT_FAILURE);
 			break;
@@ -314,8 +315,6 @@ parseprint_assignment_expression(struct ParserState *ptr_ps,
 			*ptr_tokvec = tokvec;
 			return remove_leftiness(expr_info);
 		};
-		case GLOBAL_VAR:
-			unimplemented("global var as lvalue");
 	}
 }
 
