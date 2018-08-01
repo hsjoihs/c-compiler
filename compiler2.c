@@ -18,7 +18,7 @@ struct LocalVarTableList {
 struct ParserState {
 	struct LocalVarTableList scope_chain;
 	struct map global_vars_type_map;
-	struct map func_ret_type_map;
+	struct map func_info_map;
 	int newest_offset;
 	int final_label_name;
 	int return_label_name; /* the label at the end of the function */
@@ -510,14 +510,14 @@ struct ExprInfo parseprint_postfix_expression(struct ParserState *ptr_ps,
 		const char *ident_str = tokvec[0].ident_str;
 
 		struct Type ret_type;
-		if (!isElem(ptr_ps->func_ret_type_map, ident_str)) {
+		if (!isElem(ptr_ps->func_info_map, ident_str)) {
 			fprintf(stderr, "Undeclared function `%s()` detected.\n",
 			        ident_str);
 			fprintf(stderr, "Assumes that `%s()` returns `int`\n", ident_str);
 			ret_type = INT_TYPE;
 		} else {
 			struct FuncInfo *ptr_func_info =
-			    lookup(ptr_ps->func_ret_type_map, ident_str);
+			    lookup(ptr_ps->func_info_map, ident_str);
 			ret_type = ptr_func_info->ret_type;
 		}
 
@@ -1049,13 +1049,13 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
 	ptr_ps->newest_offset = -8;
 	ptr_ps->func_ret_type = ret_type;
 
-	struct map retmap = ptr_ps->func_ret_type_map;
+	struct map retmap = ptr_ps->func_info_map;
 
 	struct FuncInfo *ptr_func_info = calloc(1, sizeof(struct FuncInfo));
 	ptr_func_info->ret_type = ret_type;
 	insert(&retmap, declarator_name, ptr_func_info);
 
-	ptr_ps->func_ret_type_map = retmap;
+	ptr_ps->func_info_map = retmap;
 
 	int label1;
 	int label2;
@@ -1239,7 +1239,7 @@ int main(int argc, char const **argv)
 		struct ParserState ps;
 		ps.final_label_name = 1;
 		ps.return_label_name = GARBAGE_INT;
-		ps.func_ret_type_map = init_int_map();
+		ps.func_info_map = init_int_map();
 		ps.global_vars_type_map = init_int_map();
 
 		while (1) {
