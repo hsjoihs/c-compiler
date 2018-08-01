@@ -178,7 +178,47 @@ parseprint_assignment_expression(struct ParserState *ptr_ps,
 		*ptr_tokvec = tokvec;
 
 		if (!is_local_var(ptr_ps->scope_chain, name)) {
-			unimplemented("assignment to a global variable");
+			struct Type type =
+			    resolve_name_globally(ptr_ps->global_vars_type_map, name);
+
+			if (opkind != OP_EQ) {
+				printf("//load from global `%s`\n", name);
+				switch (size_of(type)) {
+					case 4:
+						gen_push_from_global_4byte(name);
+						break;
+					case 8:
+						gen_push_from_global_8byte(name);
+						break;
+					default:
+						unimplemented(
+						    "Unsupported width in the assignment operation");
+				}
+			}
+
+			struct ExprInfo expr_info =
+			    parseprint_assignment_expression(ptr_ps, &tokvec);
+			expect_type(expr_info, type, 0);
+
+			if (opkind != OP_EQ) {
+				printf("//before assigning to global `%s`:\n", name);
+				print_before_assign(opkind);
+			}
+
+			printf("//assign to global `%s`\n", name);
+			switch (size_of(type)) {
+				case 4:
+					gen_write_to_global_4byte(name);
+					break;
+				case 8:
+					gen_write_to_global_8byte(name);
+					break;
+				default:
+					unimplemented(
+					    "Unsupported width in the assignment operation");
+			}
+			*ptr_tokvec = tokvec;
+			return UNASSIGNABLE(type);
 		} else {
 			struct LocalVarInfo info =
 			    resolve_name_locally(ptr_ps->scope_chain, name);
