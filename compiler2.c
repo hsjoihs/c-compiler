@@ -249,15 +249,15 @@ parseprint_assignment_expression(struct ParserState *ptr_ps,
 
 			printf("//assign to `%s`\n", name);
 			switch (size_of(info.type)) {
-				case 4: 
+				case 4:
 					gen_write_to_local(info.offset);
-					break; 
-				case 8: 
+					break;
+				case 8:
 					gen_write_to_local_8byte(info.offset);
-					break; 
-				default: 
-					unimplemented( 
-					    "Unsupported width in the assignment operation"); 
+					break;
+				default:
+					unimplemented(
+					    "Unsupported width in the assignment operation");
 			}
 			*ptr_tokvec = tokvec;
 			return UNASSIGNABLE(info.type);
