@@ -554,27 +554,28 @@ struct ExprInfo parseprint_primary_expression(struct ParserState *ptr_ps,
 
 		if (!is_local_var(ptr_ps->scope_chain, tokvec[0].ident_str)) {
 			unimplemented("global var as a primary expression");
-		}
-		struct LocalVarInfo info =
-		    resolve_name_locally(ptr_ps->scope_chain, tokvec[0].ident_str);
+		} else {
+			struct LocalVarInfo info =
+			    resolve_name_locally(ptr_ps->scope_chain, tokvec[0].ident_str);
 
-		printf("//`%s` as rvalue\n", tokvec[0].ident_str);
-		switch (size_of(info.type)) {
-			case 4:
-				gen_push_from_local(info.offset);
-				break;
-			case 8:
-				gen_push_from_local_8byte(info.offset);
-				break;
-			default:
-				unimplemented("Unsupported width");
-		}
+			printf("//`%s` as rvalue\n", tokvec[0].ident_str);
+			switch (size_of(info.type)) {
+				case 4:
+					gen_push_from_local(info.offset);
+					break;
+				case 8:
+					gen_push_from_local_8byte(info.offset);
+					break;
+				default:
+					unimplemented("Unsupported width");
+			}
 
-		struct ExprInfo expr_info;
-		expr_info.info = LOCAL_VAR;
-		expr_info.type = info.type;
-		expr_info.offset = info.offset;
-		return expr_info;
+			struct ExprInfo expr_info;
+			expr_info.info = LOCAL_VAR;
+			expr_info.type = info.type;
+			expr_info.offset = info.offset;
+			return expr_info;
+		}
 	} else if (tokvec[0].kind == LEFT_PAREN) {
 		++tokvec;
 		*ptr_tokvec = tokvec;
