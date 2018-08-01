@@ -32,7 +32,7 @@ int get_new_label_name(struct ParserState *ptr_ps);
 
 struct ExprInfo remove_leftiness(struct ExprInfo info)
 {
-	if (info.info == LOCAL_VAR) {
+	if (info.info == LOCAL_VAR || info.info == GLOBAL_VAR) {
 		info.info = NOT_ASSIGNABLE;
 	}
 	return info;
@@ -86,6 +86,17 @@ int is_local_var(struct LocalVarTableList t, const char *str)
 		return 0;
 	} else {
 		return is_local_var(*(t.outer), str);
+	}
+}
+
+struct Type resolve_name_globally(struct map m, const char *str)
+{
+	if (isElem(m, str)) {
+		struct Type *ptr_type = lookup(m, str);
+		return *ptr_type;
+	} else {
+		fprintf(stderr, "%s is not declared globally\n", str);
+		exit(EXIT_FAILURE);
 	}
 }
 
@@ -261,6 +272,8 @@ parseprint_assignment_expression(struct ParserState *ptr_ps,
 			*ptr_tokvec = tokvec;
 			return remove_leftiness(expr_info);
 		};
+		case GLOBAL_VAR:
+			unimplemented("global var as lvalue");
 	}
 }
 
@@ -553,7 +566,25 @@ struct ExprInfo parseprint_primary_expression(struct ParserState *ptr_ps,
 		++*ptr_tokvec;
 
 		if (!is_local_var(ptr_ps->scope_chain, tokvec[0].ident_str)) {
-			unimplemented("global var as a primary expression");
+			struct Type type = resolve_name_globally(
+			    ptr_ps->global_vars_type_map, tokvec[0].ident_str);
+			printf("//global `%s` as rvalue\n", tokvec[0].ident_str);
+
+			switch (size_of(type)) {
+				case 4:
+					gen_push_from_global_4byte(tokvec[0].ident_str);
+					break;
+				case 8:
+					gen_push_from_global_8byte(tokvec[0].ident_str);
+					break;
+				default:
+					unimplemented("Unsupported width");
+			}
+
+			struct ExprInfo expr_info;
+			expr_info.info = GLOBAL_VAR;
+			expr_info.type = type;
+			return expr_info;
 		} else {
 			struct LocalVarInfo info =
 			    resolve_name_locally(ptr_ps->scope_chain, tokvec[0].ident_str);
