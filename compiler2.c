@@ -181,6 +181,9 @@ parseprint_assignment_expression(struct ParserState *ptr_ps,
 				case 8:
 					gen_push_from_local_8byte(info.offset);
 					break;
+				default:
+					unimplemented(
+					    "Unsupported width in the assignment operation");
 			}
 		}
 
@@ -201,6 +204,8 @@ parseprint_assignment_expression(struct ParserState *ptr_ps,
 			case 8:
 				gen_write_to_local_8byte(info.offset);
 				break;
+			default:
+				unimplemented("Unsupported width in the assignment operation");
 		}
 		*ptr_tokvec = tokvec;
 		return UNASSIGNABLE(info.type);
@@ -932,6 +937,8 @@ void print_parameter_declaration(struct ParserState *ptr_ps, int counter,
 			    get_reg_name_from_arg_pos_8byte(counter),
 			    resolve_name_locally(ptr_ps->scope_chain, ident_str).offset);
 			break;
+		default:
+			unimplemented("Unsupported width in function argument");
 	}
 }
 
