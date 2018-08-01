@@ -179,47 +179,49 @@ parseprint_assignment_expression(struct ParserState *ptr_ps,
 
 		if (!is_local_var(ptr_ps->scope_chain, name)) {
 			unimplemented("assignment to a global variable");
-		}
-		struct LocalVarInfo info =
-		    resolve_name_locally(ptr_ps->scope_chain, name);
+		} else {
+			struct LocalVarInfo info =
+			    resolve_name_locally(ptr_ps->scope_chain, name);
 
-		if (opkind != OP_EQ) {
-			printf("//load from `%s`\n", name);
-			switch (size_of(info.type)) {
-				case 4:
-					gen_push_from_local(info.offset);
-					break;
-				case 8:
-					gen_push_from_local_8byte(info.offset);
-					break;
-				default:
-					unimplemented(
-					    "Unsupported width in the assignment operation");
+			if (opkind != OP_EQ) {
+				printf("//load from `%s`\n", name);
+				switch (size_of(info.type)) {
+					case 4:
+						gen_push_from_local(info.offset);
+						break;
+					case 8:
+						gen_push_from_local_8byte(info.offset);
+						break;
+					default:
+						unimplemented(
+						    "Unsupported width in the assignment operation");
+				}
 			}
-		}
 
-		struct ExprInfo expr_info =
-		    parseprint_assignment_expression(ptr_ps, &tokvec);
-		expect_type(expr_info, info.type, 0);
+			struct ExprInfo expr_info =
+			    parseprint_assignment_expression(ptr_ps, &tokvec);
+			expect_type(expr_info, info.type, 0);
 
-		if (opkind != OP_EQ) {
-			printf("//before assigning to `%s`:\n", name);
-			print_before_assign(opkind);
-		}
+			if (opkind != OP_EQ) {
+				printf("//before assigning to `%s`:\n", name);
+				print_before_assign(opkind);
+			}
 
-		printf("//assign to `%s`\n", name);
-		switch (size_of(info.type)) {
-			case 4:
-				gen_write_to_local(info.offset);
-				break;
-			case 8:
-				gen_write_to_local_8byte(info.offset);
-				break;
-			default:
-				unimplemented("Unsupported width in the assignment operation");
+			printf("//assign to `%s`\n", name);
+			switch (size_of(info.type)) {
+				case 4: 
+					gen_write_to_local(info.offset);
+					break; 
+				case 8: 
+					gen_write_to_local_8byte(info.offset);
+					break; 
+				default: 
+					unimplemented( 
+					    "Unsupported width in the assignment operation"); 
+			}
+			*ptr_tokvec = tokvec;
+			return UNASSIGNABLE(info.type);
 		}
-		*ptr_tokvec = tokvec;
-		return UNASSIGNABLE(info.type);
 	}
 
 	int label = get_new_label_name(ptr_ps);
