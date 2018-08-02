@@ -9,8 +9,8 @@ struct Expression parse_assignment_expression(struct ParserState *ptr_ps,
                                               const struct Token **ptr_tokvec);
 struct Expression parse_primary_expression(struct ParserState *ptr_ps,
                                            const struct Token **ptr_tokvec);
-struct ExprInfo parse_postfix_expression(struct ParserState *ptr_ps,
-                                         const struct Token **ptr_tokvec);
+struct Expression parse_postfix_expression(struct ParserState *ptr_ps,
+                                           const struct Token **ptr_tokvec);
 struct Expression parse_expression(struct ParserState *ptr_ps,
                                    const struct Token **ptr_tokvec);
 struct Expression parse_cast_expression(struct ParserState *ptr_ps,
@@ -1370,8 +1370,7 @@ struct Expression parse_unary_expression(struct ParserState *ptr_ps,
 
 		return new_expr;
 	} else {
-		struct Expression expr =
-		    wrap(parse_postfix_expression(ptr_ps, &tokvec));
+		struct Expression expr = parse_postfix_expression(ptr_ps, &tokvec);
 		*ptr_tokvec = tokvec;
 		return expr;
 	}
@@ -1383,8 +1382,8 @@ struct Expression parse_cast_expression(struct ParserState *ptr_ps,
 	return parse_unary_expression(ptr_ps, ptr_tokvec);
 }
 
-struct ExprInfo parse_postfix_expression(struct ParserState *ptr_ps,
-                                         const struct Token **ptr_tokvec)
+struct Expression parse_postfix_expression(struct ParserState *ptr_ps,
+                                           const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 	if (tokvec[0].kind == IDENT_OR_RESERVED && tokvec[1].kind == LEFT_PAREN) {
@@ -1429,7 +1428,7 @@ struct ExprInfo parse_postfix_expression(struct ParserState *ptr_ps,
 			*ptr_tokvec = tokvec;
 		}
 		*ptr_tokvec = tokvec;
-		return UNASSIGNABLE(ret_type);
+		return wrap(UNASSIGNABLE(ret_type));
 
 	} else if (tokvec[0].kind == IDENT_OR_RESERVED &&
 	           (tokvec[1].kind == OP_PLUS_PLUS ||
@@ -1439,17 +1438,24 @@ struct ExprInfo parse_postfix_expression(struct ParserState *ptr_ps,
 		tokvec += 2;
 		*ptr_tokvec = tokvec;
 
-		// print_inc_or_dec(ptr_ps, name, opkind);
+		struct Expression expr = ident_as_lvalue(*ptr_ps, name);
+		struct Expression *ptr_expr1 = calloc(1, sizeof(struct Expression));
+		*ptr_expr1 = expr;
 
-		// gen_push_int(-1);
-		// print_before_assign(opkind);
+		struct Expression new_expr;
+		new_expr.details = UNASSIGNABLE(INT_TYPE);
+		new_expr.category =
+		    opkind == OP_PLUS_PLUS ? POSTFIX_INCREMENT : POSTFIX_DECREMENT;
+		new_expr.ptr1 = ptr_expr1;
+		new_expr.ptr2 = 0;
+		new_expr.ptr3 = 0;
+
 		*ptr_tokvec = tokvec;
-		return UNASSIGNABLE(INT_TYPE);
+		return new_expr;
 	} else {
-		struct ExprInfo expr_info =
-		    parse_primary_expression(ptr_ps, &tokvec).details;
+		struct Expression expr = parse_primary_expression(ptr_ps, &tokvec);
 		*ptr_tokvec = tokvec;
-		return expr_info;
+		return expr;
 	}
 }
 
