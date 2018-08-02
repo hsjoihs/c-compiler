@@ -186,13 +186,15 @@ enum expr_category {
 	BINARY_EXPR,
 	POINTER_PLUSORMINUS_INT,
 	POINTER_MINUS_POINTER,
-	CONDITIONAL_EXPR
+	CONDITIONAL_EXPR,
+	UNARY_OP_EXPR
 };
 
 struct Expression {
 	struct ExprInfo details;
 	enum expr_category category;
 	enum TokenKind binary_operator;
+	enum TokenKind unary_operator;
 	struct Expression *ptr1;
 	struct Expression *ptr2;
 	struct Expression *ptr3;

@@ -1275,6 +1275,23 @@ int main(int argc, char const **argv)
  *    pure parsers    *
  **********************/
 
+struct Expression unary_op_(struct Expression expr, enum TokenKind kind,
+                            enum expr_category cat, struct ExprInfo exprinfo)
+{
+	struct Expression *ptr_expr1 = calloc(1, sizeof(struct Expression));
+	*ptr_expr1 = expr;
+
+	struct Expression new_expr;
+	new_expr.details = exprinfo;
+	new_expr.category = UNARY_OP_EXPR;
+	new_expr.unary_operator = kind;
+	new_expr.ptr1 = ptr_expr1;
+	new_expr.ptr2 = 0;
+	new_expr.ptr3 = 0;
+
+	return new_expr;
+}
+
 struct ExprInfo parse_unary_expression(struct ParserState *ptr_ps,
                                        const struct Token **ptr_tokvec)
 {
