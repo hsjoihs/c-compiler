@@ -278,7 +278,7 @@ struct Expression combine_by_add_or_sub(struct Expression expr,
 
 	if (is_equal(type1, INT_TYPE)) {
 		if (is_equal(type2, INT_TYPE)) {
-			expr = simple_binary_op(expr, expr2, kind, UNASSIGNABLE(INT_TYPE));
+			return simple_binary_op(expr, expr2, kind, UNASSIGNABLE(INT_TYPE));
 		} else if (is_pointer(type2)) {
 			if (kind == OP_MINUS) {
 				fprintf(stderr, "cannot subtract a pointer from an integer.\n");
@@ -286,7 +286,7 @@ struct Expression combine_by_add_or_sub(struct Expression expr,
 			}
 
 			/* swapped */
-			expr = pointer_plusorminus_int(expr2, expr, kind);
+			return pointer_plusorminus_int(expr2, expr, kind);
 		}
 
 	} else if (is_pointer(type1)) {
@@ -295,18 +295,17 @@ struct Expression combine_by_add_or_sub(struct Expression expr,
 			expect_type(expr2.details, INT_TYPE, 30);
 			/* cannot add a pointer to a pointer*/
 
-			expr = pointer_plusorminus_int(expr, expr2, kind);
+			return pointer_plusorminus_int(expr, expr2, kind);
 		} else if (is_equal(type2, INT_TYPE)) {
 
 			/* pointer minus int */
-			expr = pointer_plusorminus_int(expr, expr2, kind);
+			return pointer_plusorminus_int(expr, expr2, kind);
 		} else {
 			/* pointer minus pointer */
-			expr = binary_op_(expr, expr2, kind, POINTER_MINUS_POINTER,
+			return binary_op_(expr, expr2, kind, POINTER_MINUS_POINTER,
 			                  UNASSIGNABLE(INT_TYPE));
 		}
 	}
-	return expr;
 }
 
 struct Expression parse_additive_expression(struct ParserState *ptr_ps,
