@@ -607,7 +607,8 @@ parseprint_logical_AND_expression(struct ParserState *ptr_ps,
 struct ExprInfo parseprint_cast_expression(struct ParserState *ptr_ps,
                                            const struct Token **ptr_tokvec)
 {
-	return parseprint_unary_expression(ptr_ps, ptr_tokvec);
+	fprintf(stderr, "DELETED\n");
+	exit(EXIT_FAILURE);
 }
 
 const char *get_reg_name_from_arg_pos(int counter)
@@ -668,13 +669,6 @@ void print_argument_expression(struct ParserState *ptr_ps,
 		default:
 			unimplemented("Unsupported width");
 	}
-}
-
-struct ExprInfo parseprint_postfix_expression(struct ParserState *ptr_ps,
-                                              const struct Token **ptr_tokvec)
-{
-	fprintf(stderr, "DELETED\n");
-	exit(EXIT_FAILURE);
 }
 
 struct ExprInfo parseprint_primary_expression(struct ParserState *ptr_ps,
@@ -1206,92 +1200,6 @@ void print_inc_or_dec(struct ParserState *ptr_ps, const char *name,
 
 	printf("//assign to `%s`\n", name);
 	gen_write_to_local(info.offset);
-}
-
-struct ExprInfo parseprint_unary_expression(struct ParserState *ptr_ps,
-                                            const struct Token **ptr_tokvec)
-{
-	const struct Token *tokvec = *ptr_tokvec;
-
-	/* unary-operator cast-expression */
-	if (tokvec[0].kind == OP_NOT || tokvec[0].kind == OP_TILDA ||
-	    tokvec[0].kind == OP_PLUS || tokvec[0].kind == OP_MINUS) {
-		enum TokenKind kind = tokvec[0].kind;
-		++tokvec;
-		struct ExprInfo expr_info =
-		    remove_leftiness(parseprint_cast_expression(ptr_ps, &tokvec));
-		expect_type(expr_info, INT_TYPE, 2);
-		print_unary_prefix_op(kind);
-
-		*ptr_tokvec = tokvec;
-		return remove_leftiness(expr_info);
-	} else if (tokvec[0].kind == OP_PLUS_PLUS ||
-	           tokvec[0].kind == OP_MINUS_MINUS) {
-		enum TokenKind opkind = tokvec[0].kind;
-		++tokvec;
-		if (tokvec[0].kind == IDENT_OR_RESERVED) {
-			const char *name = tokvec[0].ident_str;
-			++tokvec;
-			*ptr_tokvec = tokvec;
-
-			print_inc_or_dec(ptr_ps, name, opkind);
-		} else {
-			unimplemented("++ followed by non-identifier");
-		}
-		*ptr_tokvec = tokvec;
-		return UNASSIGNABLE(INT_TYPE);
-	} else if (tokvec[0].kind == OP_AND) {
-		if (tokvec[1].kind == IDENT_OR_RESERVED) {
-			const char *name = tokvec[1].ident_str;
-
-			tokvec += 2;
-
-			if (!is_local_var(ptr_ps->scope_chain, name)) {
-				unimplemented("& of a global variable");
-			}
-			struct LocalVarInfo info =
-			    resolve_name_locally(ptr_ps->scope_chain, name);
-			gen_push_address_of_local(info.offset);
-			*ptr_tokvec = tokvec;
-
-			struct Type *ptr_type = calloc(1, sizeof(struct Type));
-			*ptr_type = info.type;
-
-			return UNASSIGNABLE(ptr_of_type_to_ptr_to_type(ptr_type));
-		} else {
-			unimplemented("& followed by non-identifier");
-		}
-
-	} else if (tokvec[0].kind == OP_ASTERISK) {
-		++tokvec;
-		struct ExprInfo expr_info =
-		    remove_leftiness(parseprint_cast_expression(ptr_ps, &tokvec));
-		struct Type type = deref_type(expr_info.type);
-
-		switch (size_of(type)) {
-			case 4:
-				gen_peek_and_dereference();
-				break;
-			case 8:
-				gen_peek_and_dereference_8byte();
-				break;
-			default:
-				unimplemented("Unsupported width");
-		}
-
-		struct ExprInfo new_expr_info;
-		new_expr_info.info = DEREFERENCED_ADDRESS;
-		new_expr_info.type = type;
-		new_expr_info.offset = GARBAGE_INT;
-
-		*ptr_tokvec = tokvec;
-		return new_expr_info;
-	} else {
-		struct ExprInfo expr_info =
-		    parseprint_postfix_expression(ptr_ps, &tokvec);
-		*ptr_tokvec = tokvec;
-		return expr_info;
-	}
 }
 
 struct ExprInfo UNASSIGNABLE(struct Type type) {
