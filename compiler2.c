@@ -1464,6 +1464,11 @@ struct ExprInfo parse_primary_expression(struct ParserState *ptr_ps,
 			expr_info.info = GLOBAL_VAR;
 			expr_info.type = type;
 			return expr_info;
+
+			struct Expression expr;
+			expr.details = expr_info;
+			expr.category = GLOBAL_VAR_AS_RVALUE;
+			return expr.details;
 		} else {
 			struct LocalVarInfo info =
 			    resolve_name_locally(ptr_ps->scope_chain, tokvec[0].ident_str);
@@ -1472,7 +1477,11 @@ struct ExprInfo parse_primary_expression(struct ParserState *ptr_ps,
 			expr_info.info = LOCAL_VAR;
 			expr_info.type = info.type;
 			expr_info.offset = info.offset;
-			return expr_info;
+
+			struct Expression expr;
+			expr.details = expr_info;
+			expr.category = LOCAL_VAR_AS_RVALUE;
+			return expr.details;
 		}
 	} else if (tokvec[0].kind == LEFT_PAREN) {
 		++tokvec;
