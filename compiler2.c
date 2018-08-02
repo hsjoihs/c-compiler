@@ -44,7 +44,8 @@ void read_all_tokens_debug(const char *str)
 int is_print_implemented(struct Expression expr)
 {
 	switch (expr.category) {
-		case POINTER_PLUSORMINUS_INT: {
+		case POINTER_PLUSORMINUS_INT:
+		case POINTER_MINUS_POINTER: {
 			return is_print_implemented(*expr.ptr1) &&
 			       is_print_implemented(*expr.ptr2);
 		}
@@ -135,6 +136,14 @@ int is_print_implemented(struct Expression expr)
 void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 {
 	switch (expr.category) {
+		case POINTER_MINUS_POINTER: {
+			print_expression(ptr_ps, *expr.ptr1);
+			print_expression(ptr_ps, *expr.ptr2);
+			int size = size_of(deref_type(expr.ptr1->details.type));
+			gen_op_8byte("subq");
+			gen_div_by_const(size);
+			return;
+		}
 		case POINTER_PLUSORMINUS_INT: {
 			print_expression(ptr_ps, *expr.ptr1);
 			print_expression(ptr_ps, *expr.ptr2);
