@@ -222,7 +222,8 @@ struct Expression parse_additive_expression(struct ParserState *ptr_ps,
 	const struct Token *tokvec = *ptr_tokvec;
 	struct Expression expr =
 	    wrap(parse_multiplicative_expression(ptr_ps, &tokvec));
-	struct ExprInfo expr_info = expr.details;
+
+	struct Type type1 = expr.details.type;
 
 	while (1) {
 		enum TokenKind kind = tokvec[0].kind;
@@ -233,12 +234,12 @@ struct Expression parse_additive_expression(struct ParserState *ptr_ps,
 
 		struct Expression expr2 = wrap(
 		    remove_leftiness(parse_multiplicative_expression(ptr_ps, &tokvec)));
-		struct ExprInfo expr_info2 = expr2.details;
+		struct Type type2 = expr2.details.type;
 
-		if (is_equal(expr_info.type, INT_TYPE)) {
-			if (is_equal(expr_info2.type, INT_TYPE)) {
+		if (is_equal(type1, INT_TYPE)) {
+			if (is_equal(type2, INT_TYPE)) {
 				expr = binary_op(expr, expr2, kind);
-			} else if (is_pointer(expr_info2.type)) {
+			} else if (is_pointer(type2)) {
 				if (kind == OP_MINUS) {
 					fprintf(stderr,
 					        "cannot subtract a pointer from an integer.\n");
@@ -249,14 +250,14 @@ struct Expression parse_additive_expression(struct ParserState *ptr_ps,
 				expr = pointer_plusorminus_int(expr2, expr, kind);
 			}
 
-		} else if (is_pointer(expr_info.type)) {
+		} else if (is_pointer(type1)) {
 			// int size = size_of(deref_type(expr_info.type));
 			if (kind == OP_PLUS) {
-				expect_type(expr_info2, INT_TYPE, 30);
+				expect_type(expr2.details, INT_TYPE, 30);
 				/* cannot add a pointer to a pointer*/
 
 				expr = pointer_plusorminus_int(expr, expr2, kind);
-			} else if (is_equal(expr_info2.type, INT_TYPE)) {
+			} else if (is_equal(type2, INT_TYPE)) {
 
 				/* pointer minus int */
 				expr = pointer_plusorminus_int(expr, expr2, kind);
