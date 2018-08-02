@@ -21,8 +21,8 @@ struct ExprInfo parse_conditional_expression(struct ParserState *ptr_ps,
                                              const struct Token **ptr_tokvec);
 struct ExprInfo parse_logical_OR_expression(struct ParserState *ptr_ps,
                                             const struct Token **ptr_tokvec);
-struct ExprInfo parse_logical_AND_expression(struct ParserState *ptr_ps,
-                                             const struct Token **ptr_tokvec);
+struct Expression parse_logical_AND_expression(struct ParserState *ptr_ps,
+                                               const struct Token **ptr_tokvec);
 void parse_argument_expression(struct ParserState *ptr_ps,
                                const struct Token **ptr_tokvec, int counter);
 
@@ -1742,7 +1742,7 @@ struct ExprInfo parse_logical_OR_expression(struct ParserState *ptr_ps,
 
 	int counter = 0;
 	struct ExprInfo first_expr_info =
-	    parse_logical_AND_expression(ptr_ps, &tokvec);
+	    parse_logical_AND_expression(ptr_ps, &tokvec).details;
 
 	while (1) {
 		enum TokenKind kind = tokvec[0].kind;
@@ -1755,7 +1755,7 @@ struct ExprInfo parse_logical_OR_expression(struct ParserState *ptr_ps,
 		}
 
 		++tokvec;
-		parse_logical_AND_expression(ptr_ps, &tokvec);
+		parse_logical_AND_expression(ptr_ps, &tokvec).details;
 		++counter;
 		// gen_logical_OR_set(counter, label1, label2);
 	}
@@ -1770,8 +1770,8 @@ struct ExprInfo parse_logical_OR_expression(struct ParserState *ptr_ps,
 	return first_expr_info;
 }
 
-struct ExprInfo parse_logical_AND_expression(struct ParserState *ptr_ps,
-                                             const struct Token **ptr_tokvec)
+struct Expression parse_logical_AND_expression(struct ParserState *ptr_ps,
+                                               const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 
@@ -1793,14 +1793,8 @@ struct ExprInfo parse_logical_AND_expression(struct ParserState *ptr_ps,
 		first_expr = binary_op(first_expr, expr2, kind); /* first_expr is INT */
 	}
 
-	if (counter != 0) {
-
-		*ptr_tokvec = tokvec;
-		return first_expr.details;
-	}
-
 	*ptr_tokvec = tokvec;
-	return first_expr.details;
+	return first_expr;
 }
 
 void parse_argument_expression(struct ParserState *ptr_ps,
