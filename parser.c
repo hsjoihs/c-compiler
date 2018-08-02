@@ -313,6 +313,10 @@ struct Expression ident_as_lvalue(struct ParserState ps, const char *name)
 {
 	if (!is_local_var(ps.scope_chain, name)) {
 		struct Type type = resolve_name_globally(ps.global_vars_type_map, name);
+		if (is_array(type)) {
+			fprintf(stderr, "array is not an lvalue\n");
+			exit(EXIT_FAILURE);
+		}
 
 		struct Expression expr;
 		expr.details.info = GLOBAL_VAR;
@@ -323,6 +327,10 @@ struct Expression ident_as_lvalue(struct ParserState ps, const char *name)
 		return expr;
 	} else {
 		struct LocalVarInfo info = resolve_name_locally(ps.scope_chain, name);
+		if (is_array(info.type)) {
+			fprintf(stderr, "array is not an lvalue\n");
+			exit(EXIT_FAILURE);
+		}
 
 		struct Expression expr;
 		expr.details.info = LOCAL_VAR;
