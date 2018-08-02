@@ -184,7 +184,8 @@ _Noreturn void unimplemented(const char *str);
 enum expr_category {
 	UNKNOWN,
 	BINARY_EXPR,
-	POINTER_PLUSORMINUS_INT
+	POINTER_PLUSORMINUS_INT,
+	POINTER_MINUS_POINTER
 };
 
 struct Expression {

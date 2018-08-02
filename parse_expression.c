@@ -261,10 +261,9 @@ struct Expression parse_additive_expression(struct ParserState *ptr_ps,
 				/* pointer minus int */
 				expr = pointer_plusorminus_int(expr, expr2, kind);
 			} else {
-				/* subtract pointer */
-				// gen_op_8byte("subq");
-				// gen_div_by_const(size);
-				expr_info = UNASSIGNABLE(INT_TYPE);
+				/* pointer minus pointer */
+				expr = binary_op_(expr, expr2, kind, POINTER_MINUS_POINTER,
+				                  UNASSIGNABLE(INT_TYPE));
 			}
 		}
 	}
