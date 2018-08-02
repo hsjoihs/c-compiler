@@ -191,7 +191,8 @@ enum expr_category {
 	LOCAL_VAR_AS_RVALUE,
 	LOCAL_VAR_AS_LVALUE,
 	GLOBAL_VAR_AS_RVALUE,
-	GLOBAL_VAR_AS_LVALUE
+	GLOBAL_VAR_AS_LVALUE,
+	INT_VALUE
 };
 
 struct Expression {
@@ -202,6 +203,7 @@ struct Expression {
 	struct Expression *ptr1;
 	struct Expression *ptr2;
 	struct Expression *ptr3;
+	int int_value;
 };
 
 
