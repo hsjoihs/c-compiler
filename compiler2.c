@@ -348,10 +348,6 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 
 				case UNARY_OP_PLUS_PLUS:
 				case UNARY_OP_MINUS_MINUS: {
-					enum TokenKind opkind =
-					    expr.unary_operator == UNARY_OP_PLUS_PLUS
-					        ? OP_PLUS_PLUS
-					        : OP_MINUS_MINUS;
 					if (expr.ptr1->category != LOCAL_VAR_AS_LVALUE) {
 						unimplemented("increment of non-(local variable)");
 					}
@@ -362,8 +358,10 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 
 					gen_push_from_local(info.offset);
 					gen_push_int(1);
-
-					print_before_assign(opkind);
+					print_simple_binary_op(expr.unary_operator ==
+					                               UNARY_OP_PLUS_PLUS
+					                           ? SIMPLE_BIN_OP_PLUS
+					                           : SIMPLE_BIN_OP_MINUS);
 
 					gen_write_to_local(info.offset);
 					return;
