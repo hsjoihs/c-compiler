@@ -15,8 +15,8 @@ struct Expression parse_expression(struct ParserState *ptr_ps,
                                    const struct Token **ptr_tokvec);
 struct Expression parse_cast_expression(struct ParserState *ptr_ps,
                                         const struct Token **ptr_tokvec);
-struct ExprInfo parse_unary_expression(struct ParserState *ptr_ps,
-                                       const struct Token **ptr_tokvec);
+struct Expression parse_unary_expression(struct ParserState *ptr_ps,
+                                         const struct Token **ptr_tokvec);
 struct Expression parse_conditional_expression(struct ParserState *ptr_ps,
                                                const struct Token **ptr_tokvec);
 struct ExprInfo parse_argument_expression(struct ParserState *ptr_ps,
@@ -1293,8 +1293,8 @@ struct Expression unary_op_(struct Expression expr, enum TokenKind kind,
 	return new_expr;
 }
 
-struct ExprInfo parse_unary_expression(struct ParserState *ptr_ps,
-                                       const struct Token **ptr_tokvec)
+struct Expression parse_unary_expression(struct ParserState *ptr_ps,
+                                         const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 
@@ -1310,7 +1310,7 @@ struct ExprInfo parse_unary_expression(struct ParserState *ptr_ps,
 		struct Expression new_expr = unary_op_(expr, kind, expr.details);
 
 		*ptr_tokvec = tokvec;
-		return new_expr.details;
+		return new_expr;
 	} else if (tokvec[0].kind == OP_PLUS_PLUS ||
 	           tokvec[0].kind == OP_MINUS_MINUS) {
 		enum TokenKind opkind = tokvec[0].kind;
@@ -1325,7 +1325,7 @@ struct ExprInfo parse_unary_expression(struct ParserState *ptr_ps,
 			unimplemented("++ followed by non-identifier");
 		}
 		*ptr_tokvec = tokvec;
-		return UNASSIGNABLE(INT_TYPE);
+		return wrap(UNASSIGNABLE(INT_TYPE));
 	} else if (tokvec[0].kind == OP_AND) {
 		if (tokvec[1].kind == IDENT_OR_RESERVED) {
 			const char *name = tokvec[1].ident_str;
@@ -1343,7 +1343,7 @@ struct ExprInfo parse_unary_expression(struct ParserState *ptr_ps,
 			struct Type *ptr_type = calloc(1, sizeof(struct Type));
 			*ptr_type = info.type;
 
-			return UNASSIGNABLE(ptr_of_type_to_ptr_to_type(ptr_type));
+			return wrap(UNASSIGNABLE(ptr_of_type_to_ptr_to_type(ptr_type)));
 		} else {
 			unimplemented("& followed by non-identifier");
 		}
@@ -1360,18 +1360,18 @@ struct ExprInfo parse_unary_expression(struct ParserState *ptr_ps,
 		new_expr_info.offset = GARBAGE_INT;
 
 		*ptr_tokvec = tokvec;
-		return new_expr_info;
+		return wrap(new_expr_info);
 	} else {
 		struct ExprInfo expr_info = parse_postfix_expression(ptr_ps, &tokvec);
 		*ptr_tokvec = tokvec;
-		return expr_info;
+		return wrap(expr_info);
 	}
 }
 
 struct Expression parse_cast_expression(struct ParserState *ptr_ps,
                                         const struct Token **ptr_tokvec)
 {
-	return wrap(parse_unary_expression(ptr_ps, ptr_tokvec));
+	return parse_unary_expression(ptr_ps, ptr_tokvec);
 }
 
 struct ExprInfo parse_postfix_expression(struct ParserState *ptr_ps,
@@ -1564,7 +1564,7 @@ struct Expression parse_assignment_expression(struct ParserState *ptr_ps,
 		return expr;
 	}
 
-	struct Expression expr = wrap(parse_unary_expression(ptr_ps, &tokvec));
+	struct Expression expr = parse_unary_expression(ptr_ps, &tokvec);
 	struct ExprInfo expr_info = expr.details;
 
 	assert(isAssign(tokvec[0].kind));
