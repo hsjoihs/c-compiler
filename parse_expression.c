@@ -217,8 +217,10 @@ struct Expression parse_additive_expression(struct ParserState *ptr_ps,
 		}
 		++tokvec;
 
-		struct ExprInfo expr_info2 =
-		    remove_leftiness(parse_multiplicative_expression(ptr_ps, &tokvec));
+		struct Expression expr2 = wrap(
+		    remove_leftiness(parse_multiplicative_expression(ptr_ps, &tokvec)));
+		struct ExprInfo expr_info2 = expr2.details;
+
 		if (is_equal(expr_info.type, INT_TYPE)) {
 			if (is_equal(expr_info2.type, INT_TYPE)) {
 				expr_info2 = expr_info;
