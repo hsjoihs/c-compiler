@@ -100,9 +100,8 @@ struct Expression parse_exclusive_OR_expression(struct ParserState *ptr_ps,
 		}
 		++tokvec;
 
-		struct Expression expr2;
-		expr2 = remove_leftiness_(parse_AND_expression(ptr_ps, &tokvec));
-
+		struct Expression expr2 =
+		    remove_leftiness_(parse_AND_expression(ptr_ps, &tokvec));
 		expr = binary_op(expr, expr2, kind);
 	}
 	*ptr_tokvec = tokvec;
@@ -123,9 +122,8 @@ struct Expression parse_AND_expression(struct ParserState *ptr_ps,
 		}
 		++tokvec;
 
-		struct Expression expr2;
-		expr2 = remove_leftiness_(parse_equality_expression(ptr_ps, &tokvec));
-
+		struct Expression expr2 =
+		    remove_leftiness_(parse_equality_expression(ptr_ps, &tokvec));
 		expr = binary_op(expr, expr2, kind);
 	}
 	*ptr_tokvec = tokvec;
@@ -146,8 +144,7 @@ struct Expression parse_equality_expression(struct ParserState *ptr_ps,
 		}
 		++tokvec;
 
-		struct Expression expr2;
-		expr2 = wrap(
+		struct Expression expr2 = wrap(
 		    remove_leftiness(parse_relational_expression(ptr_ps, &tokvec)));
 
 		expr = binary_op(expr, expr2, kind);
