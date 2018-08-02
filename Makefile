@@ -34,7 +34,7 @@ intmap_check:
 
 notest:
 	make format
-	gcc -Wall -Wextra compiler2.c error.c type.c parseprint_expression.c map.c print_x86_64.c lexer.c -o out/compiler.out
+	gcc -Wall -Wextra compiler2.c error.c type.c parseprint_expression.c parse_expression.c map.c print_x86_64.c lexer.c -o out/compiler.out
 
 full_compile:
 	rm out/*.out
