@@ -183,7 +183,8 @@ _Noreturn void unimplemented(const char *str);
 
 enum expr_category {
 	UNKNOWN,
-	XOR_EXPR
+	XOR_EXPR,
+	BITAND_EXPR
 };
 
 struct Expression {
