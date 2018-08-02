@@ -1471,6 +1471,7 @@ struct Expression parse_primary_expression(struct ParserState *ptr_ps,
 			struct Expression expr;
 			expr.details = expr_info;
 			expr.category = GLOBAL_VAR_AS_RVALUE;
+			expr.global_var_name = tokvec[0].ident_str;
 			return expr;
 		} else {
 			struct LocalVarInfo info =
@@ -1516,13 +1517,21 @@ struct Expression parse_assignment_expression(struct ParserState *ptr_ps,
 			struct Type type =
 			    resolve_name_globally(ptr_ps->global_vars_type_map, name);
 
+			struct Expression expr;
+			expr.details.info = GLOBAL_VAR;
+			expr.details.type = type;
+			expr.details.offset = GARBAGE_INT;
+			expr.category = GLOBAL_VAR_AS_LVALUE;
+			expr.global_var_name = name;
+
 			struct Expression expr2 =
 			    parse_assignment_expression(ptr_ps, &tokvec);
 			struct ExprInfo expr_info = expr2.details;
 			expect_type(expr_info, type, 0);
 
 			*ptr_tokvec = tokvec;
-			return wrap(UNASSIGNABLE(type));
+			return binary_op_(expr, expr2, opkind, BINARY_EXPR,
+			                  UNASSIGNABLE(type));
 		} else {
 			struct LocalVarInfo info =
 			    resolve_name_locally(ptr_ps->scope_chain, name);

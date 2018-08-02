@@ -204,6 +204,7 @@ struct Expression {
 	struct Expression *ptr2;
 	struct Expression *ptr3;
 	int int_value;
+	const char *global_var_name;
 };
 
 
