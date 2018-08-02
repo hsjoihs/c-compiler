@@ -39,15 +39,25 @@ int main()
 	gen_push_int(74);
 	gen_epilogue(123);
 
-	puts("_bar:\n"
-	     "  pushq %rbp\n"
-	     "  movq %rsp, %rbp\n"
-	     "  leaq -16(%rbp), %rax\n"
-	     "  movq %rax, -8(%rbp)\n"
-	     "  movl $100, %eax\n"
-	     "  popq %rbp\n"
-	     "  ret\n"
-	     ".global _main\n"
+	/*
+
+
+
+	*/
+	gen_prologue(32, "bar");
+	gen_push_address_of_local(-16);
+	gen_write_to_local_8byte(-8);
+
+	gen_push_int(100);
+	gen_epilogue(234);
+
+	/*
+
+
+
+	*/
+
+	puts(".global _main\n"
 	     "_main:\n"
 	     "  pushq %rbp\n"
 	     "  movq %rsp, %rbp\n"
