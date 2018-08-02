@@ -1566,10 +1566,9 @@ struct ExprInfo parse_assignment_expression(struct ParserState *ptr_ps,
 
 	/* parse failed */
 	if (!isAssign(tokvec2[0].kind)) {
-		struct ExprInfo expr_info =
-		    parse_conditional_expression(ptr_ps, &tokvec).details;
+		struct Expression expr = parse_conditional_expression(ptr_ps, &tokvec);
 		*ptr_tokvec = tokvec;
-		return expr_info;
+		return expr.details;
 	}
 
 	struct ExprInfo expr_info = parse_unary_expression(ptr_ps, &tokvec);
