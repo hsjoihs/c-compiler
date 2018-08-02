@@ -1337,23 +1337,16 @@ struct Expression parse_unary_expression(struct ParserState *ptr_ps,
 
 			tokvec += 2;
 
-			if (!is_local_var(ptr_ps->scope_chain, name)) {
-				unimplemented("& of a global variable");
-			}
-			struct LocalVarInfo info =
-			    resolve_name_locally(ptr_ps->scope_chain, name);
-			// gen_push_address_of_local(info.offset);
-			*ptr_tokvec = tokvec;
-
 			struct Expression expr = ident_as_lvalue(*ptr_ps, name);
 
 			struct Type *ptr_type = calloc(1, sizeof(struct Type));
-			*ptr_type = info.type;
+			*ptr_type = expr.details.type;
 
 			struct Expression new_expr =
 			    unary_op_(expr, OP_AND,
 			              UNASSIGNABLE(ptr_of_type_to_ptr_to_type(ptr_type)));
 
+			*ptr_tokvec = tokvec;
 			return new_expr;
 		} else {
 			unimplemented("& followed by non-identifier");
