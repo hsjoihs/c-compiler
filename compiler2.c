@@ -127,6 +127,7 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 		case GLOBAL_VAR_AS_LVALUE:
 			return;
 		case BINARY_EXPR:
+		case SIMPLE_BINARY_EXPR:
 			switch (expr.binary_operator) {
 				case OP_OR_OR: {
 					int label1 = get_new_label_name(ptr_ps);
