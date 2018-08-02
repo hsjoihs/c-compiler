@@ -1316,17 +1316,21 @@ struct Expression parse_unary_expression(struct ParserState *ptr_ps,
 	           tokvec[0].kind == OP_MINUS_MINUS) {
 		enum TokenKind opkind = tokvec[0].kind;
 		++tokvec;
+		const char *name;
 		if (tokvec[0].kind == IDENT_OR_RESERVED) {
-			const char *name = tokvec[0].ident_str;
+			name = tokvec[0].ident_str;
 			++tokvec;
 			*ptr_tokvec = tokvec;
 
-			// print_inc_or_dec(ptr_ps, name, opkind);
 		} else {
 			unimplemented("++ followed by non-identifier");
 		}
+
+		struct Expression expr = ident_as_lvalue(*ptr_ps, name);
+		struct Expression new_expr =
+		    unary_op_(expr, opkind, UNASSIGNABLE(INT_TYPE));
 		*ptr_tokvec = tokvec;
-		return wrap(UNASSIGNABLE(INT_TYPE));
+		return new_expr;
 	} else if (tokvec[0].kind == OP_AND) {
 		if (tokvec[1].kind == IDENT_OR_RESERVED) {
 			const char *name = tokvec[1].ident_str;
