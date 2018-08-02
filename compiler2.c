@@ -103,6 +103,7 @@ int is_print_implemented(struct Expression expr)
 				case OP_MINUS:
 				case OP_PLUS_PLUS:
 				case OP_MINUS_MINUS:
+				case OP_ASTERISK:
 					return is_print_implemented(*expr.ptr1);
 				case OP_AND:
 					return 1;
@@ -395,6 +396,23 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 						unimplemented("increment of non-(local variable)");
 					}
 					gen_push_address_of_local(expr.ptr1->details.offset);
+					return;
+				}
+
+				case OP_ASTERISK: {
+					print_expression(ptr_ps, *expr.ptr1);
+					struct Type type = expr.details.type;
+					switch (size_of(type)) {
+						case 4:
+							gen_peek_and_dereference();
+							break;
+						case 8:
+							gen_peek_and_dereference_8byte();
+							break;
+						default:
+							unimplemented("Unsupported width");
+					}
+					return;
 				}
 			}
 			return;
