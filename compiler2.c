@@ -104,6 +104,8 @@ int is_print_implemented(struct Expression expr)
 				case OP_PLUS_PLUS:
 				case OP_MINUS_MINUS:
 					return is_print_implemented(*expr.ptr1);
+				case OP_AND:
+					return 1;
 				default:
 					return 0;
 			}
@@ -386,6 +388,13 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 
 					gen_write_to_local(info.offset);
 					return;
+				}
+
+				case OP_AND: {
+					if (expr.ptr1->category != LOCAL_VAR_AS_LVALUE) {
+						unimplemented("increment of non-(local variable)");
+					}
+					gen_push_address_of_local(expr.ptr1->details.offset);
 				}
 			}
 			return;
