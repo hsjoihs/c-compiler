@@ -111,6 +111,10 @@ struct ExprInfo parseprint_expression(struct ParserState *ptr_ps,
                                       const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
+
+	const struct Token *tokvec2 = tokvec;
+	struct Expression expr = parse_expression(ptr_ps, &tokvec2);
+
 	struct ExprInfo info = parseprint_assignment_expression(ptr_ps, &tokvec);
 	while (1) {
 		enum TokenKind kind = tokvec[0].kind;
@@ -122,7 +126,7 @@ struct ExprInfo parseprint_expression(struct ParserState *ptr_ps,
 		    remove_leftiness(parseprint_assignment_expression(ptr_ps, &tokvec));
 		print_binary_op(OP_COMMA);
 	}
-	*ptr_tokvec = tokvec;
+	*ptr_tokvec = tokvec2;
 	return info;
 }
 
