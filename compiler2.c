@@ -5,8 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-struct ExprInfo parse_assignment_expression(struct ParserState *ptr_ps,
-                                            const struct Token **ptr_tokvec);
+struct Expression parse_assignment_expression(struct ParserState *ptr_ps,
+                                              const struct Token **ptr_tokvec);
 struct Expression parse_primary_expression(struct ParserState *ptr_ps,
                                            const struct Token **ptr_tokvec);
 struct ExprInfo parse_postfix_expression(struct ParserState *ptr_ps,
@@ -1500,8 +1500,8 @@ struct Expression parse_primary_expression(struct ParserState *ptr_ps,
 	                       "the beginning of parseprint_primary_expression");
 }
 
-struct ExprInfo parse_assignment_expression(struct ParserState *ptr_ps,
-                                            const struct Token **ptr_tokvec)
+struct Expression parse_assignment_expression(struct ParserState *ptr_ps,
+                                              const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 
@@ -1517,21 +1517,21 @@ struct ExprInfo parse_assignment_expression(struct ParserState *ptr_ps,
 			    resolve_name_globally(ptr_ps->global_vars_type_map, name);
 
 			struct ExprInfo expr_info =
-			    parse_assignment_expression(ptr_ps, &tokvec);
+			    parse_assignment_expression(ptr_ps, &tokvec).details;
 			expect_type(expr_info, type, 0);
 
 			*ptr_tokvec = tokvec;
-			return UNASSIGNABLE(type);
+			return wrap(UNASSIGNABLE(type));
 		} else {
 			struct LocalVarInfo info =
 			    resolve_name_locally(ptr_ps->scope_chain, name);
 
 			struct ExprInfo expr_info =
-			    parse_assignment_expression(ptr_ps, &tokvec);
+			    parse_assignment_expression(ptr_ps, &tokvec).details;
 			expect_type(expr_info, info.type, 0);
 
 			*ptr_tokvec = tokvec;
-			return UNASSIGNABLE(info.type);
+			return wrap(UNASSIGNABLE(info.type));
 		}
 	}
 
@@ -1543,7 +1543,7 @@ struct ExprInfo parse_assignment_expression(struct ParserState *ptr_ps,
 	if (!isAssign(tokvec2[0].kind)) {
 		struct Expression expr = parse_conditional_expression(ptr_ps, &tokvec);
 		*ptr_tokvec = tokvec;
-		return expr.details;
+		return expr;
 	}
 
 	struct ExprInfo expr_info = parse_unary_expression(ptr_ps, &tokvec);
@@ -1564,11 +1564,11 @@ struct ExprInfo parse_assignment_expression(struct ParserState *ptr_ps,
 			++tokvec;
 
 			struct ExprInfo expr_info2 =
-			    parse_assignment_expression(ptr_ps, &tokvec);
+			    parse_assignment_expression(ptr_ps, &tokvec).details;
 			expect_type(expr_info, expr_info2.type, 19);
 
 			*ptr_tokvec = tokvec;
-			return remove_leftiness(expr_info);
+			return wrap(remove_leftiness(expr_info));
 		};
 	}
 }
@@ -1618,7 +1618,7 @@ struct Expression parse_expression(struct ParserState *ptr_ps,
                                    const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
-	struct Expression expr = wrap(parse_assignment_expression(ptr_ps, &tokvec));
+	struct Expression expr = parse_assignment_expression(ptr_ps, &tokvec);
 	while (1) {
 		enum TokenKind kind = tokvec[0].kind;
 		if (kind != OP_COMMA) {
@@ -1626,8 +1626,8 @@ struct Expression parse_expression(struct ParserState *ptr_ps,
 		}
 		++tokvec;
 
-		struct Expression expr2 = wrap(
-		    remove_leftiness(parse_assignment_expression(ptr_ps, &tokvec)));
+		struct Expression expr2 =
+		    remove_leftiness_(parse_assignment_expression(ptr_ps, &tokvec));
 
 		expr = binary_op_(expr, expr2, kind, BINARY_EXPR, expr2.details);
 	}
@@ -1641,7 +1641,8 @@ struct ExprInfo parse_argument_expression(struct ParserState *ptr_ps,
 {
 	const struct Token *tokvec = *ptr_tokvec;
 
-	struct ExprInfo expr_info = parse_assignment_expression(ptr_ps, &tokvec);
+	struct ExprInfo expr_info =
+	    parse_assignment_expression(ptr_ps, &tokvec).details;
 	if (counter > 5) {
 		unimplemented("calling with 7 or more arguments");
 	}
