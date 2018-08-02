@@ -285,14 +285,14 @@ parseprint_assignment_expression(struct ParserState *ptr_ps,
 		}
 	}
 
-	int label = get_new_label_name(ptr_ps);
+	// int label = get_new_label_name(ptr_ps);
 
 	const struct Token *tokvec2 = tokvec;
 	struct ParserState *ptr_ps2 = ptr_ps;
-	gen_jump(label, "commenting out");
-	parseprint_unary_expression(ptr_ps2, &tokvec2);
-	printf("// comment finishes\n");
-	printf("  .L%d:\n", label);
+	// gen_jump(label, "commenting out");
+	parse_unary_expression(ptr_ps2, &tokvec2);
+	// printf("// comment finishes\n");
+	// printf("  .L%d:\n", label);
 
 	/* parse failed */
 	if (!isAssign(tokvec2[0].kind)) {
@@ -1449,7 +1449,7 @@ struct ExprInfo parse_postfix_expression(struct ParserState *ptr_ps,
 
 		// print_inc_or_dec(ptr_ps, name, opkind);
 
-		gen_push_int(-1);
+		// gen_push_int(-1);
 		// print_before_assign(opkind);
 		*ptr_tokvec = tokvec;
 		return UNASSIGNABLE(INT_TYPE);
@@ -1628,7 +1628,7 @@ struct ExprInfo parse_assignment_expression(struct ParserState *ptr_ps,
 		}
 	}
 
-	int label = get_new_label_name(ptr_ps);
+	// int label = get_new_label_name(ptr_ps);
 
 	const struct Token *tokvec2 = tokvec;
 	struct ParserState *ptr_ps2 = ptr_ps;
@@ -1691,7 +1691,7 @@ struct ExprInfo parse_conditional_expression(struct ParserState *ptr_ps,
 		int label1 = get_new_label_name(ptr_ps);
 		int label2 = get_new_label_name(ptr_ps);
 
-		gen_ternary_part1(label1, label2);
+		// gen_ternary_part1(label1, label2);
 		++tokvec;
 		*ptr_tokvec = tokvec;
 		struct ExprInfo true_branch_info = parse_expression(ptr_ps, &tokvec);
