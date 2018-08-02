@@ -1779,7 +1779,7 @@ struct ExprInfo parse_logical_AND_expression(struct ParserState *ptr_ps,
 
 	int counter = 0;
 	struct ExprInfo first_expr_info =
-	    parse_inclusive_OR_expression(ptr_ps, &tokvec);
+	    parse_inclusive_OR_expression(ptr_ps, &tokvec).details;
 
 	while (1) {
 		enum TokenKind kind = tokvec[0].kind;
@@ -1792,7 +1792,7 @@ struct ExprInfo parse_logical_AND_expression(struct ParserState *ptr_ps,
 		}
 
 		++tokvec;
-		parse_inclusive_OR_expression(ptr_ps, &tokvec);
+		parse_inclusive_OR_expression(ptr_ps, &tokvec).details;
 		++counter;
 		// gen_logical_AND_set(counter, label1, label2);
 	}

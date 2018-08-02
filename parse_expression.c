@@ -39,31 +39,6 @@ struct Expression parse_relational_expression(struct ParserState *ptr_ps,
 struct Expression parse_shift_expression(struct ParserState *ptr_ps,
                                          const struct Token **ptr_tokvec);
 
-struct ExprInfo parse_inclusive_OR_expression(struct ParserState *ptr_ps,
-                                              const struct Token **ptr_tokvec)
-{
-	const struct Token *tokvec = *ptr_tokvec;
-	struct ExprInfo expr_info =
-	    parse_exclusive_OR_expression(ptr_ps, &tokvec).details;
-
-	while (1) {
-		enum TokenKind kind = tokvec[0].kind;
-		if (kind != OP_OR) {
-			break;
-		}
-		++tokvec;
-
-		expect_type(expr_info, INT_TYPE, 3);
-
-		expr_info = remove_leftiness(
-		    parse_exclusive_OR_expression(ptr_ps, &tokvec).details);
-		expect_type(expr_info, INT_TYPE, 4);
-		// print_binary_op(kind);
-	}
-	*ptr_tokvec = tokvec;
-	return expr_info;
-}
-
 struct Expression binary_op_(struct Expression expr, struct Expression expr2,
                              enum TokenKind kind, enum expr_category cat,
                              struct ExprInfo exprinfo)
@@ -95,6 +70,29 @@ struct Expression pointer_plusorminus_int(struct Expression expr,
                                           enum TokenKind kind)
 {
 	return binary_op_(expr, expr2, kind, POINTER_PLUSORMINUS_INT, expr.details);
+}
+
+struct Expression parse_inclusive_OR_expression(struct ParserState *ptr_ps,
+                                                const struct Token **ptr_tokvec)
+{
+	const struct Token *tokvec = *ptr_tokvec;
+	struct Expression expr = parse_exclusive_OR_expression(ptr_ps, &tokvec);
+
+	while (1) {
+		enum TokenKind kind = tokvec[0].kind;
+		if (kind != OP_OR) {
+			break;
+		}
+		++tokvec;
+
+		struct Expression expr2 =
+		    remove_leftiness_(parse_exclusive_OR_expression(ptr_ps, &tokvec));
+		expect_type(expr.details, INT_TYPE, 3);
+		expect_type(expr2.details, INT_TYPE, 4);
+		expr = binary_op(expr, expr2, kind);
+	}
+	*ptr_tokvec = tokvec;
+	return expr;
 }
 
 struct Expression parse_exclusive_OR_expression(struct ParserState *ptr_ps,
