@@ -242,3 +242,7 @@ struct Expression simple_binary_op(struct Expression expr,
 void print_simple_binary_op(enum SimpleBinOp kind);
 
 enum UnaryOp to_unaryop(enum TokenKind t);
+
+struct Expression combine_by_add_or_sub(struct Expression expr,
+                                        struct Expression expr2,
+                                        enum TokenKind kind);

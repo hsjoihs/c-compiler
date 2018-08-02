@@ -269,13 +269,51 @@ struct Expression parse_shift_expression(struct ParserState *ptr_ps,
 	return expr;
 }
 
+struct Expression combine_by_add_or_sub(struct Expression expr,
+                                        struct Expression expr2,
+                                        enum TokenKind kind)
+{
+	struct Type type1 = expr.details.type;
+	struct Type type2 = expr2.details.type;
+
+	if (is_equal(type1, INT_TYPE)) {
+		if (is_equal(type2, INT_TYPE)) {
+			expr = simple_binary_op(expr, expr2, kind, UNASSIGNABLE(INT_TYPE));
+		} else if (is_pointer(type2)) {
+			if (kind == OP_MINUS) {
+				fprintf(stderr, "cannot subtract a pointer from an integer.\n");
+				exit(EXIT_FAILURE);
+			}
+
+			/* swapped */
+			expr = pointer_plusorminus_int(expr2, expr, kind);
+		}
+
+	} else if (is_pointer(type1)) {
+		// int size = size_of(deref_type(expr_info.type));
+		if (kind == OP_PLUS) {
+			expect_type(expr2.details, INT_TYPE, 30);
+			/* cannot add a pointer to a pointer*/
+
+			expr = pointer_plusorminus_int(expr, expr2, kind);
+		} else if (is_equal(type2, INT_TYPE)) {
+
+			/* pointer minus int */
+			expr = pointer_plusorminus_int(expr, expr2, kind);
+		} else {
+			/* pointer minus pointer */
+			expr = binary_op_(expr, expr2, kind, POINTER_MINUS_POINTER,
+			                  UNASSIGNABLE(INT_TYPE));
+		}
+	}
+	return expr;
+}
+
 struct Expression parse_additive_expression(struct ParserState *ptr_ps,
                                             const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 	struct Expression expr = parse_multiplicative_expression(ptr_ps, &tokvec);
-
-	struct Type type1 = expr.details.type;
 
 	while (1) {
 		enum TokenKind kind = tokvec[0].kind;
@@ -286,40 +324,7 @@ struct Expression parse_additive_expression(struct ParserState *ptr_ps,
 
 		struct Expression expr2 =
 		    remove_leftiness_(parse_multiplicative_expression(ptr_ps, &tokvec));
-		struct Type type2 = expr2.details.type;
-
-		if (is_equal(type1, INT_TYPE)) {
-			if (is_equal(type2, INT_TYPE)) {
-				expr =
-				    simple_binary_op(expr, expr2, kind, UNASSIGNABLE(INT_TYPE));
-			} else if (is_pointer(type2)) {
-				if (kind == OP_MINUS) {
-					fprintf(stderr,
-					        "cannot subtract a pointer from an integer.\n");
-					exit(EXIT_FAILURE);
-				}
-
-				/* swapped */
-				expr = pointer_plusorminus_int(expr2, expr, kind);
-			}
-
-		} else if (is_pointer(type1)) {
-			// int size = size_of(deref_type(expr_info.type));
-			if (kind == OP_PLUS) {
-				expect_type(expr2.details, INT_TYPE, 30);
-				/* cannot add a pointer to a pointer*/
-
-				expr = pointer_plusorminus_int(expr, expr2, kind);
-			} else if (is_equal(type2, INT_TYPE)) {
-
-				/* pointer minus int */
-				expr = pointer_plusorminus_int(expr, expr2, kind);
-			} else {
-				/* pointer minus pointer */
-				expr = binary_op_(expr, expr2, kind, POINTER_MINUS_POINTER,
-				                  UNASSIGNABLE(INT_TYPE));
-			}
-		}
+		expr = combine_by_add_or_sub(expr, expr2, kind);
 	}
 	*ptr_tokvec = tokvec;
 	return expr;
