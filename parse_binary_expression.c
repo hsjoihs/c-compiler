@@ -103,7 +103,6 @@ struct Expression simple_binary_op(struct Expression expr,
                                    struct Expression expr2, enum TokenKind kind,
                                    struct ExprInfo exprinfo)
 {
-	to_simplebinop(kind);
 	struct Expression *ptr_expr1 = calloc(1, sizeof(struct Expression));
 	struct Expression *ptr_expr2 = calloc(1, sizeof(struct Expression));
 	*ptr_expr1 = expr;
@@ -112,6 +111,7 @@ struct Expression simple_binary_op(struct Expression expr,
 	struct Expression new_expr;
 	new_expr.details = exprinfo;
 	new_expr.category = SIMPLE_BINARY_EXPR;
+	new_expr.simple_binary_operator = to_simplebinop(kind);
 	new_expr.binary_operator = kind;
 	new_expr.ptr1 = ptr_expr1;
 	new_expr.ptr2 = ptr_expr2;

@@ -126,8 +126,32 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 		case LOCAL_VAR_AS_LVALUE:
 		case GLOBAL_VAR_AS_LVALUE:
 			return;
+		case SIMPLE_BINARY_EXPR: {
+			switch (expr.simple_binary_operator) {
+				case SIMPLE_BIN_OP_PLUS:
+				case SIMPLE_BIN_OP_MINUS:
+				case SIMPLE_BIN_OP_ASTERISK:
+				case SIMPLE_BIN_OP_SLASH:
+				case SIMPLE_BIN_OP_PERCENT:
+				case SIMPLE_BIN_OP_COMMA:
+				case SIMPLE_BIN_OP_LT:
+				case SIMPLE_BIN_OP_LT_EQ:
+				case SIMPLE_BIN_OP_LSHIFT:
+				case SIMPLE_BIN_OP_GT:
+				case SIMPLE_BIN_OP_GT_EQ:
+				case SIMPLE_BIN_OP_RSHIFT:
+				case SIMPLE_BIN_OP_AND:
+				case SIMPLE_BIN_OP_OR:
+				case SIMPLE_BIN_OP_EQ_EQ:
+				case SIMPLE_BIN_OP_NOT_EQ:
+				case SIMPLE_BIN_OP_HAT:
+					print_expression(ptr_ps, *expr.ptr1);
+					print_expression(ptr_ps, *expr.ptr2);
+					print_binary_op(expr.binary_operator);
+					return;
+			}
+		}
 		case BINARY_EXPR:
-		case SIMPLE_BINARY_EXPR:
 			switch (expr.binary_operator) {
 				case OP_OR_OR: {
 					int label1 = get_new_label_name(ptr_ps);
@@ -151,27 +175,6 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 					gen_logical_AND_final(1, label1, label2);
 					return;
 				}
-				case OP_PLUS:
-				case OP_MINUS:
-				case OP_ASTERISK:
-				case OP_SLASH:
-				case OP_PERCENT:
-				case OP_COMMA:
-				case OP_LT:
-				case OP_LT_EQ:
-				case OP_LSHIFT:
-				case OP_GT:
-				case OP_GT_EQ:
-				case OP_RSHIFT:
-				case OP_AND:
-				case OP_OR:
-				case OP_EQ_EQ:
-				case OP_NOT_EQ:
-				case OP_HAT:
-					print_expression(ptr_ps, *expr.ptr1);
-					print_expression(ptr_ps, *expr.ptr2);
-					print_binary_op(expr.binary_operator);
-					return;
 
 				case OP_EQ:
 				case OP_PLUS_EQ:
