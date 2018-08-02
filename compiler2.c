@@ -329,26 +329,29 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 			return;
 		case UNARY_OP_EXPR:
 			switch (expr.unary_operator) {
-				case OP_NOT:
+				case UNARY_OP_NOT:
 					print_expression(ptr_ps, *expr.ptr1);
 					gen_unary_not();
 					return;
-				case OP_TILDA:
+				case UNARY_OP_TILDA:
 					print_expression(ptr_ps, *expr.ptr1);
 					gen_unary("notl");
 					return;
-				case OP_PLUS:
+				case UNARY_OP_PLUS:
 					print_expression(ptr_ps, *expr.ptr1);
 					/* do nothing */
 					return;
-				case OP_MINUS:
+				case UNARY_OP_MINUS:
 					print_expression(ptr_ps, *expr.ptr1);
 					gen_unary("negl");
 					return;
 
-				case OP_PLUS_PLUS:
-				case OP_MINUS_MINUS: {
-					enum TokenKind opkind = expr.unary_operator;
+				case UNARY_OP_PLUS_PLUS:
+				case UNARY_OP_MINUS_MINUS: {
+					enum TokenKind opkind =
+					    expr.unary_operator == UNARY_OP_PLUS_PLUS
+					        ? OP_PLUS_PLUS
+					        : OP_MINUS_MINUS;
 					if (expr.ptr1->category != LOCAL_VAR_AS_LVALUE) {
 						unimplemented("increment of non-(local variable)");
 					}
@@ -366,7 +369,7 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 					return;
 				}
 
-				case OP_AND: {
+				case UNARY_OP_AND: {
 					if (expr.ptr1->category != LOCAL_VAR_AS_LVALUE) {
 						unimplemented("increment of non-(local variable)");
 					}
@@ -374,7 +377,7 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 					return;
 				}
 
-				case OP_ASTERISK: {
+				case UNARY_OP_ASTERISK: {
 					print_expression(ptr_ps, *expr.ptr1);
 					struct Type type = expr.details.type;
 					switch (size_of(type)) {

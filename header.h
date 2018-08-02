@@ -193,12 +193,26 @@ enum SimpleBinOp {
 	SIMPLE_BIN_OP_HAT
 };
 
+enum UnaryOp {
+	UNARY_OP_NOT,
+	UNARY_OP_TILDA,
+	UNARY_OP_PLUS,
+	UNARY_OP_MINUS,
+	
+	UNARY_OP_PLUS_PLUS,
+	UNARY_OP_MINUS_MINUS,
+	
+	UNARY_OP_AND,
+	
+	UNARY_OP_ASTERISK
+};
+
 struct Expression {
 	struct ExprInfo details;
 	enum expr_category category;
 	enum SimpleBinOp simple_binary_operator;
 	enum TokenKind binary_operator;
-	enum TokenKind unary_operator;
+	enum UnaryOp unary_operator;
 	struct Expression *ptr1;
 	struct Expression *ptr2;
 	struct Expression *ptr3;
@@ -226,3 +240,5 @@ struct Expression simple_binary_op(struct Expression expr,
                                    struct ExprInfo exprinfo);
 
 void print_simple_binary_op(enum SimpleBinOp kind);
+
+enum UnaryOp to_unaryop(enum TokenKind t);

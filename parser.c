@@ -7,6 +7,34 @@
 #include <stdlib.h>
 #include <string.h>
 
+enum UnaryOp to_unaryop(enum TokenKind t)
+{
+	switch (t) {
+		case OP_NOT:
+			return UNARY_OP_NOT;
+		case OP_TILDA:
+			return UNARY_OP_TILDA;
+		case OP_PLUS:
+			return UNARY_OP_PLUS;
+		case OP_MINUS:
+			return UNARY_OP_MINUS;
+
+		case OP_PLUS_PLUS:
+			return UNARY_OP_PLUS_PLUS;
+		case OP_MINUS_MINUS:
+			return UNARY_OP_MINUS_MINUS;
+
+		case OP_AND:
+			return UNARY_OP_AND;
+
+		case OP_ASTERISK:
+			return UNARY_OP_ASTERISK;
+
+		default:
+			assert("cannot happen" && 0);
+	}
+}
+
 struct Expression parse_postfix_expression(struct ParserState *ptr_ps,
                                            const struct Token **ptr_tokvec);
 struct Expression parse_conditional_expression(struct ParserState *ptr_ps,
@@ -30,7 +58,7 @@ struct Expression unary_op_(struct Expression expr, enum TokenKind kind,
 	struct Expression new_expr;
 	new_expr.details = exprinfo;
 	new_expr.category = UNARY_OP_EXPR;
-	new_expr.unary_operator = kind;
+	new_expr.unary_operator = to_unaryop(kind);
 	new_expr.ptr1 = ptr_expr1;
 	new_expr.ptr2 = 0;
 	new_expr.ptr3 = 0;
