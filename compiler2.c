@@ -19,8 +19,6 @@ struct ExprInfo parse_unary_expression(struct ParserState *ptr_ps,
                                        const struct Token **ptr_tokvec);
 struct ExprInfo parse_conditional_expression(struct ParserState *ptr_ps,
                                              const struct Token **ptr_tokvec);
-struct Expression parse_logical_OR_expression(struct ParserState *ptr_ps,
-                                              const struct Token **ptr_tokvec);
 void parse_argument_expression(struct ParserState *ptr_ps,
                                const struct Token **ptr_tokvec, int counter);
 
@@ -1730,29 +1728,6 @@ struct ExprInfo parse_expression(struct ParserState *ptr_ps,
 	}
 	*ptr_tokvec = tokvec;
 	return info;
-}
-
-struct Expression parse_logical_OR_expression(struct ParserState *ptr_ps,
-                                              const struct Token **ptr_tokvec)
-{
-	const struct Token *tokvec = *ptr_tokvec;
-
-	struct Expression expr = parse_logical_AND_expression(ptr_ps, &tokvec);
-
-	while (1) {
-		enum TokenKind kind = tokvec[0].kind;
-		if (kind != OP_OR_OR) {
-			break;
-		}
-
-		++tokvec;
-		struct Expression expr2 = parse_logical_AND_expression(ptr_ps, &tokvec);
-
-		expr = binary_op(expr, expr2, kind);
-	}
-
-	*ptr_tokvec = tokvec;
-	return expr;
 }
 
 void parse_argument_expression(struct ParserState *ptr_ps,

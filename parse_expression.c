@@ -42,6 +42,9 @@ struct Expression parse_relational_expression(struct ParserState *ptr_ps,
 struct Expression parse_shift_expression(struct ParserState *ptr_ps,
                                          const struct Token **ptr_tokvec);
 
+struct Expression parse_logical_AND_expression(struct ParserState *ptr_ps,
+                                               const struct Token **ptr_tokvec);
+
 struct Expression binary_op_(struct Expression expr, struct Expression expr2,
                              enum TokenKind kind, enum expr_category cat,
                              struct ExprInfo exprinfo)
@@ -322,4 +325,27 @@ struct Expression parse_logical_AND_expression(struct ParserState *ptr_ps,
 
 	*ptr_tokvec = tokvec;
 	return first_expr;
+}
+
+struct Expression parse_logical_OR_expression(struct ParserState *ptr_ps,
+                                              const struct Token **ptr_tokvec)
+{
+	const struct Token *tokvec = *ptr_tokvec;
+
+	struct Expression expr = parse_logical_AND_expression(ptr_ps, &tokvec);
+
+	while (1) {
+		enum TokenKind kind = tokvec[0].kind;
+		if (kind != OP_OR_OR) {
+			break;
+		}
+
+		++tokvec;
+		struct Expression expr2 = parse_logical_AND_expression(ptr_ps, &tokvec);
+
+		expr = binary_op(expr, expr2, kind);
+	}
+
+	*ptr_tokvec = tokvec;
+	return expr;
 }
