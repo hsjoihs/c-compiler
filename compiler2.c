@@ -13,8 +13,8 @@ struct ExprInfo parse_postfix_expression(struct ParserState *ptr_ps,
                                          const struct Token **ptr_tokvec);
 struct ExprInfo parse_expression(struct ParserState *ptr_ps,
                                  const struct Token **ptr_tokvec);
-struct ExprInfo parse_cast_expression(struct ParserState *ptr_ps,
-                                      const struct Token **ptr_tokvec);
+struct Expression parse_cast_expression(struct ParserState *ptr_ps,
+                                        const struct Token **ptr_tokvec);
 struct ExprInfo parse_unary_expression(struct ParserState *ptr_ps,
                                        const struct Token **ptr_tokvec);
 struct Expression parse_conditional_expression(struct ParserState *ptr_ps,
@@ -1286,7 +1286,7 @@ struct ExprInfo parse_unary_expression(struct ParserState *ptr_ps,
 		enum TokenKind kind = tokvec[0].kind;
 		++tokvec;
 		struct ExprInfo expr_info =
-		    remove_leftiness(parse_cast_expression(ptr_ps, &tokvec));
+		    remove_leftiness_(parse_cast_expression(ptr_ps, &tokvec)).details;
 		expect_type(expr_info, INT_TYPE, 2);
 		// print_unary_prefix_op(kind);
 
@@ -1332,7 +1332,7 @@ struct ExprInfo parse_unary_expression(struct ParserState *ptr_ps,
 	} else if (tokvec[0].kind == OP_ASTERISK) {
 		++tokvec;
 		struct ExprInfo expr_info =
-		    remove_leftiness(parse_cast_expression(ptr_ps, &tokvec));
+		    remove_leftiness_(parse_cast_expression(ptr_ps, &tokvec)).details;
 		struct Type type = deref_type(expr_info.type);
 
 		switch (size_of(type)) {
@@ -1360,10 +1360,10 @@ struct ExprInfo parse_unary_expression(struct ParserState *ptr_ps,
 	}
 }
 
-struct ExprInfo parse_cast_expression(struct ParserState *ptr_ps,
-                                      const struct Token **ptr_tokvec)
+struct Expression parse_cast_expression(struct ParserState *ptr_ps,
+                                        const struct Token **ptr_tokvec)
 {
-	return parse_unary_expression(ptr_ps, ptr_tokvec);
+	return wrap(parse_unary_expression(ptr_ps, ptr_tokvec));
 }
 
 struct ExprInfo parse_postfix_expression(struct ParserState *ptr_ps,

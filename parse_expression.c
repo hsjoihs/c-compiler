@@ -280,7 +280,7 @@ parse_multiplicative_expression(struct ParserState *ptr_ps,
                                 const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
-	struct Expression expr = wrap(parse_cast_expression(ptr_ps, &tokvec));
+	struct Expression expr = parse_cast_expression(ptr_ps, &tokvec);
 
 	while (1) {
 		enum TokenKind kind = tokvec[0].kind;
@@ -290,7 +290,7 @@ parse_multiplicative_expression(struct ParserState *ptr_ps,
 		++tokvec;
 
 		struct Expression expr2 =
-		    wrap(remove_leftiness(parse_cast_expression(ptr_ps, &tokvec)));
+		    remove_leftiness_(parse_cast_expression(ptr_ps, &tokvec));
 		expect_type(expr.details, INT_TYPE, 17);
 		expect_type(expr2.details, INT_TYPE, 18);
 
