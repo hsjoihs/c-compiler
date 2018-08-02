@@ -200,7 +200,7 @@ struct ExprInfo parse_additive_expression(struct ParserState *ptr_ps,
 					        "cannot subtract a pointer from an integer.\n");
 					exit(EXIT_FAILURE);
 				}
-				int size = size_of(deref_type(expr_info2.type));
+				// int size = size_of(deref_type(expr_info2.type));
 				// gen_swap();
 				// gen_cltq();
 				// gen_mul_by_const(size);
@@ -210,7 +210,7 @@ struct ExprInfo parse_additive_expression(struct ParserState *ptr_ps,
 			}
 
 		} else if (is_pointer(expr_info.type)) {
-			int size = size_of(deref_type(expr_info.type));
+			// int size = size_of(deref_type(expr_info.type));
 			if (kind == OP_PLUS) {
 				expect_type(expr_info2, INT_TYPE, 30);
 				/* cannot add a pointer to a pointer*/
