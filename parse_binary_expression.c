@@ -306,6 +306,8 @@ struct Expression combine_by_add_or_sub(struct Expression expr,
 			                  UNASSIGNABLE(INT_TYPE));
 		}
 	}
+	fprintf(stderr, "fail\n");
+	exit(EXIT_FAILURE);
 }
 
 struct Expression parse_additive_expression(struct ParserState *ptr_ps,
