@@ -103,6 +103,7 @@ struct Expression simple_binary_op(struct Expression expr,
                                    struct Expression expr2, enum TokenKind kind,
                                    struct ExprInfo exprinfo)
 {
+	to_simplebinop(kind);
 	struct Expression *ptr_expr1 = calloc(1, sizeof(struct Expression));
 	struct Expression *ptr_expr2 = calloc(1, sizeof(struct Expression));
 	*ptr_expr1 = expr;
@@ -343,8 +344,7 @@ parse_multiplicative_expression(struct ParserState *ptr_ps,
 		expect_type(expr.details, INT_TYPE, 17);
 		expect_type(expr2.details, INT_TYPE, 18);
 
-		expr =
-		    binary_op_(expr, expr2, kind, BINARY_EXPR, UNASSIGNABLE(INT_TYPE));
+		expr = simple_binary_op(expr, expr2, kind, UNASSIGNABLE(INT_TYPE));
 	}
 	*ptr_tokvec = tokvec;
 	return expr;
