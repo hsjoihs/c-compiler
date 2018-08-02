@@ -11,7 +11,7 @@ struct Expression parse_primary_expression(struct ParserState *ptr_ps,
                                            const struct Token **ptr_tokvec);
 struct ExprInfo parse_postfix_expression(struct ParserState *ptr_ps,
                                          const struct Token **ptr_tokvec);
-struct ExprInfo parse_expression(struct ParserState *ptr_ps,
+struct Expression parse_expression(struct ParserState *ptr_ps,
                                  const struct Token **ptr_tokvec);
 struct Expression parse_cast_expression(struct ParserState *ptr_ps,
                                         const struct Token **ptr_tokvec);
@@ -1489,7 +1489,7 @@ struct Expression parse_primary_expression(struct ParserState *ptr_ps,
 	} else if (tokvec[0].kind == LEFT_PAREN) {
 		++tokvec;
 		*ptr_tokvec = tokvec;
-		struct Expression expr = wrap(parse_expression(ptr_ps, &tokvec));
+		struct Expression expr = parse_expression(ptr_ps, &tokvec);
 		expect_and_consume(&tokvec, RIGHT_PAREN, "right paren");
 
 		*ptr_tokvec = tokvec;
@@ -1582,7 +1582,7 @@ struct Expression parse_conditional_expression(struct ParserState *ptr_ps,
 
 		++tokvec;
 		*ptr_tokvec = tokvec;
-		struct Expression true_branch = wrap(parse_expression(ptr_ps, &tokvec));
+		struct Expression true_branch = parse_expression(ptr_ps, &tokvec);
 
 		expect_and_consume(&tokvec, COLON, "colon of the conditional operator");
 
@@ -1614,7 +1614,7 @@ struct Expression parse_conditional_expression(struct ParserState *ptr_ps,
 	return expr;
 }
 
-struct ExprInfo parse_expression(struct ParserState *ptr_ps,
+struct Expression parse_expression(struct ParserState *ptr_ps,
                                  const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
@@ -1629,7 +1629,7 @@ struct ExprInfo parse_expression(struct ParserState *ptr_ps,
 		// print_binary_op(OP_COMMA);
 	}
 	*ptr_tokvec = tokvec;
-	return info;
+	return wrap(info);
 }
 
 struct ExprInfo parse_argument_expression(struct ParserState *ptr_ps,
