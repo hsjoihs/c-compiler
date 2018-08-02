@@ -229,3 +229,6 @@ enum SimpleBinOp {
 };
 
 enum SimpleBinOp to_simplebinop(enum TokenKind t);
+struct Expression simple_binary_op(struct Expression expr,
+                                   struct Expression expr2, enum TokenKind kind,
+                                   struct ExprInfo exprinfo);

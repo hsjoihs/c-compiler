@@ -414,7 +414,7 @@ struct Expression parse_expression(struct ParserState *ptr_ps,
 		struct Expression expr2 =
 		    remove_leftiness_(parse_assignment_expression(ptr_ps, &tokvec));
 
-		expr = binary_op_(expr, expr2, kind, BINARY_EXPR, expr2.details);
+		expr = simple_binary_op(expr, expr2, kind, expr2.details);
 	}
 	*ptr_tokvec = tokvec;
 	return expr;
