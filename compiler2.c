@@ -1350,9 +1350,9 @@ struct Expression parse_unary_expression(struct ParserState *ptr_ps,
 
 	} else if (tokvec[0].kind == OP_ASTERISK) {
 		++tokvec;
-		struct ExprInfo expr_info =
-		    remove_leftiness_(parse_cast_expression(ptr_ps, &tokvec)).details;
-		struct Type type = deref_type(expr_info.type);
+		struct Expression expr =
+		    remove_leftiness_(parse_cast_expression(ptr_ps, &tokvec));
+		struct Type type = deref_type(expr.details.type);
 
 		struct ExprInfo new_expr_info;
 		new_expr_info.info = DEREFERENCED_ADDRESS;
@@ -1360,11 +1360,16 @@ struct Expression parse_unary_expression(struct ParserState *ptr_ps,
 		new_expr_info.offset = GARBAGE_INT;
 
 		*ptr_tokvec = tokvec;
-		return wrap(new_expr_info);
+
+		struct Expression new_expr =
+		    unary_op_(expr, OP_ASTERISK, new_expr_info);
+
+		return new_expr;
 	} else {
-		struct ExprInfo expr_info = parse_postfix_expression(ptr_ps, &tokvec);
+		struct Expression expr =
+		    wrap(parse_postfix_expression(ptr_ps, &tokvec));
 		*ptr_tokvec = tokvec;
-		return wrap(expr_info);
+		return expr;
 	}
 }
 
