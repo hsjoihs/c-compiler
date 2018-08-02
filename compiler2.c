@@ -747,12 +747,8 @@ void parseprint_statement(struct ParserState *ptr_ps,
 		} else {
 			const struct Token *tokvec2 = tokvec;
 
-			// int lab = get_new_label_name(ptr_ps);
-
-			// gen_jump(lab, "commenting out, to handle expression3 of `for`");
-			parse_expression(ptr_ps, &tokvec2);
-			// printf("// comment finishes\n");
-			// printf(".L%d:\n", lab);
+			// expression3 of `for`
+			struct Expression expr = parse_expression(ptr_ps, &tokvec2);
 
 			expect_and_consume(&tokvec2, RIGHT_PAREN,
 			                   "right parenthesis of `for`");
@@ -761,11 +757,7 @@ void parseprint_statement(struct ParserState *ptr_ps,
 
 			gen_label(cont_label);
 
-			printf("// what was previously ignored\n");
-
-			parseprint_expression(ptr_ps, &tokvec);
-			expect_and_consume(&tokvec, RIGHT_PAREN,
-			                   "right parenthesis of `for`");
+			print_expression(ptr_ps, expr);
 			gen_discard();
 
 			gen_for_part4(label1, break_label);
