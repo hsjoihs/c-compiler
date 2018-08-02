@@ -227,10 +227,7 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 				case OP_OR_EQ: {
 
 					enum TokenKind opkind = expr.binary_operator;
-
-					if (expr.ptr1->category == LOCAL_VAR_AS_LVALUE ||
-					    expr.ptr1->category == GLOBAL_VAR_AS_LVALUE) {
-
+					{
 						if (expr.ptr1->category == GLOBAL_VAR_AS_LVALUE) {
 							struct Type type = expr.ptr1->details.type;
 							const char *name = expr.ptr1->global_var_name;
@@ -272,7 +269,7 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 									              "assignment operation");
 							}
 							return;
-						} else {
+						} else if (expr.ptr1->category == LOCAL_VAR_AS_LVALUE) {
 
 							if (opkind != OP_EQ) {
 								switch (size_of(expr.ptr1->details.type)) {
