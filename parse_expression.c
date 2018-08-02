@@ -21,7 +21,7 @@ struct Expression remove_leftiness_(struct Expression expr)
 
 struct Expression parse_additive_expression(struct ParserState *ptr_ps,
                                             const struct Token **ptr_tokvec);
-struct ExprInfo
+struct Expression
 parse_multiplicative_expression(struct ParserState *ptr_ps,
                                 const struct Token **ptr_tokvec);
 
@@ -220,8 +220,7 @@ struct Expression parse_additive_expression(struct ParserState *ptr_ps,
                                             const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
-	struct Expression expr =
-	    wrap(parse_multiplicative_expression(ptr_ps, &tokvec));
+	struct Expression expr = parse_multiplicative_expression(ptr_ps, &tokvec);
 
 	struct Type type1 = expr.details.type;
 
@@ -232,8 +231,8 @@ struct Expression parse_additive_expression(struct ParserState *ptr_ps,
 		}
 		++tokvec;
 
-		struct Expression expr2 = wrap(
-		    remove_leftiness(parse_multiplicative_expression(ptr_ps, &tokvec)));
+		struct Expression expr2 =
+		    remove_leftiness_(parse_multiplicative_expression(ptr_ps, &tokvec));
 		struct Type type2 = expr2.details.type;
 
 		if (is_equal(type1, INT_TYPE)) {
@@ -272,11 +271,12 @@ struct Expression parse_additive_expression(struct ParserState *ptr_ps,
 	return expr;
 }
 
-struct ExprInfo parse_multiplicative_expression(struct ParserState *ptr_ps,
-                                                const struct Token **ptr_tokvec)
+struct Expression
+parse_multiplicative_expression(struct ParserState *ptr_ps,
+                                const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
-	struct ExprInfo expr_info = parse_cast_expression(ptr_ps, &tokvec);
+	struct Expression expr = wrap(parse_cast_expression(ptr_ps, &tokvec));
 
 	while (1) {
 		enum TokenKind kind = tokvec[0].kind;
@@ -285,13 +285,13 @@ struct ExprInfo parse_multiplicative_expression(struct ParserState *ptr_ps,
 		}
 		++tokvec;
 
-		struct ExprInfo expr_info2 =
-		    remove_leftiness(parse_cast_expression(ptr_ps, &tokvec));
-		expect_type(expr_info, INT_TYPE, 17);
-		expect_type(expr_info2, INT_TYPE, 18);
-		expr_info2 = expr_info;
-		// print_binary_op(kind);
+		struct Expression expr2 =
+		    wrap(remove_leftiness(parse_cast_expression(ptr_ps, &tokvec)));
+		expect_type(expr.details, INT_TYPE, 17);
+		expect_type(expr2.details, INT_TYPE, 18);
+
+		expr = binary_op(expr, expr2, kind);
 	}
 	*ptr_tokvec = tokvec;
-	return expr_info;
+	return expr;
 }
