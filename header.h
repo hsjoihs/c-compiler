@@ -216,3 +216,6 @@ struct Expression parse_logical_OR_expression(struct ParserState *ptr_ps,
 
 struct Expression wrap(struct ExprInfo info);
 struct Expression remove_leftiness_(struct Expression expr);
+struct Expression binary_op_(struct Expression expr, struct Expression expr2,
+                             enum TokenKind kind, enum expr_category cat,
+                             struct ExprInfo exprinfo);
