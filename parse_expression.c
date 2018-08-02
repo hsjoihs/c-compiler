@@ -64,8 +64,8 @@ struct ExprInfo parse_inclusive_OR_expression(struct ParserState *ptr_ps,
 	return expr_info;
 }
 
-struct Expression binary_op(struct Expression expr, struct Expression expr2,
-                            enum TokenKind kind)
+struct Expression binary_op_(struct Expression expr, struct Expression expr2,
+                             enum TokenKind kind, enum expr_category cat)
 {
 	struct Expression *ptr_expr1 = calloc(1, sizeof(struct Expression));
 	struct Expression *ptr_expr2 = calloc(1, sizeof(struct Expression));
@@ -74,13 +74,26 @@ struct Expression binary_op(struct Expression expr, struct Expression expr2,
 
 	struct Expression new_expr;
 	new_expr.details = UNASSIGNABLE(INT_TYPE);
-	new_expr.category = BINARY_EXPR;
+	new_expr.category = cat;
 	new_expr.binary_operator = kind;
 	new_expr.ptr1 = ptr_expr1;
 	new_expr.ptr2 = ptr_expr2;
 	new_expr.ptr3 = 0;
 
 	return new_expr;
+}
+
+struct Expression binary_op(struct Expression expr, struct Expression expr2,
+                            enum TokenKind kind)
+{
+	return binary_op_(expr, expr2, kind, BINARY_EXPR);
+}
+
+struct Expression pointer_plusorminus_int(struct Expression expr,
+                                          struct Expression expr2,
+                                          enum TokenKind kind)
+{
+	return binary_op_(expr, expr2, kind, POINTER_PLUSORMINUS_INT);
 }
 
 struct Expression parse_exclusive_OR_expression(struct ParserState *ptr_ps,
@@ -223,22 +236,16 @@ struct Expression parse_additive_expression(struct ParserState *ptr_ps,
 
 		if (is_equal(expr_info.type, INT_TYPE)) {
 			if (is_equal(expr_info2.type, INT_TYPE)) {
-				expr_info2 = expr_info;
-				// print_binary_op(kind);
-				expr_info = remove_leftiness(expr_info); /* int */
+				expr = binary_op(expr, expr2, kind);
 			} else if (is_pointer(expr_info2.type)) {
 				if (kind == OP_MINUS) {
 					fprintf(stderr,
 					        "cannot subtract a pointer from an integer.\n");
 					exit(EXIT_FAILURE);
 				}
-				// int size = size_of(deref_type(expr_info2.type));
-				// gen_swap();
-				// gen_cltq();
-				// gen_mul_by_const(size);
 
-				// gen_op_8byte("addq");
-				expr_info = expr_info2; /* pointer */
+				/* swapped */
+				expr = pointer_plusorminus_int(expr2, expr, kind);
 			}
 
 		} else if (is_pointer(expr_info.type)) {
@@ -246,17 +253,12 @@ struct Expression parse_additive_expression(struct ParserState *ptr_ps,
 			if (kind == OP_PLUS) {
 				expect_type(expr_info2, INT_TYPE, 30);
 				/* cannot add a pointer to a pointer*/
-				// gen_cltq();
-				// gen_mul_by_const(size);
 
-				// gen_op_8byte("addq");
-				expr_info = remove_leftiness(expr_info); /* pointer */
+				expr = pointer_plusorminus_int(expr, expr2, kind);
 			} else if (is_equal(expr_info2.type, INT_TYPE)) {
-				// gen_cltq();
-				// gen_mul_by_const(size);
 
-				// gen_op_8byte("subq");
-				expr_info = remove_leftiness(expr_info); /* pointer */
+				/* pointer minus int */
+				expr = pointer_plusorminus_int(expr, expr2, kind);
 			} else {
 				/* subtract pointer */
 				// gen_op_8byte("subq");
@@ -266,7 +268,7 @@ struct Expression parse_additive_expression(struct ParserState *ptr_ps,
 		}
 	}
 	*ptr_tokvec = tokvec;
-	return wrap(expr_info); /* pointer */
+	return expr;
 }
 
 struct ExprInfo parse_multiplicative_expression(struct ParserState *ptr_ps,
