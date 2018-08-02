@@ -1527,13 +1527,20 @@ struct Expression parse_assignment_expression(struct ParserState *ptr_ps,
 			struct LocalVarInfo info =
 			    resolve_name_locally(ptr_ps->scope_chain, name);
 
+			struct Expression expr;
+			expr.details.info = LOCAL_VAR;
+			expr.details.type = info.type;
+			expr.details.offset = info.offset;
+			expr.category = LOCAL_VAR_AS_LVALUE;
+
 			struct Expression expr2 =
 			    parse_assignment_expression(ptr_ps, &tokvec);
 			struct ExprInfo expr_info = expr2.details;
 			expect_type(expr_info, info.type, 0);
 
 			*ptr_tokvec = tokvec;
-			return wrap(UNASSIGNABLE(info.type));
+			return binary_op_(expr, expr2, opkind, BINARY_EXPR,
+			                  UNASSIGNABLE(info.type));
 		}
 	}
 
