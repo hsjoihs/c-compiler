@@ -101,6 +101,8 @@ int is_print_implemented(struct Expression expr)
 				case OP_TILDA:
 				case OP_PLUS:
 				case OP_MINUS:
+				case OP_PLUS_PLUS:
+				case OP_MINUS_MINUS:
 					return is_print_implemented(*expr.ptr1);
 				default:
 					return 0;
@@ -364,6 +366,27 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 				case OP_MINUS:
 					print_expression(ptr_ps, *expr.ptr1);
 					print_unary_prefix_op(expr.unary_operator);
+					return;
+
+				case OP_PLUS_PLUS:
+				case OP_MINUS_MINUS: {
+					enum TokenKind opkind = expr.unary_operator;
+					if (expr.ptr1->category != LOCAL_VAR_AS_LVALUE) {
+						unimplemented("increment of non-(local variable)");
+					}
+
+					struct LocalVarInfo info;
+					info.type = expr.ptr1->details.type;
+					info.offset = expr.ptr1->details.offset;
+
+					gen_push_from_local(info.offset);
+					gen_push_int(1);
+
+					print_before_assign(opkind);
+
+					gen_write_to_local(info.offset);
+					return;
+				}
 			}
 			return;
 		case CONDITIONAL_EXPR: {
