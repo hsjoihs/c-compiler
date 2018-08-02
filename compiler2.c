@@ -19,8 +19,8 @@ struct ExprInfo parse_unary_expression(struct ParserState *ptr_ps,
                                        const struct Token **ptr_tokvec);
 struct ExprInfo parse_conditional_expression(struct ParserState *ptr_ps,
                                              const struct Token **ptr_tokvec);
-struct ExprInfo parse_logical_OR_expression(struct ParserState *ptr_ps,
-                                            const struct Token **ptr_tokvec);
+struct Expression parse_logical_OR_expression(struct ParserState *ptr_ps,
+                                              const struct Token **ptr_tokvec);
 void parse_argument_expression(struct ParserState *ptr_ps,
                                const struct Token **ptr_tokvec, int counter);
 
@@ -1684,7 +1684,8 @@ struct ExprInfo parse_conditional_expression(struct ParserState *ptr_ps,
                                              const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
-	struct ExprInfo expr_info = parse_logical_OR_expression(ptr_ps, &tokvec);
+	struct ExprInfo expr_info =
+	    parse_logical_OR_expression(ptr_ps, &tokvec).details;
 	if (tokvec[0].kind == QUESTION) {
 		// int label1 = get_new_label_name(ptr_ps);
 		// int label2 = get_new_label_name(ptr_ps);
@@ -1731,8 +1732,8 @@ struct ExprInfo parse_expression(struct ParserState *ptr_ps,
 	return info;
 }
 
-struct ExprInfo parse_logical_OR_expression(struct ParserState *ptr_ps,
-                                            const struct Token **ptr_tokvec)
+struct Expression parse_logical_OR_expression(struct ParserState *ptr_ps,
+                                              const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 
@@ -1751,7 +1752,7 @@ struct ExprInfo parse_logical_OR_expression(struct ParserState *ptr_ps,
 	}
 
 	*ptr_tokvec = tokvec;
-	return expr.details;
+	return expr;
 }
 
 void parse_argument_expression(struct ParserState *ptr_ps,
