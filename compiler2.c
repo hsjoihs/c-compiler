@@ -1,32 +1,12 @@
 #include "header.h"
+#if 1
+#include "compiler.h"
+#endif
 #include "print_x86_64.h"
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-struct LocalVarInfo {
-	struct Type type;
-	int offset;
-};
-
-struct LocalVarTableList {
-	struct map var_table;
-	struct LocalVarTableList *outer;
-};
-
-struct ParserState {
-	struct LocalVarTableList scope_chain;
-	struct map global_vars_type_map;
-	struct map func_info_map;
-	int newest_offset;
-	int final_label_name;
-	int return_label_name; /* the label at the end of the function */
-	struct Type func_ret_type;
-	int break_label_name;    /* the label at the end of the current loop */
-	int continue_label_name; /* the label at the beginning of the current loop
-	                          */
-};
 
 int get_new_label_name(struct ParserState *ptr_ps);
 
@@ -56,6 +36,75 @@ void read_all_tokens_debug(const char *str)
 			break;
 		}
 	} while (1);
+}
+
+int is_print_implemented(struct Expression expr)
+{
+	switch (expr.category) {
+		case BINARY_EXPR:
+			switch (expr.binary_operator) {
+				case OP_PLUS:
+				case OP_MINUS:
+				case OP_ASTERISK:
+				case OP_SLASH:
+				case OP_PERCENT:
+				case OP_COMMA:
+				case OP_LT:
+				case OP_LT_EQ:
+				case OP_LSHIFT:
+				case OP_GT:
+				case OP_GT_EQ:
+				case OP_RSHIFT:
+				case OP_AND:
+				case OP_OR:
+				case OP_EQ_EQ:
+				case OP_NOT_EQ:
+				case OP_HAT:
+
+					return is_print_implemented(*expr.ptr1) &&
+					       is_print_implemented(*expr.ptr2);
+
+				default:
+					return 0;
+			}
+		case INT_VALUE:
+			return 1;
+		default:
+			return 0;
+	}
+}
+
+void print_expression(struct Expression expr)
+{
+	switch (expr.category) {
+		case BINARY_EXPR:
+			switch (expr.binary_operator) {
+				case OP_PLUS:
+				case OP_MINUS:
+				case OP_ASTERISK:
+				case OP_SLASH:
+				case OP_PERCENT:
+				case OP_COMMA:
+				case OP_LT:
+				case OP_LT_EQ:
+				case OP_LSHIFT:
+				case OP_GT:
+				case OP_GT_EQ:
+				case OP_RSHIFT:
+				case OP_AND:
+				case OP_OR:
+				case OP_EQ_EQ:
+				case OP_NOT_EQ:
+				case OP_HAT:
+					print_expression(*expr.ptr1);
+					print_expression(*expr.ptr2);
+					print_binary_op(expr.binary_operator);
+					return;
+			}
+		case INT_VALUE:
+			gen_push_int(expr.int_value);
+			return;
+	}
 }
 
 struct ExprInfo parseprint_expression(struct ParserState *ptr_ps,
@@ -264,14 +313,14 @@ parseprint_assignment_expression(struct ParserState *ptr_ps,
 		}
 	}
 
-	int label = get_new_label_name(ptr_ps);
+	// int label = get_new_label_name(ptr_ps);
 
 	const struct Token *tokvec2 = tokvec;
 	struct ParserState *ptr_ps2 = ptr_ps;
-	gen_jump(label, "commenting out");
-	parseprint_unary_expression(ptr_ps2, &tokvec2);
-	printf("// comment finishes\n");
-	printf("  .L%d:\n", label);
+	// gen_jump(label, "commenting out");
+	parse_unary_expression(ptr_ps2, &tokvec2);
+	// printf("// comment finishes\n");
+	// printf("  .L%d:\n", label);
 
 	/* parse failed */
 	if (!isAssign(tokvec2[0].kind)) {
@@ -872,12 +921,12 @@ void parseprint_statement(struct ParserState *ptr_ps,
 		} else {
 			const struct Token *tokvec2 = tokvec;
 
-			int lab = get_new_label_name(ptr_ps);
+			// int lab = get_new_label_name(ptr_ps);
 
-			gen_jump(lab, "commenting out, to handle expression3 of `for`");
-			parseprint_expression(ptr_ps, &tokvec2);
-			printf("// comment finishes\n");
-			printf(".L%d:\n", lab);
+			// gen_jump(lab, "commenting out, to handle expression3 of `for`");
+			parse_expression(ptr_ps, &tokvec2);
+			// printf("// comment finishes\n");
+			// printf(".L%d:\n", lab);
 
 			expect_and_consume(&tokvec2, RIGHT_PAREN,
 			                   "right parenthesis of `for`");

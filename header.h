@@ -180,3 +180,46 @@ struct Type parse_declarator(const struct Token **ptr_tokvec,
                                  const char **ptr_to_ident_str);
 
 _Noreturn void unimplemented(const char *str);
+
+enum expr_category {
+	BINARY_EXPR = 1,
+	POINTER_PLUSORMINUS_INT,
+	POINTER_MINUS_POINTER,
+	CONDITIONAL_EXPR,
+	UNARY_OP_EXPR,
+	LOCAL_VAR_AS_RVALUE,
+	LOCAL_VAR_AS_LVALUE,
+	GLOBAL_VAR_AS_RVALUE,
+	GLOBAL_VAR_AS_LVALUE,
+	INT_VALUE,
+	POSTFIX_INCREMENT,
+	POSTFIX_DECREMENT,
+	FUNCCALL_EXPR
+};
+
+struct Expression {
+	struct ExprInfo details;
+	enum expr_category category;
+	enum TokenKind binary_operator;
+	enum TokenKind unary_operator;
+	struct Expression *ptr1;
+	struct Expression *ptr2;
+	struct Expression *ptr3;
+	int int_value;
+	const char *global_var_name;
+	struct Expression *arg_expr_vec;
+	int arg_length;
+};
+
+
+struct Expression parse_cast_expression(struct ParserState *ptr_ps,
+                                      const struct Token **ptr_tokvec);
+struct Expression binary_op(struct Expression expr, struct Expression expr2,
+                            enum TokenKind kind);
+struct Expression parse_logical_OR_expression(struct ParserState *ptr_ps,
+                                              const struct Token **ptr_tokvec);
+
+struct Expression remove_leftiness_(struct Expression expr);
+struct Expression binary_op_(struct Expression expr, struct Expression expr2,
+                             enum TokenKind kind, enum expr_category cat,
+                             struct ExprInfo exprinfo);
