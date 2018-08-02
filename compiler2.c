@@ -493,14 +493,6 @@ int isAssign(enum TokenKind opkind)
 }
 
 struct ExprInfo
-parseprint_assignment_expression(struct ParserState *ptr_ps,
-                                 const struct Token **ptr_tokvec)
-{
-	fprintf(stderr, "DELETED\n");
-	exit(EXIT_FAILURE);
-}
-
-struct ExprInfo
 parseprint_conditional_expression(struct ParserState *ptr_ps,
                                   const struct Token **ptr_tokvec)
 {
@@ -678,121 +670,11 @@ void print_argument_expression(struct ParserState *ptr_ps,
 	}
 }
 
-void parseprint_argument_expression(struct ParserState *ptr_ps,
-                                    const struct Token **ptr_tokvec,
-                                    int counter)
-{
-	const struct Token *tokvec = *ptr_tokvec;
-
-	struct ExprInfo expr_info =
-	    parseprint_assignment_expression(ptr_ps, &tokvec);
-	if (counter > 5) {
-		unimplemented("calling with 7 or more arguments");
-	}
-
-	switch (size_of(expr_info.type)) {
-		case 4:
-			gen_pop_to_reg(get_reg_name_from_arg_pos(counter));
-			break;
-		case 8:
-			gen_pop_to_reg_8byte(get_reg_name_from_arg_pos_8byte(counter));
-			break;
-		default:
-			unimplemented("Unsupported width");
-	}
-
-	*ptr_tokvec = tokvec;
-}
-
 struct ExprInfo parseprint_postfix_expression(struct ParserState *ptr_ps,
                                               const struct Token **ptr_tokvec)
 {
-	const struct Token *tokvec = *ptr_tokvec;
-	if (tokvec[0].kind == IDENT_OR_RESERVED && tokvec[1].kind == LEFT_PAREN) {
-		const char *ident_str = tokvec[0].ident_str;
-
-		struct Type ret_type;
-		if (!isElem(ptr_ps->func_info_map, ident_str)) {
-			fprintf(stderr, "Undeclared function `%s()` detected.\n",
-			        ident_str);
-			fprintf(stderr, "Assumes that `%s()` returns `int`\n", ident_str);
-			ret_type = INT_TYPE;
-		} else {
-			struct FuncInfo *ptr_func_info =
-			    lookup(ptr_ps->func_info_map, ident_str);
-			ret_type = ptr_func_info->ret_type;
-		}
-
-		tokvec += 2;
-		if (tokvec[0].kind == RIGHT_PAREN) {
-			switch (size_of(ret_type)) {
-				case 4:
-					gen_push_ret_of(ident_str);
-					break;
-				case 8:
-					gen_push_ret_of_8byte(ident_str);
-					break;
-				default:
-					unimplemented("Unsupported width in the return type");
-			}
-
-			tokvec++;
-		} else {
-			int counter = 0;
-
-			parseprint_argument_expression(ptr_ps, &tokvec, counter);
-			++counter;
-
-			while (1) {
-				enum TokenKind kind = tokvec[0].kind;
-				if (kind != OP_COMMA) {
-					break;
-				}
-				++tokvec;
-				parseprint_argument_expression(ptr_ps, &tokvec, counter);
-				++counter;
-			}
-
-			switch (size_of(ret_type)) {
-				case 4:
-					gen_push_ret_of(ident_str);
-					break;
-				case 8:
-					gen_push_ret_of_8byte(ident_str);
-					break;
-				default:
-					unimplemented("Unsupported width");
-			}
-			*ptr_tokvec = tokvec;
-
-			expect_and_consume(&tokvec, RIGHT_PAREN,
-			                   "closing parenthesis of function call");
-
-			*ptr_tokvec = tokvec;
-		}
-		*ptr_tokvec = tokvec;
-		return UNASSIGNABLE(ret_type);
-
-	} else if (tokvec[0].kind == IDENT_OR_RESERVED &&
-	           (tokvec[1].kind == OP_PLUS_PLUS ||
-	            tokvec[1].kind == OP_MINUS_MINUS)) {
-		const char *name = tokvec[0].ident_str;
-		enum TokenKind opkind = tokvec[1].kind;
-		tokvec += 2;
-		*ptr_tokvec = tokvec;
-
-		print_inc_or_dec(ptr_ps, name, opkind);
-
-		gen_push_int(-1);
-		print_before_assign(opkind);
-		*ptr_tokvec = tokvec;
-		return UNASSIGNABLE(INT_TYPE);
-	} else {
-		struct ExprInfo expr_info =
-		    parseprint_primary_expression(ptr_ps, &tokvec);
-		*ptr_tokvec = tokvec;
-		return expr_info;
-	}
+	fprintf(stderr, "DELETED\n");
+	exit(EXIT_FAILURE);
 }
 
 struct ExprInfo parseprint_primary_expression(struct ParserState *ptr_ps,
