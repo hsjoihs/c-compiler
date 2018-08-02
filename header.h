@@ -185,7 +185,8 @@ enum expr_category {
 	UNKNOWN,
 	BINARY_EXPR,
 	POINTER_PLUSORMINUS_INT,
-	POINTER_MINUS_POINTER
+	POINTER_MINUS_POINTER,
+	CONDITIONAL_EXPR
 };
 
 struct Expression {
@@ -204,3 +205,5 @@ struct Expression binary_op(struct Expression expr, struct Expression expr2,
                             enum TokenKind kind);
 struct Expression parse_logical_OR_expression(struct ParserState *ptr_ps,
                                               const struct Token **ptr_tokvec);
+
+struct Expression wrap(struct ExprInfo info);

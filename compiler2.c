@@ -1682,34 +1682,41 @@ struct ExprInfo parse_conditional_expression(struct ParserState *ptr_ps,
                                              const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
-	struct ExprInfo expr_info =
-	    parse_logical_OR_expression(ptr_ps, &tokvec).details;
+	struct Expression expr = parse_logical_OR_expression(ptr_ps, &tokvec);
 	if (tokvec[0].kind == QUESTION) {
-		// int label1 = get_new_label_name(ptr_ps);
-		// int label2 = get_new_label_name(ptr_ps);
 
-		// gen_ternary_part1(label1, label2);
 		++tokvec;
 		*ptr_tokvec = tokvec;
-		struct ExprInfo true_branch_info = parse_expression(ptr_ps, &tokvec);
-
-		// gen_ternary_part2(label1, label2);
+		struct Expression true_branch = wrap(parse_expression(ptr_ps, &tokvec));
 
 		expect_and_consume(&tokvec, COLON, "colon of the conditional operator");
 
 		*ptr_tokvec = tokvec;
-		struct ExprInfo false_branch_info =
-		    parse_conditional_expression(ptr_ps, &tokvec);
-
-		// gen_ternary_part3(label1, label2);
+		struct Expression false_branch =
+		    wrap(parse_conditional_expression(ptr_ps, &tokvec));
 
 		*ptr_tokvec = tokvec;
 
-		expect_type(false_branch_info, true_branch_info.type, 1);
-		return remove_leftiness(true_branch_info);
+		expect_type(false_branch.details, true_branch.details.type, 1);
+
+		struct Expression *ptr_expr1 = calloc(1, sizeof(struct Expression));
+		struct Expression *ptr_expr2 = calloc(1, sizeof(struct Expression));
+		struct Expression *ptr_expr3 = calloc(1, sizeof(struct Expression));
+		*ptr_expr1 = expr;
+		*ptr_expr2 = true_branch;
+		*ptr_expr3 = false_branch;
+
+		struct Expression new_expr;
+		new_expr.details = remove_leftiness(true_branch.details);
+		new_expr.category = CONDITIONAL_EXPR;
+		new_expr.ptr1 = ptr_expr1;
+		new_expr.ptr2 = ptr_expr2;
+		new_expr.ptr3 = ptr_expr3;
+
+		return new_expr.details;
 	}
 	*ptr_tokvec = tokvec;
-	return expr_info;
+	return expr.details;
 }
 
 struct ExprInfo parse_expression(struct ParserState *ptr_ps,
