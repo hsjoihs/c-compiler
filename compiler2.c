@@ -1394,17 +1394,6 @@ struct ExprInfo parse_postfix_expression(struct ParserState *ptr_ps,
 
 		tokvec += 2;
 		if (tokvec[0].kind == RIGHT_PAREN) {
-			switch (size_of(ret_type)) {
-				case 4:
-					// gen_push_ret_of(ident_str);
-					break;
-				case 8:
-					// gen_push_ret_of_8byte(ident_str);
-					break;
-				default:
-					unimplemented("Unsupported width in the return type");
-			}
-
 			tokvec++;
 		} else {
 			int counter = 0;
@@ -1422,16 +1411,6 @@ struct ExprInfo parse_postfix_expression(struct ParserState *ptr_ps,
 				++counter;
 			}
 
-			switch (size_of(ret_type)) {
-				case 4:
-					// gen_push_ret_of(ident_str);
-					break;
-				case 8:
-					// gen_push_ret_of_8byte(ident_str);
-					break;
-				default:
-					unimplemented("Unsupported width");
-			}
 			*ptr_tokvec = tokvec;
 
 			expect_and_consume(&tokvec, RIGHT_PAREN,
