@@ -51,6 +51,7 @@ int is_print_implemented(struct Expression expr)
 			return 1;
 		case BINARY_EXPR:
 			switch (expr.binary_operator) {
+				case OP_OR_OR:
 				case OP_AND_AND:
 
 				case OP_PLUS:
@@ -161,6 +162,17 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 			return;
 		case BINARY_EXPR:
 			switch (expr.binary_operator) {
+				case OP_OR_OR: {
+					int label1 = get_new_label_name(ptr_ps);
+					int label2 = get_new_label_name(ptr_ps);
+					print_expression(ptr_ps, *expr.ptr1);
+
+					gen_logical_OR_set(0, label1, label2);
+					print_expression(ptr_ps, *expr.ptr2);
+					gen_logical_OR_set(1, label1, label2);
+					gen_logical_OR_final(1, label1, label2);
+					return;
+				}
 				case OP_AND_AND: {
 					int label1 = get_new_label_name(ptr_ps);
 					int label2 = get_new_label_name(ptr_ps);
