@@ -40,55 +40,6 @@ full_compile:
 	rm out/*.out
 	make supplement
 	make notest
-	./test_ret4.sh 103 'int *alloc4();int main(){int *p;p = alloc4(62, 8, 31, 85);return *p;}' 62
-	./test_ret4.sh 104 'int *alloc4();int main(){int *p;int *r;p = alloc4(62, 8, 31, 85);int *q;q = p;return *q;}' 62
-	./test_ret4.sh 105 'int *alloc4();int main(){int *p;int *r;p = alloc4(62, 8, 31, 85);int *q;q = p + 2;return *q;}' 31
-	./test_ret4.sh 106 'int *alloc4();int main(){int *p;int c;int e;c = 2;int d;d = 1;p = alloc4(62, 8, 31, 85);int *q;q = p + c;return *(q+d) - *q + (*p-2)*2;}' 174
-	./test_ret4.sh 107 'int *alloc4();int main(){int *p;p = alloc4(62, 8, 31, 85);int *q;q = p;return *q;}' 62
-	./test_ret4.sh 108 'int *alloc4();int main(){int *p;p = alloc4(62, 8, 31, 85);int *q;q = p + 2;return *q;}' 31
-	./test_ret4.sh 109 'int *alloc4();int main(){int *p;int c;c = 2;int d;d = 1;p = alloc4(62, 8, 31, 85);int *q;q = p + c;return *(q+d) - *q + (*p-2)*2;}' 174
-	./test_ret4.sh 110 'int *alloc4();int main(){int *p;int c;c = 2;int d;d = 1;p = alloc4(62, 8, 31, 85);int *q;q = c + p;return *(d+q) - *q + (*p-2)*2;}' 174
-	./test_ret4.sh 111 'int *alloc4();int main(){int *p;int c;c = -2;int d;d = 1;p = alloc4(62, 8, 31, 85);int *q;q = p - c;return *(d+q) - *q + (*p-2)*2;}' 174
-	./test_ret4.sh 112 'int *alloc4();int main(){int *p; int *q; q = p+174; return q-p;}' 174
-	./test_ret4.sh 113 'int *foo(int *(p)){*p = 4;return p;} int main(){int (x);int (y); int (*(*(z))); *foo(&x) += 170;return x;}' 174
-	./test_ret4.sh 114 'int main(){int a[2][3]; return 174;}' 174
-	./test_ret4.sh 115 'int x; int *y; int main(){return 174;}' 174
-	./test_ret4.sh 116 'int x; int *y; int main(){return x+174;}' 174
-	./test_ret4.sh 117 'int x; int *y; int main(){x=3; int a; a=2; y=&a; return x+*y+169;}' 174
-	./test_ret4.sh 102 'int *foo(int *p){*p = 4;return p;} int main(){int x;int y;*foo(&x) += 170;return x;}' 174
-	./test_ret4.sh 101 'int *foo(int *p){*p = 4;return p;} int main(){int x;int *y;y = foo(&x); *y+= 170;return x;}' 174
-	./test_ret4.sh 100 'int foo(int* p){*p = 172; return *p+2;} int main(){int x; return foo(&x);}' 174
-	./test_ret4.sh 099 'int foo(int* p){return *p;} int main(){int x; x = 174; return foo(&x);}' 174
-	./test_ret4.sh 098 'int foo(int* p){return 3;} int main(){int x; return 174;}' 174
-	./test_ret4.sh 090 'int main(){int x;x = 86;int *y;y = &x; return (*y) + x + 2;}' 174
-	./test_ret4.sh 091 'int main(){int x;x = 86;int *y;y = &x; return (*y) + (*y) + 2;}' 174
-	./test_ret4.sh 092 'int main(){int x;x = 86;int *y;y = &x;int **z;z = &y;return (*y) + (**z) + 2;}' 174
-	./test_ret4.sh 093 'int main(){int x;x = 86;int *y;y = &x;int **z;z = &y;return*y+**z+2;}' 174
-	./test_ret4.sh 094 'int main() {int x;int *y;x = 3;y = &x;*y = 174;return x;}' 174
-	./test_ret4.sh 095 'int main() {int x;int *y;x = 3;y = &x;*y = 171;*y += 3;return x;}' 174
-	./test_ret4.sh 096 'int main(){int x; int y; int *z; int*a; z=&x; a=&y; *z=*a=87; return(x+y);}' 174
-	./test_ret4.sh 097 'int main(){int x; int *y; int **z; z = &y; *z = &x; *y = 174; return x;}' 174
-	./test_ret4.sh 086 'int main(){int a; a = 3; { a = 174;} return a;}' 174
-	./test_ret4.sh 085 'int main(){int a; a = 174; {int a; a = 3;} return a;}' 174
-	./test_ret4.sh 084 'int main(){int a; int b; for(a=0,b=0;a<10;a++){ if(a ==5)continue;b+=a;} return b;}' 40
-	./test_ret4.sh 089 'int main() {int a; a = 174; int *b; b = &a; return a;}' 174
-	./test_ret4.sh 083 'int main(){int a; int b; int c; int d; d=0; b = 5; c = 0;for(a = 3;a;d++){for(;b;++d) {c += b;b-=1;if(b == 3) break;}b = 7;a-=1;if(a == 1) break;} return a*7+b*15+c*2;}' 174
-	./test_ret4.sh 082 'int main(){int a; int b; for(a=0,b=0;a <= 10;a++) {b += a;}return b;}' 55
-	./test_ret4.sh 081 'int main(){int a; int b; for(a=0,b=0;a <= 10;++a) {b += a;}return b;}' 55
-	./test_ret4.sh 080 'int main(){int a; int b; for(a=11, b=0;a;){a-=1;b+=a;if(a)continue;break; a+=100;} return b;}' 55
-	./test_ret4.sh 079 'int main(){int a; int b; for(a=0,b=0;a <= 10;) {b += a; a += 1;}return b;}' 55
-	./test_ret4.sh 078 'int main(){int a; for (a = 3;;) {a = 2;if (a - 3) {break;}a += 3;}return 174;}' 174
-	./test_ret4.sh 077 'int main(){int a; for (a = 3;a;) {a = 2;if (a - 3) {break;}a += 3;}return 174;}' 174
-	./test_ret4.sh 076 'int main(){int a; int b; a =0; b=0; do{b+=--a;}while(a+3); return b*a;}' 18
-	./test_ret4.sh 075 'int main(){int a; int b; a=3; b=0; b+= a++; return !(b-3)+!(a-4)+172;}' 174
-	./test_ret4.sh 074 'int main(){int a; int b; a=3; b=0; b+= ++a; return a*b*11-2;}' 174
-	./test_ret4.sh 073 'int main(){int a; int b; a =0; b=0; do{a-=1;b+=a;}while(a+3); return b*a;}' 18
-	./test_ret4.sh 072 'int main(){int a; int b; a =0; b=0; do{a-=1;b+=a;}while(a+3); return a*b;}' 18
-	./test_ret4.sh 071 'int main(){int a; int b; a =0; b=0; do{a-=1;b+=a;if(!a)break;}while(a+3); return a*b;}' 18
-	./test_ret4.sh 070 'int main(){int a; int b; a =0; b=0; do{a-=1;b+=a;if(a)continue;break;}while(a+3); return a*b;}' 18
-	./test_ret4.sh 069 'int main(){int a; int b; a =0; b=0; do{a-=1;b+=a;if(a)continue;break; a+=100;}while(a+3); return b*a*10;}' 180
-	./test_ret4.sh 068 'int main(){int a; int b; a =0; b=0; do{a-=1;b+=a;if(a)continue;break; a+=100;}while(a+3); return b*a;}' 18
-	./test_ret4.sh 067 'int main(){int a; int b; a =0; b=0; do{a-=1;b+=a;if(a)continue;break; a+=100;}while(a+3); return a*b;}' 18
 	./test_ret4.sh 001 'int main(){return 123;}' 123
 	./test_ret4.sh 002 'int main(){return (123);}' 123
 	./test_ret4.sh 003 'int main(){return ((((123))));}' 123
@@ -155,9 +106,57 @@ full_compile:
 	./test_ret4.sh 064 'int main(){int a; int b; a =-3; b=-6; return a*b*10+a+b+3;}' 174
 	./test_ret4.sh 065 'int main(){int a; int b; a =0; b=0; do{a-=1;b+=a;if(a)continue;break; a+=100;}while(a+3); return a*b*10;}' 180
 	./test_ret4.sh 066 'int main(){int a; int b; a =0; b=0; do{a-=1;b+=a;if(a)continue;break; a+=100;}while(a+3); return a*b*10+a+b+3;}' 174
+	./test_ret4.sh 067 'int main(){int a; int b; a =0; b=0; do{a-=1;b+=a;if(a)continue;break; a+=100;}while(a+3); return a*b;}' 18
+	./test_ret4.sh 068 'int main(){int a; int b; a =0; b=0; do{a-=1;b+=a;if(a)continue;break; a+=100;}while(a+3); return b*a;}' 18
+	./test_ret4.sh 069 'int main(){int a; int b; a =0; b=0; do{a-=1;b+=a;if(a)continue;break; a+=100;}while(a+3); return b*a*10;}' 180
+	./test_ret4.sh 070 'int main(){int a; int b; a =0; b=0; do{a-=1;b+=a;if(a)continue;break;}while(a+3); return a*b;}' 18
+	./test_ret4.sh 071 'int main(){int a; int b; a =0; b=0; do{a-=1;b+=a;if(!a)break;}while(a+3); return a*b;}' 18
+	./test_ret4.sh 072 'int main(){int a; int b; a =0; b=0; do{a-=1;b+=a;}while(a+3); return a*b;}' 18
+	./test_ret4.sh 073 'int main(){int a; int b; a =0; b=0; do{a-=1;b+=a;}while(a+3); return b*a;}' 18
+	./test_ret4.sh 074 'int main(){int a; int b; a=3; b=0; b+= ++a; return a*b*11-2;}' 174
+	./test_ret4.sh 075 'int main(){int a; int b; a=3; b=0; b+= a++; return !(b-3)+!(a-4)+172;}' 174
+	./test_ret4.sh 076 'int main(){int a; int b; a =0; b=0; do{b+=--a;}while(a+3); return b*a;}' 18
+	./test_ret4.sh 077 'int main(){int a; for (a = 3;a;) {a = 2;if (a - 3) {break;}a += 3;}return 174;}' 174
+	./test_ret4.sh 078 'int main(){int a; for (a = 3;;) {a = 2;if (a - 3) {break;}a += 3;}return 174;}' 174
+	./test_ret4.sh 079 'int main(){int a; int b; for(a=0,b=0;a <= 10;) {b += a; a += 1;}return b;}' 55
+	./test_ret4.sh 080 'int main(){int a; int b; for(a=11, b=0;a;){a-=1;b+=a;if(a)continue;break; a+=100;} return b;}' 55
+	./test_ret4.sh 081 'int main(){int a; int b; for(a=0,b=0;a <= 10;++a) {b += a;}return b;}' 55
+	./test_ret4.sh 082 'int main(){int a; int b; for(a=0,b=0;a <= 10;a++) {b += a;}return b;}' 55
+	./test_ret4.sh 083 'int main(){int a; int b; int c; int d; d=0; b = 5; c = 0;for(a = 3;a;d++){for(;b;++d) {c += b;b-=1;if(b == 3) break;}b = 7;a-=1;if(a == 1) break;} return a*7+b*15+c*2;}' 174
+	./test_ret4.sh 084 'int main(){int a; int b; for(a=0,b=0;a<10;a++){ if(a ==5)continue;b+=a;} return b;}' 40
+	./test_ret4.sh 085 'int main(){int a; a = 174; {int a; a = 3;} return a;}' 174
+	./test_ret4.sh 086 'int main(){int a; a = 3; { a = 174;} return a;}' 174
 	./test_ret4.sh 087 'int main() {int *b; int a; a = 3; a += 5;  return a + 166; }' 174
 	./test_ret4.sh 088 'int main() {int *******b; int a; a = 3; a += 5;  return a + 166; }' 174
-	
+	./test_ret4.sh 089 'int main() {int a; a = 174; int *b; b = &a; return a;}' 174
+	./test_ret4.sh 090 'int main(){int x;x = 86;int *y;y = &x; return (*y) + x + 2;}' 174
+	./test_ret4.sh 091 'int main(){int x;x = 86;int *y;y = &x; return (*y) + (*y) + 2;}' 174
+	./test_ret4.sh 092 'int main(){int x;x = 86;int *y;y = &x;int **z;z = &y;return (*y) + (**z) + 2;}' 174
+	./test_ret4.sh 093 'int main(){int x;x = 86;int *y;y = &x;int **z;z = &y;return*y+**z+2;}' 174
+	./test_ret4.sh 094 'int main() {int x;int *y;x = 3;y = &x;*y = 174;return x;}' 174
+	./test_ret4.sh 095 'int main() {int x;int *y;x = 3;y = &x;*y = 171;*y += 3;return x;}' 174
+	./test_ret4.sh 096 'int main(){int x; int y; int *z; int*a; z=&x; a=&y; *z=*a=87; return(x+y);}' 174
+	./test_ret4.sh 097 'int main(){int x; int *y; int **z; z = &y; *z = &x; *y = 174; return x;}' 174
+	./test_ret4.sh 098 'int foo(int* p){return 3;} int main(){int x; return 174;}' 174
+	./test_ret4.sh 099 'int foo(int* p){return *p;} int main(){int x; x = 174; return foo(&x);}' 174
+	./test_ret4.sh 100 'int foo(int* p){*p = 172; return *p+2;} int main(){int x; return foo(&x);}' 174
+	./test_ret4.sh 101 'int *foo(int *p){*p = 4;return p;} int main(){int x;int *y;y = foo(&x); *y+= 170;return x;}' 174
+	./test_ret4.sh 102 'int *foo(int *p){*p = 4;return p;} int main(){int x;int y;*foo(&x) += 170;return x;}' 174
+	./test_ret4.sh 103 'int *alloc4();int main(){int *p;p = alloc4(62, 8, 31, 85);return *p;}' 62
+	./test_ret4.sh 104 'int *alloc4();int main(){int *p;int *r;p = alloc4(62, 8, 31, 85);int *q;q = p;return *q;}' 62
+	./test_ret4.sh 105 'int *alloc4();int main(){int *p;int *r;p = alloc4(62, 8, 31, 85);int *q;q = p + 2;return *q;}' 31
+	./test_ret4.sh 106 'int *alloc4();int main(){int *p;int c;int e;c = 2;int d;d = 1;p = alloc4(62, 8, 31, 85);int *q;q = p + c;return *(q+d) - *q + (*p-2)*2;}' 174
+	./test_ret4.sh 107 'int *alloc4();int main(){int *p;p = alloc4(62, 8, 31, 85);int *q;q = p;return *q;}' 62
+	./test_ret4.sh 108 'int *alloc4();int main(){int *p;p = alloc4(62, 8, 31, 85);int *q;q = p + 2;return *q;}' 31
+	./test_ret4.sh 109 'int *alloc4();int main(){int *p;int c;c = 2;int d;d = 1;p = alloc4(62, 8, 31, 85);int *q;q = p + c;return *(q+d) - *q + (*p-2)*2;}' 174
+	./test_ret4.sh 110 'int *alloc4();int main(){int *p;int c;c = 2;int d;d = 1;p = alloc4(62, 8, 31, 85);int *q;q = c + p;return *(d+q) - *q + (*p-2)*2;}' 174
+	./test_ret4.sh 111 'int *alloc4();int main(){int *p;int c;c = -2;int d;d = 1;p = alloc4(62, 8, 31, 85);int *q;q = p - c;return *(d+q) - *q + (*p-2)*2;}' 174
+	./test_ret4.sh 112 'int *alloc4();int main(){int *p; int *q; q = p+174; return q-p;}' 174
+	./test_ret4.sh 113 'int *foo(int *(p)){*p = 4;return p;} int main(){int (x);int (y); int (*(*(z))); *foo(&x) += 170;return x;}' 174
+	./test_ret4.sh 114 'int main(){int a[2][3]; return 174;}' 174
+	./test_ret4.sh 115 'int x; int *y; int main(){return 174;}' 174
+	./test_ret4.sh 116 'int x; int *y; int main(){return x+174;}' 174
+	./test_ret4.sh 117 'int x; int *y; int main(){x=3; int a; a=2; y=&a; return x+*y+169;}' 174
 
 check_error:
 	make notest
