@@ -196,9 +196,9 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 					int label2 = get_new_label_name(ptr_ps);
 					print_expression(ptr_ps, *expr.ptr1);
 
-					gen_logical_OR_set(0, label1, label2);
+					gen_logical_OR_set(0, label1);
 					print_expression(ptr_ps, *expr.ptr2);
-					gen_logical_OR_set(1, label1, label2);
+					gen_logical_OR_set(1, label1);
 					gen_logical_OR_final(1, label1, label2);
 					return;
 				}
@@ -207,9 +207,9 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 					int label2 = get_new_label_name(ptr_ps);
 					print_expression(ptr_ps, *expr.ptr1);
 
-					gen_logical_AND_set(0, label1, label2);
+					gen_logical_AND_set(0, label1);
 					print_expression(ptr_ps, *expr.ptr2);
-					gen_logical_AND_set(1, label1, label2);
+					gen_logical_AND_set(1, label1);
 					gen_logical_AND_final(1, label1, label2);
 					return;
 				}

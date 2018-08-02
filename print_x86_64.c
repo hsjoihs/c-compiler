@@ -379,9 +379,9 @@ void gen_ternary_part3(int label1, int label2)
 	       label2);
 }
 
-void gen_logical_OR_set(int depth, int label1, int label2)
+void gen_logical_OR_set(int depth, int label1)
 {
-	printf("//gen_logical_OR_set(%d, %d, %d);\n", depth, label1, label2);
+	printf("//gen_logical_OR_set(%d, %d);\n", depth, label1);
 	printf("  addq $%d, %%rsp\n", depth * 8);
 	printf("  cmpl $0, %d(%%rsp)\n", -depth * 8);
 	printf("  jne .L%d\n", label1);
@@ -402,9 +402,9 @@ void gen_logical_OR_final(int final_depth, int label1, int label2)
 	       label2, label1, label2);
 }
 
-void gen_logical_AND_set(int depth, int label1, int label2)
+void gen_logical_AND_set(int depth, int label1)
 {
-	printf("//gen_logical_AND_set(%d, %d, %d);\n", depth, label1, label2);
+	printf("//gen_logical_AND_set(%d, %d);\n", depth, label1);
 	printf("  addq $%d, %%rsp\n", depth * 8);
 	printf("  cmpl $0, %d(%%rsp)\n", -depth * 8);
 	printf("  je .L%d\n", label1);
