@@ -22,6 +22,7 @@ struct Expression parse_conditional_expression(struct ParserState *ptr_ps,
 struct ExprInfo parse_argument_expression(struct ParserState *ptr_ps,
                                           const struct Token **ptr_tokvec,
                                           int counter);
+struct Expression ident_as_lvalue(struct ParserState ps, const char *name);
 
 struct LocalVarInfo {
 	struct Type type;
@@ -1506,6 +1507,30 @@ struct Expression parse_primary_expression(struct ParserState *ptr_ps,
 	                       "the beginning of parseprint_primary_expression");
 }
 
+struct Expression ident_as_lvalue(struct ParserState ps, const char *name)
+{
+	if (!is_local_var(ps.scope_chain, name)) {
+		struct Type type = resolve_name_globally(ps.global_vars_type_map, name);
+
+		struct Expression expr;
+		expr.details.info = GLOBAL_VAR;
+		expr.details.type = type;
+		expr.details.offset = GARBAGE_INT;
+		expr.category = GLOBAL_VAR_AS_LVALUE;
+		expr.global_var_name = name;
+		return expr;
+	} else {
+		struct LocalVarInfo info = resolve_name_locally(ps.scope_chain, name);
+
+		struct Expression expr;
+		expr.details.info = LOCAL_VAR;
+		expr.details.type = info.type;
+		expr.details.offset = info.offset;
+		expr.category = LOCAL_VAR_AS_LVALUE;
+		return expr;
+	}
+}
+
 struct Expression parse_assignment_expression(struct ParserState *ptr_ps,
                                               const struct Token **ptr_tokvec)
 {
@@ -1518,44 +1543,14 @@ struct Expression parse_assignment_expression(struct ParserState *ptr_ps,
 		tokvec += 2;
 		*ptr_tokvec = tokvec;
 
-		if (!is_local_var(ptr_ps->scope_chain, name)) {
-			struct Type type =
-			    resolve_name_globally(ptr_ps->global_vars_type_map, name);
+		struct Expression expr = ident_as_lvalue(*ptr_ps, name);
+		struct Expression expr2 = parse_assignment_expression(ptr_ps, &tokvec);
+		struct ExprInfo expr_info = expr2.details;
+		expect_type(expr_info, expr.details.type, 0);
 
-			struct Expression expr;
-			expr.details.info = GLOBAL_VAR;
-			expr.details.type = type;
-			expr.details.offset = GARBAGE_INT;
-			expr.category = GLOBAL_VAR_AS_LVALUE;
-			expr.global_var_name = name;
-
-			struct Expression expr2 =
-			    parse_assignment_expression(ptr_ps, &tokvec);
-			struct ExprInfo expr_info = expr2.details;
-			expect_type(expr_info, type, 0);
-
-			*ptr_tokvec = tokvec;
-			return binary_op_(expr, expr2, opkind, BINARY_EXPR,
-			                  UNASSIGNABLE(type));
-		} else {
-			struct LocalVarInfo info =
-			    resolve_name_locally(ptr_ps->scope_chain, name);
-
-			struct Expression expr;
-			expr.details.info = LOCAL_VAR;
-			expr.details.type = info.type;
-			expr.details.offset = info.offset;
-			expr.category = LOCAL_VAR_AS_LVALUE;
-
-			struct Expression expr2 =
-			    parse_assignment_expression(ptr_ps, &tokvec);
-			struct ExprInfo expr_info = expr2.details;
-			expect_type(expr_info, info.type, 0);
-
-			*ptr_tokvec = tokvec;
-			return binary_op_(expr, expr2, opkind, BINARY_EXPR,
-			                  UNASSIGNABLE(info.type));
-		}
+		*ptr_tokvec = tokvec;
+		return binary_op_(expr, expr2, opkind, BINARY_EXPR,
+		                  UNASSIGNABLE(expr.details.type));
 	}
 
 	const struct Token *tokvec2 = tokvec;
