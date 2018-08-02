@@ -44,6 +44,10 @@ void read_all_tokens_debug(const char *str)
 int is_print_implemented(struct Expression expr)
 {
 	switch (expr.category) {
+		case POINTER_PLUSORMINUS_INT: {
+			return is_print_implemented(*expr.ptr1) &&
+			       is_print_implemented(*expr.ptr2);
+		}
 		case POSTFIX_INCREMENT:
 		case POSTFIX_DECREMENT: {
 			return is_print_implemented(*expr.ptr1);
@@ -131,6 +135,16 @@ int is_print_implemented(struct Expression expr)
 void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 {
 	switch (expr.category) {
+		case POINTER_PLUSORMINUS_INT: {
+			print_expression(ptr_ps, *expr.ptr1);
+			print_expression(ptr_ps, *expr.ptr2);
+			int size = size_of(deref_type(expr.ptr1->details.type));
+			gen_cltq();
+			gen_mul_by_const(size);
+			gen_op_8byte(expr.binary_operator == OP_PLUS ? "addq" : "subq");
+
+			return;
+		}
 		case POSTFIX_INCREMENT:
 		case POSTFIX_DECREMENT: {
 			enum TokenKind opkind = expr.category == POSTFIX_INCREMENT
