@@ -1655,17 +1655,6 @@ struct ExprInfo parse_argument_expression(struct ParserState *ptr_ps,
 		unimplemented("calling with 7 or more arguments");
 	}
 
-	switch (size_of(expr_info.type)) {
-		case 4:
-			// gen_pop_to_reg(get_reg_name_from_arg_pos(counter));
-			break;
-		case 8:
-			// gen_pop_to_reg_8byte(get_reg_name_from_arg_pos_8byte(counter));
-			break;
-		default:
-			unimplemented("Unsupported width");
-	}
-
 	*ptr_tokvec = tokvec;
 
 	return expr_info;
