@@ -41,98 +41,6 @@ void read_all_tokens_debug(const char *str)
 	} while (1);
 }
 
-int is_print_implemented(struct Expression expr)
-{
-	switch (expr.category) {
-		case POINTER_PLUSORMINUS_INT:
-		case POINTER_MINUS_POINTER: {
-			return is_print_implemented(*expr.ptr1) &&
-			       is_print_implemented(*expr.ptr2);
-		}
-		case POSTFIX_INCREMENT:
-		case POSTFIX_DECREMENT: {
-			return is_print_implemented(*expr.ptr1);
-		}
-		case LOCAL_VAR_AS_RVALUE:
-		case GLOBAL_VAR_AS_RVALUE:
-		case LOCAL_VAR_AS_LVALUE:
-		case GLOBAL_VAR_AS_LVALUE:
-			return 1;
-		case BINARY_EXPR:
-			switch (expr.binary_operator) {
-				case OP_OR_OR:
-				case OP_AND_AND:
-
-				case OP_PLUS:
-				case OP_MINUS:
-				case OP_ASTERISK:
-				case OP_SLASH:
-				case OP_PERCENT:
-				case OP_COMMA:
-				case OP_LT:
-				case OP_LT_EQ:
-				case OP_LSHIFT:
-				case OP_GT:
-				case OP_GT_EQ:
-				case OP_RSHIFT:
-				case OP_AND:
-				case OP_OR:
-				case OP_EQ_EQ:
-				case OP_NOT_EQ:
-				case OP_HAT:
-
-				case OP_EQ:
-				case OP_PLUS_EQ:
-				case OP_MINUS_EQ:
-				case OP_ASTERISK_EQ:
-				case OP_SLASH_EQ:
-				case OP_PERCENT_EQ:
-				case OP_LSHIFT_EQ:
-				case OP_RSHIFT_EQ:
-				case OP_AND_EQ:
-				case OP_HAT_EQ:
-				case OP_OR_EQ:
-					return is_print_implemented(*expr.ptr1) &&
-					       is_print_implemented(*expr.ptr2);
-
-				default:
-					return 0;
-			}
-		case INT_VALUE:
-			return 1;
-		case UNARY_OP_EXPR:
-			switch (expr.unary_operator) {
-				case OP_NOT:
-				case OP_TILDA:
-				case OP_PLUS:
-				case OP_MINUS:
-				case OP_PLUS_PLUS:
-				case OP_MINUS_MINUS:
-				case OP_ASTERISK:
-					return is_print_implemented(*expr.ptr1);
-				case OP_AND:
-					return 1;
-				default:
-					return 0;
-			}
-		case CONDITIONAL_EXPR:
-			return is_print_implemented(*expr.ptr1) &&
-			       is_print_implemented(*expr.ptr2) &&
-			       is_print_implemented(*expr.ptr3);
-		case FUNCCALL_EXPR: {
-			int flag = 1;
-
-			for (int counter = 0; counter < expr.arg_length; counter++) {
-				flag = flag && is_print_implemented(expr.arg_expr_vec[counter]);
-			}
-			return flag;
-		}
-
-		default:
-			return 0;
-	}
-}
-
 void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 {
 	switch (expr.category) {
@@ -492,27 +400,9 @@ struct ExprInfo parseprint_expression(struct ParserState *ptr_ps,
 
 	const struct Token *tokvec2 = tokvec;
 	struct Expression expr = parse_expression(ptr_ps, &tokvec2);
-	// fprintf(stderr, "expr.category: %d\n", expr.category);
-	if (is_print_implemented(expr)) {
-		*ptr_tokvec = tokvec2;
-		print_expression(ptr_ps, expr);
-		return expr.details;
-	}
-
-	fprintf(stderr, "\x1B[35mparser and lexer is NOT split\x1B[0m\n");
-	struct ExprInfo info = parseprint_assignment_expression(ptr_ps, &tokvec);
-	while (1) {
-		enum TokenKind kind = tokvec[0].kind;
-		if (kind != OP_COMMA) {
-			break;
-		}
-		++tokvec;
-		info =
-		    remove_leftiness(parseprint_assignment_expression(ptr_ps, &tokvec));
-		print_binary_op(OP_COMMA);
-	}
 	*ptr_tokvec = tokvec2;
-	return info;
+	print_expression(ptr_ps, expr);
+	return expr.details;
 }
 
 int is_local_var(struct LocalVarTableList t, const char *str)
