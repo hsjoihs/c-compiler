@@ -38,6 +38,75 @@ void read_all_tokens_debug(const char *str)
 	} while (1);
 }
 
+int is_print_implemented(struct Expression expr)
+{
+	switch (expr.category) {
+		case BINARY_EXPR:
+			switch (expr.binary_operator) {
+				case OP_PLUS:
+				case OP_MINUS:
+				case OP_ASTERISK:
+				case OP_SLASH:
+				case OP_PERCENT:
+				case OP_COMMA:
+				case OP_LT:
+				case OP_LT_EQ:
+				case OP_LSHIFT:
+				case OP_GT:
+				case OP_GT_EQ:
+				case OP_RSHIFT:
+				case OP_AND:
+				case OP_OR:
+				case OP_EQ_EQ:
+				case OP_NOT_EQ:
+				case OP_HAT:
+
+					return is_print_implemented(*expr.ptr1) &&
+					       is_print_implemented(*expr.ptr2);
+
+				default:
+					return 0;
+			}
+		case INT_VALUE:
+			return 1;
+		default:
+			return 0;
+	}
+}
+
+void print_expression(struct Expression expr)
+{
+	switch (expr.category) {
+		case BINARY_EXPR:
+			switch (expr.binary_operator) {
+				case OP_PLUS:
+				case OP_MINUS:
+				case OP_ASTERISK:
+				case OP_SLASH:
+				case OP_PERCENT:
+				case OP_COMMA:
+				case OP_LT:
+				case OP_LT_EQ:
+				case OP_LSHIFT:
+				case OP_GT:
+				case OP_GT_EQ:
+				case OP_RSHIFT:
+				case OP_AND:
+				case OP_OR:
+				case OP_EQ_EQ:
+				case OP_NOT_EQ:
+				case OP_HAT:
+					print_expression(*expr.ptr1);
+					print_expression(*expr.ptr2);
+					print_binary_op(expr.binary_operator);
+					return;
+			}
+		case INT_VALUE:
+			gen_push_int(expr.int_value);
+			return;
+	}
+}
+
 struct ExprInfo parseprint_expression(struct ParserState *ptr_ps,
                                       const struct Token **ptr_tokvec)
 {
