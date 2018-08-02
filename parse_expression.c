@@ -5,14 +5,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-struct Expression wrap(struct ExprInfo info)
-{
-	struct Expression expr;
-	expr.category = UNKNOWN;
-	expr.details = info;
-	return expr;
-}
-
 struct Expression remove_leftiness_(struct Expression expr)
 {
 	expr.details = remove_leftiness(expr.details);

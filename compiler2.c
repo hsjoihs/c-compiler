@@ -1402,12 +1402,14 @@ struct Expression parse_postfix_expression(struct ParserState *ptr_ps,
 		}
 
 		tokvec += 2;
+
+		struct Expression *args = calloc(10, sizeof(struct Expression));
+		int counter = 0;
 		if (tokvec[0].kind == RIGHT_PAREN) {
 			tokvec++;
 		} else {
-			int counter = 0;
 
-			parse_argument_expression(ptr_ps, &tokvec, counter);
+			args[counter] = parse_argument_expression(ptr_ps, &tokvec, counter);
 			++counter;
 
 			while (1) {
@@ -1416,7 +1418,8 @@ struct Expression parse_postfix_expression(struct ParserState *ptr_ps,
 					break;
 				}
 				++tokvec;
-				parse_argument_expression(ptr_ps, &tokvec, counter);
+				args[counter] =
+				    parse_argument_expression(ptr_ps, &tokvec, counter);
 				++counter;
 			}
 
@@ -1428,7 +1431,13 @@ struct Expression parse_postfix_expression(struct ParserState *ptr_ps,
 			*ptr_tokvec = tokvec;
 		}
 		*ptr_tokvec = tokvec;
-		return wrap(UNASSIGNABLE(ret_type));
+
+		struct Expression expr;
+		expr.category = FUNCCALL_EXPR;
+		expr.arg_expr_vec = args;
+		expr.arg_length = counter - 1;
+		expr.details = UNASSIGNABLE(ret_type);
+		return expr;
 
 	} else if (tokvec[0].kind == IDENT_OR_RESERVED &&
 	           (tokvec[1].kind == OP_PLUS_PLUS ||
