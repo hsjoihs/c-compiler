@@ -4,6 +4,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+struct ExprInfo parseprint_cast_expression(struct ParserState *ptr_ps,
+                                           const struct Token **ptr_tokvec)
+{
+	fprintf(stderr, "DELETED\n");
+	exit(EXIT_FAILURE);
+}
 
 struct ExprInfo parseprint_additive_expression(struct ParserState *ptr_ps,
                                                const struct Token **ptr_tokvec);

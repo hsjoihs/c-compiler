@@ -492,13 +492,6 @@ int isAssign(enum TokenKind opkind)
 	        opkind == OP_HAT_EQ || opkind == OP_OR_EQ);
 }
 
-struct ExprInfo parseprint_cast_expression(struct ParserState *ptr_ps,
-                                           const struct Token **ptr_tokvec)
-{
-	fprintf(stderr, "DELETED\n");
-	exit(EXIT_FAILURE);
-}
-
 const char *get_reg_name_from_arg_pos(int counter)
 {
 	switch (counter) {
