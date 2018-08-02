@@ -1564,10 +1564,11 @@ struct Expression parse_assignment_expression(struct ParserState *ptr_ps,
 		return expr;
 	}
 
-	struct ExprInfo expr_info = parse_unary_expression(ptr_ps, &tokvec);
+	struct Expression expr = wrap(parse_unary_expression(ptr_ps, &tokvec));
+	struct ExprInfo expr_info = expr.details;
 
 	assert(isAssign(tokvec[0].kind));
-	switch (expr_info.info) {
+	switch (expr.details.info) {
 		case LOCAL_VAR:
 		case GLOBAL_VAR:
 			assert("supposed to be handled separately, at least for now" && 0);
@@ -1581,12 +1582,14 @@ struct Expression parse_assignment_expression(struct ParserState *ptr_ps,
 			enum TokenKind opkind = tokvec[0].kind;
 			++tokvec;
 
-			struct ExprInfo expr_info2 =
-			    parse_assignment_expression(ptr_ps, &tokvec).details;
+			struct Expression expr2 =
+			    parse_assignment_expression(ptr_ps, &tokvec);
+			struct ExprInfo expr_info2 = expr2.details;
 			expect_type(expr_info, expr_info2.type, 19);
 
 			*ptr_tokvec = tokvec;
-			return remove_leftiness_(wrap((expr_info)));
+			return binary_op_(expr, expr2, opkind, BINARY_EXPR,
+			                  remove_leftiness(expr_info));
 		};
 	}
 }
