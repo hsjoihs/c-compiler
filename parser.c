@@ -7,6 +7,20 @@
 #include <stdlib.h>
 #include <string.h>
 
+struct Expression parse_postfix_expression(struct ParserState *ptr_ps,
+                                           const struct Token **ptr_tokvec);
+struct Expression parse_conditional_expression(struct ParserState *ptr_ps,
+                                               const struct Token **ptr_tokvec);
+struct Expression parse_argument_expression(struct ParserState *ptr_ps,
+                                            const struct Token **ptr_tokvec,
+                                            int counter);
+struct Expression parse_primary_expression(struct ParserState *ptr_ps,
+                                           const struct Token **ptr_tokvec);
+struct Expression parse_assignment_expression(struct ParserState *ptr_ps,
+                                              const struct Token **ptr_tokvec);
+struct Expression parse_cast_expression(struct ParserState *ptr_ps,
+                                        const struct Token **ptr_tokvec);
+
 struct Expression unary_op_(struct Expression expr, enum TokenKind kind,
                             struct ExprInfo exprinfo)
 {
