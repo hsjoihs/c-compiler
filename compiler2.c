@@ -1276,7 +1276,7 @@ int main(int argc, char const **argv)
  **********************/
 
 struct Expression unary_op_(struct Expression expr, enum TokenKind kind,
-                            enum expr_category cat, struct ExprInfo exprinfo)
+                            struct ExprInfo exprinfo)
 {
 	struct Expression *ptr_expr1 = calloc(1, sizeof(struct Expression));
 	*ptr_expr1 = expr;
@@ -1304,12 +1304,12 @@ struct ExprInfo parse_unary_expression(struct ParserState *ptr_ps,
 		++tokvec;
 		struct Expression expr =
 		    remove_leftiness_(parse_cast_expression(ptr_ps, &tokvec));
-		struct ExprInfo expr_info = expr.details;
 		expect_type(expr.details, INT_TYPE, 2);
-		// print_unary_prefix_op(kind);
+
+		struct Expression new_expr = unary_op_(expr, kind, expr.details);
 
 		*ptr_tokvec = tokvec;
-		return remove_leftiness(expr_info);
+		return new_expr.details;
 	} else if (tokvec[0].kind == OP_PLUS_PLUS ||
 	           tokvec[0].kind == OP_MINUS_MINUS) {
 		enum TokenKind opkind = tokvec[0].kind;
