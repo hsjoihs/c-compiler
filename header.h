@@ -79,8 +79,6 @@ void parseprint_compound_statement(struct ParserState *ptr_ps,
 void print_inc_or_dec(struct ParserState *ptr_ps, const char *name,
                 enum TokenKind opkind);
 
-void print_unary_prefix_op(enum TokenKind kind);
-
 struct ParamInfo;
 
 struct ParamInfos {

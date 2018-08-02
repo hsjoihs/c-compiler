@@ -61,30 +61,3 @@ void print_simple_binary_op(enum SimpleBinOp kind)
 			return;
 	}
 }
-
-void print_unary_prefix_op(enum TokenKind kind)
-{
-	switch (kind) {
-		case OP_NOT:
-			gen_unary_not();
-			return;
-		case OP_TILDA:
-			gen_unary("notl");
-			return;
-		case OP_PLUS:
-			/* do nothing */
-			return;
-		case OP_MINUS:
-			gen_unary("negl");
-			return;
-		case IDENT_OR_RESERVED:
-		case LEFT_PAREN:
-		case RIGHT_PAREN:
-		case END:
-		case LIT_DEC_INTEGER:
-			assert("failure!!! not an op!!!!" && 0);
-		default:
-			assert("failure!!! not a unary prefix op!!!!" && 0);
-	}
-	assert("unimplemented!!!!" && 0);
-}

@@ -280,11 +280,20 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 		case UNARY_OP_EXPR:
 			switch (expr.unary_operator) {
 				case OP_NOT:
+					print_expression(ptr_ps, *expr.ptr1);
+					gen_unary_not();
+					return;
 				case OP_TILDA:
+					print_expression(ptr_ps, *expr.ptr1);
+					gen_unary("notl");
+					return;
 				case OP_PLUS:
+					print_expression(ptr_ps, *expr.ptr1);
+					/* do nothing */
+					return;
 				case OP_MINUS:
 					print_expression(ptr_ps, *expr.ptr1);
-					print_unary_prefix_op(expr.unary_operator);
+					gen_unary("negl");
 					return;
 
 				case OP_PLUS_PLUS:
