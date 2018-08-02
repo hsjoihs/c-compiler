@@ -1541,97 +1541,28 @@ struct ExprInfo parse_assignment_expression(struct ParserState *ptr_ps,
 			struct Type type =
 			    resolve_name_globally(ptr_ps->global_vars_type_map, name);
 
-			if (opkind != OP_EQ) {
-				// printf("//load from global `%s`\n", name);
-				switch (size_of(type)) {
-					case 4:
-						// gen_push_from_global_4byte(name);
-						break;
-					case 8:
-						// gen_push_from_global_8byte(name);
-						break;
-					default:
-						unimplemented(
-						    "Unsupported width in the assignment operation");
-				}
-			}
-
 			struct ExprInfo expr_info =
 			    parse_assignment_expression(ptr_ps, &tokvec);
 			expect_type(expr_info, type, 0);
 
-			if (opkind != OP_EQ) {
-				// printf("//before assigning to global `%s`:\n", name);
-				// print_before_assign(opkind);
-			}
-
-			// printf("//assign to global `%s`\n", name);
-			switch (size_of(type)) {
-				case 4:
-					// gen_write_to_global_4byte(name);
-					break;
-				case 8:
-					// gen_write_to_global_8byte(name);
-					break;
-				default:
-					unimplemented(
-					    "Unsupported width in the assignment operation");
-			}
 			*ptr_tokvec = tokvec;
 			return UNASSIGNABLE(type);
 		} else {
 			struct LocalVarInfo info =
 			    resolve_name_locally(ptr_ps->scope_chain, name);
 
-			if (opkind != OP_EQ) {
-				// printf("//load from `%s`\n", name);
-				switch (size_of(info.type)) {
-					case 4:
-						// gen_push_from_local(info.offset);
-						break;
-					case 8:
-						// gen_push_from_local_8byte(info.offset);
-						break;
-					default:
-						unimplemented(
-						    "Unsupported width in the assignment operation");
-				}
-			}
-
 			struct ExprInfo expr_info =
 			    parse_assignment_expression(ptr_ps, &tokvec);
 			expect_type(expr_info, info.type, 0);
 
-			if (opkind != OP_EQ) {
-				// printf("//before assigning to `%s`:\n", name);
-				// print_before_assign(opkind);
-			}
-
-			// printf("//assign to `%s`\n", name);
-			switch (size_of(info.type)) {
-				case 4:
-					// gen_write_to_local(info.offset);
-					break;
-				case 8:
-					// gen_write_to_local_8byte(info.offset);
-					break;
-				default:
-					unimplemented(
-					    "Unsupported width in the assignment operation");
-			}
 			*ptr_tokvec = tokvec;
 			return UNASSIGNABLE(info.type);
 		}
 	}
 
-	// int label = get_new_label_name(ptr_ps);
-
 	const struct Token *tokvec2 = tokvec;
 	struct ParserState *ptr_ps2 = ptr_ps;
-	// gen_jump(label, "commenting out");
 	parse_unary_expression(ptr_ps2, &tokvec2);
-	// printf("// comment finishes\n");
-	// printf("  .L%d:\n", label);
 
 	/* parse failed */
 	if (!isAssign(tokvec2[0].kind)) {
@@ -1658,20 +1589,10 @@ struct ExprInfo parse_assignment_expression(struct ParserState *ptr_ps,
 			enum TokenKind opkind = tokvec[0].kind;
 			++tokvec;
 
-			/* push the backup */
-			// gen_push_from_local_8byte(-8);
-
 			struct ExprInfo expr_info2 =
 			    parse_assignment_expression(ptr_ps, &tokvec);
 			expect_type(expr_info, expr_info2.type, 19);
 
-			// gen_pop2nd_to_local_8byte(-8);
-			if (opkind != OP_EQ) {
-				// print_before_assign(opkind);
-			} else {
-				// gen_discard2nd_8byte();
-			}
-			// gen_assign_to_backed_up_address();
 			*ptr_tokvec = tokvec;
 			return remove_leftiness(expr_info);
 		};
