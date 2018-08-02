@@ -75,26 +75,10 @@ struct Token get_token(const char** ptr_to_str);
 
 struct ExprInfo parseprint_expression(struct ParserState *ptr_ps,
                       const struct Token **ptr_tokvec);
-struct ExprInfo parseprint_assignment_expression(struct ParserState *ptr_ps,
-                                 const struct Token **ptr_tokvec);
-struct ExprInfo parseprint_primary_expression(struct ParserState *ptr_ps,
-                              const struct Token **ptr_tokvec);
-struct ExprInfo parseprint_inclusive_OR_expression(struct ParserState *ptr_ps,
-                                   const struct Token **ptr_tokvec);
 struct ExprInfo parseprint_cast_expression(struct ParserState *ptr_ps,
                            const struct Token **ptr_tokvec);
-struct ExprInfo parseprint_unary_expression(struct ParserState *ptr_ps,
-                            const struct Token **ptr_tokvec);
-struct ExprInfo parseprint_postfix_expression(struct ParserState *ptr_ps,
-                              const struct Token **ptr_tokvec);
-struct ExprInfo parseprint_conditional_expression(struct ParserState *ptr_ps,
-                                  const struct Token **ptr_tokvec);
 void parseprint_compound_statement(struct ParserState *ptr_ps,
                               const struct Token **ptr_tokvec);
-struct ExprInfo parseprint_logical_OR_expression(struct ParserState *ptr_ps,
-                                 const struct Token **ptr_tokvec);
-struct ExprInfo parseprint_logical_AND_expression(struct ParserState *ptr_ps,
-                                  const struct Token **ptr_tokvec);
 
 void print_inc_or_dec(struct ParserState *ptr_ps, const char *name,
                 enum TokenKind opkind);
