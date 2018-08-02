@@ -102,6 +102,16 @@ struct Type deref_type(struct Type t)
 
 int is_pointer(struct Type t) { return t.type_category == PTR_; }
 
+int is_array(struct Type t) { return t.type_category == ARRAY; }
+
+struct Type if_array_convert_to_ptr(struct Type t)
+{
+	if (is_array(t)) {
+		t.type_category = PTR_;
+	}
+	return t;
+}
+
 struct Type ptr_of_type_to_ptr_to_type(struct Type *ptr_type)
 {
 	struct Type type;

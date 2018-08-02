@@ -150,6 +150,10 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 			info.type = expr.details.type;
 			info.offset = expr.details.offset;
 
+			if (is_array(expr.details.true_type)) {
+				gen_push_address_of_local(info.offset);
+				return;
+			}
 			switch (size_of(info.type)) {
 				case 4:
 					gen_push_from_local(info.offset);

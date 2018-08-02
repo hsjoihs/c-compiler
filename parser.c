@@ -274,7 +274,8 @@ struct Expression parse_primary_expression(struct ParserState *ptr_ps,
 
 			struct ExprInfo expr_info;
 			expr_info.info = GLOBAL_VAR;
-			expr_info.type = type;
+			expr_info.type = if_array_convert_to_ptr(type);
+			expr_info.true_type = type;
 
 			struct Expression expr;
 			expr.details = expr_info;
@@ -287,7 +288,8 @@ struct Expression parse_primary_expression(struct ParserState *ptr_ps,
 
 			struct ExprInfo expr_info;
 			expr_info.info = LOCAL_VAR;
-			expr_info.type = info.type;
+			expr_info.type = if_array_convert_to_ptr(info.type);
+			expr_info.true_type = info.type;
 			expr_info.offset = info.offset;
 
 			struct Expression expr;

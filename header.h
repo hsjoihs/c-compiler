@@ -117,6 +117,7 @@ enum expr_info_ {
 struct ExprInfo {
 	enum expr_info_ info;
 	struct Type type;
+	struct Type true_type;
 	int offset;
 };
 
@@ -246,3 +247,6 @@ enum UnaryOp to_unaryop(enum TokenKind t);
 struct Expression combine_by_add_or_sub(struct Expression expr,
                                         struct Expression expr2,
                                         enum TokenKind kind);
+
+int is_array(struct Type t);
+struct Type if_array_convert_to_ptr(struct Type t);
