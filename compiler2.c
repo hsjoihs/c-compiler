@@ -147,7 +147,7 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 				case SIMPLE_BIN_OP_HAT:
 					print_expression(ptr_ps, *expr.ptr1);
 					print_expression(ptr_ps, *expr.ptr2);
-					print_binary_op(expr.binary_operator);
+					print_simple_binary_op(expr.simple_binary_operator);
 					return;
 			}
 		}
@@ -452,35 +452,35 @@ void print_before_assign(enum TokenKind kind)
 	switch (kind) {
 		case OP_PLUS_EQ:
 		case OP_PLUS_PLUS:
-			print_binary_op(OP_PLUS);
+			print_simple_binary_op(SIMPLE_BIN_OP_PLUS);
 			return;
 		case OP_MINUS_EQ:
 		case OP_MINUS_MINUS:
-			print_binary_op(OP_MINUS);
+			print_simple_binary_op(SIMPLE_BIN_OP_MINUS);
 			return;
 		case OP_ASTERISK_EQ:
-			print_binary_op(OP_ASTERISK);
+			print_simple_binary_op(SIMPLE_BIN_OP_ASTERISK);
 			return;
 		case OP_SLASH_EQ:
-			print_binary_op(OP_SLASH);
+			print_simple_binary_op(SIMPLE_BIN_OP_SLASH);
 			return;
 		case OP_PERCENT_EQ:
-			print_binary_op(OP_PERCENT);
+			print_simple_binary_op(SIMPLE_BIN_OP_PERCENT);
 			return;
 		case OP_LSHIFT_EQ:
-			print_binary_op(OP_LSHIFT);
+			print_simple_binary_op(SIMPLE_BIN_OP_LSHIFT);
 			return;
 		case OP_RSHIFT_EQ:
-			print_binary_op(OP_RSHIFT);
+			print_simple_binary_op(SIMPLE_BIN_OP_RSHIFT);
 			return;
 		case OP_AND_EQ:
-			print_binary_op(OP_AND);
+			print_simple_binary_op(SIMPLE_BIN_OP_AND);
 			return;
 		case OP_HAT_EQ:
-			print_binary_op(OP_HAT);
+			print_simple_binary_op(SIMPLE_BIN_OP_HAT);
 			return;
 		case OP_OR_EQ:
-			print_binary_op(OP_OR);
+			print_simple_binary_op(SIMPLE_BIN_OP_OR);
 			return;
 		default:
 			assert("cannot happen" && 0);

@@ -82,7 +82,6 @@ void parseprint_compound_statement(struct ParserState *ptr_ps,
 void print_inc_or_dec(struct ParserState *ptr_ps, const char *name,
                 enum TokenKind opkind);
 
-void print_binary_op(enum TokenKind kind);
 void print_unary_prefix_op(enum TokenKind kind);
 
 struct ParamInfo;
@@ -234,3 +233,5 @@ enum SimpleBinOp to_simplebinop(enum TokenKind t);
 struct Expression simple_binary_op(struct Expression expr,
                                    struct Expression expr2, enum TokenKind kind,
                                    struct ExprInfo exprinfo);
+
+void print_simple_binary_op(enum SimpleBinOp kind);
