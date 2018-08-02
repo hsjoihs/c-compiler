@@ -1586,7 +1586,7 @@ struct Expression parse_assignment_expression(struct ParserState *ptr_ps,
 			expect_type(expr_info, expr_info2.type, 19);
 
 			*ptr_tokvec = tokvec;
-			return wrap(remove_leftiness(expr_info));
+			return remove_leftiness_(wrap((expr_info)));
 		};
 	}
 }
