@@ -1516,8 +1516,9 @@ struct Expression parse_assignment_expression(struct ParserState *ptr_ps,
 			struct Type type =
 			    resolve_name_globally(ptr_ps->global_vars_type_map, name);
 
-			struct ExprInfo expr_info =
-			    parse_assignment_expression(ptr_ps, &tokvec).details;
+			struct Expression expr2 =
+			    parse_assignment_expression(ptr_ps, &tokvec);
+			struct ExprInfo expr_info = expr2.details;
 			expect_type(expr_info, type, 0);
 
 			*ptr_tokvec = tokvec;
@@ -1526,8 +1527,9 @@ struct Expression parse_assignment_expression(struct ParserState *ptr_ps,
 			struct LocalVarInfo info =
 			    resolve_name_locally(ptr_ps->scope_chain, name);
 
-			struct ExprInfo expr_info =
-			    parse_assignment_expression(ptr_ps, &tokvec).details;
+			struct Expression expr2 =
+			    parse_assignment_expression(ptr_ps, &tokvec);
+			struct ExprInfo expr_info = expr2.details;
 			expect_type(expr_info, info.type, 0);
 
 			*ptr_tokvec = tokvec;
