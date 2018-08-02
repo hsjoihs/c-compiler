@@ -183,13 +183,13 @@ _Noreturn void unimplemented(const char *str);
 
 enum expr_category {
 	UNKNOWN,
-	XOR_EXPR,
-	BITAND_EXPR
+	BINARY_EXPR,
 };
 
 struct Expression {
 	struct ExprInfo details;
 	enum expr_category category;
+	enum TokenKind binary_operator;
 	struct Expression *ptr1;
 	struct Expression *ptr2;
 	struct Expression *ptr3;

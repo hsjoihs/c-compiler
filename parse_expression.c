@@ -32,8 +32,8 @@ struct ExprInfo parse_OR_expression(struct ParserState *ptr_ps,
                                     const struct Token **ptr_tokvec);
 struct Expression parse_AND_expression(struct ParserState *ptr_ps,
                                        const struct Token **ptr_tokvec);
-struct ExprInfo parse_equality_expression(struct ParserState *ptr_ps,
-                                          const struct Token **ptr_tokvec);
+struct Expression parse_equality_expression(struct ParserState *ptr_ps,
+                                            const struct Token **ptr_tokvec);
 struct ExprInfo parse_relational_expression(struct ParserState *ptr_ps,
                                             const struct Token **ptr_tokvec);
 struct ExprInfo parse_shift_expression(struct ParserState *ptr_ps,
@@ -77,12 +77,8 @@ struct Expression binary_op(struct Expression expr, struct Expression expr2,
 
 	struct Expression new_expr;
 	new_expr.details = UNASSIGNABLE(INT_TYPE);
-	switch (kind) {
-		case OP_HAT:
-			new_expr.category = XOR_EXPR;
-		case OP_AND:
-			new_expr.category = BITAND_EXPR;
-	}
+	new_expr.category = BINARY_EXPR;
+	new_expr.binary_operator = kind;
 	new_expr.ptr1 = ptr_expr1;
 	new_expr.ptr2 = ptr_expr2;
 	new_expr.ptr3 = 0;
@@ -118,7 +114,7 @@ struct Expression parse_AND_expression(struct ParserState *ptr_ps,
                                        const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
-	struct Expression expr = wrap(parse_equality_expression(ptr_ps, &tokvec));
+	struct Expression expr = parse_equality_expression(ptr_ps, &tokvec);
 
 	while (1) {
 		enum TokenKind kind = tokvec[0].kind;
@@ -128,8 +124,7 @@ struct Expression parse_AND_expression(struct ParserState *ptr_ps,
 		++tokvec;
 
 		struct Expression expr2;
-		expr2 =
-		    wrap(remove_leftiness(parse_equality_expression(ptr_ps, &tokvec)));
+		expr2 = remove_leftiness_(parse_equality_expression(ptr_ps, &tokvec));
 
 		expr = binary_op(expr, expr2, kind);
 	}
@@ -138,11 +133,11 @@ struct Expression parse_AND_expression(struct ParserState *ptr_ps,
 	return expr;
 }
 
-struct ExprInfo parse_equality_expression(struct ParserState *ptr_ps,
-                                          const struct Token **ptr_tokvec)
+struct Expression parse_equality_expression(struct ParserState *ptr_ps,
+                                            const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
-	struct ExprInfo expr_info = parse_relational_expression(ptr_ps, &tokvec);
+	struct Expression expr = wrap(parse_relational_expression(ptr_ps, &tokvec));
 
 	while (1) {
 		enum TokenKind kind = tokvec[0].kind;
@@ -151,15 +146,14 @@ struct ExprInfo parse_equality_expression(struct ParserState *ptr_ps,
 		}
 		++tokvec;
 
-		expect_type(expr_info, INT_TYPE, 9);
+		struct Expression expr2;
+		expr2 = wrap(
+		    remove_leftiness(parse_relational_expression(ptr_ps, &tokvec)));
 
-		expr_info =
-		    remove_leftiness(parse_relational_expression(ptr_ps, &tokvec));
-		expect_type(expr_info, INT_TYPE, 10);
-		// print_binary_op(kind);
+		expr = binary_op(expr, expr2, kind);
 	}
 	*ptr_tokvec = tokvec;
-	return expr_info;
+	return expr;
 }
 
 struct ExprInfo parse_relational_expression(struct ParserState *ptr_ps,
