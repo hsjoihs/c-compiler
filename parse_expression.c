@@ -24,12 +24,6 @@ struct ExprInfo parse_relational_expression(struct ParserState *ptr_ps,
 struct ExprInfo parse_shift_expression(struct ParserState *ptr_ps,
                                        const struct Token **ptr_tokvec);
 
-struct ExprInfo parse_cast_expression(struct ParserState *ptr_ps,
-                                      const struct Token **ptr_tokvec)
-{
-	unimplemented("parse_cast_expression");
-}
-
 struct ExprInfo parse_inclusive_OR_expression(struct ParserState *ptr_ps,
                                               const struct Token **ptr_tokvec)
 {

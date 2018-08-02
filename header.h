@@ -180,3 +180,8 @@ struct Type parse_declarator(const struct Token **ptr_tokvec,
                                  const char **ptr_to_ident_str);
 
 _Noreturn void unimplemented(const char *str);
+
+struct ExprInfo parse_cast_expression(struct ParserState *ptr_ps,
+                                      const struct Token **ptr_tokvec);
+struct ExprInfo parse_inclusive_OR_expression(struct ParserState *ptr_ps,
+                                              const struct Token **ptr_tokvec);
