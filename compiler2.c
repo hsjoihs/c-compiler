@@ -1774,12 +1774,10 @@ struct ExprInfo parse_logical_AND_expression(struct ParserState *ptr_ps,
                                              const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
-	// int label1 = get_new_label_name(ptr_ps);
-	// int label2 = get_new_label_name(ptr_ps);
 
 	int counter = 0;
-	struct ExprInfo first_expr_info =
-	    parse_inclusive_OR_expression(ptr_ps, &tokvec).details;
+	struct Expression first_expr =
+	    parse_inclusive_OR_expression(ptr_ps, &tokvec);
 
 	while (1) {
 		enum TokenKind kind = tokvec[0].kind;
@@ -1787,24 +1785,22 @@ struct ExprInfo parse_logical_AND_expression(struct ParserState *ptr_ps,
 			break;
 		}
 
-		if (counter == 0) {
-			// gen_logical_AND_set(0, label1, label2);
-		}
-
 		++tokvec;
-		parse_inclusive_OR_expression(ptr_ps, &tokvec).details;
+		struct Expression expr2 =
+		    parse_inclusive_OR_expression(ptr_ps, &tokvec);
 		++counter;
-		// gen_logical_AND_set(counter, label1, label2);
+
+		first_expr = binary_op(first_expr, expr2, kind); /* first_expr is INT */
 	}
 
 	if (counter != 0) {
-		// gen_logical_AND_final(counter, label1, label2);
+
 		*ptr_tokvec = tokvec;
-		return UNASSIGNABLE(INT_TYPE);
+		return first_expr.details;
 	}
 
 	*ptr_tokvec = tokvec;
-	return first_expr_info;
+	return first_expr.details;
 }
 
 void parse_argument_expression(struct ParserState *ptr_ps,
