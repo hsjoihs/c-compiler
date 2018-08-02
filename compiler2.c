@@ -10,6 +10,8 @@
 
 int get_new_label_name(struct ParserState *ptr_ps);
 void print_before_assign(enum TokenKind kind);
+void print_argument_expression(struct ParserState *ptr_ps,
+                               struct Expression expr, int counter);
 
 struct ExprInfo remove_leftiness(struct ExprInfo info)
 {
@@ -100,6 +102,15 @@ int is_print_implemented(struct Expression expr)
 			return is_print_implemented(*expr.ptr1) &&
 			       is_print_implemented(*expr.ptr2) &&
 			       is_print_implemented(*expr.ptr3);
+		case FUNCCALL_EXPR: {
+			int flag = 1;
+
+			for (int counter = 0; counter < expr.arg_length; counter++) {
+				flag = flag && is_print_implemented(expr.arg_expr_vec[counter]);
+			}
+			return flag;
+		}
+
 		default:
 			return 0;
 	}
@@ -313,6 +324,36 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 			gen_ternary_part3(label1, label2);
 			return;
 		}
+		case FUNCCALL_EXPR: {
+			const char *ident_str = expr.global_var_name;
+			struct Type ret_type;
+			if (!isElem(ptr_ps->func_info_map, ident_str)) {
+				fprintf(stderr, "Undeclared function `%s()` detected.\n",
+				        ident_str);
+				fprintf(stderr, "Assumes that `%s()` returns `int`\n",
+				        ident_str);
+				ret_type = INT_TYPE;
+			} else {
+				struct FuncInfo *ptr_func_info =
+				    lookup(ptr_ps->func_info_map, ident_str);
+				ret_type = ptr_func_info->ret_type;
+			}
+
+			for (int counter = 0; counter < expr.arg_length; counter++) {
+				print_argument_expression(ptr_ps, expr.arg_expr_vec[counter],
+				                          counter);
+			}
+			switch (size_of(ret_type)) {
+				case 4:
+					gen_push_ret_of(ident_str);
+					break;
+				case 8:
+					gen_push_ret_of_8byte(ident_str);
+					break;
+				default:
+					unimplemented("Unsupported width");
+			}
+		}
 	}
 }
 
@@ -461,8 +502,8 @@ parseprint_assignment_expression(struct ParserState *ptr_ps,
 						gen_push_from_global_8byte(name);
 						break;
 					default:
-						unimplemented(
-						    "Unsupported width in the assignment operation");
+						unimplemented("Unsupported width in the assignment "
+						              "operation");
 				}
 			}
 
@@ -503,8 +544,8 @@ parseprint_assignment_expression(struct ParserState *ptr_ps,
 						gen_push_from_local_8byte(info.offset);
 						break;
 					default:
-						unimplemented(
-						    "Unsupported width in the assignment operation");
+						unimplemented("Unsupported width in the assignment "
+						              "operation");
 				}
 			}
 
@@ -743,6 +784,26 @@ const char *get_reg_name_from_arg_pos_8byte(int counter)
 			return "r9";
 		default:
 			assert("cannot happen" && 0);
+	}
+}
+
+void print_argument_expression(struct ParserState *ptr_ps,
+                               struct Expression expr, int counter)
+{
+	print_expression(ptr_ps, expr);
+	if (counter > 5) {
+		unimplemented("calling with 7 or more arguments");
+	}
+
+	switch (size_of(expr.details.type)) {
+		case 4:
+			gen_pop_to_reg(get_reg_name_from_arg_pos(counter));
+			break;
+		case 8:
+			gen_pop_to_reg_8byte(get_reg_name_from_arg_pos_8byte(counter));
+			break;
+		default:
+			unimplemented("Unsupported width");
 	}
 }
 

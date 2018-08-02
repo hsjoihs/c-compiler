@@ -181,6 +181,7 @@ struct Expression parse_postfix_expression(struct ParserState *ptr_ps,
 		expr.arg_expr_vec = args;
 		expr.arg_length = counter;
 		expr.details = UNASSIGNABLE(ret_type);
+		expr.global_var_name = ident_str;
 		return expr;
 
 	} else if (tokvec[0].kind == IDENT_OR_RESERVED &&
