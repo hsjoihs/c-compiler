@@ -222,6 +222,7 @@ struct Expression parse_primary_expression(struct ParserState *ptr_ps,
 		struct Expression expr;
 		expr.details = UNASSIGNABLE(INT_TYPE);
 		expr.int_value = tokvec[0].int_value;
+		expr.category = INT_VALUE;
 
 		return expr;
 
