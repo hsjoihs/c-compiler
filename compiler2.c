@@ -19,8 +19,9 @@ struct ExprInfo parse_unary_expression(struct ParserState *ptr_ps,
                                        const struct Token **ptr_tokvec);
 struct Expression parse_conditional_expression(struct ParserState *ptr_ps,
                                                const struct Token **ptr_tokvec);
-void parse_argument_expression(struct ParserState *ptr_ps,
-                               const struct Token **ptr_tokvec, int counter);
+struct ExprInfo parse_argument_expression(struct ParserState *ptr_ps,
+                                          const struct Token **ptr_tokvec,
+                                          int counter);
 
 struct LocalVarInfo {
 	struct Type type;
@@ -1643,8 +1644,9 @@ struct ExprInfo parse_expression(struct ParserState *ptr_ps,
 	return info;
 }
 
-void parse_argument_expression(struct ParserState *ptr_ps,
-                               const struct Token **ptr_tokvec, int counter)
+struct ExprInfo parse_argument_expression(struct ParserState *ptr_ps,
+                                          const struct Token **ptr_tokvec,
+                                          int counter)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 
@@ -1665,4 +1667,6 @@ void parse_argument_expression(struct ParserState *ptr_ps,
 	}
 
 	*ptr_tokvec = tokvec;
+
+	return expr_info;
 }
