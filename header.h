@@ -182,8 +182,7 @@ struct Type parse_declarator(const struct Token **ptr_tokvec,
 _Noreturn void unimplemented(const char *str);
 
 enum expr_category {
-	UNKNOWN,
-	BINARY_EXPR,
+	BINARY_EXPR = 1,
 	POINTER_PLUSORMINUS_INT,
 	POINTER_MINUS_POINTER,
 	CONDITIONAL_EXPR,
