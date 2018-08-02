@@ -1688,8 +1688,8 @@ struct ExprInfo parse_conditional_expression(struct ParserState *ptr_ps,
 	const struct Token *tokvec = *ptr_tokvec;
 	struct ExprInfo expr_info = parse_logical_OR_expression(ptr_ps, &tokvec);
 	if (tokvec[0].kind == QUESTION) {
-		int label1 = get_new_label_name(ptr_ps);
-		int label2 = get_new_label_name(ptr_ps);
+		// int label1 = get_new_label_name(ptr_ps);
+		// int label2 = get_new_label_name(ptr_ps);
 
 		// gen_ternary_part1(label1, label2);
 		++tokvec;
