@@ -19,9 +19,9 @@ struct Expression parse_unary_expression(struct ParserState *ptr_ps,
                                          const struct Token **ptr_tokvec);
 struct Expression parse_conditional_expression(struct ParserState *ptr_ps,
                                                const struct Token **ptr_tokvec);
-struct ExprInfo parse_argument_expression(struct ParserState *ptr_ps,
-                                          const struct Token **ptr_tokvec,
-                                          int counter);
+struct Expression parse_argument_expression(struct ParserState *ptr_ps,
+                                            const struct Token **ptr_tokvec,
+                                            int counter);
 struct Expression ident_as_lvalue(struct ParserState ps, const char *name);
 
 struct LocalVarInfo {
@@ -1665,19 +1665,18 @@ struct Expression parse_expression(struct ParserState *ptr_ps,
 	return expr;
 }
 
-struct ExprInfo parse_argument_expression(struct ParserState *ptr_ps,
-                                          const struct Token **ptr_tokvec,
-                                          int counter)
+struct Expression parse_argument_expression(struct ParserState *ptr_ps,
+                                            const struct Token **ptr_tokvec,
+                                            int counter)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 
-	struct ExprInfo expr_info =
-	    parse_assignment_expression(ptr_ps, &tokvec).details;
+	struct Expression expr = parse_assignment_expression(ptr_ps, &tokvec);
 	if (counter > 5) {
 		unimplemented("calling with 7 or more arguments");
 	}
 
 	*ptr_tokvec = tokvec;
 
-	return expr_info;
+	return expr;
 }
