@@ -88,41 +88,41 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 			return;
 		}
 
-		case LOCAL_VAR_AS_RVALUE:
-		case GLOBAL_VAR_AS_RVALUE: {
-			if (expr.category == GLOBAL_VAR_AS_RVALUE) {
-				struct Type type = expr.details.type;
-				printf("//global `%s` as rvalue\n", expr.global_var_name);
+		case LOCAL_VAR_AS_RVALUE: {
+			struct LocalVarInfo info;
+			info.type = expr.details.type;
+			info.offset = expr.details.offset;
 
-				switch (size_of(type)) {
-					case 4:
-						gen_push_from_global_4byte(expr.global_var_name);
-						break;
-					case 8:
-						gen_push_from_global_8byte(expr.global_var_name);
-						break;
-					default:
-						unimplemented("Unsupported width");
-				}
-				return;
-			} else {
-				struct LocalVarInfo info;
-				info.type = expr.details.type;
-				info.offset = expr.details.offset;
-
-				switch (size_of(info.type)) {
-					case 4:
-						gen_push_from_local(info.offset);
-						break;
-					case 8:
-						gen_push_from_local_8byte(info.offset);
-						break;
-					default:
-						unimplemented("Unsupported width");
-				}
-				return;
+			switch (size_of(info.type)) {
+				case 4:
+					gen_push_from_local(info.offset);
+					break;
+				case 8:
+					gen_push_from_local_8byte(info.offset);
+					break;
+				default:
+					unimplemented("Unsupported width");
 			}
+			return;
 		}
+
+		case GLOBAL_VAR_AS_RVALUE: {
+			struct Type type = expr.details.type;
+			printf("//global `%s` as rvalue\n", expr.global_var_name);
+
+			switch (size_of(type)) {
+				case 4:
+					gen_push_from_global_4byte(expr.global_var_name);
+					break;
+				case 8:
+					gen_push_from_global_8byte(expr.global_var_name);
+					break;
+				default:
+					unimplemented("Unsupported width");
+			}
+			return;
+		}
+
 		case LOCAL_VAR_AS_LVALUE:
 		case GLOBAL_VAR_AS_LVALUE:
 			return;
