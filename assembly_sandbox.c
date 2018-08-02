@@ -13,8 +13,10 @@ int foo()
 int bar()
 {
     int a[1][2];
-    int(*p)[2];
+    int (*p)[2];
     p = a;
+    int *q;
+    q = *p;
     return 100;
 }
 
@@ -45,8 +47,13 @@ int main()
 
 	*/
 	gen_prologue(32, "bar");
-	gen_push_address_of_local(-16);
+	gen_push_address_of_local(-24);
 	gen_write_to_local_8byte(-8);
+	gen_discard();
+
+	gen_push_from_local_8byte(-8);
+	gen_write_to_local_8byte(-16);
+	gen_discard();
 
 	gen_push_int(100);
 	gen_epilogue(234);
