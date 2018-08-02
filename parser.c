@@ -165,7 +165,7 @@ struct Expression parse_postfix_expression(struct ParserState *ptr_ps,
 		struct Expression expr;
 		expr.category = FUNCCALL_EXPR;
 		expr.arg_expr_vec = args;
-		expr.arg_length = counter - 1;
+		expr.arg_length = counter;
 		expr.details = UNASSIGNABLE(ret_type);
 		return expr;
 
