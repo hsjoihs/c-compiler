@@ -67,9 +67,6 @@ struct ExprInfo parse_inclusive_OR_expression(struct ParserState *ptr_ps,
 struct Expression binary_op(struct Expression expr, struct Expression expr2,
                             enum TokenKind kind)
 {
-	expect_type(expr.details, INT_TYPE, 5);
-	expect_type(expr2.details, INT_TYPE, 6);
-
 	struct Expression *ptr_expr1 = calloc(1, sizeof(struct Expression));
 	struct Expression *ptr_expr2 = calloc(1, sizeof(struct Expression));
 	*ptr_expr1 = expr;
@@ -102,6 +99,8 @@ struct Expression parse_exclusive_OR_expression(struct ParserState *ptr_ps,
 
 		struct Expression expr2 =
 		    remove_leftiness_(parse_AND_expression(ptr_ps, &tokvec));
+		expect_type(expr.details, INT_TYPE, 5);
+		expect_type(expr2.details, INT_TYPE, 6);
 		expr = binary_op(expr, expr2, kind);
 	}
 	*ptr_tokvec = tokvec;
@@ -124,6 +123,8 @@ struct Expression parse_AND_expression(struct ParserState *ptr_ps,
 
 		struct Expression expr2 =
 		    remove_leftiness_(parse_equality_expression(ptr_ps, &tokvec));
+		expect_type(expr.details, INT_TYPE, 7);
+		expect_type(expr2.details, INT_TYPE, 8);
 		expr = binary_op(expr, expr2, kind);
 	}
 	*ptr_tokvec = tokvec;
@@ -146,7 +147,8 @@ struct Expression parse_equality_expression(struct ParserState *ptr_ps,
 
 		struct Expression expr2 =
 		    remove_leftiness_(parse_relational_expression(ptr_ps, &tokvec));
-
+		expect_type(expr.details, INT_TYPE, 9);
+		expect_type(expr2.details, INT_TYPE, 10);
 		expr = binary_op(expr, expr2, kind);
 	}
 	*ptr_tokvec = tokvec;
@@ -169,7 +171,8 @@ struct Expression parse_relational_expression(struct ParserState *ptr_ps,
 
 		struct Expression expr2 =
 		    remove_leftiness_(parse_shift_expression(ptr_ps, &tokvec));
-
+		expect_type(expr.details, INT_TYPE, 11);
+		expect_type(expr2.details, INT_TYPE, 12);
 		expr = binary_op(expr, expr2, kind);
 	}
 	*ptr_tokvec = tokvec;
@@ -191,7 +194,8 @@ struct Expression parse_shift_expression(struct ParserState *ptr_ps,
 
 		struct Expression expr2 =
 		    wrap(remove_leftiness(parse_additive_expression(ptr_ps, &tokvec)));
-
+		expect_type(expr.details, INT_TYPE, 13);
+		expect_type(expr2.details, INT_TYPE, 14);
 		expr = binary_op(expr, expr2, kind);
 	}
 	*ptr_tokvec = tokvec;
