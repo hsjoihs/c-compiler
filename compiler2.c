@@ -127,29 +127,10 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 		case GLOBAL_VAR_AS_LVALUE:
 			return;
 		case SIMPLE_BINARY_EXPR: {
-			switch (expr.simple_binary_operator) {
-				case SIMPLE_BIN_OP_PLUS:
-				case SIMPLE_BIN_OP_MINUS:
-				case SIMPLE_BIN_OP_ASTERISK:
-				case SIMPLE_BIN_OP_SLASH:
-				case SIMPLE_BIN_OP_PERCENT:
-				case SIMPLE_BIN_OP_COMMA:
-				case SIMPLE_BIN_OP_LT:
-				case SIMPLE_BIN_OP_LT_EQ:
-				case SIMPLE_BIN_OP_LSHIFT:
-				case SIMPLE_BIN_OP_GT:
-				case SIMPLE_BIN_OP_GT_EQ:
-				case SIMPLE_BIN_OP_RSHIFT:
-				case SIMPLE_BIN_OP_AND:
-				case SIMPLE_BIN_OP_OR:
-				case SIMPLE_BIN_OP_EQ_EQ:
-				case SIMPLE_BIN_OP_NOT_EQ:
-				case SIMPLE_BIN_OP_HAT:
-					print_expression(ptr_ps, *expr.ptr1);
-					print_expression(ptr_ps, *expr.ptr2);
-					print_simple_binary_op(expr.simple_binary_operator);
-					return;
-			}
+			print_expression(ptr_ps, *expr.ptr1);
+			print_expression(ptr_ps, *expr.ptr2);
+			print_simple_binary_op(expr.simple_binary_operator);
+			return;
 		}
 		case BINARY_EXPR:
 			switch (expr.binary_operator) {
