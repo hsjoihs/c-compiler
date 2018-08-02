@@ -65,7 +65,8 @@ struct ExprInfo parse_inclusive_OR_expression(struct ParserState *ptr_ps,
 }
 
 struct Expression binary_op_(struct Expression expr, struct Expression expr2,
-                             enum TokenKind kind, enum expr_category cat)
+                             enum TokenKind kind, enum expr_category cat,
+                             struct ExprInfo exprinfo)
 {
 	struct Expression *ptr_expr1 = calloc(1, sizeof(struct Expression));
 	struct Expression *ptr_expr2 = calloc(1, sizeof(struct Expression));
@@ -73,7 +74,7 @@ struct Expression binary_op_(struct Expression expr, struct Expression expr2,
 	*ptr_expr2 = expr2;
 
 	struct Expression new_expr;
-	new_expr.details = UNASSIGNABLE(INT_TYPE);
+	new_expr.details = exprinfo;
 	new_expr.category = cat;
 	new_expr.binary_operator = kind;
 	new_expr.ptr1 = ptr_expr1;
@@ -86,14 +87,14 @@ struct Expression binary_op_(struct Expression expr, struct Expression expr2,
 struct Expression binary_op(struct Expression expr, struct Expression expr2,
                             enum TokenKind kind)
 {
-	return binary_op_(expr, expr2, kind, BINARY_EXPR);
+	return binary_op_(expr, expr2, kind, BINARY_EXPR, UNASSIGNABLE(INT_TYPE));
 }
 
 struct Expression pointer_plusorminus_int(struct Expression expr,
                                           struct Expression expr2,
                                           enum TokenKind kind)
 {
-	return binary_op_(expr, expr2, kind, POINTER_PLUSORMINUS_INT);
+	return binary_op_(expr, expr2, kind, POINTER_PLUSORMINUS_INT, expr.details);
 }
 
 struct Expression parse_exclusive_OR_expression(struct ParserState *ptr_ps,
