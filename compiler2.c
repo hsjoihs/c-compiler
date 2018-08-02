@@ -69,6 +69,16 @@ int is_print_implemented(struct Expression expr)
 			}
 		case INT_VALUE:
 			return 1;
+		case UNARY_OP_EXPR:
+			switch (expr.unary_operator) {
+				case OP_NOT:
+				case OP_TILDA:
+				case OP_PLUS:
+				case OP_MINUS:
+					return is_print_implemented(*expr.ptr1);
+				default:
+					return 0;
+			}
 		default:
 			return 0;
 	}
@@ -104,6 +114,16 @@ void print_expression(struct Expression expr)
 		case INT_VALUE:
 			gen_push_int(expr.int_value);
 			return;
+		case UNARY_OP_EXPR:
+			switch (expr.unary_operator) {
+				case OP_NOT:
+				case OP_TILDA:
+				case OP_PLUS:
+				case OP_MINUS:
+					print_expression(*expr.ptr1);
+					print_unary_prefix_op(expr.unary_operator);
+			}
+			return;
 	}
 }
 
@@ -122,6 +142,7 @@ struct ExprInfo parseprint_expression(struct ParserState *ptr_ps,
 		return expr.details;
 	}
 
+	fprintf(stderr, "\x1B[35mparser and lexer is NOT split\x1B[0m\n");
 	struct ExprInfo info = parseprint_assignment_expression(ptr_ps, &tokvec);
 	while (1) {
 		enum TokenKind kind = tokvec[0].kind;
