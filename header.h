@@ -76,8 +76,6 @@ struct Token get_token(const char** ptr_to_str);
 void parseprint_compound_statement(struct ParserState *ptr_ps,
                               const struct Token **ptr_tokvec);
 
-void print_inc_or_dec(struct ParserState *ptr_ps, const char *name,
-                enum TokenKind opkind);
 
 struct ParamInfo;
 

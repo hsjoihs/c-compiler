@@ -1041,34 +1041,6 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
 	*ptr_tokvec = tokvec2;
 }
 
-void print_inc_or_dec(struct ParserState *ptr_ps, const char *name,
-                      enum TokenKind opkind)
-{
-	if (!is_local_var(ptr_ps->scope_chain, name)) {
-		unimplemented("incrementing or decrementing a global variable");
-	}
-	struct LocalVarInfo info = resolve_name_locally(ptr_ps->scope_chain, name);
-
-	printf("//load from `%s`\n", name);
-	gen_push_from_local(info.offset);
-	gen_push_int(1);
-
-	printf("//before assigning to `%s`:\n", name);
-	print_before_assign(opkind);
-
-	printf("//assign to `%s`\n", name);
-	gen_write_to_local(info.offset);
-}
-
-struct ExprInfo UNASSIGNABLE(struct Type type) {
-	struct ExprInfo expr_info;
-	expr_info.info = NOT_ASSIGNABLE;
-	expr_info.type = type;
-	expr_info.offset = GARBAGE_INT;
-
-	return expr_info;
-}
-
 int main(int argc, char const **argv)
 {
 	char *str;
