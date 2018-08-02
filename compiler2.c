@@ -1459,18 +1459,6 @@ struct ExprInfo parse_primary_expression(struct ParserState *ptr_ps,
 		if (!is_local_var(ptr_ps->scope_chain, tokvec[0].ident_str)) {
 			struct Type type = resolve_name_globally(
 			    ptr_ps->global_vars_type_map, tokvec[0].ident_str);
-			// printf("//global `%s` as rvalue\n", tokvec[0].ident_str);
-
-			switch (size_of(type)) {
-				case 4:
-					// gen_push_from_global_4byte(tokvec[0].ident_str);
-					break;
-				case 8:
-					// gen_push_from_global_8byte(tokvec[0].ident_str);
-					break;
-				default:
-					unimplemented("Unsupported width");
-			}
 
 			struct ExprInfo expr_info;
 			expr_info.info = GLOBAL_VAR;
@@ -1479,18 +1467,6 @@ struct ExprInfo parse_primary_expression(struct ParserState *ptr_ps,
 		} else {
 			struct LocalVarInfo info =
 			    resolve_name_locally(ptr_ps->scope_chain, tokvec[0].ident_str);
-
-			// printf("//`%s` as rvalue\n", tokvec[0].ident_str);
-			switch (size_of(info.type)) {
-				case 4:
-					// gen_push_from_local(info.offset);
-					break;
-				case 8:
-					// gen_push_from_local_8byte(info.offset);
-					break;
-				default:
-					unimplemented("Unsupported width");
-			}
 
 			struct ExprInfo expr_info;
 			expr_info.info = LOCAL_VAR;
