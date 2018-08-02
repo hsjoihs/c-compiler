@@ -378,18 +378,6 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 	}
 }
 
-struct ExprInfo parseprint_expression(struct ParserState *ptr_ps,
-                                      const struct Token **ptr_tokvec)
-{
-	const struct Token *tokvec = *ptr_tokvec;
-
-	const struct Token *tokvec2 = tokvec;
-	struct Expression expr = parse_expression(ptr_ps, &tokvec2);
-	*ptr_tokvec = tokvec2;
-	print_expression(ptr_ps, expr);
-	return expr.details;
-}
-
 int is_local_var(struct LocalVarTableList t, const char *str)
 {
 	if (isElem(t.var_table, str)) {
@@ -557,7 +545,9 @@ void parseprint_statement(struct ParserState *ptr_ps,
 		expect_and_consume(&tokvec, LEFT_PAREN,
 		                   "left parenthesis immediately after `if`");
 
-		parseprint_expression(ptr_ps, &tokvec);
+		struct Expression expr = parse_expression(ptr_ps, &tokvec);
+
+		print_expression(ptr_ps, expr);
 
 		expect_and_consume(&tokvec, RIGHT_PAREN, "right parenthesis of `if`");
 
@@ -583,7 +573,10 @@ void parseprint_statement(struct ParserState *ptr_ps,
 		if (tokvec[0].kind == SEMICOLON) {
 			unimplemented("`return;`");
 		} else {
-			struct ExprInfo expr_info = parseprint_expression(ptr_ps, &tokvec);
+			struct Expression expr = parse_expression(ptr_ps, &tokvec);
+
+			print_expression(ptr_ps, expr);
+			struct ExprInfo expr_info = expr.details;
 			expect_type(expr_info, ptr_ps->func_ret_type, 20);
 
 			expect_and_consume(
@@ -624,7 +617,9 @@ void parseprint_statement(struct ParserState *ptr_ps,
 		expect_and_consume(&tokvec, RES_WHILE, "`while` of do-while");
 		expect_and_consume(&tokvec, LEFT_PAREN, "left parenthesis of do-while");
 
-		parseprint_expression(ptr_ps, &tokvec);
+		struct Expression expr = parse_expression(ptr_ps, &tokvec);
+
+		print_expression(ptr_ps, expr);
 
 		expect_and_consume(&tokvec, RIGHT_PAREN,
 		                   "right parenthesis of do-while");
@@ -654,7 +649,9 @@ void parseprint_statement(struct ParserState *ptr_ps,
 
 		gen_label(label1);
 
-		parseprint_expression(ptr_ps, &tokvec);
+		struct Expression expr = parse_expression(ptr_ps, &tokvec);
+
+		print_expression(ptr_ps, expr);
 
 		expect_and_consume(&tokvec, RIGHT_PAREN, "left parenthesis of while");
 
@@ -715,7 +712,9 @@ void parseprint_statement(struct ParserState *ptr_ps,
 			;
 			/* do nothing */
 		} else {
-			parseprint_expression(ptr_ps, &tokvec); /* expression1 */
+			struct Expression expr = parse_expression(ptr_ps, &tokvec);
+
+			print_expression(ptr_ps, expr); /* expression1 */
 			gen_discard();
 		}
 
@@ -726,7 +725,9 @@ void parseprint_statement(struct ParserState *ptr_ps,
 		if (tokvec[0].kind == SEMICOLON) { /* expression2 is missing */
 			gen_push_int(1);
 		} else {
-			parseprint_expression(ptr_ps, &tokvec); /* expression2 */
+			struct Expression expr = parse_expression(ptr_ps, &tokvec);
+
+			print_expression(ptr_ps, expr); /* expression2 */
 		}
 
 		expect_and_consume(&tokvec, SEMICOLON, "second semicolon of `for`");
@@ -768,7 +769,9 @@ void parseprint_statement(struct ParserState *ptr_ps,
 		ptr_ps->break_label_name = stashed_break_label;
 		ptr_ps->continue_label_name = stashed_continue_label;
 	} else {
-		parseprint_expression(ptr_ps, &tokvec);
+		struct Expression expr = parse_expression(ptr_ps, &tokvec);
+
+		print_expression(ptr_ps, expr);
 		expect_and_consume(&tokvec, SEMICOLON, "semicolon after an expression");
 
 		gen_discard();

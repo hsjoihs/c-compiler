@@ -73,9 +73,6 @@ struct ParserState;
 void print_token(struct Token tok);
 struct Token get_token(const char** ptr_to_str);
 
-struct ExprInfo parseprint_expression(struct ParserState *ptr_ps,
-                      const struct Token **ptr_tokvec);
-
 void parseprint_compound_statement(struct ParserState *ptr_ps,
                               const struct Token **ptr_tokvec);
 
