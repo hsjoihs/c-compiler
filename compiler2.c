@@ -9,6 +9,7 @@
 #include <string.h>
 
 int get_new_label_name(struct ParserState *ptr_ps);
+void print_before_assign(enum TokenKind kind);
 
 struct ExprInfo remove_leftiness(struct ExprInfo info)
 {
@@ -41,6 +42,11 @@ void read_all_tokens_debug(const char *str)
 int is_print_implemented(struct Expression expr)
 {
 	switch (expr.category) {
+		case LOCAL_VAR_AS_RVALUE:
+		case GLOBAL_VAR_AS_RVALUE:
+		case LOCAL_VAR_AS_LVALUE:
+		case GLOBAL_VAR_AS_LVALUE:
+			return 1;
 		case BINARY_EXPR:
 			switch (expr.binary_operator) {
 				case OP_PLUS:
@@ -61,6 +67,17 @@ int is_print_implemented(struct Expression expr)
 				case OP_NOT_EQ:
 				case OP_HAT:
 
+				case OP_EQ:
+				case OP_PLUS_EQ:
+				case OP_MINUS_EQ:
+				case OP_ASTERISK_EQ:
+				case OP_SLASH_EQ:
+				case OP_PERCENT_EQ:
+				case OP_LSHIFT_EQ:
+				case OP_RSHIFT_EQ:
+				case OP_AND_EQ:
+				case OP_HAT_EQ:
+				case OP_OR_EQ:
 					return is_print_implemented(*expr.ptr1) &&
 					       is_print_implemented(*expr.ptr2);
 
@@ -91,6 +108,44 @@ int is_print_implemented(struct Expression expr)
 void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 {
 	switch (expr.category) {
+		case LOCAL_VAR_AS_RVALUE:
+		case GLOBAL_VAR_AS_RVALUE: {
+			if (expr.category == GLOBAL_VAR_AS_RVALUE) {
+				struct Type type = expr.details.type;
+				printf("//global `%s` as rvalue\n", expr.global_var_name);
+
+				switch (size_of(type)) {
+					case 4:
+						gen_push_from_global_4byte(expr.global_var_name);
+						break;
+					case 8:
+						gen_push_from_global_8byte(expr.global_var_name);
+						break;
+					default:
+						unimplemented("Unsupported width");
+				}
+				return;
+			} else {
+				struct LocalVarInfo info;
+				info.type = expr.details.type;
+				info.offset = expr.details.offset;
+
+				switch (size_of(info.type)) {
+					case 4:
+						gen_push_from_local(info.offset);
+						break;
+					case 8:
+						gen_push_from_local_8byte(info.offset);
+						break;
+					default:
+						unimplemented("Unsupported width");
+				}
+				return;
+			}
+		}
+		case LOCAL_VAR_AS_LVALUE:
+		case GLOBAL_VAR_AS_LVALUE:
+			return;
 		case BINARY_EXPR:
 			switch (expr.binary_operator) {
 				case OP_PLUS:
@@ -114,6 +169,123 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 					print_expression(ptr_ps, *expr.ptr2);
 					print_binary_op(expr.binary_operator);
 					return;
+
+				case OP_EQ:
+				case OP_PLUS_EQ:
+				case OP_MINUS_EQ:
+				case OP_ASTERISK_EQ:
+				case OP_SLASH_EQ:
+				case OP_PERCENT_EQ:
+				case OP_LSHIFT_EQ:
+				case OP_RSHIFT_EQ:
+				case OP_AND_EQ:
+				case OP_HAT_EQ:
+				case OP_OR_EQ: {
+
+					enum TokenKind opkind = expr.binary_operator;
+
+					if (expr.ptr1->category == LOCAL_VAR_AS_LVALUE ||
+					    expr.ptr1->category == GLOBAL_VAR_AS_LVALUE) {
+
+						if (expr.ptr1->category == GLOBAL_VAR_AS_LVALUE) {
+							struct Type type = expr.ptr1->details.type;
+							const char *name = expr.ptr1->global_var_name;
+
+							if (opkind != OP_EQ) {
+								printf("//load from global `%s`\n", name);
+								switch (size_of(type)) {
+									case 4:
+										gen_push_from_global_4byte(name);
+										break;
+									case 8:
+										gen_push_from_global_8byte(name);
+										break;
+									default:
+										unimplemented(
+										    "Unsupported width in the "
+										    "assignment operation");
+								}
+							}
+
+							print_expression(ptr_ps, *expr.ptr2);
+
+							if (opkind != OP_EQ) {
+								printf("//before assigning to global `%s`:\n",
+								       name);
+								print_before_assign(opkind);
+							}
+
+							printf("//assign to global `%s`\n", name);
+							switch (size_of(type)) {
+								case 4:
+									gen_write_to_global_4byte(name);
+									break;
+								case 8:
+									gen_write_to_global_8byte(name);
+									break;
+								default:
+									unimplemented("Unsupported width in the "
+									              "assignment operation");
+							}
+							return;
+						} else {
+
+							if (opkind != OP_EQ) {
+								switch (size_of(expr.ptr1->details.type)) {
+									case 4:
+										gen_push_from_local(
+										    expr.ptr1->details.offset);
+										break;
+									case 8:
+										gen_push_from_local_8byte(
+										    expr.ptr1->details.offset);
+										break;
+									default:
+										unimplemented(
+										    "Unsupported width in the "
+										    "assignment operation");
+								}
+							}
+
+							print_expression(ptr_ps, *expr.ptr2);
+
+							if (opkind != OP_EQ) {
+								print_before_assign(opkind);
+							}
+
+							switch (size_of(expr.ptr1->details.type)) {
+								case 4:
+									gen_write_to_local(
+									    expr.ptr1->details.offset);
+									break;
+								case 8:
+									gen_write_to_local_8byte(
+									    expr.ptr1->details.offset);
+									break;
+								default:
+									unimplemented("Unsupported width in the "
+									              "assignment operation");
+							}
+							return;
+						}
+					}
+
+					print_expression(ptr_ps, *expr.ptr1);
+
+					/* push the backup */
+					gen_push_from_local_8byte(-8);
+
+					print_expression(ptr_ps, *expr.ptr2);
+
+					gen_pop2nd_to_local_8byte(-8);
+					if (opkind != OP_EQ) {
+						print_before_assign(opkind);
+					} else {
+						gen_discard2nd_8byte();
+					}
+					gen_assign_to_backed_up_address();
+					return;
+				}
 			}
 		case INT_VALUE:
 			gen_push_int(expr.int_value);
@@ -143,17 +315,6 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 		}
 	}
 }
-
-/*
-    const struct Token *tokvec = *ptr_tokvec;
-    struct ExprInfo expr_info =
-        parseprint_logical_OR_expression(ptr_ps, &tokvec);
-    if (tokvec[0].kind == QUESTION)
-    *ptr_tokvec = tokvec;
-    return expr_info;
-
-
-*/
 
 struct ExprInfo parseprint_expression(struct ParserState *ptr_ps,
                                       const struct Token **ptr_tokvec)
