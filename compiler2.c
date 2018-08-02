@@ -17,8 +17,8 @@ struct ExprInfo parse_cast_expression(struct ParserState *ptr_ps,
                                       const struct Token **ptr_tokvec);
 struct ExprInfo parse_unary_expression(struct ParserState *ptr_ps,
                                        const struct Token **ptr_tokvec);
-struct ExprInfo parse_conditional_expression(struct ParserState *ptr_ps,
-                                             const struct Token **ptr_tokvec);
+struct Expression parse_conditional_expression(struct ParserState *ptr_ps,
+                                               const struct Token **ptr_tokvec);
 void parse_argument_expression(struct ParserState *ptr_ps,
                                const struct Token **ptr_tokvec, int counter);
 
@@ -1636,7 +1636,7 @@ struct ExprInfo parse_assignment_expression(struct ParserState *ptr_ps,
 	/* parse failed */
 	if (!isAssign(tokvec2[0].kind)) {
 		struct ExprInfo expr_info =
-		    parse_conditional_expression(ptr_ps, &tokvec);
+		    parse_conditional_expression(ptr_ps, &tokvec).details;
 		*ptr_tokvec = tokvec;
 		return expr_info;
 	}
@@ -1678,8 +1678,8 @@ struct ExprInfo parse_assignment_expression(struct ParserState *ptr_ps,
 	}
 }
 
-struct ExprInfo parse_conditional_expression(struct ParserState *ptr_ps,
-                                             const struct Token **ptr_tokvec)
+struct Expression parse_conditional_expression(struct ParserState *ptr_ps,
+                                               const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 	struct Expression expr = parse_logical_OR_expression(ptr_ps, &tokvec);
@@ -1693,7 +1693,7 @@ struct ExprInfo parse_conditional_expression(struct ParserState *ptr_ps,
 
 		*ptr_tokvec = tokvec;
 		struct Expression false_branch =
-		    wrap(parse_conditional_expression(ptr_ps, &tokvec));
+		    parse_conditional_expression(ptr_ps, &tokvec);
 
 		*ptr_tokvec = tokvec;
 
@@ -1713,10 +1713,10 @@ struct ExprInfo parse_conditional_expression(struct ParserState *ptr_ps,
 		new_expr.ptr2 = ptr_expr2;
 		new_expr.ptr3 = ptr_expr3;
 
-		return new_expr.details;
+		return new_expr;
 	}
 	*ptr_tokvec = tokvec;
-	return expr.details;
+	return expr;
 }
 
 struct ExprInfo parse_expression(struct ParserState *ptr_ps,
