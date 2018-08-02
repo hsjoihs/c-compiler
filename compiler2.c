@@ -471,7 +471,6 @@ struct ExprInfo parseprint_expression(struct ParserState *ptr_ps,
 	struct Expression expr = parse_expression(ptr_ps, &tokvec2);
 	// fprintf(stderr, "expr.category: %d\n", expr.category);
 	if (is_print_implemented(expr)) {
-		fprintf(stderr, "\x1B[32mparser and lexer is split\x1B[0m\n");
 		*ptr_tokvec = tokvec2;
 		print_expression(ptr_ps, expr);
 		return expr.details;
