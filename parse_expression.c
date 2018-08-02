@@ -5,14 +5,23 @@
 #include <stdlib.h>
 #include <string.h>
 
+struct Expression wrap(struct ExprInfo info)
+{
+	struct Expression expr;
+	expr.category = UNKNOWN;
+	expr.details = info;
+	return expr;
+}
+
 struct ExprInfo parse_additive_expression(struct ParserState *ptr_ps,
                                           const struct Token **ptr_tokvec);
 struct ExprInfo
 parse_multiplicative_expression(struct ParserState *ptr_ps,
                                 const struct Token **ptr_tokvec);
 
-struct ExprInfo parse_exclusive_OR_expression(struct ParserState *ptr_ps,
-                                              const struct Token **ptr_tokvec);
+struct Expression
+parse_exclusive_OR_expression(struct ParserState *ptr_ps,
+                              const struct Token **ptr_tokvec);
 struct ExprInfo parse_OR_expression(struct ParserState *ptr_ps,
                                     const struct Token **ptr_tokvec);
 struct ExprInfo parse_AND_expression(struct ParserState *ptr_ps,
@@ -28,7 +37,8 @@ struct ExprInfo parse_inclusive_OR_expression(struct ParserState *ptr_ps,
                                               const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
-	struct ExprInfo expr_info = parse_exclusive_OR_expression(ptr_ps, &tokvec);
+	struct ExprInfo expr_info =
+	    parse_exclusive_OR_expression(ptr_ps, &tokvec).details;
 
 	while (1) {
 		enum TokenKind kind = tokvec[0].kind;
@@ -39,8 +49,8 @@ struct ExprInfo parse_inclusive_OR_expression(struct ParserState *ptr_ps,
 
 		expect_type(expr_info, INT_TYPE, 3);
 
-		expr_info =
-		    remove_leftiness(parse_exclusive_OR_expression(ptr_ps, &tokvec));
+		expr_info = remove_leftiness(
+		    parse_exclusive_OR_expression(ptr_ps, &tokvec).details);
 		expect_type(expr_info, INT_TYPE, 4);
 		// print_binary_op(kind);
 	}
@@ -48,11 +58,36 @@ struct ExprInfo parse_inclusive_OR_expression(struct ParserState *ptr_ps,
 	return expr_info;
 }
 
-struct ExprInfo parse_exclusive_OR_expression(struct ParserState *ptr_ps,
-                                              const struct Token **ptr_tokvec)
+struct Expression binary_op(struct Expression expr, struct Expression expr2,
+                            enum TokenKind kind)
+{
+	expect_type(expr.details, INT_TYPE, 5);
+	expect_type(expr2.details, INT_TYPE, 6);
+
+	struct Expression *ptr_expr1 = calloc(1, sizeof(struct Expression));
+	struct Expression *ptr_expr2 = calloc(1, sizeof(struct Expression));
+	*ptr_expr1 = expr;
+	*ptr_expr2 = expr2;
+
+	struct Expression new_expr;
+	new_expr.details = UNASSIGNABLE(INT_TYPE);
+	switch (kind) {
+		case OP_HAT:
+			new_expr.category = XOR_EXPR;
+	}
+	new_expr.ptr1 = ptr_expr1;
+	new_expr.ptr2 = ptr_expr2;
+	new_expr.ptr3 = 0;
+
+	return new_expr;
+}
+
+struct Expression parse_exclusive_OR_expression(struct ParserState *ptr_ps,
+                                                const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
-	struct ExprInfo expr_info = parse_AND_expression(ptr_ps, &tokvec);
+
+	struct Expression expr = wrap(parse_AND_expression(ptr_ps, &tokvec));
 
 	while (1) {
 		enum TokenKind kind = tokvec[0].kind;
@@ -61,14 +96,14 @@ struct ExprInfo parse_exclusive_OR_expression(struct ParserState *ptr_ps,
 		}
 		++tokvec;
 
-		expect_type(expr_info, INT_TYPE, 5);
+		struct Expression expr2;
+		expr2 = wrap(remove_leftiness(parse_AND_expression(ptr_ps, &tokvec)));
 
-		expr_info = remove_leftiness(parse_AND_expression(ptr_ps, &tokvec));
-		expect_type(expr_info, INT_TYPE, 6);
-		// print_binary_op(kind);
+		expr = binary_op(expr, expr2, kind);
 	}
 	*ptr_tokvec = tokvec;
-	return expr_info;
+
+	return expr;
 }
 
 struct ExprInfo parse_AND_expression(struct ParserState *ptr_ps,

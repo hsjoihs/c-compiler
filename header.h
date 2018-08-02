@@ -181,6 +181,20 @@ struct Type parse_declarator(const struct Token **ptr_tokvec,
 
 _Noreturn void unimplemented(const char *str);
 
+enum expr_category {
+	UNKNOWN,
+	XOR_EXPR
+};
+
+struct Expression {
+	struct ExprInfo details;
+	enum expr_category category;
+	struct Expression *ptr1;
+	struct Expression *ptr2;
+	struct Expression *ptr3;
+};
+
+
 struct ExprInfo parse_cast_expression(struct ParserState *ptr_ps,
                                       const struct Token **ptr_tokvec);
 struct ExprInfo parse_inclusive_OR_expression(struct ParserState *ptr_ps,
