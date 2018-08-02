@@ -2,49 +2,64 @@
 #include <stdio.h>
 
 /*
-int x;
-int *y;
+int foo()
+{
+    int a[1];
+    int *p;
+    p = a;
+    *p = 2;
+    return 74;
+}
+int bar()
+{
+    int a[1][2];
+    int(*p)[2];
+    p = a;
+    return 100;
+}
 
-int *alloc4(int a, int b, int c, int d);
-int main() { y = alloc4(1,2,3,174); return x + *(y+3); }
-
+int main() { return foo() + bar(); }
 */
 
 int main()
 {
-	gen_global_declaration("y", 8);
-	gen_global_declaration("x", 4);
-	gen_prologue(16, "main");
+	gen_prologue(32, "foo");
 
-	gen_push_int(174);
-	gen_pop_to_reg("ecx");
-
-	gen_push_int(3);
-	gen_pop_to_reg("edx");
-
-	gen_push_int(2);
-	gen_pop_to_reg("esi");
-
-	gen_push_int(1);
-	gen_pop_to_reg("edi");
-
-	gen_push_ret_of_8byte("alloc4");
-
-	gen_write_to_global_8byte("y");
-
+	gen_push_address_of_local(-12);
+	gen_write_to_local_8byte(-20);
 	gen_discard();
 
-	gen_push_from_global_8byte("y");
-
-	gen_push_int(12);
-	gen_op_8byte("addq");
-
+	gen_push_from_local_8byte(-20);
 	gen_peek_and_dereference();
+	gen_discard();
 
-	gen_push_from_global_4byte("x");
+	gen_push_int(2);
+	gen_assign_to_backed_up_address();
 
-	gen_op_ints("addl");
+	gen_push_int(74);
+	gen_epilogue(123);
 
-	gen_epilogue(1234);
+	puts("_bar:\n"
+	     "  pushq %rbp\n"
+	     "  movq %rsp, %rbp\n"
+	     "  leaq -16(%rbp), %rax\n"
+	     "  movq %rax, -8(%rbp)\n"
+	     "  movl $100, %eax\n"
+	     "  popq %rbp\n"
+	     "  ret\n"
+	     ".global _main\n"
+	     "_main:\n"
+	     "  pushq %rbp\n"
+	     "  movq %rsp, %rbp\n"
+	     "  pushq %rbx\n"
+	     "  movl $0, %eax\n"
+	     "  call _foo\n"
+	     "  movl %eax, %ebx\n"
+	     "  movl $0, %eax\n"
+	     "  call _bar\n"
+	     "  addl %ebx, %eax\n"
+	     "  popq %rbx\n"
+	     "  popq %rbp\n"
+	     "  ret\n");
 	return 0;
 }
