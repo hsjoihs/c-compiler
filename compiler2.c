@@ -44,6 +44,10 @@ void read_all_tokens_debug(const char *str)
 int is_print_implemented(struct Expression expr)
 {
 	switch (expr.category) {
+		case POSTFIX_INCREMENT:
+		case POSTFIX_DECREMENT: {
+			return is_print_implemented(*expr.ptr1);
+		}
 		case LOCAL_VAR_AS_RVALUE:
 		case GLOBAL_VAR_AS_RVALUE:
 		case LOCAL_VAR_AS_LVALUE:
@@ -122,6 +126,32 @@ int is_print_implemented(struct Expression expr)
 void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 {
 	switch (expr.category) {
+		case POSTFIX_INCREMENT:
+		case POSTFIX_DECREMENT: {
+			enum TokenKind opkind = expr.category == POSTFIX_INCREMENT
+			                            ? OP_PLUS_PLUS
+			                            : OP_MINUS_MINUS;
+
+			if (expr.ptr1->category != LOCAL_VAR_AS_LVALUE) {
+				unimplemented("increment of non-(local variable)");
+			}
+			struct LocalVarInfo info;
+			info.type = expr.ptr1->details.type;
+			info.offset = expr.ptr1->details.offset;
+
+			gen_push_from_local(info.offset);
+			gen_push_int(1);
+
+			print_before_assign(opkind);
+
+			gen_write_to_local(info.offset);
+
+			gen_push_int(-1);
+			print_before_assign(opkind);
+
+			return;
+		}
+
 		case LOCAL_VAR_AS_RVALUE:
 		case GLOBAL_VAR_AS_RVALUE: {
 			if (expr.category == GLOBAL_VAR_AS_RVALUE) {
