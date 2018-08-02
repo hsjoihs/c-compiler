@@ -5,6 +5,48 @@
 #include <stdlib.h>
 #include <string.h>
 
+enum SimpleBinOp to_simplebinop(enum TokenKind t)
+{
+	switch (t) {
+		case OP_PLUS:
+			return SIMPLE_BIN_OP_PLUS;
+		case OP_MINUS:
+			return SIMPLE_BIN_OP_MINUS;
+		case OP_ASTERISK:
+			return SIMPLE_BIN_OP_ASTERISK;
+		case OP_SLASH:
+			return SIMPLE_BIN_OP_SLASH;
+		case OP_PERCENT:
+			return SIMPLE_BIN_OP_PERCENT;
+		case OP_COMMA:
+			return SIMPLE_BIN_OP_COMMA;
+		case OP_LT:
+			return SIMPLE_BIN_OP_LT;
+		case OP_LT_EQ:
+			return SIMPLE_BIN_OP_LT_EQ;
+		case OP_LSHIFT:
+			return SIMPLE_BIN_OP_LSHIFT;
+		case OP_GT:
+			return SIMPLE_BIN_OP_GT;
+		case OP_GT_EQ:
+			return SIMPLE_BIN_OP_GT_EQ;
+		case OP_RSHIFT:
+			return SIMPLE_BIN_OP_RSHIFT;
+		case OP_AND:
+			return SIMPLE_BIN_OP_AND;
+		case OP_OR:
+			return SIMPLE_BIN_OP_OR;
+		case OP_EQ_EQ:
+			return SIMPLE_BIN_OP_EQ_EQ;
+		case OP_NOT_EQ:
+			return SIMPLE_BIN_OP_NOT_EQ;
+		case OP_HAT:
+			return SIMPLE_BIN_OP_HAT;
+		default:
+			assert("cannot happen" && 0);
+	}
+}
+
 struct Expression remove_leftiness_(struct Expression expr)
 {
 	expr.details = remove_leftiness(expr.details);

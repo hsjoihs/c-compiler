@@ -206,3 +206,25 @@ struct Expression remove_leftiness_(struct Expression expr);
 struct Expression binary_op_(struct Expression expr, struct Expression expr2,
                              enum TokenKind kind, enum expr_category cat,
                              struct ExprInfo exprinfo);
+
+enum SimpleBinOp {
+	SIMPLE_BIN_OP_PLUS,
+	SIMPLE_BIN_OP_MINUS,
+	SIMPLE_BIN_OP_ASTERISK,
+	SIMPLE_BIN_OP_SLASH,
+	SIMPLE_BIN_OP_PERCENT,
+	SIMPLE_BIN_OP_COMMA,
+	SIMPLE_BIN_OP_LT,
+	SIMPLE_BIN_OP_LT_EQ,
+	SIMPLE_BIN_OP_LSHIFT,
+	SIMPLE_BIN_OP_GT,
+	SIMPLE_BIN_OP_GT_EQ,
+	SIMPLE_BIN_OP_RSHIFT,
+	SIMPLE_BIN_OP_AND,
+	SIMPLE_BIN_OP_OR,
+	SIMPLE_BIN_OP_EQ_EQ,
+	SIMPLE_BIN_OP_NOT_EQ,
+	SIMPLE_BIN_OP_HAT
+};
+
+enum SimpleBinOp to_simplebinop(enum TokenKind t);
