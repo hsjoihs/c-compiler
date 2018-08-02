@@ -19,6 +19,9 @@ struct Expression remove_leftiness_(struct Expression expr)
 	return expr;
 }
 
+struct Expression
+parse_inclusive_OR_expression(struct ParserState *ptr_ps,
+                              const struct Token **ptr_tokvec);
 struct Expression parse_additive_expression(struct ParserState *ptr_ps,
                                             const struct Token **ptr_tokvec);
 struct Expression
@@ -292,4 +295,31 @@ parse_multiplicative_expression(struct ParserState *ptr_ps,
 	}
 	*ptr_tokvec = tokvec;
 	return expr;
+}
+
+struct Expression parse_logical_AND_expression(struct ParserState *ptr_ps,
+                                               const struct Token **ptr_tokvec)
+{
+	const struct Token *tokvec = *ptr_tokvec;
+
+	int counter = 0;
+	struct Expression first_expr =
+	    parse_inclusive_OR_expression(ptr_ps, &tokvec);
+
+	while (1) {
+		enum TokenKind kind = tokvec[0].kind;
+		if (kind != OP_AND_AND) {
+			break;
+		}
+
+		++tokvec;
+		struct Expression expr2 =
+		    parse_inclusive_OR_expression(ptr_ps, &tokvec);
+		++counter;
+
+		first_expr = binary_op(first_expr, expr2, kind); /* first_expr is INT */
+	}
+
+	*ptr_tokvec = tokvec;
+	return first_expr;
 }
