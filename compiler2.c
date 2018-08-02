@@ -79,12 +79,16 @@ int is_print_implemented(struct Expression expr)
 				default:
 					return 0;
 			}
+		case CONDITIONAL_EXPR:
+			return is_print_implemented(*expr.ptr1) &&
+			       is_print_implemented(*expr.ptr2) &&
+			       is_print_implemented(*expr.ptr3);
 		default:
 			return 0;
 	}
 }
 
-void print_expression(struct Expression expr)
+void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 {
 	switch (expr.category) {
 		case BINARY_EXPR:
@@ -106,8 +110,8 @@ void print_expression(struct Expression expr)
 				case OP_EQ_EQ:
 				case OP_NOT_EQ:
 				case OP_HAT:
-					print_expression(*expr.ptr1);
-					print_expression(*expr.ptr2);
+					print_expression(ptr_ps, *expr.ptr1);
+					print_expression(ptr_ps, *expr.ptr2);
 					print_binary_op(expr.binary_operator);
 					return;
 			}
@@ -120,12 +124,36 @@ void print_expression(struct Expression expr)
 				case OP_TILDA:
 				case OP_PLUS:
 				case OP_MINUS:
-					print_expression(*expr.ptr1);
+					print_expression(ptr_ps, *expr.ptr1);
 					print_unary_prefix_op(expr.unary_operator);
 			}
 			return;
+		case CONDITIONAL_EXPR: {
+			print_expression(ptr_ps, *expr.ptr1);
+			int label1 = get_new_label_name(ptr_ps);
+			int label2 = get_new_label_name(ptr_ps);
+
+			gen_ternary_part1(label1, label2);
+			print_expression(ptr_ps, *expr.ptr2);
+			gen_ternary_part2(label1, label2);
+			print_expression(ptr_ps, *expr.ptr3);
+
+			gen_ternary_part3(label1, label2);
+			return;
+		}
 	}
 }
+
+/*
+    const struct Token *tokvec = *ptr_tokvec;
+    struct ExprInfo expr_info =
+        parseprint_logical_OR_expression(ptr_ps, &tokvec);
+    if (tokvec[0].kind == QUESTION)
+    *ptr_tokvec = tokvec;
+    return expr_info;
+
+
+*/
 
 struct ExprInfo parseprint_expression(struct ParserState *ptr_ps,
                                       const struct Token **ptr_tokvec)
@@ -138,7 +166,7 @@ struct ExprInfo parseprint_expression(struct ParserState *ptr_ps,
 	if (is_print_implemented(expr)) {
 		fprintf(stderr, "\x1B[32mparser and lexer is split\x1B[0m\n");
 		*ptr_tokvec = tokvec2;
-		print_expression(expr);
+		print_expression(ptr_ps, expr);
 		return expr.details;
 	}
 
