@@ -130,6 +130,7 @@ void print_expression_as_lvalue(struct ParserState *ptr_ps,
 						default:
 							unimplemented("Unsupported width");
 					}
+					gen_swap();
 					return;
 				}
 				default:
@@ -310,6 +311,7 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 					}
 
 					print_expression_as_lvalue(ptr_ps, *expr.ptr1);
+					gen_swap();
 
 					print_expression(ptr_ps, *expr.ptr2);
 
@@ -406,6 +408,7 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 					}
 
 					print_expression_as_lvalue(ptr_ps, *expr.ptr1);
+					gen_swap();
 
 					print_expression(ptr_ps, *expr.ptr2);
 
