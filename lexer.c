@@ -6,6 +6,26 @@
 
 int from_hex(char c);
 
+void read_all_tokens_debug(const char *str)
+{
+	struct Token tok;
+	tok.kind = BEGINNING;
+	tok.int_value = GARBAGE_INT;
+	tok.ident_str = 0;
+
+	print_token(tok);
+	fprintf(stderr, "\n");
+
+	do {
+		tok = get_token(&str);
+		print_token(tok);
+		fprintf(stderr, "\n");
+		if (tok.kind == END) {
+			break;
+		}
+	} while (1);
+}
+
 void print_token(struct Token tok)
 {
 	switch (tok.kind) {
