@@ -314,8 +314,8 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 						print_before_assign(opkind);
 					}
 
+					struct Type type = expr.ptr1->details.type;
 					if (expr.ptr1->category == GLOBAL_VAR_AS_LVALUE) {
-						struct Type type = expr.ptr1->details.type;
 						const char *name = expr.ptr1->global_var_name;
 
 						gen_discard2nd_8byte();
@@ -337,7 +337,7 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 
 						gen_discard2nd_8byte();
 
-						switch (size_of(expr.ptr1->details.type)) {
+						switch (size_of(type)) {
 							case 4:
 								gen_write_to_local(expr.ptr1->details.offset);
 								break;
@@ -352,7 +352,7 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 						return;
 					} else {
 
-						switch (size_of(expr.ptr1->details.type)) {
+						switch (size_of(type)) {
 							case 4:
 								gen_assign_4byte();
 								break;
