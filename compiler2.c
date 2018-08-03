@@ -305,9 +305,7 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 
 					print_expression(ptr_ps, *expr.ptr2);
 
-					printf("  movq (%%rsp), %%rax\n"
-					       "  addq $8, %%rsp\n"
-					       "  movq %%rax, (%%rsp)\n");
+					gen_discard2nd_8byte();
 					gen_assign();
 					return;
 				}
