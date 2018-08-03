@@ -344,6 +344,37 @@ struct Expression ident_as_lvalue(struct ParserState ps, const char *name)
 	}
 }
 
+enum SimpleBinOp op_before_assign(enum TokenKind kind)
+{
+	switch (kind) {
+		case OP_EQ:
+			return (SIMPLE_BIN_OP_COMMA);
+		case OP_PLUS_EQ:
+			return (SIMPLE_BIN_OP_PLUS);
+		case OP_MINUS_EQ:
+			return (SIMPLE_BIN_OP_MINUS);
+		case OP_ASTERISK_EQ:
+			return (SIMPLE_BIN_OP_ASTERISK);
+		case OP_SLASH_EQ:
+			return (SIMPLE_BIN_OP_SLASH);
+		case OP_PERCENT_EQ:
+			return (SIMPLE_BIN_OP_PERCENT);
+		case OP_LSHIFT_EQ:
+			return (SIMPLE_BIN_OP_LSHIFT);
+		case OP_RSHIFT_EQ:
+			return (SIMPLE_BIN_OP_RSHIFT);
+		case OP_AND_EQ:
+			return (SIMPLE_BIN_OP_AND);
+		case OP_HAT_EQ:
+			return (SIMPLE_BIN_OP_HAT);
+		case OP_OR_EQ:
+			return (SIMPLE_BIN_OP_OR);
+		default:
+			assert("op_before_assign called before a non-assignment operator" &&
+			       0);
+	}
+}
+
 struct Expression parse_assignment_expression(struct ParserState *ptr_ps,
                                               const struct Token **ptr_tokvec)
 {

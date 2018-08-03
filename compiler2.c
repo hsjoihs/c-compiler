@@ -516,43 +516,7 @@ struct LocalVarInfo resolve_name_locally(struct LocalVarTableList t,
 
 void print_before_assign(enum TokenKind kind)
 {
-	switch (kind) {
-		case OP_EQ:
-			gen_discard2nd_8byte();
-			return;
-		case OP_PLUS_EQ:
-			print_simple_binary_op(SIMPLE_BIN_OP_PLUS);
-			return;
-		case OP_MINUS_EQ:
-			print_simple_binary_op(SIMPLE_BIN_OP_MINUS);
-			return;
-		case OP_ASTERISK_EQ:
-			print_simple_binary_op(SIMPLE_BIN_OP_ASTERISK);
-			return;
-		case OP_SLASH_EQ:
-			print_simple_binary_op(SIMPLE_BIN_OP_SLASH);
-			return;
-		case OP_PERCENT_EQ:
-			print_simple_binary_op(SIMPLE_BIN_OP_PERCENT);
-			return;
-		case OP_LSHIFT_EQ:
-			print_simple_binary_op(SIMPLE_BIN_OP_LSHIFT);
-			return;
-		case OP_RSHIFT_EQ:
-			print_simple_binary_op(SIMPLE_BIN_OP_RSHIFT);
-			return;
-		case OP_AND_EQ:
-			print_simple_binary_op(SIMPLE_BIN_OP_AND);
-			return;
-		case OP_HAT_EQ:
-			print_simple_binary_op(SIMPLE_BIN_OP_HAT);
-			return;
-		case OP_OR_EQ:
-			print_simple_binary_op(SIMPLE_BIN_OP_OR);
-			return;
-		default:
-			assert("cannot happen" && 0);
-	}
+	print_simple_binary_op(op_before_assign(kind));
 }
 
 int isAssign(enum TokenKind opkind)
