@@ -114,16 +114,10 @@ void print_expression_as_lvalue(struct ParserState *ptr_ps,
 					struct Type type = expr.details.type;
 					switch (size_of(type)) {
 						case 4:
-							puts("  movq (%rsp), %rax \n"
-							     "  movl (%rax), %edx\n"
-							     "  subq $8, %rsp\n"
-							     "  movq %rdx, (%rsp)\n");
+							gen_peek_deref_push_4byte();
 							break;
 						case 8:
-							puts("  movq (%rsp), %rax \n"
-							     "  movq (%rax), %rdx\n"
-							     "  subq $8, %rsp\n"
-							     "  movq %rdx, (%rsp)\n");
+							gen_peek_deref_push_8byte();
 							break;
 						default:
 							unimplemented("Unsupported width");

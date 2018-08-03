@@ -117,6 +117,15 @@ void gen_peek_and_dereference(void)
 	     "  movl  %eax, (%rsp)");
 }
 
+void gen_peek_deref_push_4byte(void)
+{
+	printf("//gen_peek_deref_push_4byte()\n");
+	puts("  movq (%rsp), %rax \n"
+	     "  movl (%rax), %edx\n"
+	     "  subq $8, %rsp\n"
+	     "  movq %rdx, (%rsp)\n");
+}
+
 /*
  dereference what's at the top of the stack.
  backs up the address to -8(%rbp).
@@ -129,6 +138,15 @@ void gen_peek_and_dereference_8byte(void)
 	     "// ^ backup\n"
 	     "  movq (%rax), %rax\n"
 	     "  movq  %rax, (%rsp)");
+}
+
+void gen_peek_deref_push_8byte(void)
+{
+	printf("//gen_peek_deref_push_8byte()\n");
+	puts("  movq (%rsp), %rax \n"
+	     "  movq (%rax), %rdx\n"
+	     "  subq $8, %rsp\n"
+	     "  movq %rdx, (%rsp)\n");
 }
 
 /*
