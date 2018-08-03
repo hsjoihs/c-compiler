@@ -409,7 +409,6 @@ struct Expression parse_assignment_expression(struct ParserState *ptr_ps,
 	}
 
 	tokvec = tokvec2;
-	struct ExprInfo expr_info = expr.details;
 
 	assert(isAssign(tokvec[0].kind));
 	switch (expr.details.info) {
@@ -429,11 +428,27 @@ struct Expression parse_assignment_expression(struct ParserState *ptr_ps,
 			struct Expression expr2 =
 			    parse_assignment_expression(ptr_ps, &tokvec);
 			struct ExprInfo expr_info2 = expr2.details;
-			expect_type(expr_info, expr_info2.type, 19);
+			expect_type(expr.details, expr_info2.type, 19);
 
 			*ptr_tokvec = tokvec;
-			return binary_op_(expr, expr2, opkind, BINARY_EXPR,
-			                  remove_leftiness(expr_info));
+			{
+				struct Expression *ptr_expr1 =
+				    calloc(1, sizeof(struct Expression));
+				struct Expression *ptr_expr2 =
+				    calloc(1, sizeof(struct Expression));
+				*ptr_expr1 = expr;
+				*ptr_expr2 = expr2;
+
+				struct Expression new_expr;
+				new_expr.details = remove_leftiness(expr.details);
+				new_expr.category = BINARY_EXPR;
+				new_expr.binary_operator = opkind;
+				new_expr.ptr1 = ptr_expr1;
+				new_expr.ptr2 = ptr_expr2;
+				new_expr.ptr3 = 0;
+
+				return new_expr;
+			}
 		};
 	}
 }
