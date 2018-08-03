@@ -372,11 +372,13 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 				}
 
 				case UNARY_OP_AND: {
-					if (expr.ptr1->category != LOCAL_VAR_AS_LVALUE) {
-						unimplemented("increment of non-(local variable)");
+					if (expr.ptr1->category == LOCAL_VAR_AS_LVALUE) {
+						gen_push_address_of_local(expr.ptr1->details.offset);
+						return;
+					} else if (expr.ptr1->category == GLOBAL_VAR_AS_LVALUE) {
+						gen_push_address_of_global(expr.ptr1->global_var_name);
+						return;
 					}
-					gen_push_address_of_local(expr.ptr1->details.offset);
-					return;
 				}
 
 				case UNARY_OP_ASTERISK: {
