@@ -601,6 +601,7 @@ void gen_global_declaration(const char *ident, int size)
 	printf(".comm " PREFIX "%s,%d\n", ident, size);
 }
 
+/* confirmed in both environments */
 void gen_push_address_of_global(const char *ident)
 {
 	printf("//gen_push_address_of_global(\"%s\");\n", ident);
