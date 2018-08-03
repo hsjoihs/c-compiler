@@ -73,35 +73,37 @@ int main()
 
 	*/
 
-	puts(".global " PREFIX "main\n"
-	     ".comm	" PREFIX "A,20,4\n"
-	     "" PREFIX "foo2:\n"
-	     "  pushq %rbp\n"
-	     "  movq %rsp, %rbp\n");
+	gen_global_declaration("A", 20);
+
+	gen_prologue(32, "foo2");
+
 	gen_push_address_of_global("A");
-	puts("  movq (%rsp), %rcx\n"
-	     "  movq %rcx, -8(%rbp)\n"
-	     "  addq $8, %rsp\n"
-	     "  movq -8(%rbp), %rax\n"
-	     "  movl $2, (%rax)\n"
-	     "  movl $74, %eax\n"
-	     "  popq %rbp\n"
-	     "  ret\n"
-	     "" PREFIX "main:\n"
-	     "  pushq %rbp\n"
-	     "  movq %rsp, %rbp\n"
-	     "  pushq %rbx\n"
-	     "  subq $8, %rsp\n"
+	gen_write_to_local_8byte(-16);
+	gen_discard();
+
+	gen_push_from_local_8byte(-16);
+	gen_peek_and_dereference();
+	gen_push_int(2);
+	gen_assign_to_backed_up_address();
+
+	gen_push_int(74);
+	gen_epilogue(153);
+
+	/*
+
+
+	*/
+	gen_prologue(0, "main");
+	puts("  subq $8, %rsp\n"
 	     "  movl $0, %eax\n"
 	     "  call " PREFIX "foo2\n"
 	     "  movl $0, %eax\n"
 	     "  call " PREFIX "foo\n"
-	     "  movl %eax, %ebx\n"
+	     "  movl %eax, %edx\n"
 	     "  movl $0, %eax\n"
 	     "  call " PREFIX "bar\n"
-	     "  addl %ebx, %eax\n"
+	     "  addl %edx, %eax\n"
 	     "  addq $8, %rsp\n"
-	     "  popq %rbx\n"
 	     "  popq %rbp\n"
 	     "  ret\n");
 	return 0;
