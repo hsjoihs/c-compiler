@@ -122,6 +122,7 @@ void print_expression_as_lvalue(struct ParserState *ptr_ps,
 						default:
 							unimplemented("Unsupported width");
 					}
+					gen_push_from_local_8byte(-8);
 					return;
 				}
 				default:
@@ -303,9 +304,6 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 
 					print_expression_as_lvalue(ptr_ps, *expr.ptr1);
 
-					/* push the backup */
-					gen_push_from_local_8byte(-8);
-
 					print_expression(ptr_ps, *expr.ptr2);
 
 					gen_pop2nd_to_local_8byte(-8);
@@ -400,9 +398,6 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 					}
 
 					print_expression_as_lvalue(ptr_ps, *expr.ptr1);
-
-					/* push the backup */
-					gen_push_from_local_8byte(-8);
 
 					print_expression(ptr_ps, *expr.ptr2);
 
