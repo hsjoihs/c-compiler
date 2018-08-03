@@ -308,11 +308,7 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 					print_expression_as_lvalue(ptr_ps, *expr.ptr1);
 					print_expression(ptr_ps, *expr.ptr2);
 
-					if (opkind == OP_EQ) {
-						gen_discard2nd_8byte();
-					} else {
-						print_before_assign(opkind);
-					}
+					print_before_assign(opkind);
 
 					struct Type type = expr.ptr1->details.type;
 					if (expr.ptr1->category == GLOBAL_VAR_AS_LVALUE) {
@@ -522,6 +518,9 @@ struct LocalVarInfo resolve_name_locally(struct LocalVarTableList t,
 void print_before_assign(enum TokenKind kind)
 {
 	switch (kind) {
+		case OP_EQ:
+			gen_discard2nd_8byte();
+			return;
 		case OP_PLUS_EQ:
 		case OP_PLUS_PLUS:
 			print_simple_binary_op(SIMPLE_BIN_OP_PLUS);
