@@ -600,3 +600,18 @@ void gen_global_declaration(const char *ident, int size)
 	printf("//gen_global_declaration(\"%s\", %d)\n", ident, size);
 	printf(".comm " PREFIX "%s,%d\n", ident, size);
 }
+
+void gen_push_address_of_global(const char *ident)
+{
+	printf("//gen_push_address_of_global(\"%s\");\n", ident);
+	printf("  subq $8, %%rsp\n");
+#ifdef OSX
+	printf("  movq " PREFIX "%s@GOTPCREL(%%rip), %%rcx\n"
+	       "  movq %%rcx, (%%rsp)\n",
+	       ident);
+#else
+	printf("  leaq " PREFIX "%s(%%rip), %%rax\n"
+	       "  movq %%rax, (%%rsp)\n",
+	       ident);
+#endif
+}

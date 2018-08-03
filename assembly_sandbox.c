@@ -20,7 +20,16 @@ int bar()
     return 100;
 }
 
-int main() { return foo() + bar(); }
+int main() { foo2(); return foo() + bar(); }
+
+int A[5];
+int foo2()
+{
+    int *p;
+    p = A;
+    *p = 2;
+    return 3;
+}
 */
 
 int main()
@@ -65,16 +74,33 @@ int main()
 	*/
 
 	puts(".global " PREFIX "main\n"
+	     ".comm	_A,20,4\n"
+	     "" PREFIX "foo2:\n"
+	     "  pushq %rbp\n"
+	     "  movq %rsp, %rbp\n");
+	gen_push_address_of_global("A");
+	puts("  movq (%rsp), %rcx\n"
+	     "  movq %rcx, -8(%rbp)\n"
+	     "  addq $8, %rsp\n"
+	     "  movq -8(%rbp), %rax\n"
+	     "  movl $2, (%rax)\n"
+	     "  movl $74, %eax\n"
+	     "  popq %rbp\n"
+	     "  ret\n"
 	     "" PREFIX "main:\n"
 	     "  pushq %rbp\n"
 	     "  movq %rsp, %rbp\n"
 	     "  pushq %rbx\n"
+	     "  subq $8, %rsp\n"
+	     "  movl $0, %eax\n"
+	     "  call " PREFIX "foo2\n"
 	     "  movl $0, %eax\n"
 	     "  call " PREFIX "foo\n"
 	     "  movl %eax, %ebx\n"
 	     "  movl $0, %eax\n"
 	     "  call " PREFIX "bar\n"
 	     "  addl %ebx, %eax\n"
+	     "  addq $8, %rsp\n"
 	     "  popq %rbx\n"
 	     "  popq %rbp\n"
 	     "  ret\n");
