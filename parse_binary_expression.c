@@ -124,7 +124,20 @@ struct Expression pointer_plusorminus_int(struct Expression expr,
                                           struct Expression expr2,
                                           enum TokenKind kind)
 {
-	return binary_op_(expr, expr2, kind, POINTER_PLUSORMINUS_INT, expr.details);
+	struct Expression *ptr_expr1 = calloc(1, sizeof(struct Expression));
+	struct Expression *ptr_expr2 = calloc(1, sizeof(struct Expression));
+	*ptr_expr1 = expr;
+	*ptr_expr2 = expr2;
+
+	struct Expression new_expr;
+	new_expr.details = expr.details;
+	new_expr.category = kind == OP_PLUS ? POINTER_PLUS_INT : POINTER_MINUS_INT;
+	new_expr.binary_operator = kind;
+	new_expr.ptr1 = ptr_expr1;
+	new_expr.ptr2 = ptr_expr2;
+	new_expr.ptr3 = 0;
+
+	return new_expr;
 }
 
 struct Expression parse_inclusive_OR_expression(struct ParserState *ptr_ps,

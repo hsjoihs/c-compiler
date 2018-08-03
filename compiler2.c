@@ -178,13 +178,14 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 			gen_div_by_const(size);
 			return;
 		}
-		case POINTER_PLUSORMINUS_INT: {
+		case POINTER_PLUS_INT:
+		case POINTER_MINUS_INT: {
 			print_expression(ptr_ps, *expr.ptr1);
 			print_expression(ptr_ps, *expr.ptr2);
 			int size = size_of(deref_type(expr.ptr1->details.type));
 			gen_cltq();
 			gen_mul_by_const(size);
-			gen_op_8byte(expr.binary_operator == OP_PLUS ? "addq" : "subq");
+			gen_op_8byte(expr.category == POINTER_PLUS_INT ? "addq" : "subq");
 
 			return;
 		}

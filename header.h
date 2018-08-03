@@ -159,7 +159,8 @@ _Noreturn void unimplemented(const char *str);
 
 enum expr_category {
 	SIMPLE_BINARY_EXPR = 2,
-	POINTER_PLUSORMINUS_INT,
+	POINTER_PLUS_INT,
+	POINTER_MINUS_INT,
 	POINTER_MINUS_POINTER,
 	CONDITIONAL_EXPR,
 	UNARY_OP_EXPR,
