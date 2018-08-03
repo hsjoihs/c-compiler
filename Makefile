@@ -21,7 +21,7 @@ supplement:
 
 assembly_sandbox:
 	make format
-	gcc -Wall -Wextra assembly_sandbox.c print_x86_64.c -o out/assembly_sandbox.out
+	gcc -Wall -Wextra assembly_sandbox.c print_x86_64.c -DMACOS -o out/assembly_sandbox.out
 	./test_ret3.sh '' s/assembly_sandbox.s out/assembly_sandbox.out 174 out/assembly_sandbox.out
 
 typeparse_check:
@@ -34,7 +34,7 @@ intmap_check:
 
 notest:
 	make format
-	gcc -Wall -Wextra compiler2.c parser.c error.c type.c parse_binary_expression.c map.c print_x86_64.c lexer.c -o out/compiler.out
+	gcc -Wall -Wextra compiler2.c parser.c error.c type.c parse_binary_expression.c map.c print_x86_64.c -DMACOS lexer.c -o out/compiler.out
 
 full_compile:
 	rm out/*.out

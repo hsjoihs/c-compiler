@@ -3,8 +3,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define MACOS
-
 #ifdef MACOS
 #define PREFIX "_"
 #else
