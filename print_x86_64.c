@@ -598,5 +598,5 @@ void gen_push_from_global_4byte(const char *ident)
 void gen_global_declaration(const char *ident, int size)
 {
 	printf("//gen_global_declaration(\"%s\", %d)\n", ident, size);
-	printf(".comm _%s,%d\n", ident, size);
+	printf(".comm " PREFIX "%s,%d\n", ident, size);
 }
