@@ -104,9 +104,41 @@ void print_expression_as_lvalue(struct ParserState *ptr_ps,
                                 struct Expression expr)
 {
 	switch (expr.category) {
-		case LOCAL_VAR_AS_LVALUE:
-		case GLOBAL_VAR_AS_LVALUE:
+		case LOCAL_VAR_AS_LVALUE: {
+			gen_push_int(0);
+
+			switch (size_of(expr.details.type)) {
+				case 4:
+					gen_push_from_local(expr.details.offset);
+					break;
+				case 8:
+					gen_push_from_local_8byte(expr.details.offset);
+					break;
+				default:
+					unimplemented("Unsupported width in the "
+					              "assignment operation");
+			}
 			return;
+		}
+		case GLOBAL_VAR_AS_LVALUE: {
+			gen_push_int(0);
+			struct Type type = expr.details.type;
+			const char *name = expr.global_var_name;
+
+			printf("//load from global `%s`\n", name);
+			switch (size_of(type)) {
+				case 4:
+					gen_push_from_global_4byte(name);
+					break;
+				case 8:
+					gen_push_from_global_8byte(name);
+					break;
+				default:
+					unimplemented("Unsupported width in the "
+					              "assignment operation");
+			}
+			return;
+		}
 		case UNARY_OP_EXPR:
 			switch (expr.unary_operator) {
 				case UNARY_OP_ASTERISK: {
@@ -275,22 +307,8 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 
 					if (expr.ptr1->category == GLOBAL_VAR_AS_LVALUE) {
 						print_expression_as_lvalue(ptr_ps, *expr.ptr1);
-						gen_push_int(0);
 						struct Type type = expr.ptr1->details.type;
 						const char *name = expr.ptr1->global_var_name;
-
-						printf("//load from global `%s`\n", name);
-						switch (size_of(type)) {
-							case 4:
-								gen_push_from_global_4byte(name);
-								break;
-							case 8:
-								gen_push_from_global_8byte(name);
-								break;
-							default:
-								unimplemented("Unsupported width in the "
-								              "assignment operation");
-						}
 
 						print_expression(ptr_ps, *expr.ptr2);
 
@@ -318,21 +336,6 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 						return;
 					} else if (expr.ptr1->category == LOCAL_VAR_AS_LVALUE) {
 						print_expression_as_lvalue(ptr_ps, *expr.ptr1);
-						gen_push_int(0);
-
-						switch (size_of(expr.ptr1->details.type)) {
-							case 4:
-								gen_push_from_local(expr.ptr1->details.offset);
-								break;
-							case 8:
-								gen_push_from_local_8byte(
-								    expr.ptr1->details.offset);
-								break;
-							default:
-								unimplemented("Unsupported width in the "
-								              "assignment operation");
-						}
-
 						print_expression(ptr_ps, *expr.ptr2);
 						if (opkind == OP_EQ) {
 							gen_discard2nd_8byte();
