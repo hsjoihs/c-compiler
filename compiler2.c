@@ -114,15 +114,28 @@ void print_expression_as_lvalue(struct ParserState *ptr_ps,
 					struct Type type = expr.details.type;
 					switch (size_of(type)) {
 						case 4:
-							gen_peek_and_dereference();
+							puts("  movq (%rsp), %rax \n"
+							     "  movq %rax, -8(%rbp)\n"
+							     "// ^ backup\n"
+							     "  movl (%rax), %eax\n"
+							     "  movl  %eax, (%rsp)");
+							puts("  subq $8, %rsp\n"
+							     "  movq -8(%rbp), %rax\n"
+							     "  movq %rax, (%rsp)\n");
 							break;
 						case 8:
-							gen_peek_and_dereference_8byte();
+							puts("  movq (%rsp), %rax \n"
+							     "  movq %rax, -8(%rbp)\n"
+							     "// ^ backup\n"
+							     "  movq (%rax), %rax\n"
+							     "  movq  %rax, (%rsp)");
+							puts("  subq $8, %rsp\n"
+							     "  movq -8(%rbp), %rax\n"
+							     "  movq %rax, (%rsp)\n");
 							break;
 						default:
 							unimplemented("Unsupported width");
 					}
-					gen_push_from_local_8byte(-8);
 					return;
 				}
 				default:
