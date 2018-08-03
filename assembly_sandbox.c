@@ -94,17 +94,14 @@ int main()
 
 	*/
 	gen_prologue(0, "main");
-	puts("  subq $8, %rsp\n"
-	     "  movl $0, %eax\n"
-	     "  call " PREFIX "foo2\n"
-	     "  movl $0, %eax\n"
-	     "  call " PREFIX "foo\n"
-	     "  movl %eax, %edx\n"
-	     "  movl $0, %eax\n"
-	     "  call " PREFIX "bar\n"
-	     "  addl %edx, %eax\n"
-	     "  addq $8, %rsp\n"
-	     "  popq %rbp\n"
-	     "  ret\n");
+
+	gen_push_ret_of("foo2");
+	gen_discard();
+
+	gen_push_ret_of("foo");
+	gen_push_ret_of("bar");
+	gen_op_ints("addl");
+
+	gen_epilogue(193);
 	return 0;
 }
