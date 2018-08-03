@@ -74,7 +74,7 @@ int main()
 	*/
 
 	puts(".global " PREFIX "main\n"
-	     ".comm	_A,20,4\n"
+	     ".comm	" PREFIX "A,20,4\n"
 	     "" PREFIX "foo2:\n"
 	     "  pushq %rbp\n"
 	     "  movq %rsp, %rbp\n");
