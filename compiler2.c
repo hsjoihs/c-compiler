@@ -171,6 +171,10 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 			struct Type type = expr.details.type;
 			printf("//global `%s` as rvalue\n", expr.global_var_name);
 
+			if (is_array(expr.details.true_type)) {
+				gen_push_address_of_global(expr.global_var_name);
+				return;
+			}
 			switch (size_of(type)) {
 				case 4:
 					gen_push_from_global_4byte(expr.global_var_name);
