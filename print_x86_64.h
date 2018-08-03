@@ -59,6 +59,7 @@ void gen_peek_deref_push_4byte(void);
 void gen_peek_deref_push_8byte(void);
 void gen_assign_8byte(void);
 void gen_assign_4byte(void);
+void gen_discard3rd_8byte(void);
 
 #ifdef OSX
 #define PREFIX "_"

@@ -291,6 +291,16 @@ void gen_discard2nd_8byte(void)
 	       "  addq $8, %%rsp\n");
 }
 
+void gen_discard3rd_8byte(void)
+{
+	printf("//gen_discard3rd_8byte()\n");
+	printf("  movq 8(%%rsp), %%rax\n"
+	       "  movq %%rax, 16(%%rsp)\n"
+	       "  movq (%%rsp), %%rax\n"
+	       "  movq %%rax, 8(%%rsp)\n"
+	       "  addq $8, %%rsp\n");
+}
+
 void gen_mul_ints(void)
 {
 	printf("//gen_mul_ints()\n");
