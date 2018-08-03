@@ -270,95 +270,85 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 		}
 
 		case LOGICAL_OR_EXPR: {
-			{
-				{
-					int label1 = get_new_label_name(ptr_ps);
-					int label2 = get_new_label_name(ptr_ps);
-					print_expression(ptr_ps, *expr.ptr1);
 
-					gen_logical_OR_set(0, label1);
-					print_expression(ptr_ps, *expr.ptr2);
-					gen_logical_OR_set(1, label1);
-					gen_logical_OR_final(1, label1, label2);
-					return;
-				}
-			}
+			int label1 = get_new_label_name(ptr_ps);
+			int label2 = get_new_label_name(ptr_ps);
+			print_expression(ptr_ps, *expr.ptr1);
+
+			gen_logical_OR_set(0, label1);
+			print_expression(ptr_ps, *expr.ptr2);
+			gen_logical_OR_set(1, label1);
+			gen_logical_OR_final(1, label1, label2);
+			return;
 		}
 		case LOGICAL_AND_EXPR: {
-			{
-				{
-					int label1 = get_new_label_name(ptr_ps);
-					int label2 = get_new_label_name(ptr_ps);
-					print_expression(ptr_ps, *expr.ptr1);
 
-					gen_logical_AND_set(0, label1);
-					print_expression(ptr_ps, *expr.ptr2);
-					gen_logical_AND_set(1, label1);
-					gen_logical_AND_final(1, label1, label2);
-					return;
-				}
-			}
+			int label1 = get_new_label_name(ptr_ps);
+			int label2 = get_new_label_name(ptr_ps);
+			print_expression(ptr_ps, *expr.ptr1);
+
+			gen_logical_AND_set(0, label1);
+			print_expression(ptr_ps, *expr.ptr2);
+			gen_logical_AND_set(1, label1);
+			gen_logical_AND_final(1, label1, label2);
+			return;
 		}
 
 		case ASSIGNMENT_EXPR: {
-			{
-				{
-					print_expression_as_lvalue(ptr_ps, *expr.ptr1);
-					print_expression(ptr_ps, *expr.ptr2);
 
-					print_simple_binary_op(expr.simple_binary_operator);
+			print_expression_as_lvalue(ptr_ps, *expr.ptr1);
+			print_expression(ptr_ps, *expr.ptr2);
 
-					struct Type type = expr.ptr1->details.type;
-					if (expr.ptr1->category == GLOBAL_VAR_AS_LVALUE) {
-						const char *name = expr.ptr1->global_var_name;
+			print_simple_binary_op(expr.simple_binary_operator);
 
-						gen_discard2nd_8byte();
+			struct Type type = expr.ptr1->details.type;
+			if (expr.ptr1->category == GLOBAL_VAR_AS_LVALUE) {
+				const char *name = expr.ptr1->global_var_name;
 
-						printf("//assign to global `%s`\n", name);
-						switch (size_of(type)) {
-							case 4:
-								gen_write_to_global_4byte(name);
-								break;
-							case 8:
-								gen_write_to_global_8byte(name);
-								break;
-							default:
-								unimplemented("Unsupported width in the "
-								              "assignment operation");
-						}
-						return;
-					} else if (expr.ptr1->category == LOCAL_VAR_AS_LVALUE) {
+				gen_discard2nd_8byte();
 
-						gen_discard2nd_8byte();
+				printf("//assign to global `%s`\n", name);
+				switch (size_of(type)) {
+					case 4:
+						gen_write_to_global_4byte(name);
+						break;
+					case 8:
+						gen_write_to_global_8byte(name);
+						break;
+					default:
+						unimplemented("Unsupported width in the "
+						              "assignment operation");
+				}
+				return;
+			} else if (expr.ptr1->category == LOCAL_VAR_AS_LVALUE) {
 
-						switch (size_of(type)) {
-							case 4:
-								gen_write_to_local(expr.ptr1->details.offset);
-								break;
-							case 8:
-								gen_write_to_local_8byte(
-								    expr.ptr1->details.offset);
-								break;
-							default:
-								unimplemented("Unsupported width in the "
-								              "assignment operation");
-						}
-						return;
-					} else {
+				gen_discard2nd_8byte();
 
-						switch (size_of(type)) {
-							case 4:
-								gen_assign_4byte();
-								break;
-							case 8:
-								gen_assign_8byte();
-								break;
-						}
-					}
+				switch (size_of(type)) {
+					case 4:
+						gen_write_to_local(expr.ptr1->details.offset);
+						break;
+					case 8:
+						gen_write_to_local_8byte(expr.ptr1->details.offset);
+						break;
+					default:
+						unimplemented("Unsupported width in the "
+						              "assignment operation");
+				}
+				return;
+			} else {
 
-					return;
+				switch (size_of(type)) {
+					case 4:
+						gen_assign_4byte();
+						break;
+					case 8:
+						gen_assign_8byte();
+						break;
 				}
 			}
+
+			return;
 		}
 		case INT_VALUE:
 			gen_push_int(expr.int_value);
