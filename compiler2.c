@@ -259,8 +259,107 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 					gen_logical_AND_final(1, label1, label2);
 					return;
 				}
+				case OP_EQ: {
 
-				case OP_EQ:
+					enum TokenKind opkind = expr.binary_operator;
+
+					if (expr.ptr1->category == GLOBAL_VAR_AS_LVALUE) {
+						print_expression_as_lvalue(ptr_ps, *expr.ptr1);
+						struct Type type = expr.ptr1->details.type;
+						const char *name = expr.ptr1->global_var_name;
+
+						if (opkind != OP_EQ) {
+							printf("//load from global `%s`\n", name);
+							switch (size_of(type)) {
+								case 4:
+									gen_push_from_global_4byte(name);
+									break;
+								case 8:
+									gen_push_from_global_8byte(name);
+									break;
+								default:
+									unimplemented("Unsupported width in the "
+									              "assignment operation");
+							}
+						}
+
+						print_expression(ptr_ps, *expr.ptr2);
+
+						if (opkind != OP_EQ) {
+							printf("//before assigning to global `%s`:\n",
+							       name);
+							print_before_assign(opkind);
+						}
+
+						printf("//assign to global `%s`\n", name);
+						switch (size_of(type)) {
+							case 4:
+								gen_write_to_global_4byte(name);
+								break;
+							case 8:
+								gen_write_to_global_8byte(name);
+								break;
+							default:
+								unimplemented("Unsupported width in the "
+								              "assignment operation");
+						}
+						return;
+					} else if (expr.ptr1->category == LOCAL_VAR_AS_LVALUE) {
+						print_expression_as_lvalue(ptr_ps, *expr.ptr1);
+
+						if (opkind != OP_EQ) {
+							switch (size_of(expr.ptr1->details.type)) {
+								case 4:
+									gen_push_from_local(
+									    expr.ptr1->details.offset);
+									break;
+								case 8:
+									gen_push_from_local_8byte(
+									    expr.ptr1->details.offset);
+									break;
+								default:
+									unimplemented("Unsupported width in the "
+									              "assignment operation");
+							}
+						}
+
+						print_expression(ptr_ps, *expr.ptr2);
+
+						if (opkind != OP_EQ) {
+							print_before_assign(opkind);
+						}
+
+						switch (size_of(expr.ptr1->details.type)) {
+							case 4:
+								gen_write_to_local(expr.ptr1->details.offset);
+								break;
+							case 8:
+								gen_write_to_local_8byte(
+								    expr.ptr1->details.offset);
+								break;
+							default:
+								unimplemented("Unsupported width in the "
+								              "assignment operation");
+						}
+						return;
+					}
+
+					print_expression_as_lvalue(ptr_ps, *expr.ptr1);
+
+					/* push the backup */
+					gen_push_from_local_8byte(-8);
+
+					print_expression(ptr_ps, *expr.ptr2);
+
+					gen_pop2nd_to_local_8byte(-8);
+					if (opkind != OP_EQ) {
+						print_before_assign(opkind);
+					} else {
+						gen_discard2nd_8byte();
+					}
+					gen_assign_to_backed_up_address();
+					return;
+				}
 				case OP_PLUS_EQ:
 				case OP_MINUS_EQ:
 				case OP_ASTERISK_EQ:
