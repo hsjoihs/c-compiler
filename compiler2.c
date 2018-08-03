@@ -398,15 +398,25 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 					}
 
 					print_expression_as_lvalue(ptr_ps, *expr.ptr1);
-					gen_swap();
-
 					print_expression(ptr_ps, *expr.ptr2);
+					printf("  movq 16(%%rsp), %%rbx\n"
+					       "  movq (%%rsp), %%rax\n"
+					       "  movq %%rax, 16(%%rsp)\n"
 
-					gen_pop2nd_to_local_8byte(-8);
+					       "  movq 8(%%rsp), %%rax\n"
+					       "  movq 16(%%rsp), %%rdx\n"
+					       "  movq %%rdx, 8(%%rsp)\n"
+					       "  movq %%rax, 16(%%rsp)\n"
+
+					       "  addq $8, %%rsp\n");
 
 					print_before_assign(opkind);
 
-					gen_assign_to_backed_up_address();
+					puts("  subq $16, %rsp\n"
+					     "  movq 16(%rsp), %rax\n"
+					     "  movq %rax, (%rbx)\n"
+					     "  movq %rax, 16(%rsp)\n"
+					     "  addq $16, %rsp\n");
 					return;
 				}
 			}
