@@ -9,7 +9,6 @@
 #include <string.h>
 
 int get_new_label_name(struct ParserState *ptr_ps);
-void print_before_assign(enum TokenKind kind);
 void print_argument_expression(struct ParserState *ptr_ps,
                                struct Expression expr, int counter);
 
@@ -191,8 +190,9 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 		}
 		case POSTFIX_INCREMENT:
 		case POSTFIX_DECREMENT: {
-			enum TokenKind opkind =
-			    expr.category == POSTFIX_INCREMENT ? OP_PLUS_EQ : OP_MINUS_EQ;
+			enum SimpleBinOp opkind2 = expr.category == POSTFIX_INCREMENT
+			                               ? SIMPLE_BIN_OP_PLUS
+			                               : SIMPLE_BIN_OP_MINUS;
 
 			if (expr.ptr1->category != LOCAL_VAR_AS_LVALUE) {
 				unimplemented("increment of non-(local variable)");
@@ -204,12 +204,12 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 			gen_push_from_local(info.offset);
 			gen_push_int(1);
 
-			print_before_assign(opkind);
+			print_simple_binary_op(opkind2);
 
 			gen_write_to_local(info.offset);
 
 			gen_push_int(-1);
-			print_before_assign(opkind);
+			print_simple_binary_op(opkind2);
 
 			return;
 		}
@@ -294,8 +294,6 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 		case ASSIGNMENT_EXPR: {
 			{
 				{
-					enum TokenKind opkind = expr.binary_operator;
-
 					print_expression_as_lvalue(ptr_ps, *expr.ptr1);
 					print_expression(ptr_ps, *expr.ptr2);
 
@@ -505,11 +503,6 @@ struct LocalVarInfo resolve_name_locally(struct LocalVarTableList t,
 	} else {
 		return resolve_name_locally(*(t.outer), str);
 	}
-}
-
-void print_before_assign(enum TokenKind kind)
-{
-	print_simple_binary_op(op_before_assign(kind));
 }
 
 int isAssign(enum TokenKind opkind)
