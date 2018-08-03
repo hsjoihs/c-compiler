@@ -119,6 +119,10 @@ void print_expression_as_lvalue(struct ParserState *ptr_ps,
 							     "  movl  %eax, (%rsp)");
 							puts("  subq $8, %rsp\n"
 							     "  movq %rdx, (%rsp)\n");
+							puts("movq (%rsp), %rax\n"
+							     "movq 8(%rsp), %rdx\n"
+							     "movq %rdx, (%rsp)\n"
+							     "movq %rax, 8(%rsp)\n");
 							break;
 						case 8:
 							puts("  movq (%rsp), %rdx \n"
@@ -126,11 +130,14 @@ void print_expression_as_lvalue(struct ParserState *ptr_ps,
 							     "  movq  %rax, (%rsp)");
 							puts("  subq $8, %rsp\n"
 							     "  movq %rdx, (%rsp)\n");
+							puts("movq (%rsp), %rax\n"
+							     "movq 8(%rsp), %rdx\n"
+							     "movq %rdx, (%rsp)\n"
+							     "movq %rax, 8(%rsp)\n");
 							break;
 						default:
 							unimplemented("Unsupported width");
 					}
-					gen_swap();
 					return;
 				}
 				default:
