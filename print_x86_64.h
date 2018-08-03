@@ -57,7 +57,8 @@ void gen_global_declaration(const char *ident, int size);
 void gen_push_address_of_global(const char *ident);
 void gen_peek_deref_push_4byte(void);
 void gen_peek_deref_push_8byte(void);
-void gen_assign(void);
+void gen_assign_8byte(void);
+void gen_assign_4byte(void);
 
 #ifdef OSX
 #define PREFIX "_"

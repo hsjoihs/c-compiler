@@ -306,7 +306,14 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 					print_expression(ptr_ps, *expr.ptr2);
 
 					gen_discard2nd_8byte();
-					gen_assign();
+					switch (size_of(expr.ptr1->details.type)) {
+						case 4:
+							gen_assign_4byte();
+							break;
+						case 8:
+							gen_assign_8byte();
+							break;
+					}
 					return;
 				}
 				case OP_PLUS_EQ:
@@ -397,7 +404,14 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 					print_expression(ptr_ps, *expr.ptr2);
 
 					print_before_assign(opkind);
-					gen_assign();
+					switch (size_of(expr.ptr1->details.type)) {
+						case 4:
+							gen_assign_4byte();
+							break;
+						case 8:
+							gen_assign_8byte();
+							break;
+					}
 
 					return;
 				}

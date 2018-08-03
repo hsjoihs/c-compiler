@@ -641,13 +641,30 @@ void gen_push_address_of_global(const char *ident)
     *addr = value;
     push(value);
 */
-void gen_assign(void)
+void gen_assign_8byte(void)
 {
-	printf("//gen_assign()\n");
+	printf("//gen_assign_8byte()\n");
 	printf("  movq (%%rsp), %%rax\n");
 	printf("  movq 8(%%rsp), %%rdx\n");
 
 	printf("  movq %%rax, (%%rdx)\n"
 	       "  addq $8, %%rsp\n"
 	       "  movq %%rax, (%%rsp)\n");
+}
+
+/*
+    value = pop();
+    addr = pop();
+    *addr = value;
+    push(value);
+*/
+void gen_assign_4byte(void)
+{
+	printf("//gen_assign_4byte()\n");
+	printf("  movl (%%rsp), %%eax\n");
+	printf("  movq 8(%%rsp), %%rdx\n");
+
+	printf("  movl %%eax, (%%rdx)\n"
+	       "  addq $8, %%rsp\n"
+	       "  movl %%eax, (%%rsp)\n");
 }
