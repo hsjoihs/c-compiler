@@ -142,7 +142,8 @@ parse_unary_expression(struct ParserState *ptr_ps,
 
 		struct ExprInfo new_expr_info;
 		new_expr_info.info = DEREFERENCED_ADDRESS;
-		new_expr_info.type = type;
+		new_expr_info.type = if_array_convert_to_ptr(type);
+		new_expr_info.true_type = type;
 		new_expr_info.offset = GARBAGE_INT;
 
 		*ptr_tokvec = tokvec;

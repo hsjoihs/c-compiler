@@ -31,6 +31,11 @@ int is_equal(struct Type t1, struct Type t2)
 		return is_equal(*t1.derived_from, *t2.derived_from);
 	}
 
+	if (t1.type_category == ARRAY && t2.type_category == ARRAY) {
+		return is_equal(*t1.derived_from, *t2.derived_from) &&
+		       (t1.array_length == t2.array_length);
+	}
+
 	return 0;
 }
 
