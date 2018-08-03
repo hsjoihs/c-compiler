@@ -64,16 +64,16 @@ int main()
 
 	*/
 
-	puts(".global _main\n"
-	     "_main:\n"
+	puts(".global " PREFIX "main\n"
+	     "" PREFIX "main:\n"
 	     "  pushq %rbp\n"
 	     "  movq %rsp, %rbp\n"
 	     "  pushq %rbx\n"
 	     "  movl $0, %eax\n"
-	     "  call _foo\n"
+	     "  call " PREFIX "foo\n"
 	     "  movl %eax, %ebx\n"
 	     "  movl $0, %eax\n"
-	     "  call _bar\n"
+	     "  call " PREFIX "bar\n"
 	     "  addl %ebx, %eax\n"
 	     "  popq %rbx\n"
 	     "  popq %rbp\n"

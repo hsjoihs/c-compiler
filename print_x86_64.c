@@ -3,12 +3,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifdef OSX
-#define PREFIX "_"
-#else
-#define PREFIX ""
-#endif
-
 void gen_prologue(int alloc_size, const char *fname)
 {
 	printf("//gen_prologue(%d, %s)\n", alloc_size, fname);
