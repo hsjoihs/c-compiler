@@ -634,3 +634,20 @@ void gen_push_address_of_global(const char *ident)
 	       ident);
 #endif
 }
+
+/*
+    value = pop();
+    addr = pop();
+    *addr = value;
+    push(value);
+*/
+void gen_assign(void)
+{
+	printf("//gen_assign()\n");
+	printf("  movq (%%rsp), %%rax\n");
+	printf("  movq 8(%%rsp), %%rdx\n");
+
+	printf("  movq %%rax, (%%rdx)\n"
+	       "  addq $8, %%rsp\n"
+	       "  movq %%rax, (%%rsp)\n");
+}
