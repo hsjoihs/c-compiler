@@ -293,7 +293,6 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 						}
 
 						print_expression(ptr_ps, *expr.ptr2);
-						gen_discard3rd_8byte();
 
 						if (opkind == OP_EQ) {
 							gen_discard2nd_8byte();
@@ -302,6 +301,7 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 							       name);
 							print_before_assign(opkind);
 						}
+						gen_discard2nd_8byte();
 
 						printf("//assign to global `%s`\n", name);
 						switch (size_of(type)) {
@@ -334,12 +334,12 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 						}
 
 						print_expression(ptr_ps, *expr.ptr2);
-						gen_discard3rd_8byte();
 						if (opkind == OP_EQ) {
 							gen_discard2nd_8byte();
 						} else {
 							print_before_assign(opkind);
 						}
+						gen_discard2nd_8byte();
 
 						switch (size_of(expr.ptr1->details.type)) {
 							case 4:
