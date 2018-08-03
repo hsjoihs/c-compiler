@@ -191,9 +191,8 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 		}
 		case POSTFIX_INCREMENT:
 		case POSTFIX_DECREMENT: {
-			enum TokenKind opkind = expr.category == POSTFIX_INCREMENT
-			                            ? OP_PLUS_PLUS
-			                            : OP_MINUS_MINUS;
+			enum TokenKind opkind =
+			    expr.category == POSTFIX_INCREMENT ? OP_PLUS_EQ : OP_MINUS_EQ;
 
 			if (expr.ptr1->category != LOCAL_VAR_AS_LVALUE) {
 				unimplemented("increment of non-(local variable)");
@@ -522,11 +521,9 @@ void print_before_assign(enum TokenKind kind)
 			gen_discard2nd_8byte();
 			return;
 		case OP_PLUS_EQ:
-		case OP_PLUS_PLUS:
 			print_simple_binary_op(SIMPLE_BIN_OP_PLUS);
 			return;
 		case OP_MINUS_EQ:
-		case OP_MINUS_MINUS:
 			print_simple_binary_op(SIMPLE_BIN_OP_MINUS);
 			return;
 		case OP_ASTERISK_EQ:
