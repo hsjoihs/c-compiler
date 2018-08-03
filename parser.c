@@ -399,7 +399,7 @@ struct Expression parse_assignment_expression(struct ParserState *ptr_ps,
 
 	const struct Token *tokvec2 = tokvec;
 	struct ParserState *ptr_ps2 = ptr_ps;
-	parse_unary_expression(ptr_ps2, &tokvec2);
+	struct Expression expr = parse_unary_expression(ptr_ps2, &tokvec2);
 
 	/* parse failed */
 	if (!isAssign(tokvec2[0].kind)) {
@@ -408,7 +408,7 @@ struct Expression parse_assignment_expression(struct ParserState *ptr_ps,
 		return expr;
 	}
 
-	struct Expression expr = parse_unary_expression(ptr_ps, &tokvec);
+	tokvec = tokvec2;
 	struct ExprInfo expr_info = expr.details;
 
 	assert(isAssign(tokvec[0].kind));
