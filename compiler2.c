@@ -104,7 +104,7 @@ void print_expression_as_lvalue(struct ParserState *ptr_ps,
 {
 	switch (expr.category) {
 		case LOCAL_VAR_AS_LVALUE: {
-			gen_push_int(0);
+			gen_push_address_of_local(expr.details.offset);
 
 			switch (size_of(expr.details.type)) {
 				case 4:
@@ -120,9 +120,9 @@ void print_expression_as_lvalue(struct ParserState *ptr_ps,
 			return;
 		}
 		case GLOBAL_VAR_AS_LVALUE: {
-			gen_push_int(0);
-			struct Type type = expr.details.type;
 			const char *name = expr.global_var_name;
+			gen_push_address_of_global(name);
+			struct Type type = expr.details.type;
 
 			printf("//load from global `%s`\n", name);
 			switch (size_of(type)) {
@@ -295,50 +295,17 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 			print_simple_binary_op(expr.simple_binary_operator);
 
 			struct Type type = expr.ptr1->details.type;
-			if (expr.ptr1->category == GLOBAL_VAR_AS_LVALUE) {
-				const char *name = expr.ptr1->global_var_name;
 
-				gen_discard2nd_8byte();
-
-				printf("//assign to global `%s`\n", name);
-				switch (size_of(type)) {
-					case 4:
-						gen_write_to_global_4byte(name);
-						break;
-					case 8:
-						gen_write_to_global_8byte(name);
-						break;
-					default:
-						unimplemented("Unsupported width in the "
-						              "assignment operation");
-				}
-				return;
-			} else if (expr.ptr1->category == LOCAL_VAR_AS_LVALUE) {
-
-				gen_discard2nd_8byte();
-
-				switch (size_of(type)) {
-					case 4:
-						gen_write_to_local(expr.ptr1->details.offset);
-						break;
-					case 8:
-						gen_write_to_local_8byte(expr.ptr1->details.offset);
-						break;
-					default:
-						unimplemented("Unsupported width in the "
-						              "assignment operation");
-				}
-				return;
-			} else {
-
-				switch (size_of(type)) {
-					case 4:
-						gen_assign_4byte();
-						break;
-					case 8:
-						gen_assign_8byte();
-						break;
-				}
+			switch (size_of(type)) {
+				case 4:
+					gen_assign_4byte();
+					break;
+				case 8:
+					gen_assign_8byte();
+					break;
+				default:
+					unimplemented("Unsupported width in the "
+					              "assignment operation");
 			}
 
 			return;
