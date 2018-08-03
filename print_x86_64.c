@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifdef MACOS
+#ifdef OSX
 #define PREFIX "_"
 #else
 #define PREFIX ""
