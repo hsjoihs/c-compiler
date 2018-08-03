@@ -290,24 +290,16 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 					gen_logical_AND_final(1, label1, label2);
 					return;
 				}
-				case OP_EQ:
-				case OP_PLUS_EQ:
-				case OP_MINUS_EQ:
-				case OP_ASTERISK_EQ:
-				case OP_SLASH_EQ:
-				case OP_PERCENT_EQ:
-				case OP_LSHIFT_EQ:
-				case OP_RSHIFT_EQ:
-				case OP_AND_EQ:
-				case OP_HAT_EQ:
-				case OP_OR_EQ: {
-
+			}
+		case ASSIGNMENT_EXPR: {
+			{
+				{
 					enum TokenKind opkind = expr.binary_operator;
 
 					print_expression_as_lvalue(ptr_ps, *expr.ptr1);
 					print_expression(ptr_ps, *expr.ptr2);
 
-					print_before_assign(opkind);
+					print_simple_binary_op(expr.simple_binary_operator);
 
 					struct Type type = expr.ptr1->details.type;
 					if (expr.ptr1->category == GLOBAL_VAR_AS_LVALUE) {
@@ -360,6 +352,7 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 					return;
 				}
 			}
+		}
 		case INT_VALUE:
 			gen_push_int(expr.int_value);
 			return;

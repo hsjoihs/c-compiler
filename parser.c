@@ -375,6 +375,27 @@ enum SimpleBinOp op_before_assign(enum TokenKind kind)
 	}
 }
 
+struct Expression assignment_expr(struct Expression expr,
+                                  struct Expression expr2,
+                                  enum TokenKind opkind)
+{
+	struct Expression *ptr_expr1 = calloc(1, sizeof(struct Expression));
+	struct Expression *ptr_expr2 = calloc(1, sizeof(struct Expression));
+	*ptr_expr1 = expr;
+	*ptr_expr2 = expr2;
+
+	struct Expression new_expr;
+	new_expr.details = remove_leftiness(expr.details);
+	new_expr.category = ASSIGNMENT_EXPR;
+	new_expr.binary_operator = opkind;
+	new_expr.simple_binary_operator = op_before_assign(opkind);
+	new_expr.ptr1 = ptr_expr1;
+	new_expr.ptr2 = ptr_expr2;
+	new_expr.ptr3 = 0;
+
+	return new_expr;
+}
+
 struct Expression parse_assignment_expression(struct ParserState *ptr_ps,
                                               const struct Token **ptr_tokvec)
 {
@@ -393,8 +414,7 @@ struct Expression parse_assignment_expression(struct ParserState *ptr_ps,
 		expect_type(expr_info, expr.details.type, 0);
 
 		*ptr_tokvec = tokvec;
-		return binary_op_(expr, expr2, opkind, BINARY_EXPR,
-		                  UNASSIGNABLE(expr.details.type));
+		return assignment_expr(expr, expr2, opkind);
 	}
 
 	const struct Token *tokvec2 = tokvec;
@@ -431,24 +451,7 @@ struct Expression parse_assignment_expression(struct ParserState *ptr_ps,
 			expect_type(expr.details, expr_info2.type, 19);
 
 			*ptr_tokvec = tokvec;
-			{
-				struct Expression *ptr_expr1 =
-				    calloc(1, sizeof(struct Expression));
-				struct Expression *ptr_expr2 =
-				    calloc(1, sizeof(struct Expression));
-				*ptr_expr1 = expr;
-				*ptr_expr2 = expr2;
-
-				struct Expression new_expr;
-				new_expr.details = remove_leftiness(expr.details);
-				new_expr.category = BINARY_EXPR;
-				new_expr.binary_operator = opkind;
-				new_expr.ptr1 = ptr_expr1;
-				new_expr.ptr2 = ptr_expr2;
-				new_expr.ptr3 = 0;
-
-				return new_expr;
-			}
+			return assignment_expr(expr, expr2, opkind);
 		};
 	}
 }
