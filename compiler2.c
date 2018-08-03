@@ -275,6 +275,7 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 					enum TokenKind opkind = expr.binary_operator;
 
 					if (expr.ptr1->category == GLOBAL_VAR_AS_LVALUE) {
+						print_expression_as_lvalue(ptr_ps, *expr.ptr1);
 						struct Type type = expr.ptr1->details.type;
 						const char *name = expr.ptr1->global_var_name;
 
@@ -315,6 +316,7 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 						}
 						return;
 					} else if (expr.ptr1->category == LOCAL_VAR_AS_LVALUE) {
+						print_expression_as_lvalue(ptr_ps, *expr.ptr1);
 
 						if (opkind != OP_EQ) {
 							switch (size_of(expr.ptr1->details.type)) {
@@ -353,7 +355,7 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 						return;
 					}
 
-					print_expression(ptr_ps, *expr.ptr1);
+					print_expression_as_lvalue(ptr_ps, *expr.ptr1);
 
 					/* push the backup */
 					gen_push_from_local_8byte(-8);
