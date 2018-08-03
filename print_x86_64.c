@@ -105,14 +105,11 @@ void gen_push_from_local(int offset)
 
 /*
  dereference what's at the top of the stack.
- backs up the address to -8(%rbp).
  */
 void gen_peek_and_dereference(void)
 {
 	printf("//gen_peek_and_dereference()\n");
 	puts("  movq (%rsp), %rax \n"
-	     "  movq %rax, -8(%rbp)\n"
-	     "// ^ backup\n"
 	     "  movl (%rax), %eax\n"
 	     "  movl  %eax, (%rsp)");
 }
@@ -128,14 +125,11 @@ void gen_peek_deref_push_4byte(void)
 
 /*
  dereference what's at the top of the stack.
- backs up the address to -8(%rbp).
   */
 void gen_peek_and_dereference_8byte(void)
 {
 	printf("//gen_peek_and_dereference()\n");
 	puts("  movq (%rsp), %rax \n"
-	     "  movq %rax, -8(%rbp)\n"
-	     "// ^ backup\n"
 	     "  movq (%rax), %rax\n"
 	     "  movq  %rax, (%rsp)");
 }
@@ -147,21 +141,6 @@ void gen_peek_deref_push_8byte(void)
 	     "  movq (%rax), %rdx\n"
 	     "  subq $8, %rsp\n"
 	     "  movq %rdx, (%rsp)\n");
-}
-
-/*
-    value = pop();
-    addr = backup;
-    *addr = value;
-    push(value);
-*/
-void gen_assign_to_backed_up_address(void)
-{
-	printf("//gen_assign_to_backed_up_address()\n");
-	puts("  movq (%rsp), %rax\n"
-	     "  movq -8(%rbp), %rbx\n"
-	     "  movq %rax, (%rbx)\n"
-	     "  movq %rax, (%rsp)");
 }
 
 /* push what's on local mem */
