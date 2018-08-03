@@ -98,6 +98,44 @@ void read_all_tokens_debug(const char *str)
 	} while (1);
 }
 
+void print_expression(struct ParserState *ptr_ps, struct Expression expr);
+
+void print_expression_as_lvalue(struct ParserState *ptr_ps,
+                                struct Expression expr)
+{
+	switch (expr.category) {
+		case LOCAL_VAR_AS_LVALUE:
+		case GLOBAL_VAR_AS_LVALUE:
+			return;
+		case UNARY_OP_EXPR:
+			switch (expr.unary_operator) {
+				case UNARY_OP_ASTERISK: {
+					print_expression(ptr_ps, *expr.ptr1);
+					struct Type type = expr.details.type;
+					switch (size_of(type)) {
+						case 4:
+							gen_peek_and_dereference();
+							break;
+						case 8:
+							gen_peek_and_dereference_8byte();
+							break;
+						default:
+							unimplemented("Unsupported width");
+					}
+					return;
+				}
+				default:
+					fprintf(stderr, "the only unary operator that can create "
+					                "lvalue is `*`\n");
+					exit(EXIT_FAILURE);
+			}
+			return;
+		default:
+			fprintf(stderr, "doesn't seem like an lvalue\n");
+			return;
+	}
+}
+
 void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 {
 	switch (expr.category) {
