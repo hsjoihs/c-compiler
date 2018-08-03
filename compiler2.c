@@ -309,13 +309,9 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 					printf("  movq 8(%%rsp), %%rbx\n"
 					       "  movq (%%rsp), %%rax\n"
 					       "  movq %%rax, 8(%%rsp)\n"
-					       "  addq $8, %%rsp\n"
-					       "  movq (%%rsp), %%rax\n"
-					       "  movq %%rax, 8(%%rsp)\n"
-					       "  addq $8, %%rsp\n"
-					       "  movq (%%rsp), %%rax\n"
-					       "  movq %%rax, (%%rbx)\n"
-					       "  movq %%rax, (%%rsp)\n");
+					       "  addq $16, %%rsp\n"
+					       "  movq %%rax, (%%rsp)\n"
+					       "  movq %%rax, (%%rbx)\n");
 					return;
 				}
 				case OP_PLUS_EQ:
