@@ -117,7 +117,8 @@ void gen_peek_and_dereference(void)
 {
 	printf("//gen_peek_and_dereference()\n");
 	puts("  movq (%rsp), %rax \n"
-	     "  movq %rax, -8(%rbp) //backup\n"
+	     "  movq %rax, -8(%rbp)\n"
+	     "// ^ backup\n"
 	     "  movl (%rax), %eax\n"
 	     "  movl  %eax, (%rsp)");
 }
@@ -130,7 +131,8 @@ void gen_peek_and_dereference_8byte(void)
 {
 	printf("//gen_peek_and_dereference()\n");
 	puts("  movq (%rsp), %rax \n"
-	     "  movq %rax, -8(%rbp) //backup\n"
+	     "  movq %rax, -8(%rbp)\n"
+	     "// ^ backup\n"
 	     "  movq (%rax), %rax\n"
 	     "  movq  %rax, (%rsp)");
 }
@@ -255,7 +257,7 @@ void gen_op_ints(const char *str)
 {
 	printf("//gen_op_ints(\"%s\")\n", str);
 	printf("  movl (%%rsp), %%eax\n"
-	       "  %s %%eax, +8(%%rsp)\n"
+	       "  %s %%eax, 8(%%rsp)\n"
 	       "  addq $8, %%rsp\n",
 	       str);
 }
@@ -264,7 +266,7 @@ void gen_op_8byte(const char *str)
 {
 	printf("//gen_op_8byte(\"%s\")\n", str);
 	printf("  movq (%%rsp), %%rax\n"
-	       "  %s %%rax, +8(%%rsp)\n"
+	       "  %s %%rax, 8(%%rsp)\n"
 	       "  addq $8, %%rsp\n",
 	       str);
 }
@@ -273,16 +275,16 @@ void gen_discard2nd_8byte(void)
 {
 	printf("//gen_discard2nd_8byte()\n");
 	printf("  movq (%%rsp), %%rax\n"
-	       "  movq %%rax, +8(%%rsp)\n"
+	       "  movq %%rax, 8(%%rsp)\n"
 	       "  addq $8, %%rsp\n");
 }
 
 void gen_mul_ints(void)
 {
 	printf("//gen_mul_ints()\n");
-	printf("  movl +8(%%rsp), %%eax\n"
+	printf("  movl 8(%%rsp), %%eax\n"
 	       "  imull (%%rsp), %%eax\n"
-	       "  movl %%eax, +8(%%rsp)\n"
+	       "  movl %%eax, 8(%%rsp)\n"
 	       "  addq $8, %%rsp\n");
 }
 
@@ -295,20 +297,20 @@ void gen_jump(int label, const char *comment)
 void gen_div_ints(void)
 {
 	printf("//gen_div_ints()\n");
-	printf("  movl +8(%%rsp), %%eax\n"
+	printf("  movl 8(%%rsp), %%eax\n"
 	       "  cltd\n"
 	       "  idivl (%%rsp)\n"
-	       "  movl %%eax, +8(%%rsp)\n"
+	       "  movl %%eax, 8(%%rsp)\n"
 	       "  addq $8, %%rsp\n");
 }
 
 void gen_rem_ints(void)
 {
 	printf("//gen_rem_ints()\n");
-	printf("  movl +8(%%rsp), %%eax\n"
+	printf("  movl 8(%%rsp), %%eax\n"
 	       "  cltd\n"
 	       "  idivl (%%rsp)\n"
-	       "  movl %%edx, +8(%%rsp)\n"
+	       "  movl %%edx, 8(%%rsp)\n"
 	       "  addq $8, %%rsp\n");
 }
 
@@ -321,11 +323,11 @@ setge: greater than or eq
 void gen_compare_ints(const char *str)
 {
 	printf("//gen_compare_ints(\"%s\")\n", str);
-	printf("  movl +8(%%rsp), %%eax\n"
+	printf("  movl 8(%%rsp), %%eax\n"
 	       "  cmpl (%%rsp), %%eax\n"
 	       "  %s %%al\n"
 	       "  movzbl %%al, %%eax\n"
-	       "  movl %%eax, +8(%%rsp)\n"
+	       "  movl %%eax, 8(%%rsp)\n"
 	       "  addq $8, %%rsp\n",
 	       str);
 }
@@ -467,7 +469,7 @@ void gen_shift_ints(const char *str)
 	printf("//gen_shift_ints(\"%s\")\n", str);
 	printf("  movl (%%rsp), %%eax\n"
 	       "  movl %%eax, %%ecx\n"
-	       "  %s %%cl, +8(%%rsp)\n"
+	       "  %s %%cl, 8(%%rsp)\n"
 	       "  addq $8, %%rsp\n",
 	       str);
 }
@@ -516,7 +518,7 @@ void gen_pop2nd_to_local_8byte(int offset)
 	printf("  movq 8(%%rsp), %%rbx\n"
 	       "  movq %%rbx, %d(%%rbp)\n"
 	       "  movq (%%rsp), %%rax\n"
-	       "  movq %%rax, +8(%%rsp)\n"
+	       "  movq %%rax, 8(%%rsp)\n"
 	       "  addq $8, %%rsp\n",
 	       offset);
 }
