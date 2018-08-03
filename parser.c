@@ -387,7 +387,6 @@ struct Expression assignment_expr(struct Expression expr,
 	struct Expression new_expr;
 	new_expr.details = remove_leftiness(expr.details);
 	new_expr.category = ASSIGNMENT_EXPR;
-	new_expr.binary_operator = opkind;
 	new_expr.simple_binary_operator = op_before_assign(opkind);
 	new_expr.ptr1 = ptr_expr1;
 	new_expr.ptr2 = ptr_expr2;

@@ -215,7 +215,6 @@ struct Expression {
 	struct ExprInfo details;
 	enum expr_category category;
 	enum SimpleBinOp simple_binary_operator;
-	enum TokenKind binary_operator;
 	enum UnaryOp unary_operator;
 	struct Expression *ptr1;
 	struct Expression *ptr2;
@@ -234,8 +233,7 @@ struct Expression parse_logical_OR_expression(struct ParserState *ptr_ps,
 
 struct Expression remove_leftiness_(struct Expression expr);
 struct Expression binary_op_(struct Expression expr, struct Expression expr2,
-                             enum TokenKind kind, enum expr_category cat,
-                             struct ExprInfo exprinfo);
+                             enum expr_category cat, struct ExprInfo exprinfo);
 
 
 enum SimpleBinOp to_simplebinop(enum TokenKind t);

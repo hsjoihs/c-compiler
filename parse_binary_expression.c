@@ -80,8 +80,7 @@ struct Expression parse_logical_AND_expression(struct ParserState *ptr_ps,
                                                const struct Token **ptr_tokvec);
 
 struct Expression binary_op_(struct Expression expr, struct Expression expr2,
-                             enum TokenKind kind, enum expr_category cat,
-                             struct ExprInfo exprinfo)
+                             enum expr_category cat, struct ExprInfo exprinfo)
 {
 	struct Expression *ptr_expr1 = calloc(1, sizeof(struct Expression));
 	struct Expression *ptr_expr2 = calloc(1, sizeof(struct Expression));
@@ -91,7 +90,6 @@ struct Expression binary_op_(struct Expression expr, struct Expression expr2,
 	struct Expression new_expr;
 	new_expr.details = exprinfo;
 	new_expr.category = cat;
-	new_expr.binary_operator = kind;
 	new_expr.ptr1 = ptr_expr1;
 	new_expr.ptr2 = ptr_expr2;
 	new_expr.ptr3 = 0;
@@ -112,7 +110,6 @@ struct Expression simple_binary_op(struct Expression expr,
 	new_expr.details = exprinfo;
 	new_expr.category = SIMPLE_BINARY_EXPR;
 	new_expr.simple_binary_operator = to_simplebinop(kind);
-	new_expr.binary_operator = kind;
 	new_expr.ptr1 = ptr_expr1;
 	new_expr.ptr2 = ptr_expr2;
 	new_expr.ptr3 = 0;
@@ -132,7 +129,6 @@ struct Expression pointer_plusorminus_int(struct Expression expr,
 	struct Expression new_expr;
 	new_expr.details = expr.details;
 	new_expr.category = kind == OP_PLUS ? POINTER_PLUS_INT : POINTER_MINUS_INT;
-	new_expr.binary_operator = kind;
 	new_expr.ptr1 = ptr_expr1;
 	new_expr.ptr2 = ptr_expr2;
 	new_expr.ptr3 = 0;
@@ -315,7 +311,7 @@ struct Expression combine_by_add_or_sub(struct Expression expr,
 			return pointer_plusorminus_int(expr, expr2, kind);
 		} else {
 			/* pointer minus pointer */
-			return binary_op_(expr, expr2, kind, POINTER_MINUS_POINTER,
+			return binary_op_(expr, expr2, POINTER_MINUS_POINTER,
 			                  UNASSIGNABLE(INT_TYPE));
 		}
 	}
@@ -389,7 +385,7 @@ struct Expression parse_logical_AND_expression(struct ParserState *ptr_ps,
 		    parse_inclusive_OR_expression(ptr_ps, &tokvec);
 		++counter;
 
-		first_expr = binary_op_(first_expr, expr2, kind, LOGICAL_AND_EXPR,
+		first_expr = binary_op_(first_expr, expr2, LOGICAL_AND_EXPR,
 		                        UNASSIGNABLE(INT_TYPE));
 	}
 
@@ -413,8 +409,7 @@ struct Expression parse_logical_OR_expression(struct ParserState *ptr_ps,
 		++tokvec;
 		struct Expression expr2 = parse_logical_AND_expression(ptr_ps, &tokvec);
 
-		expr = binary_op_(expr, expr2, kind, LOGICAL_OR_EXPR,
-		                  UNASSIGNABLE(INT_TYPE));
+		expr = binary_op_(expr, expr2, LOGICAL_OR_EXPR, UNASSIGNABLE(INT_TYPE));
 	}
 
 	*ptr_tokvec = tokvec;
