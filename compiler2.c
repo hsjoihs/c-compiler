@@ -266,9 +266,10 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 			print_simple_binary_op(expr.simple_binary_operator);
 			return;
 		}
-		case BINARY_EXPR:
-			switch (expr.binary_operator) {
-				case OP_OR_OR: {
+
+		case LOGICAL_OR_EXPR: {
+			{
+				{
 					int label1 = get_new_label_name(ptr_ps);
 					int label2 = get_new_label_name(ptr_ps);
 					print_expression(ptr_ps, *expr.ptr1);
@@ -279,7 +280,11 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 					gen_logical_OR_final(1, label1, label2);
 					return;
 				}
-				case OP_AND_AND: {
+			}
+		}
+		case LOGICAL_AND_EXPR: {
+			{
+				{
 					int label1 = get_new_label_name(ptr_ps);
 					int label2 = get_new_label_name(ptr_ps);
 					print_expression(ptr_ps, *expr.ptr1);
@@ -291,6 +296,8 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 					return;
 				}
 			}
+		}
+
 		case ASSIGNMENT_EXPR: {
 			{
 				{

@@ -376,7 +376,7 @@ struct Expression parse_logical_AND_expression(struct ParserState *ptr_ps,
 		    parse_inclusive_OR_expression(ptr_ps, &tokvec);
 		++counter;
 
-		first_expr = binary_op_(first_expr, expr2, kind, BINARY_EXPR,
+		first_expr = binary_op_(first_expr, expr2, kind, LOGICAL_AND_EXPR,
 		                        UNASSIGNABLE(INT_TYPE));
 	}
 
@@ -400,8 +400,8 @@ struct Expression parse_logical_OR_expression(struct ParserState *ptr_ps,
 		++tokvec;
 		struct Expression expr2 = parse_logical_AND_expression(ptr_ps, &tokvec);
 
-		expr =
-		    binary_op_(expr, expr2, kind, BINARY_EXPR, UNASSIGNABLE(INT_TYPE));
+		expr = binary_op_(expr, expr2, kind, LOGICAL_OR_EXPR,
+		                  UNASSIGNABLE(INT_TYPE));
 	}
 
 	*ptr_tokvec = tokvec;

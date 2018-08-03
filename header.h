@@ -158,8 +158,7 @@ struct Type parse_declarator(const struct Token **ptr_tokvec,
 _Noreturn void unimplemented(const char *str);
 
 enum expr_category {
-	BINARY_EXPR = 1,
-	SIMPLE_BINARY_EXPR,
+	SIMPLE_BINARY_EXPR = 2,
 	POINTER_PLUSORMINUS_INT,
 	POINTER_MINUS_POINTER,
 	CONDITIONAL_EXPR,
@@ -172,7 +171,9 @@ enum expr_category {
 	POSTFIX_INCREMENT,
 	POSTFIX_DECREMENT,
 	FUNCCALL_EXPR,
-	ASSIGNMENT_EXPR
+	ASSIGNMENT_EXPR,
+	LOGICAL_OR_EXPR,
+	LOGICAL_AND_EXPR
 };
 
 enum SimpleBinOp {
