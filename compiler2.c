@@ -259,6 +259,8 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 
 		case LOCAL_VAR_AS_LVALUE:
 		case GLOBAL_VAR_AS_LVALUE:
+			fprintf(stderr, "should not pass\n");
+			exit(EXIT_FAILURE);
 			return;
 		case SIMPLE_BINARY_EXPR: {
 			print_expression(ptr_ps, *expr.ptr1);
