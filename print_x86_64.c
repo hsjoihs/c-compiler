@@ -614,14 +614,11 @@ void gen_push_address_of_global(const char *ident)
 	printf("//gen_push_address_of_global(\"%s\");\n", ident);
 	printf("  subq $8, %%rsp\n");
 #ifdef OSX
-	printf("  movq " PREFIX "%s@GOTPCREL(%%rip), %%rcx\n"
-	       "  movq %%rcx, (%%rsp)\n",
-	       ident);
+	printf("  movq " PREFIX "%s@GOTPCREL(%%rip), %%rax\n", ident);
 #else
-	printf("  leaq " PREFIX "%s(%%rip), %%rax\n"
-	       "  movq %%rax, (%%rsp)\n",
-	       ident);
+	printf("  leaq " PREFIX "%s(%%rip), %%rax\n", ident);
 #endif
+	printf("  movq %%rax, (%%rsp)\n");
 }
 
 /*
