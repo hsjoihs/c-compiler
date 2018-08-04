@@ -342,6 +342,12 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 				case UNARY_OP_ASTERISK: {
 					print_expression(ptr_ps, *expr.ptr1);
 					struct Type type = expr.details.type;
+					struct Type true_type = expr.details.true_type;
+
+					if (is_pointer(type) && is_array(true_type)) {
+						/* do not dereference, if it is an array */
+						return;
+					}
 					switch (size_of(type)) {
 						case 4:
 							gen_peek_and_dereference();

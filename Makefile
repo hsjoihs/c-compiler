@@ -59,6 +59,8 @@ full_compile:
 	./test_ret4.sh 122 'int a[1]; int main(){ *a=2;return 174;}' 174
 	./test_ret4.sh 123 'int main(){int a[1][2];int (*p)[2];p = a;int *q;q = *p;return 174;}' 174
 	./test_ret4.sh 124 'int main(){int a[1][2];int (*p)[2];p = a;int *q;q = *p; *q=174; return **a;}' 174
+	./test_ret4.sh 125 'int main(){int a[1][2];int (*p)[2];p = a;int *q;q = *(p+1); *q=174; return **(a+1);}' 174
+	./test_ret4.sh 126 'int main(){int a[5][6];int (*p)[6];p = a;int *q;q = *(p+1); *(2+q)=174; return *(*(1+a)+2);}' 174
 
 	./test_ret4.sh 001 'int main(){return 123;}' 123
 	./test_ret4.sh 002 'int main(){return (123);}' 123
