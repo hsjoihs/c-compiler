@@ -280,7 +280,7 @@ struct Expression parse_primary_expression(struct ParserState *ptr_ps,
 
 			struct Expression expr;
 			expr.details = expr_info;
-			expr.category = GLOBAL_VAR_AS_RVALUE;
+			expr.category = GLOBAL_VAR_;
 			expr.global_var_name = tokvec[0].ident_str;
 			return expr;
 		} else {
@@ -295,7 +295,7 @@ struct Expression parse_primary_expression(struct ParserState *ptr_ps,
 
 			struct Expression expr;
 			expr.details = expr_info;
-			expr.category = LOCAL_VAR_AS_RVALUE;
+			expr.category = LOCAL_VAR_;
 			return expr;
 		}
 	} else if (tokvec[0].kind == LEFT_PAREN) {
@@ -325,7 +325,7 @@ struct Expression ident_as_lvalue(struct ParserState ps, const char *name)
 		expr.details.info = GLOBAL_VAR;
 		expr.details.type = type;
 		expr.details.offset = GARBAGE_INT;
-		expr.category = GLOBAL_VAR_AS_LVALUE;
+		expr.category = GLOBAL_VAR_;
 		expr.global_var_name = name;
 		return expr;
 	} else {
@@ -339,7 +339,7 @@ struct Expression ident_as_lvalue(struct ParserState ps, const char *name)
 		expr.details.info = LOCAL_VAR;
 		expr.details.type = info.type;
 		expr.details.offset = info.offset;
-		expr.category = LOCAL_VAR_AS_LVALUE;
+		expr.category = LOCAL_VAR_;
 		return expr;
 	}
 }

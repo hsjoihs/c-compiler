@@ -83,7 +83,7 @@ void print_expression_as_lvalue(struct ParserState *ptr_ps,
                                 struct Expression expr)
 {
 	switch (expr.category) {
-		case LOCAL_VAR_AS_LVALUE: {
+		case LOCAL_VAR_: {
 			gen_push_address_of_local(expr.details.offset);
 
 			switch (size_of(expr.details.type)) {
@@ -99,7 +99,7 @@ void print_expression_as_lvalue(struct ParserState *ptr_ps,
 			}
 			return;
 		}
-		case GLOBAL_VAR_AS_LVALUE: {
+		case GLOBAL_VAR_: {
 			const char *name = expr.global_var_name;
 			gen_push_address_of_global(name);
 			struct Type type = expr.details.type;
@@ -175,7 +175,7 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 			                               ? SIMPLE_BIN_OP_PLUS
 			                               : SIMPLE_BIN_OP_MINUS;
 
-			if (expr.ptr1->category != LOCAL_VAR_AS_LVALUE) {
+			if (expr.ptr1->category != LOCAL_VAR_) {
 				unimplemented("increment of non-(local variable)");
 			}
 
@@ -192,7 +192,7 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 			return;
 		}
 
-		case LOCAL_VAR_AS_RVALUE: {
+		case LOCAL_VAR_: {
 			if (is_array(expr.details.true_type)) {
 				gen_push_address_of_local(expr.details.offset);
 				return;
@@ -210,7 +210,7 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 			return;
 		}
 
-		case GLOBAL_VAR_AS_RVALUE: {
+		case GLOBAL_VAR_: {
 			printf("//global `%s` as rvalue\n", expr.global_var_name);
 
 			if (is_array(expr.details.true_type)) {
@@ -230,11 +230,6 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 			return;
 		}
 
-		case LOCAL_VAR_AS_LVALUE:
-		case GLOBAL_VAR_AS_LVALUE:
-			fprintf(stderr, "should not pass\n");
-			exit(EXIT_FAILURE);
-			return;
 		case SIMPLE_BINARY_EXPR: {
 			print_expression(ptr_ps, *expr.ptr1);
 			print_expression(ptr_ps, *expr.ptr2);
@@ -314,7 +309,7 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 
 				case UNARY_OP_PLUS_PLUS:
 				case UNARY_OP_MINUS_MINUS: {
-					if (expr.ptr1->category != LOCAL_VAR_AS_LVALUE) {
+					if (expr.ptr1->category != LOCAL_VAR_) {
 						unimplemented("increment of non-(local variable)");
 					}
 
@@ -330,10 +325,10 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 				}
 
 				case UNARY_OP_AND: {
-					if (expr.ptr1->category == LOCAL_VAR_AS_LVALUE) {
+					if (expr.ptr1->category == LOCAL_VAR_) {
 						gen_push_address_of_local(expr.ptr1->details.offset);
 						return;
-					} else if (expr.ptr1->category == GLOBAL_VAR_AS_LVALUE) {
+					} else if (expr.ptr1->category == GLOBAL_VAR_) {
 						gen_push_address_of_global(expr.ptr1->global_var_name);
 						return;
 					}
