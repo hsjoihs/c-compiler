@@ -238,6 +238,7 @@ check_error:
 	./test_compile_error.sh 'int *foo(int *(p)){*p = 4;return p;} int main(){int (x;int (y); int (*(*(z))); *foo(&x) += 170;return x;}'
 	./test_compile_error.sh 'int main(){int *p; int (*a)[1][2]; p = a;}'
 	./test_compile_error.sh 'int main(){int a[1]; int *b; a = b;}'
+	./test_compile_error.sh 'int main(){return 1[2];}'
 	
 
 
