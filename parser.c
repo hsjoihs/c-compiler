@@ -253,6 +253,18 @@ struct Expression parse_postfix_expression(struct ParserState *ptr_ps,
 		return new_expr;
 	} else {
 		struct Expression expr = parse_primary_expression(ptr_ps, &tokvec);
+
+		while (1) {
+			if (tokvec[0].kind == LEFT_BRACKET) {
+				++tokvec;
+				struct Expression expr2 = parse_expression(ptr_ps, &tokvec);
+				expect_and_consume(&tokvec, RIGHT_BRACKET, "right bracket ]");
+
+				expr = deref_expr(combine_by_add_or_sub(expr, expr2, OP_PLUS));
+			} else {
+				break;
+			}
+		}
 		*ptr_tokvec = tokvec;
 		return expr;
 	}
