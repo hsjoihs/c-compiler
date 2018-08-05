@@ -244,7 +244,6 @@ void parse_dirdcl(const struct Token **ptr_tokvec, struct Type3 *ptr_type3)
 		++tokvec;
 	} else {
 		error_unexpected_token(tokvec, "( or an identifier in the declarator");
-		exit(EXIT_FAILURE); /* silence the warning */
 	}
 
 	while (1) {

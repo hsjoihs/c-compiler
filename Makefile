@@ -44,6 +44,10 @@ intmap_check:
 	gcc -Wall -Wextra -Wimplicit-fallthrough map.c intmap_check.c -o out/intmap_check.out
 	./out/intmap_check.out
 
+warn:
+	make format
+	gcc -Wall -Wextra -Wimplicit-fallthrough -Weverything -Wno-padded -Wno-missing-prototypes -Wno-switch-enum compiler2.c parser.c error.c type.c parse_binary_expression.c map.c print_x86_64.c $(CCFLAGS) lexer.c -o out/compiler.out
+
 notest:
 	make format
 	gcc -Wall -Wextra -Wimplicit-fallthrough compiler2.c parser.c error.c type.c parse_binary_expression.c map.c print_x86_64.c $(CCFLAGS) lexer.c -o out/compiler.out

@@ -400,10 +400,9 @@ struct Expression parse_assignment_expression(struct ParserState *ptr_ps,
 {
 	const struct Token *tokvec = *ptr_tokvec;
 
-	enum TokenKind opkind = tokvec[1].kind;
-
-	if (tokvec[0].kind == IDENT_OR_RESERVED && isAssign(opkind)) {
+	if (tokvec[0].kind == IDENT_OR_RESERVED && isAssign(tokvec[1].kind)) {
 		const char *name = tokvec[0].ident_str;
+		enum TokenKind opkind = tokvec[1].kind;
 		tokvec += 2;
 		*ptr_tokvec = tokvec;
 
@@ -422,9 +421,9 @@ struct Expression parse_assignment_expression(struct ParserState *ptr_ps,
 
 	/* parse failed */
 	if (!isAssign(tokvec2[0].kind)) {
-		struct Expression expr = parse_conditional_expression(ptr_ps, &tokvec);
+		struct Expression expr_ = parse_conditional_expression(ptr_ps, &tokvec);
 		*ptr_tokvec = tokvec;
-		return expr;
+		return expr_;
 	}
 
 	tokvec = tokvec2;
@@ -435,11 +434,9 @@ struct Expression parse_assignment_expression(struct ParserState *ptr_ps,
 		case GLOBAL_VAR:
 			assert("supposed to be handled separately, at least for now" && 0);
 			exit(EXIT_FAILURE);
-			break;
 		case NOT_ASSIGNABLE:
 			fprintf(stderr, "Expected an lvalue, but did not get one.\n");
 			exit(EXIT_FAILURE);
-			break;
 		case DEREFERENCED_ADDRESS: {
 			enum TokenKind opkind = tokvec[0].kind;
 			++tokvec;

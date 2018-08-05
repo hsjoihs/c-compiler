@@ -140,7 +140,6 @@ void print_expression_as_lvalue(struct ParserState *ptr_ps,
 					                "lvalue is `*`\n");
 					exit(EXIT_FAILURE);
 			}
-			return;
 		default:
 			fprintf(stderr, "doesn't seem like an lvalue\n");
 			return;

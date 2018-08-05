@@ -9,8 +9,6 @@ struct _mapchip {
 	void *value;
 };
 
-#define GARBAGE_INT ((int)0xCCCCCCCC)
-
 /* it overrides; it does not overwrite. */
 void insert(struct map *ptr, const char *key, void *value)
 {
