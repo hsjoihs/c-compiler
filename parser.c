@@ -49,6 +49,8 @@ struct Expression parse_assignment_expression(struct ParserState *ptr_ps,
 struct Expression parse_cast_expression(struct ParserState *ptr_ps,
                                         const struct Token **ptr_tokvec);
 
+struct Expression deref_expr(struct Expression expr);
+
 struct Expression unary_op_(struct Expression expr, enum TokenKind kind,
                             struct ExprInfo exprinfo)
 {
@@ -138,25 +140,29 @@ parse_unary_expression(struct ParserState *ptr_ps,
 		++tokvec;
 		struct Expression expr =
 		    remove_leftiness_(parse_cast_expression(ptr_ps, &tokvec));
-		struct Type type = deref_type(expr.details.type);
-
-		struct ExprInfo new_expr_info;
-		new_expr_info.info = DEREFERENCED_ADDRESS;
-		new_expr_info.type = if_array_convert_to_ptr(type);
-		new_expr_info.true_type = type;
-		new_expr_info.offset = GARBAGE_INT;
 
 		*ptr_tokvec = tokvec;
-
-		struct Expression new_expr =
-		    unary_op_(expr, OP_ASTERISK, new_expr_info);
-
-		return new_expr;
+		return deref_expr(expr);
 	} else {
 		struct Expression expr = parse_postfix_expression(ptr_ps, &tokvec);
 		*ptr_tokvec = tokvec;
 		return expr;
 	}
+}
+
+struct Expression deref_expr(struct Expression expr)
+{
+	struct Type type = deref_type(expr.details.type);
+
+	struct ExprInfo new_expr_info;
+	new_expr_info.info = DEREFERENCED_ADDRESS;
+	new_expr_info.type = if_array_convert_to_ptr(type);
+	new_expr_info.true_type = type;
+	new_expr_info.offset = GARBAGE_INT;
+
+	struct Expression new_expr = unary_op_(expr, OP_ASTERISK, new_expr_info);
+
+	return new_expr;
 }
 
 struct Expression parse_cast_expression(struct ParserState *ptr_ps,
