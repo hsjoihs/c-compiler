@@ -400,21 +400,6 @@ struct Expression parse_assignment_expression(struct ParserState *ptr_ps,
 {
 	const struct Token *tokvec = *ptr_tokvec;
 
-	if (tokvec[0].kind == IDENT_OR_RESERVED && isAssign(tokvec[1].kind)) {
-		const char *name = tokvec[0].ident_str;
-		enum TokenKind opkind = tokvec[1].kind;
-		tokvec += 2;
-		*ptr_tokvec = tokvec;
-
-		struct Expression expr = ident_as_lvalue(*ptr_ps, name);
-		struct Expression expr2 = parse_assignment_expression(ptr_ps, &tokvec);
-		struct ExprInfo expr_info = expr2.details;
-		expect_type(expr_info, expr.details.type, 0);
-
-		*ptr_tokvec = tokvec;
-		return assignment_expr(expr, expr2, opkind);
-	}
-
 	const struct Token *tokvec2 = tokvec;
 	struct ParserState *ptr_ps2 = ptr_ps;
 	struct Expression expr = parse_unary_expression(ptr_ps2, &tokvec2);
@@ -428,15 +413,18 @@ struct Expression parse_assignment_expression(struct ParserState *ptr_ps,
 
 	tokvec = tokvec2;
 
+	if (is_array(expr.details.type) || is_array(expr.details.true_type)) {
+		fprintf(stderr, "array is not an lvalue\n");
+		exit(EXIT_FAILURE);
+	}
+
 	assert(isAssign(tokvec[0].kind));
 	switch (expr.details.info) {
-		case LOCAL_VAR:
-		case GLOBAL_VAR:
-			assert("supposed to be handled separately, at least for now" && 0);
-			exit(EXIT_FAILURE);
 		case NOT_ASSIGNABLE:
 			fprintf(stderr, "Expected an lvalue, but did not get one.\n");
 			exit(EXIT_FAILURE);
+		case LOCAL_VAR:
+		case GLOBAL_VAR:
 		case DEREFERENCED_ADDRESS: {
 			enum TokenKind opkind = tokvec[0].kind;
 			++tokvec;
