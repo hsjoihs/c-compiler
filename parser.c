@@ -314,8 +314,7 @@ struct Expression parse_primary_expression(struct ParserState *ptr_ps,
 		return expr;
 	}
 
-	error_unexpected_token(tokvec,
-	                       "the beginning of parseprint_primary_expression");
+	error_unexpected_token(tokvec, "the beginning of parse_primary_expression");
 }
 
 struct Expression ident_as_lvalue(struct ParserState ps, const char *name)
