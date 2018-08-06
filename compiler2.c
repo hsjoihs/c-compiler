@@ -8,9 +8,18 @@
 #include <stdlib.h>
 #include <string.h>
 
-int get_new_label_name(struct ParserState *ptr_ps);
+struct PrinterState {
+	int dummy;
+};
+
+int get_new_label_name(struct ParserState *ptr_ps,
+                       struct PrinterState *ptr_prs);
 void print_argument_expression(struct ParserState *ptr_ps,
+                               struct PrinterState *ptr_prs,
                                struct Expression expr, int counter);
+void parseprint_compound_statement(struct ParserState *ptr_ps,
+                                   struct PrinterState *ptr_prs,
+                                   const struct Token **ptr_tokvec);
 
 void print_simple_binary_op(enum SimpleBinOp kind)
 {
@@ -77,9 +86,11 @@ struct ExprInfo remove_leftiness(struct ExprInfo info)
 	return info;
 }
 
-void print_expression(struct ParserState *ptr_ps, struct Expression expr);
+void print_expression(struct ParserState *ptr_ps, struct PrinterState *ptr_prs,
+                      struct Expression expr);
 
 void print_expression_as_lvalue(struct ParserState *ptr_ps,
+                                struct PrinterState *ptr_prs,
                                 struct Expression expr)
 {
 	switch (expr.category) {
@@ -121,7 +132,7 @@ void print_expression_as_lvalue(struct ParserState *ptr_ps,
 		case UNARY_OP_EXPR:
 			switch (expr.unary_operator) {
 				case UNARY_OP_ASTERISK: {
-					print_expression(ptr_ps, *expr.ptr1);
+					print_expression(ptr_ps, ptr_prs, *expr.ptr1);
 					struct Type type = expr.details.type;
 					switch (size_of(type)) {
 						case 4:
@@ -146,12 +157,13 @@ void print_expression_as_lvalue(struct ParserState *ptr_ps,
 	}
 }
 
-void print_expression(struct ParserState *ptr_ps, struct Expression expr)
+void print_expression(struct ParserState *ptr_ps, struct PrinterState *ptr_prs,
+                      struct Expression expr)
 {
 	switch (expr.category) {
 		case POINTER_MINUS_POINTER: {
-			print_expression(ptr_ps, *expr.ptr1);
-			print_expression(ptr_ps, *expr.ptr2);
+			print_expression(ptr_ps, ptr_prs, *expr.ptr1);
+			print_expression(ptr_ps, ptr_prs, *expr.ptr2);
 			int size = size_of(deref_type(expr.ptr1->details.type));
 			gen_op_8byte("subq");
 			gen_div_by_const(size);
@@ -159,8 +171,8 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 		}
 		case POINTER_PLUS_INT:
 		case POINTER_MINUS_INT: {
-			print_expression(ptr_ps, *expr.ptr1);
-			print_expression(ptr_ps, *expr.ptr2);
+			print_expression(ptr_ps, ptr_prs, *expr.ptr1);
+			print_expression(ptr_ps, ptr_prs, *expr.ptr2);
 			int size = size_of(deref_type(expr.ptr1->details.type));
 			gen_cltq();
 			gen_mul_by_const(size);
@@ -230,32 +242,32 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 		}
 
 		case SIMPLE_BINARY_EXPR: {
-			print_expression(ptr_ps, *expr.ptr1);
-			print_expression(ptr_ps, *expr.ptr2);
+			print_expression(ptr_ps, ptr_prs, *expr.ptr1);
+			print_expression(ptr_ps, ptr_prs, *expr.ptr2);
 			print_simple_binary_op(expr.simple_binary_operator);
 			return;
 		}
 
 		case LOGICAL_OR_EXPR: {
 
-			int label1 = get_new_label_name(ptr_ps);
-			int label2 = get_new_label_name(ptr_ps);
-			print_expression(ptr_ps, *expr.ptr1);
+			int label1 = get_new_label_name(ptr_ps, ptr_prs);
+			int label2 = get_new_label_name(ptr_ps, ptr_prs);
+			print_expression(ptr_ps, ptr_prs, *expr.ptr1);
 
 			gen_logical_OR_set(0, label1);
-			print_expression(ptr_ps, *expr.ptr2);
+			print_expression(ptr_ps, ptr_prs, *expr.ptr2);
 			gen_logical_OR_set(1, label1);
 			gen_logical_OR_final(1, label1, label2);
 			return;
 		}
 		case LOGICAL_AND_EXPR: {
 
-			int label1 = get_new_label_name(ptr_ps);
-			int label2 = get_new_label_name(ptr_ps);
-			print_expression(ptr_ps, *expr.ptr1);
+			int label1 = get_new_label_name(ptr_ps, ptr_prs);
+			int label2 = get_new_label_name(ptr_ps, ptr_prs);
+			print_expression(ptr_ps, ptr_prs, *expr.ptr1);
 
 			gen_logical_AND_set(0, label1);
-			print_expression(ptr_ps, *expr.ptr2);
+			print_expression(ptr_ps, ptr_prs, *expr.ptr2);
 			gen_logical_AND_set(1, label1);
 			gen_logical_AND_final(1, label1, label2);
 			return;
@@ -263,8 +275,8 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 
 		case ASSIGNMENT_EXPR: {
 
-			print_expression_as_lvalue(ptr_ps, *expr.ptr1);
-			print_expression(ptr_ps, *expr.ptr2);
+			print_expression_as_lvalue(ptr_ps, ptr_prs, *expr.ptr1);
+			print_expression(ptr_ps, ptr_prs, *expr.ptr2);
 
 			print_simple_binary_op(expr.simple_binary_operator);
 
@@ -290,19 +302,19 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 		case UNARY_OP_EXPR:
 			switch (expr.unary_operator) {
 				case UNARY_OP_NOT:
-					print_expression(ptr_ps, *expr.ptr1);
+					print_expression(ptr_ps, ptr_prs, *expr.ptr1);
 					gen_unary_not();
 					return;
 				case UNARY_OP_TILDA:
-					print_expression(ptr_ps, *expr.ptr1);
+					print_expression(ptr_ps, ptr_prs, *expr.ptr1);
 					gen_unary("notl");
 					return;
 				case UNARY_OP_PLUS:
-					print_expression(ptr_ps, *expr.ptr1);
+					print_expression(ptr_ps, ptr_prs, *expr.ptr1);
 					/* do nothing */
 					return;
 				case UNARY_OP_MINUS:
-					print_expression(ptr_ps, *expr.ptr1);
+					print_expression(ptr_ps, ptr_prs, *expr.ptr1);
 					gen_unary("negl");
 					return;
 
@@ -334,7 +346,7 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 				}
 
 				case UNARY_OP_ASTERISK: {
-					print_expression(ptr_ps, *expr.ptr1);
+					print_expression(ptr_ps, ptr_prs, *expr.ptr1);
 					struct Type type = expr.details.type;
 					struct Type true_type = expr.details.true_type;
 
@@ -357,14 +369,14 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 			}
 			return;
 		case CONDITIONAL_EXPR: {
-			print_expression(ptr_ps, *expr.ptr1);
-			int label1 = get_new_label_name(ptr_ps);
-			int label2 = get_new_label_name(ptr_ps);
+			print_expression(ptr_ps, ptr_prs, *expr.ptr1);
+			int label1 = get_new_label_name(ptr_ps, ptr_prs);
+			int label2 = get_new_label_name(ptr_ps, ptr_prs);
 
 			gen_ternary_part1(label1, label2);
-			print_expression(ptr_ps, *expr.ptr2);
+			print_expression(ptr_ps, ptr_prs, *expr.ptr2);
 			gen_ternary_part2(label1, label2);
-			print_expression(ptr_ps, *expr.ptr3);
+			print_expression(ptr_ps, ptr_prs, *expr.ptr3);
 
 			gen_ternary_part3(label1, label2);
 			return;
@@ -385,8 +397,8 @@ void print_expression(struct ParserState *ptr_ps, struct Expression expr)
 			}
 
 			for (int counter = 0; counter < expr.arg_length; counter++) {
-				print_argument_expression(ptr_ps, expr.arg_expr_vec[counter],
-				                          counter);
+				print_argument_expression(ptr_ps, ptr_prs,
+				                          expr.arg_expr_vec[counter], counter);
 			}
 			switch (size_of(ret_type)) {
 				case 4:
@@ -490,9 +502,10 @@ const char *get_reg_name_from_arg_pos_8byte(int counter)
 }
 
 void print_argument_expression(struct ParserState *ptr_ps,
+                               struct PrinterState *ptr_prs,
                                struct Expression expr, int counter)
 {
-	print_expression(ptr_ps, expr);
+	print_expression(ptr_ps, ptr_prs, expr);
 	if (counter > 5) {
 		unimplemented("calling with 7 or more arguments");
 	}
@@ -509,21 +522,22 @@ void print_argument_expression(struct ParserState *ptr_ps,
 	}
 }
 
-int get_new_label_name(struct ParserState *ptr_ps)
+int get_new_label_name(struct ParserState *ptr_ps, struct PrinterState *ptr_prs)
 {
 	return ++(ptr_ps->final_label_name);
 }
 
 void parseprint_statement(struct ParserState *ptr_ps,
+                          struct PrinterState *ptr_prs,
                           const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 	if (tokvec[0].kind == LEFT_BRACE) {
-		parseprint_compound_statement(ptr_ps, &tokvec);
+		parseprint_compound_statement(ptr_ps, ptr_prs, &tokvec);
 		*ptr_tokvec = tokvec;
 	} else if (tokvec[0].kind == RES_IF) { /* or SWITCH */
-		int label1 = get_new_label_name(ptr_ps);
-		int label2 = get_new_label_name(ptr_ps);
+		int label1 = get_new_label_name(ptr_ps, ptr_prs);
+		int label2 = get_new_label_name(ptr_ps, ptr_prs);
 		++tokvec;
 
 		expect_and_consume(&tokvec, LEFT_PAREN,
@@ -531,19 +545,19 @@ void parseprint_statement(struct ParserState *ptr_ps,
 
 		struct Expression expr = parse_expression(ptr_ps, &tokvec);
 
-		print_expression(ptr_ps, expr);
+		print_expression(ptr_ps, ptr_prs, expr);
 
 		expect_and_consume(&tokvec, RIGHT_PAREN, "right parenthesis of `if`");
 
 		gen_if_else_part1(label1, label2);
 
-		parseprint_statement(ptr_ps, &tokvec);
+		parseprint_statement(ptr_ps, ptr_prs, &tokvec);
 
 		gen_if_else_part2(label1, label2);
 
 		if (tokvec[0].kind == RES_ELSE) { /* must bind to the most inner one */
 			++tokvec;
-			parseprint_statement(ptr_ps, &tokvec);
+			parseprint_statement(ptr_ps, ptr_prs, &tokvec);
 		} else {
 			/* do nothing */
 		}
@@ -559,7 +573,7 @@ void parseprint_statement(struct ParserState *ptr_ps,
 		} else {
 			struct Expression expr = parse_expression(ptr_ps, &tokvec);
 
-			print_expression(ptr_ps, expr);
+			print_expression(ptr_ps, ptr_prs, expr);
 			struct ExprInfo expr_info = expr.details;
 			expect_type(expr_info, ptr_ps->func_ret_type, 20);
 
@@ -571,7 +585,7 @@ void parseprint_statement(struct ParserState *ptr_ps,
 
 			/* the first occurrence of return within a function */
 			if (ptr_ps->return_label_name == GARBAGE_INT) {
-				int ret_label = get_new_label_name(ptr_ps);
+				int ret_label = get_new_label_name(ptr_ps, ptr_prs);
 				ptr_ps->return_label_name = ret_label;
 				gen_jump(ret_label, "return");
 			} else {
@@ -587,15 +601,15 @@ void parseprint_statement(struct ParserState *ptr_ps,
 
 		++tokvec;
 		*ptr_tokvec = tokvec;
-		int label1 = get_new_label_name(ptr_ps);
-		int break_label = get_new_label_name(ptr_ps);
-		int cont_label = get_new_label_name(ptr_ps);
+		int label1 = get_new_label_name(ptr_ps, ptr_prs);
+		int break_label = get_new_label_name(ptr_ps, ptr_prs);
+		int cont_label = get_new_label_name(ptr_ps, ptr_prs);
 
 		ptr_ps->break_label_name = break_label;
 		ptr_ps->continue_label_name = cont_label;
 
 		gen_label(label1);
-		parseprint_statement(ptr_ps, &tokvec);
+		parseprint_statement(ptr_ps, ptr_prs, &tokvec);
 		gen_label(cont_label);
 
 		expect_and_consume(&tokvec, RES_WHILE, "`while` of do-while");
@@ -603,7 +617,7 @@ void parseprint_statement(struct ParserState *ptr_ps,
 
 		struct Expression expr = parse_expression(ptr_ps, &tokvec);
 
-		print_expression(ptr_ps, expr);
+		print_expression(ptr_ps, ptr_prs, expr);
 
 		expect_and_consume(&tokvec, RIGHT_PAREN,
 		                   "right parenthesis of do-while");
@@ -625,9 +639,9 @@ void parseprint_statement(struct ParserState *ptr_ps,
 
 		expect_and_consume(&tokvec, LEFT_PAREN, "left parenthesis of while");
 
-		int label1 = get_new_label_name(ptr_ps);
-		int break_label = get_new_label_name(ptr_ps);
-		int cont_label = get_new_label_name(ptr_ps);
+		int label1 = get_new_label_name(ptr_ps, ptr_prs);
+		int break_label = get_new_label_name(ptr_ps, ptr_prs);
+		int cont_label = get_new_label_name(ptr_ps, ptr_prs);
 		ptr_ps->break_label_name = break_label;
 		ptr_ps->continue_label_name = cont_label;
 
@@ -635,13 +649,13 @@ void parseprint_statement(struct ParserState *ptr_ps,
 
 		struct Expression expr = parse_expression(ptr_ps, &tokvec);
 
-		print_expression(ptr_ps, expr);
+		print_expression(ptr_ps, ptr_prs, expr);
 
 		expect_and_consume(&tokvec, RIGHT_PAREN, "left parenthesis of while");
 
 		gen_while_part2(label1, break_label);
 
-		parseprint_statement(ptr_ps, &tokvec);
+		parseprint_statement(ptr_ps, ptr_prs, &tokvec);
 
 		gen_label(cont_label);
 		gen_for_part4(label1, break_label);
@@ -683,9 +697,9 @@ void parseprint_statement(struct ParserState *ptr_ps,
 	} else if (tokvec[0].kind == RES_FOR) {
 		int stashed_break_label = ptr_ps->break_label_name;
 		int stashed_continue_label = ptr_ps->continue_label_name;
-		int label1 = get_new_label_name(ptr_ps);
-		int break_label = get_new_label_name(ptr_ps);
-		int cont_label = get_new_label_name(ptr_ps);
+		int label1 = get_new_label_name(ptr_ps, ptr_prs);
+		int break_label = get_new_label_name(ptr_ps, ptr_prs);
+		int cont_label = get_new_label_name(ptr_ps, ptr_prs);
 		ptr_ps->break_label_name = break_label;
 		ptr_ps->continue_label_name = cont_label;
 
@@ -698,7 +712,7 @@ void parseprint_statement(struct ParserState *ptr_ps,
 		} else {
 			struct Expression expr = parse_expression(ptr_ps, &tokvec);
 
-			print_expression(ptr_ps, expr); /* expression1 */
+			print_expression(ptr_ps, ptr_prs, expr); /* expression1 */
 			gen_discard();
 		}
 
@@ -711,7 +725,7 @@ void parseprint_statement(struct ParserState *ptr_ps,
 		} else {
 			struct Expression expr = parse_expression(ptr_ps, &tokvec);
 
-			print_expression(ptr_ps, expr); /* expression2 */
+			print_expression(ptr_ps, ptr_prs, expr); /* expression2 */
 		}
 
 		expect_and_consume(&tokvec, SEMICOLON, "second semicolon of `for`");
@@ -722,7 +736,7 @@ void parseprint_statement(struct ParserState *ptr_ps,
 			expect_and_consume(&tokvec, RIGHT_PAREN,
 			                   "right parenthesis of `for`");
 
-			parseprint_statement(ptr_ps, &tokvec);
+			parseprint_statement(ptr_ps, ptr_prs, &tokvec);
 
 			gen_label(cont_label);
 			gen_for_part4(label1, break_label);
@@ -738,11 +752,11 @@ void parseprint_statement(struct ParserState *ptr_ps,
 			expect_and_consume(&tokvec2, RIGHT_PAREN,
 			                   "right parenthesis of `for`");
 
-			parseprint_statement(ptr_ps, &tokvec2);
+			parseprint_statement(ptr_ps, ptr_prs, &tokvec2);
 
 			gen_label(cont_label);
 
-			print_expression(ptr_ps, expr);
+			print_expression(ptr_ps, ptr_prs, expr);
 			gen_discard();
 
 			gen_for_part4(label1, break_label);
@@ -755,7 +769,7 @@ void parseprint_statement(struct ParserState *ptr_ps,
 	} else {
 		struct Expression expr = parse_expression(ptr_ps, &tokvec);
 
-		print_expression(ptr_ps, expr);
+		print_expression(ptr_ps, ptr_prs, expr);
 		expect_and_consume(&tokvec, SEMICOLON, "semicolon after an expression");
 
 		gen_discard();
@@ -773,6 +787,7 @@ void parse_final(const struct Token **ptr_tokvec)
 }
 
 void parseprint_compound_statement(struct ParserState *ptr_ps,
+                                   struct PrinterState *ptr_prs,
                                    const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
@@ -822,13 +837,14 @@ void parseprint_compound_statement(struct ParserState *ptr_ps,
 
 				ptr_ps->scope_chain.var_table = map_;
 			} else {
-				parseprint_statement(ptr_ps, &tokvec);
+				parseprint_statement(ptr_ps, ptr_prs, &tokvec);
 			}
 		}
 	}
 }
 
-void print_parameter_declaration(struct ParserState *ptr_ps, int counter,
+void print_parameter_declaration(struct ParserState *ptr_ps,
+                                 struct PrinterState *ptr_prs, int counter,
                                  struct ParamInfos param_infos)
 {
 
@@ -870,6 +886,7 @@ void print_parameter_declaration(struct ParserState *ptr_ps, int counter,
 }
 
 void parseprint_toplevel_definition(struct ParserState *ptr_ps,
+                                    struct PrinterState *ptr_prs,
                                     const struct Token **ptr_tokvec)
 {
 
@@ -923,26 +940,26 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
 			return;
 		}
 
-		label1 = get_new_label_name(ptr_ps);
-		label2 = get_new_label_name(ptr_ps);
+		label1 = get_new_label_name(ptr_ps, ptr_prs);
+		label2 = get_new_label_name(ptr_ps, ptr_prs);
 		gen_prologue(0, declarator_name);
 		gen_after_prologue(label1, label2);
 
 	} else {
-		label1 = get_new_label_name(ptr_ps);
-		label2 = get_new_label_name(ptr_ps);
+		label1 = get_new_label_name(ptr_ps, ptr_prs);
+		label2 = get_new_label_name(ptr_ps, ptr_prs);
 		gen_prologue(0, declarator_name);
 		gen_after_prologue(label1, label2);
 
 		int counter = 0;
 
 		do {
-			print_parameter_declaration(ptr_ps, counter, param_infos);
+			print_parameter_declaration(ptr_ps, ptr_prs, counter, param_infos);
 			++counter;
 		} while (param_infos.param_vec[counter]);
 	}
 
-	parseprint_compound_statement(ptr_ps, &tokvec2);
+	parseprint_compound_statement(ptr_ps, ptr_prs, &tokvec2);
 
 	gen_before_epilogue(label1, label2, -(ptr_ps->newest_offset));
 	switch (size_of(ret_type)) {
@@ -982,12 +999,14 @@ int main(int argc, char const **argv)
 		ps.func_info_map = init_int_map();
 		ps.global_vars_type_map = init_int_map();
 
+		struct PrinterState prs;
+
 		while (1) {
 			if (tokvec[0].kind == END) {
 				parse_final(&tokvec);
 				return 0;
 			} else {
-				parseprint_toplevel_definition(&ps, &tokvec);
+				parseprint_toplevel_definition(&ps, &prs, &tokvec);
 			}
 		}
 	}
