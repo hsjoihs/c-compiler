@@ -63,6 +63,15 @@ void gen_write_register_to_local_8byte(const char *str, int offset)
 	printf("  movq %%%s, %d(%%rbp)\n", str, offset);
 }
 
+void gen_write_register_to_local_1byte(const char *str, int offset)
+{
+	assert(offset < 0);
+	printf("//gen_write_register_to_local_1byte(%s, %d)\n", str, offset);
+	printf("  movl %%%s, %%eax\n"
+	       "  movb %%al, %d(%%rbp)\n",
+	       str, offset);
+}
+
 void gen_label(int label1)
 {
 	printf("//gen_label(%d)\n", label1);

@@ -62,6 +62,17 @@ full_compile:
 	./test_ret4.sh 136 'int main(){char x[3]; x[0] = -1; x[1] = 2; int y; y = 4; return x[0] + y + 171;}' 174
 	./test_ret4.sh 137 'char foo(char *p){*p = 5; char a;a = 3; return a;} int main(){char q; char r; r = foo(&q); return 172-r+q;}' 174
 	./test_ret4.sh 138 'char a;char foo(char *p){*p = 5; a = 3; return a;} int main(){char q; char r; r = foo(&q); return 172-r+q;}' 174
+	./test_ret4.sh 139 'int foo(char a){int d;d = 3;char c;c = a+d;return c;} int main(){char f;f=3;return foo(f)*4+150;}' 174
+	./test_ret4.sh 140 'int foo(char a){int d;d = 3;char c;c = a+d;return c*4;} int main(){char f;f=3;return foo(f)+150;}' 174
+	./test_ret4.sh 141 'int qwerty(); int main(){char f;f=3;return qwerty(f,4)+150;}' 174
+	./test_ret4.sh 142 'int qwer(); int main(){char f;f=3;return qwer(f,4)+150;}' 174
+	./test_ret4.sh 143 'int foo(char a, char b){return 23;} int main(){char f;f=3;return foo(f,4)+151;}' 174
+	./test_ret4.sh 144 'int foo(char a, char b){return a*4+11;} int main(){char f;f=3;return foo(f,4)+151;}' 174
+	./test_ret4.sh 145 'int foo(char a, char b){return a*4+12;} int main(){char f;f=3;return foo(f,4)+150;}' 174
+	./test_ret4.sh 146 'int foo(char a, char b){return (a+3)*4;} int main(){char f;f=3;return foo(f,4)+150;}' 174
+	./test_ret4.sh 147 'int foo(char a, char b){char c;c = a+3;return c*4;} int main(){char f;f=3;return foo(f,4)+150;}' 174
+	./test_ret4.sh 148 'int foo(char a, char b){int d;d = 3;char c;c = a+d;return c*4;} int main(){char f;f=3;return foo(f,4)+150;}' 174
+	./test_ret4.sh 149 'int foo(char a, char b){int d;d = 3;char c;c = a+d;return c*b;} int main(){char f;f=3;return foo(f,4)+150;}' 174
 
 	./test_ret4.sh 118 'int main(){int a[1]; int *p; p = a; *p=2; return 174;}' 174
 	./test_ret4.sh 119 'int main(){int a[1]; *(a+0)=2;return 174;}' 174

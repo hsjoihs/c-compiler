@@ -12,3 +12,19 @@ int *alloc4(int a, int b, int c, int d)
 	p[3] = d;
 	return p;
 }
+int qwerty(char a, char b)
+{
+	int d;
+	d = 3;
+	char c;
+	c = a + d;
+	return c * 4;
+}
+int qwer(char a, char b)
+{
+	int d;
+	d = 3;
+	char c;
+	c = a + d;
+	return c * b;
+}

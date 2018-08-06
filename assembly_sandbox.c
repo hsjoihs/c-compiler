@@ -1,23 +1,19 @@
 #include "print_x86_64.h"
 #include <stdio.h>
 
-/*
-int foo(char a, char b){
-    int d = 3;
-    char c = a+d;
-    return c*b;
-}
-
-
-*/
-
 int main()
 {
+
+	/*
+	int foo(char a, char b){
+	    int d = 3;
+	    char c = a+d;
+	    return c*b;
+	}
+	*/
 	gen_prologue(0, "foo");
-	puts("  movl %edi, %eax\n"
-	     "  movb %al, -20(%rbp)\n"
-	     "  movl %esi, %eax\n"
-	     "  movb %al, -24(%rbp)\n");
+	gen_write_register_to_local_1byte("edi", -20);
+	gen_write_register_to_local_1byte("esi", -24);
 
 	gen_push_int(3);
 	gen_write_to_local(-4);

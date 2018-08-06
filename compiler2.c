@@ -813,7 +813,8 @@ void parseprint_compound_statement(struct ParserState *ptr_ps,
 				vartype = parse_var_declarator(&tokvec, &str);
 				/* while function prototypes are also allowed here, I will not
 				 * implement it here */
-				ptr_prs->newest_offset -= size_of(vartype);
+				ptr_prs->newest_offset -=
+				    size_of(vartype) < 4 ? 4 : size_of(vartype);
 				expect_and_consume(
 				    &tokvec, SEMICOLON,
 				    "semicolon at the end of variable definition");
@@ -849,7 +850,7 @@ void print_parameter_declaration(struct ParserState *ptr_ps,
 		unimplemented("6-or-more parameters");
 	}
 
-	ptr_prs->newest_offset -= size_of(type);
+	ptr_prs->newest_offset -= size_of(type) < 4 ? 4 : size_of(type);
 
 	struct map map_ = ptr_ps->scope_chain.var_table;
 	struct LocalVarInfo *ptr_varinfo = calloc(1, sizeof(struct LocalVarInfo));
@@ -864,7 +865,9 @@ void print_parameter_declaration(struct ParserState *ptr_ps,
 
 	switch (size_of(type)) {
 		case 1:
-			unimplemented("Unsupported width in function parameter");
+			gen_write_register_to_local_1byte(
+			    /* yes, the register is 4byte */
+			    get_reg_name_from_arg_pos_4byte(counter), offset);
 		case 4:
 			gen_write_register_to_local_4byte(
 			    get_reg_name_from_arg_pos_4byte(counter), offset);
