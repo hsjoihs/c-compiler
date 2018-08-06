@@ -5,7 +5,7 @@
 char x[3];
 char y[3];
 char foo() { int c = 1; int d = 0; x[d] = y[c]; char e = 3; return e;}
-int main(){ char f = foo(); return 174;}
+int main(){ char f; return (f = foo())+171;}
 */
 
 int main()
@@ -52,9 +52,9 @@ int main()
 
 	gen_push_ret_of_1byte("foo");
 	gen_write_to_local_1byte(-5);
-	gen_discard();
+	gen_push_int(171);
+	gen_op_ints("addl");
 
-	gen_push_int(174);
 	gen_epilogue(123);
 	gen_global_declaration("x", 3);
 	gen_global_declaration("y", 3);
