@@ -846,7 +846,7 @@ void print_parameter_declaration(struct ParserState *ptr_ps,
 	ident_str = param_info.ident_str;
 
 	if (counter > 5) {
-		unimplemented("6-or-more args");
+		unimplemented("6-or-more parameters");
 	}
 
 	ptr_prs->newest_offset -= size_of(type);
@@ -864,7 +864,7 @@ void print_parameter_declaration(struct ParserState *ptr_ps,
 
 	switch (size_of(type)) {
 		case 1:
-			unimplemented("Unsupported width in function argument");
+			unimplemented("Unsupported width in function parameter");
 		case 4:
 			gen_write_register_to_local_4byte(
 			    get_reg_name_from_arg_pos_4byte(counter), offset);
@@ -874,7 +874,7 @@ void print_parameter_declaration(struct ParserState *ptr_ps,
 			    get_reg_name_from_arg_pos_8byte(counter), offset);
 			break;
 		default:
-			unimplemented("Unsupported width in function argument");
+			unimplemented("Unsupported width in function parameter");
 	}
 }
 
