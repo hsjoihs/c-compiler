@@ -18,7 +18,7 @@ struct PrinterState {
 };
 
 int get_new_label_name(struct PrinterState *ptr_prs);
-void print_argument_expression(struct ParserState *ptr_ps,
+void print_argument_expression(const struct ParserState *ptr_ps,
                                struct PrinterState *ptr_prs,
                                struct Expression expr, int counter);
 void parseprint_compound_statement(struct ParserState *ptr_ps,
@@ -90,10 +90,10 @@ struct ExprInfo remove_leftiness(struct ExprInfo info)
 	return info;
 }
 
-void print_expression(struct ParserState *ptr_ps, struct PrinterState *ptr_prs,
-                      struct Expression expr);
+void print_expression(const struct ParserState *ptr_ps,
+                      struct PrinterState *ptr_prs, struct Expression expr);
 
-void print_expression_as_lvalue(struct ParserState *ptr_ps,
+void print_expression_as_lvalue(const struct ParserState *ptr_ps,
                                 struct PrinterState *ptr_prs,
                                 struct Expression expr)
 {
@@ -161,8 +161,8 @@ void print_expression_as_lvalue(struct ParserState *ptr_ps,
 	}
 }
 
-void print_expression(struct ParserState *ptr_ps, struct PrinterState *ptr_prs,
-                      struct Expression expr)
+void print_expression(const struct ParserState *ptr_ps,
+                      struct PrinterState *ptr_prs, struct Expression expr)
 {
 	switch (expr.category) {
 		case POINTER_MINUS_POINTER: {
@@ -505,7 +505,7 @@ const char *get_reg_name_from_arg_pos_8byte(int counter)
 	}
 }
 
-void print_argument_expression(struct ParserState *ptr_ps,
+void print_argument_expression(const struct ParserState *ptr_ps,
                                struct PrinterState *ptr_prs,
                                struct Expression expr, int counter)
 {
