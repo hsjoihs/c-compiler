@@ -715,35 +715,19 @@ void parseprint_statement(struct ParserState *ptr_ps,
 		print_expression_(ptr_prs, expr2); /* expression2 */
 		gen_while_part2(label1, break_label);
 
+		struct Expression expr3;
 		if (tokvec[0].kind == RIGHT_PAREN) { /* expression3 is missing */
-			expect_and_consume(&tokvec, RIGHT_PAREN,
-			                   "right parenthesis of `for`");
-
-			parseprint_statement(ptr_ps, ptr_prs, &tokvec);
-
-			gen_label(cont_label);
-			gen_for_part4(label1, break_label);
-
-			*ptr_tokvec = tokvec;
-
+			expr3 = integer_1();
 		} else {
-
-			// expression3 of `for`
-			struct Expression expr = parse_expression(ptr_ps, &tokvec);
-
-			expect_and_consume(&tokvec, RIGHT_PAREN,
-			                   "right parenthesis of `for`");
-
-			parseprint_statement(ptr_ps, ptr_prs, &tokvec);
-
-			gen_label(cont_label);
-
-			print_expression_(ptr_prs, expr);
-			gen_discard();
-
-			gen_for_part4(label1, break_label);
-			*ptr_tokvec = tokvec;
+			expr3 = parse_expression(ptr_ps, &tokvec);
 		}
+		expect_and_consume(&tokvec, RIGHT_PAREN, "right parenthesis of `for`");
+		parseprint_statement(ptr_ps, ptr_prs, &tokvec);
+		gen_label(cont_label);
+		print_expression_(ptr_prs, expr3);
+		gen_discard();
+		gen_for_part4(label1, break_label);
+		*ptr_tokvec = tokvec;
 
 		ptr_prs->break_label_name = stashed_break_label;
 		ptr_prs->continue_label_name = stashed_continue_label;
