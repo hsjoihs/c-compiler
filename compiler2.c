@@ -403,23 +403,21 @@ void print_expression(const struct ParserState *ptr_ps,
 			for (int counter = 0; counter < expr.arg_length; counter++) {
 				struct Expression expr_ = expr.arg_expr_vec[counter];
 
-				{
-					print_expression(ptr_ps, ptr_prs, expr_);
-					if (counter > 5) {
-						unimplemented("calling with 7 or more arguments");
-					}
+				print_expression(ptr_ps, ptr_prs, expr_);
+				if (counter > 5) {
+					unimplemented("calling with 7 or more arguments");
+				}
 
-					switch (size_of(expr_.details.type)) {
-						case 4:
-							gen_pop_to_reg(get_reg_name_from_arg_pos(counter));
-							break;
-						case 8:
-							gen_pop_to_reg_8byte(
-							    get_reg_name_from_arg_pos_8byte(counter));
-							break;
-						default:
-							unimplemented("Unsupported width");
-					}
+				switch (size_of(expr_.details.type)) {
+					case 4:
+						gen_pop_to_reg(get_reg_name_from_arg_pos(counter));
+						break;
+					case 8:
+						gen_pop_to_reg_8byte(
+						    get_reg_name_from_arg_pos_8byte(counter));
+						break;
+					default:
+						unimplemented("Unsupported width");
 				}
 			}
 			switch (size_of(ret_type)) {
