@@ -284,8 +284,8 @@ struct Expression combine_by_add_or_sub(struct Expression expr,
 	struct Type type1 = expr.details.type;
 	struct Type type2 = expr2.details.type;
 
-	if (is_equal(type1, INT_TYPE)) {
-		if (is_equal(type2, INT_TYPE)) {
+	if (is_compatible(type1, INT_TYPE)) {
+		if (is_compatible(type2, INT_TYPE)) {
 			return simple_binary_op(expr, expr2, kind, UNASSIGNABLE(INT_TYPE));
 		} else if (is_pointer(type2)) {
 			if (kind == OP_MINUS) {
@@ -304,7 +304,7 @@ struct Expression combine_by_add_or_sub(struct Expression expr,
 			/* cannot add a pointer to a pointer*/
 
 			return pointer_plusorminus_int(expr, expr2, kind);
-		} else if (is_equal(type2, INT_TYPE)) {
+		} else if (is_compatible(type2, INT_TYPE)) {
 
 			/* pointer minus int */
 			return pointer_plusorminus_int(expr, expr2, kind);

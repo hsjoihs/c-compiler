@@ -46,7 +46,7 @@ int is_strictly_equal(struct Type t1, struct Type t2)
 	return 0;
 }
 
-int is_equal(struct Type t1, struct Type t2)
+int is_compatible(struct Type t1, struct Type t2)
 {
 	if (is_strictly_equal(t1, t2)) {
 		return 1;
@@ -116,7 +116,7 @@ void debug_print_type(struct Type type)
 void expect_type(struct ExprInfo expr_info, struct Type expected_type, int id)
 {
 
-	if (!is_equal(expr_info.type, expected_type)) {
+	if (!is_compatible(expr_info.type, expected_type)) {
 		fprintf(stderr, "Unmatched type: expected `");
 		debug_print_type(expected_type);
 		fprintf(stderr, "`, but got `");
