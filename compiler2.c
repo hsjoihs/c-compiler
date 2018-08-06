@@ -404,13 +404,12 @@ void print_expression(const struct ParserState *ptr_ps,
 				struct Expression expr_ = expr.arg_expr_vec[counter];
 
 				{
-					struct Expression expr = expr_;
-					print_expression(ptr_ps, ptr_prs, expr);
+					print_expression(ptr_ps, ptr_prs, expr_);
 					if (counter > 5) {
 						unimplemented("calling with 7 or more arguments");
 					}
 
-					switch (size_of(expr.details.type)) {
+					switch (size_of(expr_.details.type)) {
 						case 4:
 							gen_pop_to_reg(get_reg_name_from_arg_pos(counter));
 							break;
