@@ -18,9 +18,9 @@ struct PrinterState {
 };
 
 int get_new_label_name(struct PrinterState *ptr_prs);
-void print_argument_expression(const struct ParserState *ptr_ps,
-                               struct PrinterState *ptr_prs,
-                               struct Expression expr, int counter);
+const char *get_reg_name_from_arg_pos(int counter);
+const char *get_reg_name_from_arg_pos_8byte(int counter);
+
 void parseprint_compound_statement(struct ParserState *ptr_ps,
                                    struct PrinterState *ptr_prs,
                                    const struct Token **ptr_tokvec);
@@ -401,8 +401,27 @@ void print_expression(const struct ParserState *ptr_ps,
 			}
 
 			for (int counter = 0; counter < expr.arg_length; counter++) {
-				print_argument_expression(ptr_ps, ptr_prs,
-				                          expr.arg_expr_vec[counter], counter);
+				struct Expression expr_ = expr.arg_expr_vec[counter];
+
+				{
+					struct Expression expr = expr_;
+					print_expression(ptr_ps, ptr_prs, expr);
+					if (counter > 5) {
+						unimplemented("calling with 7 or more arguments");
+					}
+
+					switch (size_of(expr.details.type)) {
+						case 4:
+							gen_pop_to_reg(get_reg_name_from_arg_pos(counter));
+							break;
+						case 8:
+							gen_pop_to_reg_8byte(
+							    get_reg_name_from_arg_pos_8byte(counter));
+							break;
+						default:
+							unimplemented("Unsupported width");
+					}
+				}
 			}
 			switch (size_of(ret_type)) {
 				case 4:
@@ -502,27 +521,6 @@ const char *get_reg_name_from_arg_pos_8byte(int counter)
 			return "r9";
 		default:
 			assert("cannot happen" && 0);
-	}
-}
-
-void print_argument_expression(const struct ParserState *ptr_ps,
-                               struct PrinterState *ptr_prs,
-                               struct Expression expr, int counter)
-{
-	print_expression(ptr_ps, ptr_prs, expr);
-	if (counter > 5) {
-		unimplemented("calling with 7 or more arguments");
-	}
-
-	switch (size_of(expr.details.type)) {
-		case 4:
-			gen_pop_to_reg(get_reg_name_from_arg_pos(counter));
-			break;
-		case 8:
-			gen_pop_to_reg_8byte(get_reg_name_from_arg_pos_8byte(counter));
-			break;
-		default:
-			unimplemented("Unsupported width");
 	}
 }
 
