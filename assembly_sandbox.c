@@ -13,27 +13,26 @@ int foo(char a, char b){
 
 int main()
 {
-	puts(
+	gen_prologue(0, "foo");
+	puts("  movl %edi, %eax\n"
+	     "  movb %al, -20(%rbp)\n"
+	     "  movl %esi, %eax\n"
+	     "  movb %al, -24(%rbp)\n");
 
-	    "" PREFIX "foo:\n"
-	    "  pushq %rbp\n"
-	    "  movq %rsp, %rbp\n"
-	    "  movl %edi, %eax\n"
-	    "  movl %esi, %edx\n"
-	    "  movb %al, -20(%rbp)\n"
-	    "  movl %edx, %eax\n"
-	    "  movb %al, -24(%rbp)\n"
-	    "  movl $3, -4(%rbp)\n"
-	    "  movl -4(%rbp), %eax\n"
-	    "  movl %eax, %edx\n"
-	    "  movzbl -20(%rbp), %eax\n"
-	    "  addl %edx, %eax\n"
-	    "  movb %al, -5(%rbp)\n"
-	    "  movsbl -5(%rbp), %edx\n"
-	    "  movsbl -24(%rbp), %eax\n"
-	    "  imull %edx, %eax\n"
-	    "  popq %rbp\n"
-	    "  ret\n");
+	gen_push_int(3);
+	gen_write_to_local(-4);
+	gen_discard();
+
+	gen_push_from_local_4byte(-4);
+	gen_pop_to_reg_4byte("edx");
+	puts("  movzbl -20(%rbp), %eax\n"
+	     "  addl %edx, %eax\n"
+	     "  movb %al, -5(%rbp)\n");
+
+	gen_push_from_local_1byte(-5);
+	gen_push_from_local_1byte(-24);
+	gen_mul_ints();
+	gen_epilogue(1222);
 	/*
 	int main()
 	{
