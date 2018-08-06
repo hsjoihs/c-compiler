@@ -200,6 +200,9 @@ void print_token(struct Token tok)
 		case RES_CHAR:
 			fprintf(stderr, "char");
 			break;
+		case LIT_STRING:
+			fprintf(stderr, "\"%s\"", tok.ident_str);
+			break;
 	}
 }
 
@@ -219,6 +222,30 @@ struct Token get_token(const char **ptr_to_str)
 	    *str == '\f' || *str == '\r') {
 		++*ptr_to_str;
 		return get_token(ptr_to_str);
+	}
+
+	if (*str == '"') {
+		int i = 0;
+		++str;
+		for (;; ++i) {
+			if (str[i] == '\\') {
+				unimplemented("escape sequence");
+			}
+			if (str[i] == '"') {
+				break;
+			}
+		}
+		int length = i;
+		char *new_str = malloc(length + 1);
+		for (int j = 0; j < length; j++) {
+			new_str[j] = str[j];
+		}
+		new_str[length] = 0;
+		t.kind = LIT_STRING;
+		t.ident_str = new_str;
+
+		*ptr_to_str = str + length + 1;
+		return t;
 	}
 
 	if (*str == '+') {
