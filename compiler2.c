@@ -860,18 +860,18 @@ void print_parameter_declaration(struct ParserState *ptr_ps,
 
 	ptr_ps->scope_chain.var_table = map_;
 
+	int offset = resolve_name_locally(ptr_ps->scope_chain, ident_str).offset;
+
 	switch (size_of(type)) {
 		case 1:
 			unimplemented("Unsupported width in function argument");
 		case 4:
 			gen_write_register_to_local_4byte(
-			    get_reg_name_from_arg_pos_4byte(counter),
-			    resolve_name_locally(ptr_ps->scope_chain, ident_str).offset);
+			    get_reg_name_from_arg_pos_4byte(counter), offset);
 			break;
 		case 8:
 			gen_write_register_to_local_8byte(
-			    get_reg_name_from_arg_pos_8byte(counter),
-			    resolve_name_locally(ptr_ps->scope_chain, ident_str).offset);
+			    get_reg_name_from_arg_pos_8byte(counter), offset);
 			break;
 		default:
 			unimplemented("Unsupported width in function argument");
