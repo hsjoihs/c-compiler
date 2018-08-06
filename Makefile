@@ -56,6 +56,9 @@ full_compile:
 	rm out/*.out
 	make supplement
 	make notest
+	./test_ret4.sh 133 'char foo(){char a; return a;} int main(){foo(); return 174;}' 174
+	./test_ret4.sh 134 'char foo(char *p){char a; return a;} int main(){char q; foo(&q); return 174;}' 174
+
 	./test_ret4.sh 118 'int main(){int a[1]; int *p; p = a; *p=2; return 174;}' 174
 	./test_ret4.sh 119 'int main(){int a[1]; *(a+0)=2;return 174;}' 174
 	./test_ret4.sh 120 'int x; int *y; int main(){x=3; int a[1]; *a=2; y=a; return x+*y+169;}' 174

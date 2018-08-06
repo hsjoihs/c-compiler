@@ -30,6 +30,10 @@ int is_equal(struct Type t1, struct Type t2)
 		return 1;
 	}
 
+	if (t1.type_category == CHAR_ && t2.type_category == CHAR_) {
+		return 1;
+	}
+
 	if (t1.type_category == PTR_ && t2.type_category == PTR_) {
 		return is_equal(*t1.derived_from, *t2.derived_from);
 	}

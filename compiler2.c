@@ -102,6 +102,9 @@ void print_expression_as_lvalue_(struct PrinterState *ptr_prs,
 			gen_push_address_of_local(expr.details.offset);
 
 			switch (size_of(expr.details.type)) {
+				case 1:
+					gen_push_from_local_1byte(expr.details.offset);
+					break;
 				case 4:
 					gen_push_from_local_4byte(expr.details.offset);
 					break;
@@ -121,6 +124,9 @@ void print_expression_as_lvalue_(struct PrinterState *ptr_prs,
 
 			printf("//load from global `%s`\n", name);
 			switch (size_of(type)) {
+				case 1:
+					unimplemented("Unsupported width in the "
+					              "assignment operation");
 				case 4:
 					gen_push_from_global_4byte(name);
 					break;
@@ -139,6 +145,8 @@ void print_expression_as_lvalue_(struct PrinterState *ptr_prs,
 					print_expression_(ptr_prs, *expr.ptr1);
 					struct Type type = expr.details.type;
 					switch (size_of(type)) {
+						case 1:
+							unimplemented("Unsupported width in deref");
 						case 4:
 							gen_peek_deref_push_4byte();
 							break;
@@ -146,7 +154,7 @@ void print_expression_as_lvalue_(struct PrinterState *ptr_prs,
 							gen_peek_deref_push_8byte();
 							break;
 						default:
-							unimplemented("Unsupported width");
+							unimplemented("Unsupported width in deref");
 					}
 					return;
 				}
@@ -212,6 +220,9 @@ void print_expression_(struct PrinterState *ptr_prs, struct Expression expr)
 				return;
 			}
 			switch (size_of(expr.details.type)) {
+				case 1:
+					gen_push_from_local_1byte(expr.details.offset);
+					break;
 				case 4:
 					gen_push_from_local_4byte(expr.details.offset);
 					break;
@@ -232,6 +243,9 @@ void print_expression_(struct PrinterState *ptr_prs, struct Expression expr)
 				return;
 			}
 			switch (size_of(expr.details.type)) {
+				case 1:
+					unimplemented("Unsupported width in global var");
+					break;
 				case 4:
 					gen_push_from_global_4byte(expr.global_var_name);
 					break;
@@ -239,7 +253,7 @@ void print_expression_(struct PrinterState *ptr_prs, struct Expression expr)
 					gen_push_from_global_8byte(expr.global_var_name);
 					break;
 				default:
-					unimplemented("Unsupported width");
+					unimplemented("Unsupported width in global var");
 			}
 			return;
 		}
@@ -286,6 +300,9 @@ void print_expression_(struct PrinterState *ptr_prs, struct Expression expr)
 			struct Type type = expr.ptr1->details.type;
 
 			switch (size_of(type)) {
+				case 1:
+					gen_assign_1byte();
+					break;
 				case 4:
 					gen_assign_4byte();
 					break;
@@ -358,6 +375,9 @@ void print_expression_(struct PrinterState *ptr_prs, struct Expression expr)
 						return;
 					}
 					switch (size_of(type)) {
+						case 1:
+							gen_peek_and_dereference_1byte();
+							break;
 						case 4:
 							gen_peek_and_dereference_4byte();
 							break;
@@ -397,6 +417,8 @@ void print_expression_(struct PrinterState *ptr_prs, struct Expression expr)
 				}
 
 				switch (size_of(expr_.details.type)) {
+					case 1:
+						unimplemented("passing a char");
 					case 4:
 						gen_pop_to_reg_4byte(
 						    get_reg_name_from_arg_pos_4byte(counter));
@@ -410,6 +432,9 @@ void print_expression_(struct PrinterState *ptr_prs, struct Expression expr)
 				}
 			}
 			switch (size_of(ret_type)) {
+				case 1:
+					gen_push_ret_of_1byte(ident_str);
+					break;
 				case 4:
 					gen_push_ret_of_4byte(ident_str);
 					break;
@@ -836,6 +861,8 @@ void print_parameter_declaration(struct ParserState *ptr_ps,
 	ptr_ps->scope_chain.var_table = map_;
 
 	switch (size_of(type)) {
+		case 1:
+			unimplemented("Unsupported width in function argument");
 		case 4:
 			gen_write_register_to_local_4byte(
 			    get_reg_name_from_arg_pos_4byte(counter),
@@ -929,6 +956,7 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
 
 	gen_before_epilogue(label1, label2, -(ptr_prs->newest_offset));
 	switch (size_of(ret_type)) {
+		case 1:
 		case 4:
 			gen_epilogue(ptr_prs->return_label_name);
 			break;
