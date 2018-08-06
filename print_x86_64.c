@@ -532,9 +532,7 @@ void gen_epilogue(int label)
 	printf("//gen_epilogue(%d)\n", label);
 	printf(".L%d:"
 	       "  movl (%%rsp), %%eax\n"
-	       "  movq %%rbp, %%rsp\n"
-	       "  addq $8, %%rsp\n"
-	       "  movq (%%rbp), %%rbp\n"
+	       "  leave\n"
 	       "  ret\n",
 	       label);
 }
@@ -544,9 +542,7 @@ void gen_epilogue_8byte(int label)
 	printf("//gen_epilogue_8byte(%d)\n", label);
 	printf(".L%d:"
 	       "  movq (%%rsp), %%rax\n"
-	       "  movq %%rbp, %%rsp\n"
-	       "  addq $8, %%rsp\n"
-	       "  movq (%%rbp), %%rbp\n"
+	       "  leave\n"
 	       "  ret\n",
 	       label);
 }
