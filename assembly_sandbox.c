@@ -49,8 +49,8 @@ int main()
 	gen_push_int(4);
 	gen_pop_to_reg_4byte("esi");
 
-	puts("movsbl -1(%rbp), %eax\n"
-	     "movl %eax, %edi\n");
+	gen_push_from_local_1byte(-1);
+	gen_pop_to_reg_4byte("edi");
 
 	gen_push_ret_of_4byte("foo");
 	gen_push_int(150);
