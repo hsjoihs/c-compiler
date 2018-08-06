@@ -103,7 +103,7 @@ void print_expression_as_lvalue_(struct PrinterState *ptr_prs,
 
 			switch (size_of(expr.details.type)) {
 				case 4:
-					gen_push_from_local(expr.details.offset);
+					gen_push_from_local_4byte(expr.details.offset);
 					break;
 				case 8:
 					gen_push_from_local_8byte(expr.details.offset);
@@ -193,7 +193,7 @@ void print_expression_(struct PrinterState *ptr_prs, struct Expression expr)
 				unimplemented("increment of non-(local variable)");
 			}
 
-			gen_push_from_local(expr.ptr1->details.offset);
+			gen_push_from_local_4byte(expr.ptr1->details.offset);
 			gen_push_int(1);
 
 			print_simple_binary_op(opkind2);
@@ -213,7 +213,7 @@ void print_expression_(struct PrinterState *ptr_prs, struct Expression expr)
 			}
 			switch (size_of(expr.details.type)) {
 				case 4:
-					gen_push_from_local(expr.details.offset);
+					gen_push_from_local_4byte(expr.details.offset);
 					break;
 				case 8:
 					gen_push_from_local_8byte(expr.details.offset);
@@ -327,7 +327,7 @@ void print_expression_(struct PrinterState *ptr_prs, struct Expression expr)
 						unimplemented("increment of non-(local variable)");
 					}
 
-					gen_push_from_local(expr.ptr1->details.offset);
+					gen_push_from_local_4byte(expr.ptr1->details.offset);
 					gen_push_int(1);
 					print_simple_binary_op(expr.unary_operator ==
 					                               UNARY_OP_PLUS_PLUS

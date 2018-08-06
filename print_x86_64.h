@@ -8,7 +8,7 @@ void gen_rem_ints(void);
 void gen_shift_ints(const char* str);
 void gen_unary_not(void);
 void gen_unary(const char* str);
-void gen_push_from_local(int offset);
+void gen_push_from_local_4byte(int offset);
 void gen_write_to_local(int offset);
 void gen_epilogue(int label);
 void gen_push_ret_of_4byte(const char* fname);

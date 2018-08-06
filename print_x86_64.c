@@ -101,10 +101,10 @@ void gen_for_part4(int label1, int label2)
 }
 
 /* push what's on local mem */
-void gen_push_from_local(int offset)
+void gen_push_from_local_4byte(int offset)
 {
 	assert(offset < 0);
-	printf("//gen_push_from_local(%d)\n", offset);
+	printf("//gen_push_from_local_4byte(%d)\n", offset);
 	printf("  subq $8, %%rsp\n"
 	       "  movl %d(%%rbp), %%eax\n"
 	       "  movl %%eax, (%%rsp)\n",
@@ -517,6 +517,7 @@ void gen_before_epilogue(int label1, int label2, int capacity)
 	printf("  jmp .L%d\n", label2);
 }
 
+/* for both 4byte and 1byte */
 void gen_epilogue(int label)
 {
 	printf("//gen_epilogue(%d)\n", label);

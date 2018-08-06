@@ -21,11 +21,11 @@ int main()
 	gen_discard();
 
 	gen_push_address_of_global("x");
-	gen_push_from_local(-8); /* d */
+	gen_push_from_local_4byte(-8); /* d */
 	gen_cltq();
 	gen_op_8byte("addq"); /* &x[d] */
 
-	gen_push_from_local(-4); /* c */
+	gen_push_from_local_4byte(-4); /* c */
 	gen_cltq();
 	gen_push_address_of_global("y");
 	gen_op_8byte("addq");
