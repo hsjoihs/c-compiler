@@ -58,6 +58,7 @@ full_compile:
 	make notest
 	./test_ret4.sh 133 'char foo(){char a; return a;} int main(){foo(); return 174;}' 174
 	./test_ret4.sh 134 'char foo(char *p){char a; return a;} int main(){char q; foo(&q); return 174;}' 174
+	./test_ret4.sh 135 'char foo(char *p){char a; a = 5; return a;} int main(){char q; foo(&q); return 174;}' 174
 
 	./test_ret4.sh 118 'int main(){int a[1]; int *p; p = a; *p=2; return 174;}' 174
 	./test_ret4.sh 119 'int main(){int a[1]; *(a+0)=2;return 174;}' 174
