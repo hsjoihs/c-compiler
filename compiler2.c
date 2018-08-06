@@ -17,8 +17,7 @@ struct PrinterState {
 	                          */
 };
 
-int get_new_label_name(struct ParserState *ptr_ps,
-                       struct PrinterState *ptr_prs);
+int get_new_label_name(struct PrinterState *ptr_prs);
 void print_argument_expression(struct ParserState *ptr_ps,
                                struct PrinterState *ptr_prs,
                                struct Expression expr, int counter);
@@ -255,8 +254,8 @@ void print_expression(struct ParserState *ptr_ps, struct PrinterState *ptr_prs,
 
 		case LOGICAL_OR_EXPR: {
 
-			int label1 = get_new_label_name(ptr_ps, ptr_prs);
-			int label2 = get_new_label_name(ptr_ps, ptr_prs);
+			int label1 = get_new_label_name(ptr_prs);
+			int label2 = get_new_label_name(ptr_prs);
 			print_expression(ptr_ps, ptr_prs, *expr.ptr1);
 
 			gen_logical_OR_set(0, label1);
@@ -267,8 +266,8 @@ void print_expression(struct ParserState *ptr_ps, struct PrinterState *ptr_prs,
 		}
 		case LOGICAL_AND_EXPR: {
 
-			int label1 = get_new_label_name(ptr_ps, ptr_prs);
-			int label2 = get_new_label_name(ptr_ps, ptr_prs);
+			int label1 = get_new_label_name(ptr_prs);
+			int label2 = get_new_label_name(ptr_prs);
 			print_expression(ptr_ps, ptr_prs, *expr.ptr1);
 
 			gen_logical_AND_set(0, label1);
@@ -375,8 +374,8 @@ void print_expression(struct ParserState *ptr_ps, struct PrinterState *ptr_prs,
 			return;
 		case CONDITIONAL_EXPR: {
 			print_expression(ptr_ps, ptr_prs, *expr.ptr1);
-			int label1 = get_new_label_name(ptr_ps, ptr_prs);
-			int label2 = get_new_label_name(ptr_ps, ptr_prs);
+			int label1 = get_new_label_name(ptr_prs);
+			int label2 = get_new_label_name(ptr_prs);
 
 			gen_ternary_part1(label1, label2);
 			print_expression(ptr_ps, ptr_prs, *expr.ptr2);
@@ -527,7 +526,7 @@ void print_argument_expression(struct ParserState *ptr_ps,
 	}
 }
 
-int get_new_label_name(struct ParserState *ptr_ps, struct PrinterState *ptr_prs)
+int get_new_label_name(struct PrinterState *ptr_prs)
 {
 	return ++(ptr_prs->final_label_name);
 }
@@ -541,8 +540,8 @@ void parseprint_statement(struct ParserState *ptr_ps,
 		parseprint_compound_statement(ptr_ps, ptr_prs, &tokvec);
 		*ptr_tokvec = tokvec;
 	} else if (tokvec[0].kind == RES_IF) { /* or SWITCH */
-		int label1 = get_new_label_name(ptr_ps, ptr_prs);
-		int label2 = get_new_label_name(ptr_ps, ptr_prs);
+		int label1 = get_new_label_name(ptr_prs);
+		int label2 = get_new_label_name(ptr_prs);
 		++tokvec;
 
 		expect_and_consume(&tokvec, LEFT_PAREN,
@@ -590,7 +589,7 @@ void parseprint_statement(struct ParserState *ptr_ps,
 
 			/* the first occurrence of return within a function */
 			if (ptr_prs->return_label_name == GARBAGE_INT) {
-				int ret_label = get_new_label_name(ptr_ps, ptr_prs);
+				int ret_label = get_new_label_name(ptr_prs);
 				ptr_prs->return_label_name = ret_label;
 				gen_jump(ret_label, "return");
 			} else {
@@ -606,9 +605,9 @@ void parseprint_statement(struct ParserState *ptr_ps,
 
 		++tokvec;
 		*ptr_tokvec = tokvec;
-		int label1 = get_new_label_name(ptr_ps, ptr_prs);
-		int break_label = get_new_label_name(ptr_ps, ptr_prs);
-		int cont_label = get_new_label_name(ptr_ps, ptr_prs);
+		int label1 = get_new_label_name(ptr_prs);
+		int break_label = get_new_label_name(ptr_prs);
+		int cont_label = get_new_label_name(ptr_prs);
 
 		ptr_prs->break_label_name = break_label;
 		ptr_prs->continue_label_name = cont_label;
@@ -644,9 +643,9 @@ void parseprint_statement(struct ParserState *ptr_ps,
 
 		expect_and_consume(&tokvec, LEFT_PAREN, "left parenthesis of while");
 
-		int label1 = get_new_label_name(ptr_ps, ptr_prs);
-		int break_label = get_new_label_name(ptr_ps, ptr_prs);
-		int cont_label = get_new_label_name(ptr_ps, ptr_prs);
+		int label1 = get_new_label_name(ptr_prs);
+		int break_label = get_new_label_name(ptr_prs);
+		int cont_label = get_new_label_name(ptr_prs);
 		ptr_prs->break_label_name = break_label;
 		ptr_prs->continue_label_name = cont_label;
 
@@ -702,9 +701,9 @@ void parseprint_statement(struct ParserState *ptr_ps,
 	} else if (tokvec[0].kind == RES_FOR) {
 		int stashed_break_label = ptr_prs->break_label_name;
 		int stashed_continue_label = ptr_prs->continue_label_name;
-		int label1 = get_new_label_name(ptr_ps, ptr_prs);
-		int break_label = get_new_label_name(ptr_ps, ptr_prs);
-		int cont_label = get_new_label_name(ptr_ps, ptr_prs);
+		int label1 = get_new_label_name(ptr_prs);
+		int break_label = get_new_label_name(ptr_prs);
+		int cont_label = get_new_label_name(ptr_prs);
 		ptr_prs->break_label_name = break_label;
 		ptr_prs->continue_label_name = cont_label;
 
@@ -945,14 +944,14 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
 			return;
 		}
 
-		label1 = get_new_label_name(ptr_ps, ptr_prs);
-		label2 = get_new_label_name(ptr_ps, ptr_prs);
+		label1 = get_new_label_name(ptr_prs);
+		label2 = get_new_label_name(ptr_prs);
 		gen_prologue(0, declarator_name);
 		gen_after_prologue(label1, label2);
 
 	} else {
-		label1 = get_new_label_name(ptr_ps, ptr_prs);
-		label2 = get_new_label_name(ptr_ps, ptr_prs);
+		label1 = get_new_label_name(ptr_prs);
+		label2 = get_new_label_name(ptr_prs);
 		gen_prologue(0, declarator_name);
 		gen_after_prologue(label1, label2);
 
