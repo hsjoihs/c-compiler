@@ -40,6 +40,14 @@ void gen_write_to_local_8byte(int offset)
 	printf("  movq %%rax, %d(%%rbp)\n", offset);
 }
 
+void gen_write_to_local_1byte(int offset)
+{
+	assert(offset < 0);
+	printf("//gen_write_to_local_1byte(%d)\n", offset);
+	printf("  movb (%%rsp), %%al\n");
+	printf("  movb %%al, %d(%%rbp)\n", offset);
+}
+
 /* write to local mem what's in the register */
 void gen_write_register_to_local(const char *str, int offset)
 {
@@ -143,6 +151,14 @@ void gen_peek_deref_push_8byte(void)
 	     "  movq %rdx, (%rsp)\n");
 }
 
+void gen_peek_and_dereference_1byte(void)
+{
+	printf("//gen_peek_and_dereference_1byte()\n");
+	printf("  movq (%%rsp), %%rax\n"
+	       "  movb (%%rax), %%al\n"
+	       "  movb %%al, (%%rsp)\n");
+}
+
 /* push what's on local mem */
 void gen_push_from_local_8byte(int offset)
 {
@@ -151,6 +167,16 @@ void gen_push_from_local_8byte(int offset)
 	printf("  subq $8, %%rsp\n"
 	       "  movq %d(%%rbp), %%rax\n"
 	       "  movq %%rax, (%%rsp)\n",
+	       offset);
+}
+
+void gen_push_from_local_1byte(int offset)
+{
+	assert(offset < 0);
+	printf("//gen_push_from_local_1byte(%d)\n", offset);
+	printf("  subq $8, %%rsp\n"
+	       "  movsbl %d(%%rbp), %%eax\n"
+	       "  movl %%eax, (%%rsp)\n",
 	       offset);
 }
 
@@ -173,19 +199,25 @@ void gen_swap(void)
 
 void gen_push_ret_of_(const char *fname, int is8byte);
 
+void gen_push_ret_of_1byte(const char *fname)
+{
+	printf("//gen_push_ret_of_1byte(\"%s\")\n", fname);
+	gen_push_ret_of_(fname, 1);
+}
+
 void gen_push_ret_of(const char *fname)
 {
 	printf("//gen_push_ret_of(\"%s\")\n", fname);
-	gen_push_ret_of_(fname, 0);
+	gen_push_ret_of_(fname, 4);
 }
 
 void gen_push_ret_of_8byte(const char *fname)
 {
 	printf("//gen_push_ret_of_8byte(\"%s\")\n", fname);
-	gen_push_ret_of_(fname, 1);
+	gen_push_ret_of_(fname, 8);
 }
 
-void gen_push_ret_of_(const char *fname, int is8byte)
+void gen_push_ret_of_(const char *fname, int byte)
 {
 
 	/* alignment */
@@ -223,10 +255,12 @@ void gen_push_ret_of_(const char *fname, int is8byte)
 	returned value. Hence, you only need to add 0.
 	*/
 	printf("  addq (%%rsp), %%rsp\n");
-	if (is8byte) {
+	if (byte == 8) {
 		printf("  movq %%rax, (%%rsp)\n");
-	} else {
+	} else if (byte == 4) {
 		printf("  movl %%eax, (%%rsp)\n");
+	} else if (byte == 1) {
+		printf("  movb %%al, (%%rsp)\n");
 	}
 }
 
@@ -653,4 +687,21 @@ void gen_assign_4byte(void)
 	printf("  movl %%eax, (%%rdx)\n"
 	       "  addq $8, %%rsp\n"
 	       "  movl %%eax, (%%rsp)\n");
+}
+
+/*
+    value = pop();
+    addr = pop();
+    *addr = value;
+    push(value);
+*/
+void gen_assign_1byte(void)
+{
+	printf("//gen_assign_1byte()\n");
+	printf("  movb (%%rsp), %%al\n");
+	printf("  movq 8(%%rsp), %%rdx\n");
+
+	printf("  movb %%al, (%%rdx)\n");
+	printf("  addq $8, %%rsp\n");
+	printf("  movb %%al, (%%rsp)\n");
 }

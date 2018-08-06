@@ -20,24 +20,24 @@ int main()
 	gen_write_to_local(-8); /* d */
 	gen_discard();
 
+	gen_push_address_of_global("x");
+	gen_push_from_local(-8); /* d */
+	gen_cltq();
+	gen_op_8byte("addq"); /* &x[d] */
+
 	gen_push_from_local(-4); /* c */
 	gen_cltq();
 	gen_push_address_of_global("y");
 	gen_op_8byte("addq");
-	gen_pop_to_reg_8byte("rdx");
-	puts("  movb (%rdx), %sil\n");
+	gen_peek_and_dereference_1byte(); /* y[c] */
+	gen_assign_1byte();
+	gen_discard();
 
-	gen_push_address_of_global("x");
-	gen_push_from_local(-8);
-	gen_cltq();
-	gen_op_8byte("addq");
-	gen_pop_to_reg_8byte("rdx");
-	puts("	movb	%sil, (%rdx)\n");
+	gen_push_int(3);
+	gen_write_to_local_1byte(-9);
+	gen_discard();
 
-	puts("	movb	$3, -9(%rbp)\n"
-	     "  subq $8, %rsp\n"
-	     "	movsbl	-9(%rbp), %eax\n"
-	     "	movl	%eax, (%rsp)\n");
+	gen_push_from_local_1byte(-9);
 	gen_epilogue(134);
 
 	/*
@@ -50,8 +50,10 @@ int main()
 	gen_write_to_local(-4);
 	gen_discard();
 
-	puts("	call	" PREFIX "foo\n"
-	     "	movb	%al, -5(%rbp)\n");
+	gen_push_ret_of_1byte("foo");
+	gen_write_to_local_1byte(-5);
+	gen_discard();
+
 	gen_push_int(174);
 	gen_epilogue(123);
 	gen_global_declaration("x", 3);
