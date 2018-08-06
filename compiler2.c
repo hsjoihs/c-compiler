@@ -693,28 +693,26 @@ void parseprint_statement(struct ParserState *ptr_ps,
 		expect_and_consume(&tokvec, LEFT_PAREN, "left parenthesis of `for`");
 
 		struct Expression expr1;
+		struct Expression expr2;
+
 		if (tokvec[0].kind == SEMICOLON) { /* expression1 is missing */
 			expr1 = integer_1();
 		} else {
 			expr1 = parse_expression(ptr_ps, &tokvec);
 		}
-		print_expression_(ptr_prs, expr1); /* expression1 */
-		gen_discard();
-
 		expect_and_consume(&tokvec, SEMICOLON, "first semicolon of `for`");
 
-		gen_label(label1);
-
-		struct Expression expr2;
 		if (tokvec[0].kind == SEMICOLON) { /* expression2 is missing */
 			expr2 = integer_1();
 		} else {
 			expr2 = parse_expression(ptr_ps, &tokvec);
 		}
-		print_expression_(ptr_prs, expr2); /* expression2 */
-
 		expect_and_consume(&tokvec, SEMICOLON, "second semicolon of `for`");
 
+		print_expression_(ptr_prs, expr1); /* expression1 */
+		gen_discard();
+		gen_label(label1);
+		print_expression_(ptr_prs, expr2); /* expression2 */
 		gen_while_part2(label1, break_label);
 
 		if (tokvec[0].kind == RIGHT_PAREN) { /* expression3 is missing */
