@@ -90,12 +90,12 @@ struct ExprInfo remove_leftiness(struct ExprInfo info)
 	return info;
 }
 
-void print_expression(const struct ParserState *ptr_ps,
-                      struct PrinterState *ptr_prs, struct Expression expr);
+void print_expression_(struct PrinterState *ptr_prs, struct Expression expr);
+void print_expression_as_lvalue_(struct PrinterState *ptr_prs,
+                                 struct Expression expr);
 
-void print_expression_as_lvalue(const struct ParserState *ptr_ps,
-                                struct PrinterState *ptr_prs,
-                                struct Expression expr)
+void print_expression_as_lvalue_(struct PrinterState *ptr_prs,
+                                 struct Expression expr)
 {
 	switch (expr.category) {
 		case LOCAL_VAR_: {
@@ -136,7 +136,7 @@ void print_expression_as_lvalue(const struct ParserState *ptr_ps,
 		case UNARY_OP_EXPR:
 			switch (expr.unary_operator) {
 				case UNARY_OP_ASTERISK: {
-					print_expression(ptr_ps, ptr_prs, *expr.ptr1);
+					print_expression_(ptr_prs, *expr.ptr1);
 					struct Type type = expr.details.type;
 					switch (size_of(type)) {
 						case 4:
@@ -161,13 +161,12 @@ void print_expression_as_lvalue(const struct ParserState *ptr_ps,
 	}
 }
 
-void print_expression(const struct ParserState *ptr_ps,
-                      struct PrinterState *ptr_prs, struct Expression expr)
+void print_expression_(struct PrinterState *ptr_prs, struct Expression expr)
 {
 	switch (expr.category) {
 		case POINTER_MINUS_POINTER: {
-			print_expression(ptr_ps, ptr_prs, *expr.ptr1);
-			print_expression(ptr_ps, ptr_prs, *expr.ptr2);
+			print_expression_(ptr_prs, *expr.ptr1);
+			print_expression_(ptr_prs, *expr.ptr2);
 			int size = size_of(deref_type(expr.ptr1->details.type));
 			gen_op_8byte("subq");
 			gen_div_by_const(size);
@@ -175,8 +174,8 @@ void print_expression(const struct ParserState *ptr_ps,
 		}
 		case POINTER_PLUS_INT:
 		case POINTER_MINUS_INT: {
-			print_expression(ptr_ps, ptr_prs, *expr.ptr1);
-			print_expression(ptr_ps, ptr_prs, *expr.ptr2);
+			print_expression_(ptr_prs, *expr.ptr1);
+			print_expression_(ptr_prs, *expr.ptr2);
 			int size = size_of(deref_type(expr.ptr1->details.type));
 			gen_cltq();
 			gen_mul_by_const(size);
@@ -246,8 +245,8 @@ void print_expression(const struct ParserState *ptr_ps,
 		}
 
 		case SIMPLE_BINARY_EXPR: {
-			print_expression(ptr_ps, ptr_prs, *expr.ptr1);
-			print_expression(ptr_ps, ptr_prs, *expr.ptr2);
+			print_expression_(ptr_prs, *expr.ptr1);
+			print_expression_(ptr_prs, *expr.ptr2);
 			print_simple_binary_op(expr.simple_binary_operator);
 			return;
 		}
@@ -256,10 +255,10 @@ void print_expression(const struct ParserState *ptr_ps,
 
 			int label1 = get_new_label_name(ptr_prs);
 			int label2 = get_new_label_name(ptr_prs);
-			print_expression(ptr_ps, ptr_prs, *expr.ptr1);
+			print_expression_(ptr_prs, *expr.ptr1);
 
 			gen_logical_OR_set(0, label1);
-			print_expression(ptr_ps, ptr_prs, *expr.ptr2);
+			print_expression_(ptr_prs, *expr.ptr2);
 			gen_logical_OR_set(1, label1);
 			gen_logical_OR_final(1, label1, label2);
 			return;
@@ -268,10 +267,10 @@ void print_expression(const struct ParserState *ptr_ps,
 
 			int label1 = get_new_label_name(ptr_prs);
 			int label2 = get_new_label_name(ptr_prs);
-			print_expression(ptr_ps, ptr_prs, *expr.ptr1);
+			print_expression_(ptr_prs, *expr.ptr1);
 
 			gen_logical_AND_set(0, label1);
-			print_expression(ptr_ps, ptr_prs, *expr.ptr2);
+			print_expression_(ptr_prs, *expr.ptr2);
 			gen_logical_AND_set(1, label1);
 			gen_logical_AND_final(1, label1, label2);
 			return;
@@ -279,8 +278,8 @@ void print_expression(const struct ParserState *ptr_ps,
 
 		case ASSIGNMENT_EXPR: {
 
-			print_expression_as_lvalue(ptr_ps, ptr_prs, *expr.ptr1);
-			print_expression(ptr_ps, ptr_prs, *expr.ptr2);
+			print_expression_as_lvalue_(ptr_prs, *expr.ptr1);
+			print_expression_(ptr_prs, *expr.ptr2);
 
 			print_simple_binary_op(expr.simple_binary_operator);
 
@@ -306,19 +305,19 @@ void print_expression(const struct ParserState *ptr_ps,
 		case UNARY_OP_EXPR:
 			switch (expr.unary_operator) {
 				case UNARY_OP_NOT:
-					print_expression(ptr_ps, ptr_prs, *expr.ptr1);
+					print_expression_(ptr_prs, *expr.ptr1);
 					gen_unary_not();
 					return;
 				case UNARY_OP_TILDA:
-					print_expression(ptr_ps, ptr_prs, *expr.ptr1);
+					print_expression_(ptr_prs, *expr.ptr1);
 					gen_unary("notl");
 					return;
 				case UNARY_OP_PLUS:
-					print_expression(ptr_ps, ptr_prs, *expr.ptr1);
+					print_expression_(ptr_prs, *expr.ptr1);
 					/* do nothing */
 					return;
 				case UNARY_OP_MINUS:
-					print_expression(ptr_ps, ptr_prs, *expr.ptr1);
+					print_expression_(ptr_prs, *expr.ptr1);
 					gen_unary("negl");
 					return;
 
@@ -350,7 +349,7 @@ void print_expression(const struct ParserState *ptr_ps,
 				}
 
 				case UNARY_OP_ASTERISK: {
-					print_expression(ptr_ps, ptr_prs, *expr.ptr1);
+					print_expression_(ptr_prs, *expr.ptr1);
 					struct Type type = expr.details.type;
 					struct Type true_type = expr.details.true_type;
 
@@ -373,37 +372,26 @@ void print_expression(const struct ParserState *ptr_ps,
 			}
 			return;
 		case CONDITIONAL_EXPR: {
-			print_expression(ptr_ps, ptr_prs, *expr.ptr1);
+			print_expression_(ptr_prs, *expr.ptr1);
 			int label1 = get_new_label_name(ptr_prs);
 			int label2 = get_new_label_name(ptr_prs);
 
 			gen_ternary_part1(label1, label2);
-			print_expression(ptr_ps, ptr_prs, *expr.ptr2);
+			print_expression_(ptr_prs, *expr.ptr2);
 			gen_ternary_part2(label1, label2);
-			print_expression(ptr_ps, ptr_prs, *expr.ptr3);
+			print_expression_(ptr_prs, *expr.ptr3);
 
 			gen_ternary_part3(label1, label2);
 			return;
 		}
 		case FUNCCALL_EXPR: {
 			const char *ident_str = expr.global_var_name;
-			struct Type ret_type;
-			if (!isElem(ptr_ps->func_info_map, ident_str)) {
-				fprintf(stderr, "Undeclared function `%s()` detected.\n",
-				        ident_str);
-				fprintf(stderr, "Assumes that `%s()` returns `int`\n",
-				        ident_str);
-				ret_type = INT_TYPE;
-			} else {
-				struct FuncInfo *ptr_func_info =
-				    lookup(ptr_ps->func_info_map, ident_str);
-				ret_type = ptr_func_info->ret_type;
-			}
+			struct Type ret_type = expr.details.type;
 
 			for (int counter = 0; counter < expr.arg_length; counter++) {
 				struct Expression expr_ = expr.arg_expr_vec[counter];
 
-				print_expression(ptr_ps, ptr_prs, expr_);
+				print_expression_(ptr_prs, expr_);
 				if (counter > 5) {
 					unimplemented("calling with 7 or more arguments");
 				}
@@ -544,7 +532,7 @@ void parseprint_statement(struct ParserState *ptr_ps,
 
 		struct Expression expr = parse_expression(ptr_ps, &tokvec);
 
-		print_expression(ptr_ps, ptr_prs, expr);
+		print_expression_(ptr_prs, expr);
 
 		expect_and_consume(&tokvec, RIGHT_PAREN, "right parenthesis of `if`");
 
@@ -572,7 +560,7 @@ void parseprint_statement(struct ParserState *ptr_ps,
 		} else {
 			struct Expression expr = parse_expression(ptr_ps, &tokvec);
 
-			print_expression(ptr_ps, ptr_prs, expr);
+			print_expression_(ptr_prs, expr);
 			struct ExprInfo expr_info = expr.details;
 			expect_type(expr_info, ptr_ps->func_ret_type, 20);
 
@@ -616,7 +604,7 @@ void parseprint_statement(struct ParserState *ptr_ps,
 
 		struct Expression expr = parse_expression(ptr_ps, &tokvec);
 
-		print_expression(ptr_ps, ptr_prs, expr);
+		print_expression_(ptr_prs, expr);
 
 		expect_and_consume(&tokvec, RIGHT_PAREN,
 		                   "right parenthesis of do-while");
@@ -648,7 +636,7 @@ void parseprint_statement(struct ParserState *ptr_ps,
 
 		struct Expression expr = parse_expression(ptr_ps, &tokvec);
 
-		print_expression(ptr_ps, ptr_prs, expr);
+		print_expression_(ptr_prs, expr);
 
 		expect_and_consume(&tokvec, RIGHT_PAREN, "left parenthesis of while");
 
@@ -711,7 +699,7 @@ void parseprint_statement(struct ParserState *ptr_ps,
 		} else {
 			struct Expression expr = parse_expression(ptr_ps, &tokvec);
 
-			print_expression(ptr_ps, ptr_prs, expr); /* expression1 */
+			print_expression_(ptr_prs, expr); /* expression1 */
 			gen_discard();
 		}
 
@@ -724,7 +712,7 @@ void parseprint_statement(struct ParserState *ptr_ps,
 		} else {
 			struct Expression expr = parse_expression(ptr_ps, &tokvec);
 
-			print_expression(ptr_ps, ptr_prs, expr); /* expression2 */
+			print_expression_(ptr_prs, expr); /* expression2 */
 		}
 
 		expect_and_consume(&tokvec, SEMICOLON, "second semicolon of `for`");
@@ -755,7 +743,7 @@ void parseprint_statement(struct ParserState *ptr_ps,
 
 			gen_label(cont_label);
 
-			print_expression(ptr_ps, ptr_prs, expr);
+			print_expression_(ptr_prs, expr);
 			gen_discard();
 
 			gen_for_part4(label1, break_label);
@@ -768,7 +756,7 @@ void parseprint_statement(struct ParserState *ptr_ps,
 	} else {
 		struct Expression expr = parse_expression(ptr_ps, &tokvec);
 
-		print_expression(ptr_ps, ptr_prs, expr);
+		print_expression_(ptr_prs, expr);
 		expect_and_consume(&tokvec, SEMICOLON, "semicolon after an expression");
 
 		gen_discard();
