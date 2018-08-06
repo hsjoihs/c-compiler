@@ -729,15 +729,14 @@ void parseprint_statement(struct ParserState *ptr_ps,
 			*ptr_tokvec = tokvec;
 
 		} else {
-			const struct Token *tokvec2 = tokvec;
 
 			// expression3 of `for`
-			struct Expression expr = parse_expression(ptr_ps, &tokvec2);
+			struct Expression expr = parse_expression(ptr_ps, &tokvec);
 
-			expect_and_consume(&tokvec2, RIGHT_PAREN,
+			expect_and_consume(&tokvec, RIGHT_PAREN,
 			                   "right parenthesis of `for`");
 
-			parseprint_statement(ptr_ps, ptr_prs, &tokvec2);
+			parseprint_statement(ptr_ps, ptr_prs, &tokvec);
 
 			gen_label(cont_label);
 
@@ -745,8 +744,7 @@ void parseprint_statement(struct ParserState *ptr_ps,
 			gen_discard();
 
 			gen_for_part4(label1, break_label);
-
-			tokvec = tokvec2;
+			*ptr_tokvec = tokvec;
 		}
 
 		ptr_prs->break_label_name = stashed_break_label;
