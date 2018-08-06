@@ -125,8 +125,8 @@ void print_expression_as_lvalue_(struct PrinterState *ptr_prs,
 			printf("//load from global `%s`\n", name);
 			switch (size_of(type)) {
 				case 1:
-					unimplemented("Unsupported width in the "
-					              "assignment operation");
+					gen_push_from_global_1byte(name);
+					break;
 				case 4:
 					gen_push_from_global_4byte(name);
 					break;
@@ -245,7 +245,7 @@ void print_expression_(struct PrinterState *ptr_prs, struct Expression expr)
 			}
 			switch (size_of(expr.details.type)) {
 				case 1:
-					unimplemented("Unsupported width in global var");
+					gen_push_from_global_1byte(expr.global_var_name);
 					break;
 				case 4:
 					gen_push_from_global_4byte(expr.global_var_name);
