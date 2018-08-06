@@ -88,7 +88,7 @@ struct ParamInfos {
 
 
 
-enum typ_ { INT_ = 1, PTR_, ARRAY, FN };
+enum typ_ { INT_ = 1, PTR_, ARRAY, FN, CHAR_ };
 
 struct Type {
 	enum typ_ type_category;

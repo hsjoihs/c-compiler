@@ -30,5 +30,10 @@ int main()
 	check("int (*(*x())[2])()");
 	check("int atexit(int (*func)(int a))");
 	check("int (*signal(int sig, int (*func)(int a)))(int b)");
+	check("char **argv");
+	check("char (*(*argv))");
+	check("char arr[13]");
+	check("char (*daytab)[13]");
+	check("char (*(*x[3])[2])[4]");
 	return 0;
 }

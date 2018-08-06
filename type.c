@@ -5,6 +5,7 @@
 #include <string.h>
 
 struct Type INT_TYPE = {INT_, 0, GARBAGE_INT, {(struct ParamInfo **)0}};
+struct Type CHAR_TYPE = {CHAR_, 0, GARBAGE_INT, {(struct ParamInfo **)0}};
 
 int size_of(struct Type type)
 {
@@ -13,6 +14,8 @@ int size_of(struct Type type)
 			return 4;
 		case PTR_:
 			return 8;
+		case CHAR_:
+			return 1;
 		case ARRAY:
 			return type.array_length * size_of(*type.derived_from);
 		case FN:
@@ -48,6 +51,9 @@ void debug_print_type(struct Type type)
 			return;
 		case INT_:
 			fprintf(stderr, "int");
+			return;
+		case CHAR_:
+			fprintf(stderr, "char");
 			return;
 		case ARRAY:
 			fprintf(stderr, "array (length %d) of ", type.array_length);
@@ -139,12 +145,7 @@ struct Type ptr_of_type_to_arr_of_type(struct Type *ptr_type, int length)
  * pure parsers with respect to types. *
  ***************************************/
 
-enum t2 {
-	POINTER_TO,
-	ARRAY_OF,
-	FUNCTION_RETURNING,
-	INT_TYPE_,
-};
+enum t2 { POINTER_TO, ARRAY_OF, FUNCTION_RETURNING, INT_TYPE_, CHAR_TYPE_ };
 
 struct type3_elem {
 	enum t2 type_category;
@@ -176,6 +177,8 @@ struct Type from_type3_to_type(const struct type3_elem *type3)
 	switch (type3[0].type_category) {
 		case INT_TYPE_:
 			return INT_TYPE;
+		case CHAR_TYPE_:
+			return CHAR_TYPE;
 		case POINTER_TO: {
 			++type3;
 			struct Type *ptr_to_current_type = calloc(1, sizeof(struct Type));
@@ -326,7 +329,15 @@ void parse_dcl(const struct Token **ptr_tokvec, struct Type3 *ptr_type3)
 struct Type parse_declarator(const struct Token **ptr_tokvec,
                              const char **ptr_to_ident_str)
 {
-	expect_and_consume(ptr_tokvec, RES_INT, "type name `int`");
+	const struct Token *tokvec = *ptr_tokvec;
+
+	enum TokenKind kind = tokvec[0].kind;
+
+	if (kind != RES_INT && kind != RES_CHAR) {
+		error_unexpected_token(tokvec, "type name `int` or `char`");
+	}
+	++tokvec;
+	*ptr_tokvec = tokvec;
 
 	struct Type3 type3;
 	type3.length = 0;
@@ -339,6 +350,9 @@ struct Type parse_declarator(const struct Token **ptr_tokvec,
 	*ptr_to_ident_str = type3.ident_str;
 
 	struct type3_elem i = {INT_TYPE_, GARBAGE_INT, {(struct ParamInfo **)0}};
+	if (kind == RES_CHAR) {
+		i.type_category = CHAR_TYPE_;
+	}
 	push_to_type3(&type3, i);
 
 	struct Type type = from_type3_to_type(type3.vector);
@@ -361,5 +375,5 @@ struct Type parse_var_declarator(const struct Token **ptr_tokvec,
 
 int can_start_a_type(const struct Token *tokvec)
 {
-	return tokvec[0].kind == RES_INT;
+	return tokvec[0].kind == RES_INT || tokvec[0].kind == RES_CHAR;
 }
