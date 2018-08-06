@@ -419,7 +419,6 @@ void print_expression_(struct PrinterState *ptr_prs, struct Expression expr)
 
 				switch (size_of(expr_.details.type)) {
 					case 1:
-						unimplemented("passing a char");
 					case 4:
 						gen_pop_to_reg_4byte(
 						    get_reg_name_from_arg_pos_4byte(counter));
