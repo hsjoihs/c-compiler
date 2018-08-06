@@ -159,6 +159,15 @@ void gen_peek_and_dereference_1byte(void)
 	       "  movb %%al, (%%rsp)\n");
 }
 
+void gen_peek_deref_push_1byte(void)
+{
+	printf("//gen_peek_deref_push_1byte()\n");
+	puts("  movq (%rsp), %rax \n"
+	     "  movb (%rax), %dl\n"
+	     "  subq $8, %rsp\n"
+	     "  movb %dl, (%rsp)\n");
+}
+
 /* push what's on local mem */
 void gen_push_from_local_8byte(int offset)
 {

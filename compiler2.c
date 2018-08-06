@@ -146,7 +146,8 @@ void print_expression_as_lvalue_(struct PrinterState *ptr_prs,
 					struct Type type = expr.details.type;
 					switch (size_of(type)) {
 						case 1:
-							unimplemented("Unsupported width in deref");
+							gen_peek_deref_push_1byte();
+							break;
 						case 4:
 							gen_peek_deref_push_4byte();
 							break;
