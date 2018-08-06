@@ -37,7 +37,7 @@ int main()
 	int main()
 	{
 	    char f=3;
-	    return foo(3,4)+150;
+	    return foo(f,4)+150;
 	}
 	*/
 	gen_prologue(16, "main");
@@ -49,8 +49,8 @@ int main()
 	gen_push_int(4);
 	gen_pop_to_reg_4byte("esi");
 
-	gen_push_int(3);
-	gen_pop_to_reg_4byte("edi");
+	puts("movsbl -1(%rbp), %eax\n"
+	     "movl %eax, %edi\n");
 
 	gen_push_ret_of_4byte("foo");
 	gen_push_int(150);
