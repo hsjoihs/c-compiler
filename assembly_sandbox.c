@@ -24,10 +24,10 @@ int main()
 	gen_discard();
 
 	gen_push_from_local_4byte(-4);
-	gen_pop_to_reg_4byte("edx");
-	puts("  movzbl -20(%rbp), %eax\n"
-	     "  addl %edx, %eax\n"
-	     "  movb %al, -5(%rbp)\n");
+	gen_push_from_local_1byte(-20);
+	gen_op_ints("addl");
+	gen_write_to_local_1byte(-5);
+	gen_discard();
 
 	gen_push_from_local_1byte(-5);
 	gen_push_from_local_1byte(-24);
