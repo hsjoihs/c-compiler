@@ -514,6 +514,16 @@ int get_new_label_name(struct PrinterState *ptr_prs)
 	return ++(ptr_prs->final_label_name);
 }
 
+struct Expression integer_1(void)
+{
+	struct Expression expr;
+	expr.details = UNASSIGNABLE(INT_TYPE);
+	expr.int_value = 1;
+	expr.category = INT_VALUE;
+
+	return expr;
+}
+
 void parseprint_statement(struct ParserState *ptr_ps,
                           struct PrinterState *ptr_prs,
                           const struct Token **ptr_tokvec)
@@ -682,27 +692,26 @@ void parseprint_statement(struct ParserState *ptr_ps,
 		++tokvec;
 		expect_and_consume(&tokvec, LEFT_PAREN, "left parenthesis of `for`");
 
+		struct Expression expr1;
 		if (tokvec[0].kind == SEMICOLON) { /* expression1 is missing */
-			;
-			/* do nothing */
+			expr1 = integer_1();
 		} else {
-			struct Expression expr = parse_expression(ptr_ps, &tokvec);
-
-			print_expression_(ptr_prs, expr); /* expression1 */
-			gen_discard();
+			expr1 = parse_expression(ptr_ps, &tokvec);
 		}
+		print_expression_(ptr_prs, expr1); /* expression1 */
+		gen_discard();
 
 		expect_and_consume(&tokvec, SEMICOLON, "first semicolon of `for`");
 
 		gen_label(label1);
 
+		struct Expression expr2;
 		if (tokvec[0].kind == SEMICOLON) { /* expression2 is missing */
-			gen_push_int(1);
+			expr2 = integer_1();
 		} else {
-			struct Expression expr = parse_expression(ptr_ps, &tokvec);
-
-			print_expression_(ptr_prs, expr); /* expression2 */
+			expr2 = parse_expression(ptr_ps, &tokvec);
 		}
+		print_expression_(ptr_prs, expr2); /* expression2 */
 
 		expect_and_consume(&tokvec, SEMICOLON, "second semicolon of `for`");
 
