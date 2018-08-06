@@ -18,13 +18,7 @@ struct ParserState {
 	struct LocalVarTableList scope_chain;
 	struct map global_vars_type_map;
 	struct map func_info_map;
-	int newest_offset;
-	int final_label_name;
-	int return_label_name; /* the label at the end of the function */
 	struct Type func_ret_type;
-	int break_label_name;    /* the label at the end of the current loop */
-	int continue_label_name; /* the label at the beginning of the current loop
-	                          */
 };
 
 int isAssign(enum TokenKind opkind);

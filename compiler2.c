@@ -9,7 +9,12 @@
 #include <string.h>
 
 struct PrinterState {
-	int dummy;
+	int newest_offset;
+	int final_label_name;
+	int return_label_name;   /* the label at the end of the function */
+	int break_label_name;    /* the label at the end of the current loop */
+	int continue_label_name; /* the label at the beginning of the current loop
+	                          */
 };
 
 int get_new_label_name(struct ParserState *ptr_ps,
@@ -524,7 +529,7 @@ void print_argument_expression(struct ParserState *ptr_ps,
 
 int get_new_label_name(struct ParserState *ptr_ps, struct PrinterState *ptr_prs)
 {
-	return ++(ptr_ps->final_label_name);
+	return ++(ptr_prs->final_label_name);
 }
 
 void parseprint_statement(struct ParserState *ptr_ps,
@@ -584,20 +589,20 @@ void parseprint_statement(struct ParserState *ptr_ps,
 			*ptr_tokvec = tokvec;
 
 			/* the first occurrence of return within a function */
-			if (ptr_ps->return_label_name == GARBAGE_INT) {
+			if (ptr_prs->return_label_name == GARBAGE_INT) {
 				int ret_label = get_new_label_name(ptr_ps, ptr_prs);
-				ptr_ps->return_label_name = ret_label;
+				ptr_prs->return_label_name = ret_label;
 				gen_jump(ret_label, "return");
 			} else {
-				gen_jump(ptr_ps->return_label_name, "return");
+				gen_jump(ptr_prs->return_label_name, "return");
 			}
 
 			return;
 		}
 	} else if (tokvec[0].kind == RES_DO) {
 
-		int stashed_break_label = ptr_ps->break_label_name;
-		int stashed_continue_label = ptr_ps->continue_label_name;
+		int stashed_break_label = ptr_prs->break_label_name;
+		int stashed_continue_label = ptr_prs->continue_label_name;
 
 		++tokvec;
 		*ptr_tokvec = tokvec;
@@ -605,8 +610,8 @@ void parseprint_statement(struct ParserState *ptr_ps,
 		int break_label = get_new_label_name(ptr_ps, ptr_prs);
 		int cont_label = get_new_label_name(ptr_ps, ptr_prs);
 
-		ptr_ps->break_label_name = break_label;
-		ptr_ps->continue_label_name = cont_label;
+		ptr_prs->break_label_name = break_label;
+		ptr_prs->continue_label_name = cont_label;
 
 		gen_label(label1);
 		parseprint_statement(ptr_ps, ptr_prs, &tokvec);
@@ -626,13 +631,13 @@ void parseprint_statement(struct ParserState *ptr_ps,
 
 		gen_do_while_final(label1, break_label);
 
-		ptr_ps->break_label_name = stashed_break_label;
-		ptr_ps->continue_label_name = stashed_continue_label;
+		ptr_prs->break_label_name = stashed_break_label;
+		ptr_prs->continue_label_name = stashed_continue_label;
 
 	} else if (tokvec[0].kind == RES_WHILE) {
 
-		int stashed_break_label = ptr_ps->break_label_name;
-		int stashed_continue_label = ptr_ps->continue_label_name;
+		int stashed_break_label = ptr_prs->break_label_name;
+		int stashed_continue_label = ptr_prs->continue_label_name;
 
 		++tokvec;
 		*ptr_tokvec = tokvec;
@@ -642,8 +647,8 @@ void parseprint_statement(struct ParserState *ptr_ps,
 		int label1 = get_new_label_name(ptr_ps, ptr_prs);
 		int break_label = get_new_label_name(ptr_ps, ptr_prs);
 		int cont_label = get_new_label_name(ptr_ps, ptr_prs);
-		ptr_ps->break_label_name = break_label;
-		ptr_ps->continue_label_name = cont_label;
+		ptr_prs->break_label_name = break_label;
+		ptr_prs->continue_label_name = cont_label;
 
 		gen_label(label1);
 
@@ -662,8 +667,8 @@ void parseprint_statement(struct ParserState *ptr_ps,
 
 		*ptr_tokvec = tokvec;
 
-		ptr_ps->break_label_name = stashed_break_label;
-		ptr_ps->continue_label_name = stashed_continue_label;
+		ptr_prs->break_label_name = stashed_break_label;
+		ptr_prs->continue_label_name = stashed_continue_label;
 
 	} else if (tokvec[0].kind == RES_BREAK) {
 
@@ -671,11 +676,11 @@ void parseprint_statement(struct ParserState *ptr_ps,
 		expect_and_consume(&tokvec, SEMICOLON, "semicolon after `break`");
 		*ptr_tokvec = tokvec;
 
-		if (ptr_ps->break_label_name == GARBAGE_INT) {
+		if (ptr_prs->break_label_name == GARBAGE_INT) {
 			fprintf(stderr, "invalid `break`; no loop, no switch\n");
 			exit(EXIT_FAILURE);
 		} else {
-			gen_jump(ptr_ps->break_label_name, "break");
+			gen_jump(ptr_prs->break_label_name, "break");
 		}
 
 		return;
@@ -685,23 +690,23 @@ void parseprint_statement(struct ParserState *ptr_ps,
 		expect_and_consume(&tokvec, SEMICOLON, "semicolon after `continue`");
 		*ptr_tokvec = tokvec;
 
-		if (ptr_ps->continue_label_name == GARBAGE_INT) {
+		if (ptr_prs->continue_label_name == GARBAGE_INT) {
 			fprintf(stderr, "invalid `continue`; no loop\n");
 			exit(EXIT_FAILURE);
 		} else {
-			gen_jump(ptr_ps->continue_label_name, "continue");
+			gen_jump(ptr_prs->continue_label_name, "continue");
 		}
 
 		return;
 
 	} else if (tokvec[0].kind == RES_FOR) {
-		int stashed_break_label = ptr_ps->break_label_name;
-		int stashed_continue_label = ptr_ps->continue_label_name;
+		int stashed_break_label = ptr_prs->break_label_name;
+		int stashed_continue_label = ptr_prs->continue_label_name;
 		int label1 = get_new_label_name(ptr_ps, ptr_prs);
 		int break_label = get_new_label_name(ptr_ps, ptr_prs);
 		int cont_label = get_new_label_name(ptr_ps, ptr_prs);
-		ptr_ps->break_label_name = break_label;
-		ptr_ps->continue_label_name = cont_label;
+		ptr_prs->break_label_name = break_label;
+		ptr_prs->continue_label_name = cont_label;
 
 		++tokvec;
 		expect_and_consume(&tokvec, LEFT_PAREN, "left parenthesis of `for`");
@@ -764,8 +769,8 @@ void parseprint_statement(struct ParserState *ptr_ps,
 			tokvec = tokvec2;
 		}
 
-		ptr_ps->break_label_name = stashed_break_label;
-		ptr_ps->continue_label_name = stashed_continue_label;
+		ptr_prs->break_label_name = stashed_break_label;
+		ptr_prs->continue_label_name = stashed_continue_label;
 	} else {
 		struct Expression expr = parse_expression(ptr_ps, &tokvec);
 
@@ -822,7 +827,7 @@ void parseprint_compound_statement(struct ParserState *ptr_ps,
 				vartype = parse_var_declarator(&tokvec, &str);
 				/* while function prototypes are also allowed here, I will not
 				 * implement it here */
-				ptr_ps->newest_offset -= size_of(vartype);
+				ptr_prs->newest_offset -= size_of(vartype);
 				expect_and_consume(
 				    &tokvec, SEMICOLON,
 				    "semicolon at the end of variable definition");
@@ -831,7 +836,7 @@ void parseprint_compound_statement(struct ParserState *ptr_ps,
 
 				struct LocalVarInfo *ptr_varinfo =
 				    calloc(1, sizeof(struct LocalVarInfo));
-				ptr_varinfo->offset = ptr_ps->newest_offset;
+				ptr_varinfo->offset = ptr_prs->newest_offset;
 				ptr_varinfo->type = vartype;
 				insert(&map_, str, ptr_varinfo);
 
@@ -858,11 +863,11 @@ void print_parameter_declaration(struct ParserState *ptr_ps,
 		unimplemented("6-or-more args");
 	}
 
-	ptr_ps->newest_offset -= size_of(type);
+	ptr_prs->newest_offset -= size_of(type);
 
 	struct map map_ = ptr_ps->scope_chain.var_table;
 	struct LocalVarInfo *ptr_varinfo = calloc(1, sizeof(struct LocalVarInfo));
-	ptr_varinfo->offset = ptr_ps->newest_offset;
+	ptr_varinfo->offset = ptr_prs->newest_offset;
 	ptr_varinfo->type = type;
 
 	insert(&map_, ident_str, ptr_varinfo);
@@ -913,11 +918,11 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
 
 	ptr_ps->scope_chain.outer = 0; /* most outer scope */
 	ptr_ps->scope_chain.var_table = init_int_map();
-	ptr_ps->return_label_name = GARBAGE_INT;   /* INITIALIZE */
-	ptr_ps->break_label_name = GARBAGE_INT;    /* INITIALIZE */
-	ptr_ps->continue_label_name = GARBAGE_INT; /* INITIALIZE */
+	ptr_prs->return_label_name = GARBAGE_INT;   /* INITIALIZE */
+	ptr_prs->break_label_name = GARBAGE_INT;    /* INITIALIZE */
+	ptr_prs->continue_label_name = GARBAGE_INT; /* INITIALIZE */
 	/* 8 is the space to store the address to handle deref */
-	ptr_ps->newest_offset = -8;
+	ptr_prs->newest_offset = -8;
 	ptr_ps->func_ret_type = ret_type;
 
 	struct map retmap = ptr_ps->func_info_map;
@@ -961,13 +966,13 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
 
 	parseprint_compound_statement(ptr_ps, ptr_prs, &tokvec2);
 
-	gen_before_epilogue(label1, label2, -(ptr_ps->newest_offset));
+	gen_before_epilogue(label1, label2, -(ptr_prs->newest_offset));
 	switch (size_of(ret_type)) {
 		case 4:
-			gen_epilogue(ptr_ps->return_label_name);
+			gen_epilogue(ptr_prs->return_label_name);
 			break;
 		case 8:
-			gen_epilogue_8byte(ptr_ps->return_label_name);
+			gen_epilogue_8byte(ptr_prs->return_label_name);
 			break;
 		default:
 			unimplemented("Unsupported width");
@@ -994,12 +999,11 @@ int main(int argc, char const **argv)
 		++tokvec; /* skip the dummy token BEGINNING */
 
 		struct ParserState ps;
-		ps.final_label_name = 1;
-		ps.return_label_name = GARBAGE_INT;
+		struct PrinterState prs;
+		prs.final_label_name = 1;
+		prs.return_label_name = GARBAGE_INT;
 		ps.func_info_map = init_int_map();
 		ps.global_vars_type_map = init_int_map();
-
-		struct PrinterState prs;
 
 		while (1) {
 			if (tokvec[0].kind == END) {
