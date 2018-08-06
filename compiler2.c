@@ -18,7 +18,7 @@ struct PrinterState {
 };
 
 int get_new_label_name(struct PrinterState *ptr_prs);
-const char *get_reg_name_from_arg_pos(int counter);
+const char *get_reg_name_from_arg_pos_4byte(int counter);
 const char *get_reg_name_from_arg_pos_8byte(int counter);
 
 void parseprint_compound_statement(struct ParserState *ptr_ps,
@@ -359,7 +359,7 @@ void print_expression_(struct PrinterState *ptr_prs, struct Expression expr)
 					}
 					switch (size_of(type)) {
 						case 4:
-							gen_peek_and_dereference();
+							gen_peek_and_dereference_4byte();
 							break;
 						case 8:
 							gen_peek_and_dereference_8byte();
@@ -398,7 +398,8 @@ void print_expression_(struct PrinterState *ptr_prs, struct Expression expr)
 
 				switch (size_of(expr_.details.type)) {
 					case 4:
-						gen_pop_to_reg(get_reg_name_from_arg_pos(counter));
+						gen_pop_to_reg_4byte(
+						    get_reg_name_from_arg_pos_4byte(counter));
 						break;
 					case 8:
 						gen_pop_to_reg_8byte(
@@ -410,7 +411,7 @@ void print_expression_(struct PrinterState *ptr_prs, struct Expression expr)
 			}
 			switch (size_of(ret_type)) {
 				case 4:
-					gen_push_ret_of(ident_str);
+					gen_push_ret_of_4byte(ident_str);
 					break;
 				case 8:
 					gen_push_ret_of_8byte(ident_str);
@@ -469,7 +470,7 @@ int isAssign(enum TokenKind opkind)
 	        opkind == OP_HAT_EQ || opkind == OP_OR_EQ);
 }
 
-const char *get_reg_name_from_arg_pos(int counter)
+const char *get_reg_name_from_arg_pos_4byte(int counter)
 {
 	switch (counter) {
 		case 0:
@@ -836,8 +837,8 @@ void print_parameter_declaration(struct ParserState *ptr_ps,
 
 	switch (size_of(type)) {
 		case 4:
-			gen_write_register_to_local(
-			    get_reg_name_from_arg_pos(counter),
+			gen_write_register_to_local_4byte(
+			    get_reg_name_from_arg_pos_4byte(counter),
 			    resolve_name_locally(ptr_ps->scope_chain, ident_str).offset);
 			break;
 		case 8:

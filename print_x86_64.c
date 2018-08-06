@@ -49,10 +49,10 @@ void gen_write_to_local_1byte(int offset)
 }
 
 /* write to local mem what's in the register */
-void gen_write_register_to_local(const char *str, int offset)
+void gen_write_register_to_local_4byte(const char *str, int offset)
 {
 	assert(offset < 0);
-	printf("//gen_write_register_to_local(%s, %d)\n", str, offset);
+	printf("//gen_write_register_to_local_4byte(%s, %d)\n", str, offset);
 	printf("  movl %%%s, %d(%%rbp)\n", str, offset);
 }
 
@@ -114,9 +114,9 @@ void gen_push_from_local(int offset)
 /*
  dereference what's at the top of the stack.
  */
-void gen_peek_and_dereference(void)
+void gen_peek_and_dereference_4byte(void)
 {
-	printf("//gen_peek_and_dereference()\n");
+	printf("//gen_peek_and_dereference_4byte()\n");
 	puts("  movq (%rsp), %rax \n"
 	     "  movl (%rax), %eax\n"
 	     "  movl  %eax, (%rsp)");
@@ -205,9 +205,9 @@ void gen_push_ret_of_1byte(const char *fname)
 	gen_push_ret_of_(fname, 1);
 }
 
-void gen_push_ret_of(const char *fname)
+void gen_push_ret_of_4byte(const char *fname)
 {
-	printf("//gen_push_ret_of(\"%s\")\n", fname);
+	printf("//gen_push_ret_of_4byte(\"%s\")\n", fname);
 	gen_push_ret_of_(fname, 4);
 }
 
@@ -264,9 +264,9 @@ void gen_push_ret_of_(const char *fname, int byte)
 	}
 }
 
-void gen_pop_to_reg(const char *str)
+void gen_pop_to_reg_4byte(const char *str)
 {
-	printf("//gen_pop_to_reg(%s)\n", str);
+	printf("//gen_pop_to_reg_4byte(%s)\n", str);
 	printf("  movl (%%rsp), %%%s\n", str);
 	printf("  addq $8, %%rsp\n");
 }
