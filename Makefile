@@ -33,15 +33,15 @@ init:
 
 assembly_sandbox:
 	make format
-	gcc -Wall -Wextra -Wimplicit-fallthrough assembly_sandbox.c print_x86_64.c $(CCFLAGS) -o out/assembly_sandbox.out
+	clang -Wall -Wextra -Wimplicit-fallthrough assembly_sandbox.c print_x86_64.c $(CCFLAGS) -o out/assembly_sandbox.out
 	./test_ret3.sh '' s/assembly_sandbox.s out/assembly_sandbox.out 174 out/assembly_sandbox.out
 
 typeparse_check:
-	gcc -Wall -Wextra -Wimplicit-fallthrough  typeparse_check.c lexer.c type.c error.c -o out/typeparse_check.out
+	clang -Wall -Wextra -Wimplicit-fallthrough  typeparse_check.c lexer.c type.c error.c -o out/typeparse_check.out
 	./out/typeparse_check.out
 
 intmap_check:
-	gcc -Wall -Wextra -Wimplicit-fallthrough map.c intmap_check.c -o out/intmap_check.out
+	clang -Wall -Wextra -Wimplicit-fallthrough map.c intmap_check.c -o out/intmap_check.out
 	./out/intmap_check.out
 
 warn:
