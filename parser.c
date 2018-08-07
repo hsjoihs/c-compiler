@@ -342,13 +342,13 @@ struct Expression parse_primary_expression(struct ParserState *ptr_ps,
 		*ptr_char = CHAR_TYPE;
 		expr_info.type = ptr_of_type_to_ptr_to_type(ptr_char);
 		expr_info.true_type = ptr_of_type_to_arr_of_type(
-		    ptr_char, strlen(tokvec[0].ident_str) + 1);
+		    ptr_char, strlen(tokvec[0].literal_str) + 1);
 		expr_info.offset = GARBAGE_INT;
 
 		struct Expression expr;
 		expr.details = expr_info;
 		expr.category = STRING_LITERAL;
-		expr.string = tokvec[0].ident_str;
+		expr.string = tokvec[0].literal_str;
 
 		++*ptr_tokvec;
 		return expr;

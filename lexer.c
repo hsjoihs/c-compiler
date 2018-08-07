@@ -12,6 +12,7 @@ void read_all_tokens_debug(const char *str)
 	tok.kind = BEGINNING;
 	tok.int_value = GARBAGE_INT;
 	tok.ident_str = 0;
+	tok.literal_str = 0;
 
 	print_token(tok);
 	fprintf(stderr, "\n");
@@ -201,7 +202,7 @@ void print_token(struct Token tok)
 			fprintf(stderr, "char");
 			break;
 		case LIT_STRING:
-			fprintf(stderr, "\"%s\"", tok.ident_str);
+			fprintf(stderr, "\"%s\"", tok.literal_str);
 			break;
 	}
 }
@@ -212,6 +213,7 @@ struct Token get_token(const char **ptr_to_str)
 	struct Token t;
 	t.int_value = GARBAGE_INT;
 	t.ident_str = 0;
+	t.literal_str = 0;
 
 	if (*str == 0) { /* '\0' is 0 in C */
 		t.kind = END;
@@ -242,7 +244,7 @@ struct Token get_token(const char **ptr_to_str)
 		}
 		new_str[length] = 0;
 		t.kind = LIT_STRING;
-		t.ident_str = new_str;
+		t.literal_str = new_str;
 
 		*ptr_to_str = str + length + 1;
 		return t;

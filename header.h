@@ -67,7 +67,8 @@ enum TokenKind {
 struct Token{
 	enum TokenKind kind;
 	int int_value;
-	const char* ident_str;
+	const char *ident_str;
+	const char *literal_str;
 };
 
 struct ParserState;
