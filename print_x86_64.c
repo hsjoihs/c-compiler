@@ -278,7 +278,8 @@ void gen_push_ret_of_(const char *fname, int byte)
 	} else if (byte == 4) {
 		printf("  movl %%eax, (%%rsp)\n");
 	} else if (byte == 1) {
-		printf("  movb %%al, (%%rsp)\n");
+		printf("  movsbl %%al, %%eax\n"
+		       "  movl %%eax, (%%rsp)\n");
 	}
 }
 
