@@ -74,6 +74,7 @@ full_compile:
 	./test_ret4.sh 148 'int foo(char a, char b){int d;d = 3;char c;c = a+d;return c*4;} int main(){char f;f=3;return foo(f,4)+150;}' 174
 	./test_ret4.sh 149 'int foo(char a, char b){int d;d = 3;char c;c = a+d;return c*b;} int main(){char f;f=3;return foo(f,4)+150;}' 174
 	./test_ret4.sh 150 'char foo() { char *x;x = "1ab"; return x[0]; }int main(){ char *y;y = "a2b"; int z;z = 12; char a;a = y[1]; return (a-foo())*z+162;}' 174
+	./test_ret4.sh 151 'int printf();int main(){printf("%d %s", 1, "a");return 174;}' 174
 
 	./test_ret4.sh 118 'int main(){int a[1]; int *p; p = a; *p=2; return 174;}' 174
 	./test_ret4.sh 119 'int main(){int a[1]; *(a+0)=2;return 174;}' 174
