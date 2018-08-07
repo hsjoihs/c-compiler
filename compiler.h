@@ -22,7 +22,6 @@ struct ParserState {
 };
 
 int isAssign(enum TokenKind opkind);
-struct Type resolve_name_globally(struct map m, const char *str);
 struct LocalVarInfo resolve_name_locally(struct LocalVarTableList t,
                                          const char *str);
 int is_local_var(struct LocalVarTableList t, const char *str);

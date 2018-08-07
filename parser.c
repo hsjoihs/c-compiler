@@ -7,6 +7,17 @@
 #include <stdlib.h>
 #include <string.h>
 
+struct Type resolve_name_globally(struct map m, const char *str)
+{
+	if (isElem(m, str)) {
+		struct Type *ptr_type = lookup(m, str);
+		return *ptr_type;
+	} else {
+		fprintf(stderr, "%s is not declared globally\n", str);
+		exit(EXIT_FAILURE);
+	}
+}
+
 enum UnaryOp to_unaryop(enum TokenKind t)
 {
 	switch (t) {

@@ -482,17 +482,6 @@ int is_local_var(struct LocalVarTableList t, const char *str)
 	}
 }
 
-struct Type resolve_name_globally(struct map m, const char *str)
-{
-	if (isElem(m, str)) {
-		struct Type *ptr_type = lookup(m, str);
-		return *ptr_type;
-	} else {
-		fprintf(stderr, "%s is not declared globally\n", str);
-		exit(EXIT_FAILURE);
-	}
-}
-
 struct LocalVarInfo resolve_name_locally(struct LocalVarTableList t,
                                          const char *str)
 {
