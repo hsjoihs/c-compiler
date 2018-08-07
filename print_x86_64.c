@@ -730,3 +730,20 @@ void gen_assign_1byte(void)
 	printf("  addq $8, %%rsp\n");
 	printf("  movb %%al, (%%rsp)\n");
 }
+
+void gen_str(int strnum, const char *str)
+{
+	printf("//gen_str(%d, %s)\n", strnum, str);
+	printf("L_str%d:\n"
+	       ".asciz \"%s\"\n",
+	       strnum, str);
+}
+
+void gen_push_address_of_str(int strnum)
+{
+	printf("//gen_push_address_of_str(%d)\n", strnum);
+	printf("  subq $8, %%rsp\n"
+	       "  leaq L_str%d(%%rip), %%rax\n"
+	       "  movq %%rax, (%%rsp)\n",
+	       strnum);
+}

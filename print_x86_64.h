@@ -67,6 +67,8 @@ void gen_assign_1byte(void);
 void gen_peek_deref_push_1byte(void);
 void gen_push_from_global_1byte(const char *ident);
 void gen_write_register_to_local_1byte(const char *str, int offset);
+void gen_str(int strnum, const char *str);
+void gen_push_address_of_str(int strnum);
 
 #ifdef OSX
 #define PREFIX "_"
