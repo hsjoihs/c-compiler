@@ -450,8 +450,7 @@ void print_expression_(struct PrinterState *ptr_prs, struct Expression expr)
 		}
 
 		case STRING_LITERAL: {
-			const char *str = expr.global_var_name;
-			/* this field should be renamed */
+			const char *str = expr.literal_string;
 
 			/* already in the pool */
 			if (isElem(ptr_prs->string_constant_pool, str)) {

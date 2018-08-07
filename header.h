@@ -221,6 +221,7 @@ struct Expression {
 	struct Expression *ptr3;
 	int int_value;
 	const char *global_var_name;
+	const char *literal_string;
 	struct Expression *arg_expr_vec;
 	int arg_length;
 };

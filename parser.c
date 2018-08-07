@@ -348,8 +348,7 @@ struct Expression parse_primary_expression(struct ParserState *ptr_ps,
 		struct Expression expr;
 		expr.details = expr_info;
 		expr.category = STRING_LITERAL;
-		expr.global_var_name =
-		    tokvec[0].literal_str; /* not a varname but a string literal */
+		expr.literal_string = tokvec[0].literal_str;
 
 		++*ptr_tokvec;
 		return expr;
