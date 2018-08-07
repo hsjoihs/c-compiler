@@ -50,3 +50,9 @@ struct map init_int_map(void)
 	res._vec = calloc(res._alloc, sizeof(struct _mapchip));
 	return res;
 }
+
+void *getIth(const struct map m, int i, const char **ptr_to_str)
+{
+	*ptr_to_str = m._vec[i].ptr;
+	return m._vec[i].value;
+}

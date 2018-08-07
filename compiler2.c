@@ -15,6 +15,8 @@ struct PrinterState {
 	int break_label_name;    /* the label at the end of the current loop */
 	int continue_label_name; /* the label at the beginning of the current loop
 	                          */
+	struct map string_constant_pool;
+	int pool_largest_id;
 };
 
 int get_new_label_name(struct PrinterState *ptr_prs);
@@ -451,7 +453,19 @@ void print_expression_(struct PrinterState *ptr_prs, struct Expression expr)
 			const char *str = expr.global_var_name;
 			/* this field should be renamed */
 
-			unimplemented("string literal");
+			/* already in the pool */
+			if (isElem(ptr_prs->string_constant_pool, str)) {
+				int id =
+				    (int)(size_t)lookup(ptr_prs->string_constant_pool, str);
+				gen_push_address_of_str(id);
+				return;
+			} else {
+				ptr_prs->pool_largest_id++;
+				int id = ptr_prs->pool_largest_id;
+				insert(&ptr_prs->string_constant_pool, str, (void *)(size_t)id);
+				gen_push_address_of_str(id);
+				return;
+			}
 		}
 	}
 }
@@ -981,6 +995,15 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
 	*ptr_tokvec = tokvec2;
 }
 
+void print_string_pool(struct map pool)
+{
+	for (int i = 0; i < pool._length; ++i) {
+		const char *str;
+		int id = (int)(size_t)getIth(pool, i, &str);
+		gen_str(id, str);
+	}
+}
+
 int main(int argc, char const **argv)
 {
 	char *str;
@@ -1002,12 +1025,15 @@ int main(int argc, char const **argv)
 		struct PrinterState prs;
 		prs.final_label_name = 1;
 		prs.return_label_name = GARBAGE_INT;
+		prs.string_constant_pool = init_int_map();
+		prs.pool_largest_id = 0;
 		ps.func_info_map = init_int_map();
 		ps.global_vars_type_map = init_int_map();
 
 		while (1) {
 			if (tokvec[0].kind == END) {
 				parse_final(&tokvec);
+				print_string_pool(prs.string_constant_pool);
 				return 0;
 			} else {
 				parseprint_toplevel_definition(&ps, &prs, &tokvec);
