@@ -172,7 +172,8 @@ enum expr_category {
 	FUNCCALL_EXPR,
 	ASSIGNMENT_EXPR,
 	LOGICAL_OR_EXPR,
-	LOGICAL_AND_EXPR
+	LOGICAL_AND_EXPR,
+	STRING_LITERAL
 };
 
 enum SimpleBinOp {
@@ -255,3 +256,7 @@ void read_all_tokens_debug(const char *str);
 struct Expression combine_by_add_or_sub(struct Expression expr,
                                         struct Expression expr2,
                                         enum TokenKind kind);
+
+struct Type ptr_of_type_to_arr_of_type(struct Type *ptr_type, int length);
+
+extern struct Type CHAR_TYPE;

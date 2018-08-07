@@ -444,6 +444,14 @@ void print_expression_(struct PrinterState *ptr_prs, struct Expression expr)
 				default:
 					unimplemented("Unsupported width");
 			}
+			return;
+		}
+
+		case STRING_LITERAL: {
+			const char *str = expr.global_var_name;
+			/* this field should be renamed */
+
+			unimplemented("string literal");
 		}
 	}
 }

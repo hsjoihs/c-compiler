@@ -324,6 +324,24 @@ struct Expression parse_primary_expression(struct ParserState *ptr_ps,
 
 		*ptr_tokvec = tokvec;
 		return expr;
+	} else if (tokvec[0].kind == LIT_STRING) {
+		struct ExprInfo expr_info;
+		expr_info.info = NOT_ASSIGNABLE;
+		struct Type *ptr_char = calloc(1, sizeof(struct Type));
+		*ptr_char = CHAR_TYPE;
+		expr_info.type = ptr_of_type_to_ptr_to_type(ptr_char);
+		expr_info.true_type = ptr_of_type_to_arr_of_type(
+		    ptr_char, strlen(tokvec[0].ident_str) + 1);
+		expr_info.offset = GARBAGE_INT;
+
+		struct Expression expr;
+		expr.details = expr_info;
+		expr.category = STRING_LITERAL;
+		expr.global_var_name =
+		    tokvec[0].ident_str; /* not a varname but a string literal */
+
+		++*ptr_tokvec;
+		return expr;
 	}
 
 	error_unexpected_token(tokvec, "the beginning of parse_primary_expression");
