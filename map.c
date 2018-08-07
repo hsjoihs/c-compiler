@@ -42,7 +42,7 @@ int isElem(const struct map m, const char *key) { return lookup(m, key) != 0; }
 
 void deletion(struct map *ptr, const char *key) { insert(ptr, key, 0); }
 
-struct map init_int_map(void)
+struct map init_map(void)
 {
 	struct map res;
 	res._length = 0;

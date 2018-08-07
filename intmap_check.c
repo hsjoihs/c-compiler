@@ -4,7 +4,7 @@
 
 int main()
 {
-	struct map map_ = init_int_map();
+	struct map map_ = init_map();
 	assert(!isElem(map_, "ffjkl"));
 
 	int v = 3;

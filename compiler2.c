@@ -798,7 +798,7 @@ void parseprint_compound_statement(struct ParserState *ptr_ps,
 		struct LocalVarTableList current_table = ptr_ps->scope_chain;
 
 		struct LocalVarTableList new_table;
-		new_table.var_table = init_int_map();
+		new_table.var_table = init_map();
 
 		/* current_table disappears at the end of this function,
 		   but there is no problem because new_table itself gets overwritten at
@@ -919,7 +919,7 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
 	struct Type ret_type = *declarator_type.derived_from;
 
 	ptr_ps->scope_chain.outer = 0; /* most outer scope */
-	ptr_ps->scope_chain.var_table = init_int_map();
+	ptr_ps->scope_chain.var_table = init_map();
 	ptr_prs->return_label_name = GARBAGE_INT;   /* INITIALIZE */
 	ptr_prs->break_label_name = GARBAGE_INT;    /* INITIALIZE */
 	ptr_prs->continue_label_name = GARBAGE_INT; /* INITIALIZE */
@@ -1014,10 +1014,10 @@ int main(int argc, char const **argv)
 		struct PrinterState prs;
 		prs.final_label_name = 1;
 		prs.return_label_name = GARBAGE_INT;
-		prs.string_constant_pool = init_int_map();
+		prs.string_constant_pool = init_map();
 		prs.pool_largest_id = 0;
-		ps.func_info_map = init_int_map();
-		ps.global_vars_type_map = init_int_map();
+		ps.func_info_map = init_map();
+		ps.global_vars_type_map = init_map();
 
 		while (1) {
 			if (tokvec[0].kind == END) {
