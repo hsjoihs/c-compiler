@@ -120,7 +120,7 @@ void print_expression_as_lvalue_(struct PrinterState *ptr_prs,
 			return;
 		}
 		case GLOBAL_VAR_: {
-			const char *name = expr.global_var_name;
+			const char *name = expr.string;
 			gen_push_address_of_global(name);
 			struct Type type = expr.details.type;
 
@@ -239,21 +239,21 @@ void print_expression_(struct PrinterState *ptr_prs, struct Expression expr)
 		}
 
 		case GLOBAL_VAR_: {
-			printf("//global `%s` as rvalue\n", expr.global_var_name);
+			printf("//global `%s` as rvalue\n", expr.string);
 
 			if (is_array(expr.details.true_type)) {
-				gen_push_address_of_global(expr.global_var_name);
+				gen_push_address_of_global(expr.string);
 				return;
 			}
 			switch (size_of(expr.details.type)) {
 				case 1:
-					gen_push_from_global_1byte(expr.global_var_name);
+					gen_push_from_global_1byte(expr.string);
 					break;
 				case 4:
-					gen_push_from_global_4byte(expr.global_var_name);
+					gen_push_from_global_4byte(expr.string);
 					break;
 				case 8:
-					gen_push_from_global_8byte(expr.global_var_name);
+					gen_push_from_global_8byte(expr.string);
 					break;
 				default:
 					unimplemented("Unsupported width in global var");
@@ -363,7 +363,7 @@ void print_expression_(struct PrinterState *ptr_prs, struct Expression expr)
 						gen_push_address_of_local(expr.ptr1->details.offset);
 						return;
 					} else if (expr.ptr1->category == GLOBAL_VAR_) {
-						gen_push_address_of_global(expr.ptr1->global_var_name);
+						gen_push_address_of_global(expr.ptr1->string);
 						return;
 					}
 				}
@@ -408,7 +408,7 @@ void print_expression_(struct PrinterState *ptr_prs, struct Expression expr)
 			return;
 		}
 		case FUNCCALL_EXPR: {
-			const char *ident_str = expr.global_var_name;
+			const char *ident_str = expr.string;
 			struct Type ret_type = expr.details.type;
 
 			for (int counter = 0; counter < expr.arg_length; counter++) {
@@ -450,8 +450,7 @@ void print_expression_(struct PrinterState *ptr_prs, struct Expression expr)
 		}
 
 		case STRING_LITERAL: {
-			const char *str = expr.global_var_name;
-			/* this field should be renamed */
+			const char *str = expr.string;
 
 			/* already in the pool */
 			if (isElem(ptr_prs->string_constant_pool, str)) {

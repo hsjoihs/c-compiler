@@ -219,7 +219,7 @@ struct Expression {
 	struct Expression *ptr2;
 	struct Expression *ptr3;
 	int int_value;
-	const char *global_var_name;
+	const char *string; /* either a global var name or a string literal */
 	struct Expression *arg_expr_vec;
 	int arg_length;
 };
