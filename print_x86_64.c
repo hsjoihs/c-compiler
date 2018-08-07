@@ -257,7 +257,9 @@ void gen_push_ret_of_(const char *fname, int byte)
 	       "  movq %%rsp, %%rax\n"
 	       "  andq $15, %%rax\n"
 	       "  subq %%rax, %%rsp\n"
-	       "  movq %%rax, (%%rsp)\n");
+	       "  movq %%rax, (%%rsp)\n"
+	       "  movb $0, %%al\n" /* printf */
+	);
 	printf("  call " PREFIX "%s\n", fname);
 
 	/*
@@ -733,7 +735,7 @@ void gen_assign_1byte(void)
 
 void gen_str(int strnum, const char *str)
 {
-	printf("//gen_str(%d, %s)\n", strnum, str);
+	printf("//gen_str(%d, \"%s\")\n", strnum, str);
 	printf("L_str%d:\n"
 	       ".asciz \"%s\"\n",
 	       strnum, str);
