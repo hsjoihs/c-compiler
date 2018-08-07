@@ -164,8 +164,8 @@ void gen_peek_and_dereference_1byte(void)
 {
 	printf("//gen_peek_and_dereference_1byte()\n");
 	printf("  movq (%%rsp), %%rax\n"
-	       "  movb (%%rax), %%al\n"
-	       "  movb %%al, (%%rsp)\n");
+	       "  movsbl (%%rax), %%eax\n"
+	       "  movl %%eax, (%%rsp)\n");
 }
 
 void gen_peek_deref_push_1byte(void)
