@@ -237,7 +237,7 @@ struct Expression parse_postfix_expression(struct ParserState *ptr_ps,
 		expr.arg_expr_vec = args;
 		expr.arg_length = counter;
 		expr.details = UNASSIGNABLE(ret_type);
-		expr.string = ident_str;
+		expr.global_var_name = ident_str;
 		return expr;
 
 	} else if (tokvec[0].kind == IDENT_OR_RESERVED &&
@@ -310,7 +310,7 @@ struct Expression parse_primary_expression(struct ParserState *ptr_ps,
 			struct Expression expr;
 			expr.details = expr_info;
 			expr.category = GLOBAL_VAR_;
-			expr.string = tokvec[0].ident_str;
+			expr.global_var_name = tokvec[0].ident_str;
 			return expr;
 		} else {
 			struct LocalVarInfo info =
@@ -348,7 +348,8 @@ struct Expression parse_primary_expression(struct ParserState *ptr_ps,
 		struct Expression expr;
 		expr.details = expr_info;
 		expr.category = STRING_LITERAL;
-		expr.string = tokvec[0].literal_str;
+		expr.global_var_name =
+		    tokvec[0].literal_str; /* not a varname but a string literal */
 
 		++*ptr_tokvec;
 		return expr;
@@ -371,7 +372,7 @@ struct Expression ident_as_lvalue(struct ParserState ps, const char *name)
 		expr.details.type = type;
 		expr.details.offset = GARBAGE_INT;
 		expr.category = GLOBAL_VAR_;
-		expr.string = name;
+		expr.global_var_name = name;
 		return expr;
 	} else {
 		struct LocalVarInfo info = resolve_name_locally(ps.scope_chain, name);
