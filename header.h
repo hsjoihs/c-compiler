@@ -1,7 +1,6 @@
 #include "map.h"
 
 #define GARBAGE_INT ((int)0xCCCCCCCC)
-#define BOOL int
 
 enum TokenKind {
 	OP_PLUS = 1,
