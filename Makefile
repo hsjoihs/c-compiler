@@ -18,7 +18,7 @@ test_all_:
 	make check_error
 
 format:
-	clang-format -i *.c -style=file
+	clang-format -i *.c *.h -style=file
 
 clean:
 	rm out/*.out s/*.s

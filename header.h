@@ -63,7 +63,7 @@ enum TokenKind {
 	LIT_STRING
 };
 
-struct Token{
+struct Token {
 	enum TokenKind kind;
 	int int_value;
 	const char *ident_str;
@@ -73,21 +73,18 @@ struct Token{
 struct ParserState;
 
 void print_token(struct Token tok);
-struct Token get_token(const char** ptr_to_str);
-
+struct Token get_token(const char **ptr_to_str);
 
 struct ParamInfo;
 
 struct ParamInfos {
-	struct ParamInfo **param_vec; 
+	struct ParamInfo **param_vec;
 	/*
-	 points to the array of (ParamInfo*). 
-	 terminated by NULL. 
+	 points to the array of (ParamInfo*).
+	 terminated by NULL.
 	 if the param_vec itself is NULL, that means there is no info.
 	 */
 };
-
-
 
 enum typ_ { INT_ = 1, PTR_, ARRAY, FN, CHAR_ };
 
@@ -104,7 +101,6 @@ struct ParamInfo {
 };
 
 int size_of(struct Type type);
-
 
 enum expr_info_ {
 	LOCAL_VAR = 1,
@@ -132,18 +128,18 @@ struct Type deref_type(struct Type t);
 int is_compatible(struct Type t1, struct Type t2);
 int is_strictly_equal(struct Type t1, struct Type t2);
 int is_pointer(struct Type t);
-struct Type ptr_of_type_to_ptr_to_type(struct Type* ptr_type);
+struct Type ptr_of_type_to_ptr_to_type(struct Type *ptr_type);
 
 struct Type parse_var_declarator(const struct Token **ptr_tokvec,
                                  const char **ptr_to_ident_str);
 void expect_and_consume(const struct Token **ptr_tokvec, enum TokenKind kind,
                         const char *str);
-_Noreturn void error_unexpected_token(const struct Token *tokvec, const char *str);
+_Noreturn void error_unexpected_token(const struct Token *tokvec,
+                                      const char *str);
 
 struct Token *read_all_tokens_(const char *str);
 int count_all_tokens(const char *str);
 void debug_print_type(struct Type type);
-
 
 struct FuncInfo {
 	struct Type ret_type;
@@ -153,7 +149,7 @@ struct FuncInfo {
 int can_start_a_type(const struct Token *tokvec);
 
 struct Type parse_declarator(const struct Token **ptr_tokvec,
-                                 const char **ptr_to_ident_str);
+                             const char **ptr_to_ident_str);
 
 _Noreturn void unimplemented(const char *str);
 
@@ -201,12 +197,12 @@ enum UnaryOp {
 	UNARY_OP_TILDA,
 	UNARY_OP_PLUS,
 	UNARY_OP_MINUS,
-	
+
 	UNARY_OP_PLUS_PLUS,
 	UNARY_OP_MINUS_MINUS,
-	
+
 	UNARY_OP_AND,
-	
+
 	UNARY_OP_ASTERISK
 };
 
@@ -225,16 +221,14 @@ struct Expression {
 	int arg_length;
 };
 
-
 struct Expression parse_cast_expression(struct ParserState *ptr_ps,
-                                      const struct Token **ptr_tokvec);
+                                        const struct Token **ptr_tokvec);
 struct Expression parse_logical_OR_expression(struct ParserState *ptr_ps,
                                               const struct Token **ptr_tokvec);
 
 struct Expression remove_leftiness_(struct Expression expr);
 struct Expression binary_op_(struct Expression expr, struct Expression expr2,
                              enum expr_category cat, struct ExprInfo exprinfo);
-
 
 enum SimpleBinOp to_simplebinop(enum TokenKind t);
 struct Expression simple_binary_op(struct Expression expr,

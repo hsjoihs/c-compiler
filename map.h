@@ -2,7 +2,7 @@
 struct map {
 	int _length;
 	int _alloc;
-	struct _mapchip* _vec;
+	struct _mapchip *_vec;
 };
 
 void insert(struct map *map_ptr, const char *key, void *value);

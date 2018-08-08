@@ -1,19 +1,19 @@
-void gen_prologue(int alloc_size, const char* fname);
+void gen_prologue(int alloc_size, const char *fname);
 void gen_push_int(int num);
-void gen_op_ints(const char* str);
-void gen_compare_ints(const char* str);
+void gen_op_ints(const char *str);
+void gen_compare_ints(const char *str);
 void gen_mul_ints(void);
 void gen_div_ints(void);
 void gen_rem_ints(void);
-void gen_shift_ints(const char* str);
+void gen_shift_ints(const char *str);
 void gen_unary_not(void);
-void gen_unary(const char* str);
+void gen_unary(const char *str);
 void gen_push_from_local_4byte(int offset);
 void gen_write_to_local(int offset);
 void gen_epilogue(int label);
-void gen_push_ret_of_4byte(const char* fname);
+void gen_push_ret_of_4byte(const char *fname);
 void gen_pop_to_reg_4byte(const char *str);
-void gen_write_register_to_local_4byte(const char* str, int offset);
+void gen_write_register_to_local_4byte(const char *str, int offset);
 void gen_logical_AND_set(int offset, int label1);
 void gen_logical_OR_set(int offset, int label1);
 void gen_logical_AND_final(int final_depth, int label1, int label2);
@@ -75,4 +75,3 @@ void gen_push_address_of_str(int strnum);
 #else
 #define PREFIX ""
 #endif
-
