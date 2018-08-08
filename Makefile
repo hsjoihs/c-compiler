@@ -26,10 +26,6 @@ clean:
 supplement:
 	gcc supplement.c -S -o s/supplement.s
 
-init:
-	mkdir -p out
-	mkdir -p s
-
 
 assembly_sandbox:
 	make format

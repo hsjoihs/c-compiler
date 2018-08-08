@@ -12,7 +12,6 @@ Tested on both macOS (High Sierra) and Ubuntu (18.04.1 LTS).
 After cloning, run:
 
 ```
-$ make init
 $ make notest
 ```
 
