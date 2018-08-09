@@ -81,7 +81,6 @@ struct Expression unary_op_(struct Expression expr, enum TokenKind kind,
 
 struct ExprInfo UNASSIGNABLE(struct Type type) {
 	struct ExprInfo expr_info;
-	expr_info.info = NOT_ASSIGNABLE;
 	expr_info.type = type;
 	expr_info.offset = GARBAGE_INT;
 
@@ -168,7 +167,6 @@ struct Expression deref_expr(struct Expression expr)
 	struct Type type = deref_type(expr.details.type);
 
 	struct ExprInfo new_expr_info;
-	new_expr_info.info = DEREFERENCED_ADDRESS;
 	new_expr_info.type = if_array_convert_to_ptr(type);
 	new_expr_info.true_type = type;
 	new_expr_info.offset = GARBAGE_INT;
@@ -305,7 +303,6 @@ struct Expression parse_primary_expression(struct ParserState *ptr_ps,
 			    ptr_ps->global_vars_type_map, tokvec[0].ident_str);
 
 			struct ExprInfo expr_info;
-			expr_info.info = GLOBAL_VAR;
 			expr_info.type = if_array_convert_to_ptr(type);
 			expr_info.true_type = type;
 
@@ -319,7 +316,6 @@ struct Expression parse_primary_expression(struct ParserState *ptr_ps,
 			    resolve_name_locally(ptr_ps->scope_chain, tokvec[0].ident_str);
 
 			struct ExprInfo expr_info;
-			expr_info.info = LOCAL_VAR;
 			expr_info.type = if_array_convert_to_ptr(info.type);
 			expr_info.true_type = info.type;
 			expr_info.offset = info.offset;
@@ -339,7 +335,6 @@ struct Expression parse_primary_expression(struct ParserState *ptr_ps,
 		return expr;
 	} else if (tokvec[0].kind == LIT_STRING) {
 		struct ExprInfo expr_info;
-		expr_info.info = NOT_ASSIGNABLE;
 		struct Type *ptr_char = calloc(1, sizeof(struct Type));
 		*ptr_char = CHAR_TYPE;
 		expr_info.type = ptr_of_type_to_ptr_to_type(ptr_char);
@@ -369,7 +364,6 @@ struct Expression ident_as_lvalue(struct ParserState ps, const char *name)
 		}
 
 		struct Expression expr;
-		expr.details.info = GLOBAL_VAR;
 		expr.details.type = type;
 		expr.details.offset = GARBAGE_INT;
 		expr.category = GLOBAL_VAR_;
@@ -383,7 +377,6 @@ struct Expression ident_as_lvalue(struct ParserState ps, const char *name)
 		}
 
 		struct Expression expr;
-		expr.details.info = LOCAL_VAR;
 		expr.details.type = info.type;
 		expr.details.offset = info.offset;
 		expr.category = LOCAL_VAR_;
@@ -466,13 +459,8 @@ struct Expression parse_assignment_expression(struct ParserState *ptr_ps,
 	}
 
 	assert(isAssign(tokvec[0].kind));
-	switch (expr.details.info) {
-		case NOT_ASSIGNABLE:
-			fprintf(stderr, "Expected an lvalue, but did not get one.\n");
-			exit(EXIT_FAILURE);
-		case LOCAL_VAR:
-		case GLOBAL_VAR:
-		case DEREFERENCED_ADDRESS: {
+	{
+		{
 			enum TokenKind opkind = tokvec[0].kind;
 			++tokvec;
 

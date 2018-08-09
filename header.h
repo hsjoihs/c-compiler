@@ -102,15 +102,7 @@ struct ParamInfo {
 
 int size_of(struct Type type);
 
-enum expr_info_ {
-	LOCAL_VAR = 1,
-	DEREFERENCED_ADDRESS,
-	NOT_ASSIGNABLE,
-	GLOBAL_VAR
-};
-
 struct ExprInfo {
-	enum expr_info_ info;
 	struct Type type;
 	struct Type true_type;
 	int offset;
