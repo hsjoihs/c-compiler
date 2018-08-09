@@ -185,7 +185,7 @@ struct Elem {
 	struct ParamInfos param_infos;
 };
 
-static struct Type from_type3_to_type(void **type3)
+static struct Type from_type3_to_type(const void **type3)
 {
 	struct Type type;
 	struct Elem elem = *(struct Elem *)type3[0];

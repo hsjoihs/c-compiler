@@ -21,14 +21,14 @@ void extend_vector(struct Vector *ptr)
 	}
 }
 
-void push_vector(struct Vector *ptr, void *tok)
+void push_vector(struct Vector *ptr, const void *tok)
 {
 	extend_vector(ptr);
 	ptr->vector[ptr->length] = tok;
 	++(ptr->length);
 }
 
-void *pop_vector(struct Vector *ptr)
+const void *pop_vector(struct Vector *ptr)
 {
 	if (ptr->length == 0) {
 		assert("tried to pop an empty vector of type `void*`" && 0);
