@@ -37,11 +37,11 @@ intmap_check:
 
 warn:
 	make format
-	clang -Wall -Wextra -Wimplicit-fallthrough -Weverything -Wno-padded -Wno-missing-prototypes -Wno-switch-enum compiler2.c parser.c error.c type.c parse_binary_expression.c map.c print_x86_64.c $(CCFLAGS) lexer.c -o out/compiler.out
+	clang -Wall -Wextra -Wimplicit-fallthrough -Weverything -Wno-padded -Wno-missing-prototypes -Wno-switch-enum compiler2.c vector.c parser.c error.c type.c parse_binary_expression.c map.c print_x86_64.c $(CCFLAGS) lexer.c -o out/compiler.out
 
 notest:
 	make format
-	clang -Wall -Wextra -Wimplicit-fallthrough compiler2.c parser.c error.c type.c parse_binary_expression.c map.c print_x86_64.c $(CCFLAGS) lexer.c -o out/compiler.out
+	clang -Wall -Wextra -Wimplicit-fallthrough compiler2.c vector.c parser.c error.c type.c parse_binary_expression.c map.c print_x86_64.c $(CCFLAGS) lexer.c -o out/compiler.out
 
 full_compile:
 	rm out/*.out
