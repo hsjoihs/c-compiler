@@ -576,21 +576,38 @@ static struct Statement parseprint_statement(struct ParserState *ptr_ps,
 
 		gen_if_else_part1(label1, label2);
 
-		parseprint_statement(ptr_ps, ptr_prs, &tokvec);
+		struct Statement inner_s =
+		    parseprint_statement(ptr_ps, ptr_prs, &tokvec);
 
 		gen_if_else_part2(label1, label2);
 
+		struct Statement *ptr_inner_s = calloc(1, sizeof(struct Statement));
+		*ptr_inner_s = inner_s;
+
 		if (tokvec[0].kind == RES_ELSE) { /* must bind to the most inner one */
 			++tokvec;
-			parseprint_statement(ptr_ps, ptr_prs, &tokvec);
+			struct Statement inner_s2 =
+			    parseprint_statement(ptr_ps, ptr_prs, &tokvec);
+			gen_if_else_part3(label1, label2);
+
+			*ptr_tokvec = tokvec;
+
+			struct Statement s;
+			s.category = IF_ELSE_STATEMENT;
+			s.expr1 = expr;
+			return NOINFO;
 		} else {
-			/* do nothing */
+			gen_if_else_part3(label1, label2);
+
+			*ptr_tokvec = tokvec;
+
+			struct Statement s;
+			s.category = IF_STATEMENT;
+			s.expr1 = expr;
+
+			s.inner_statement = ptr_inner_s;
+			return s;
 		}
-
-		gen_if_else_part3(label1, label2);
-
-		*ptr_tokvec = tokvec;
-		return NOINFO;
 	}
 
 	if (tokvec[0].kind == RES_RETURN) {
