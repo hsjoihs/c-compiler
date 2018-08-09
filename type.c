@@ -241,8 +241,6 @@ struct Type from_type3_to_type(const struct type3_elem *type3)
 	}
 }
 
-void parse_dcl(const struct Token **ptr_tokvec, struct Type3 *ptr_type3);
-
 struct ParamInfo *parse_param(const struct Token **ptr_tokvec)
 {
 	const char *ident_str;
@@ -266,9 +264,26 @@ struct ParamInfo *parse_param(const struct Token **ptr_tokvec)
 	return ptr_param_info;
 }
 
-void parse_dcl(const struct Token **ptr_tokvec, struct Type3 *ptr_type3)
+/* `int a`, `int *a` */
+struct Type parse_declarator(const struct Token **ptr_tokvec,
+                             const char **ptr_to_ident_str)
 {
 	const struct Token *tokvec = *ptr_tokvec;
+
+	enum TokenKind kind = tokvec[0].kind;
+
+	if (kind != RES_INT && kind != RES_CHAR) {
+		error_unexpected_token(tokvec, "type name `int` or `char`");
+	}
+	++tokvec;
+
+	struct Type3 type3;
+	type3.length = 0;
+	type3._allocated_length = 30;
+	type3.vector = calloc(30, sizeof(struct type3_elem));
+	type3.ident_str = NULL;
+
+	struct Type3 *ptr_type3 = &type3;
 
 	int ns = 0;
 	for (; tokvec[0].kind == OP_ASTERISK; ++tokvec) {
@@ -344,29 +359,6 @@ void parse_dcl(const struct Token **ptr_tokvec, struct Type3 *ptr_type3)
 	}
 
 	*ptr_tokvec = tokvec;
-}
-
-/* `int a`, `int *a` */
-struct Type parse_declarator(const struct Token **ptr_tokvec,
-                             const char **ptr_to_ident_str)
-{
-	const struct Token *tokvec = *ptr_tokvec;
-
-	enum TokenKind kind = tokvec[0].kind;
-
-	if (kind != RES_INT && kind != RES_CHAR) {
-		error_unexpected_token(tokvec, "type name `int` or `char`");
-	}
-	++tokvec;
-	*ptr_tokvec = tokvec;
-
-	struct Type3 type3;
-	type3.length = 0;
-	type3._allocated_length = 30;
-	type3.vector = calloc(30, sizeof(struct type3_elem));
-	type3.ident_str = NULL;
-
-	parse_dcl(ptr_tokvec, &type3);
 
 	*ptr_to_ident_str = type3.ident_str;
 
