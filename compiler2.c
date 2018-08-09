@@ -161,7 +161,7 @@ void print_expression_as_lvalue(struct PrinterState *ptr_prs,
 			}
 		default:
 			fprintf(stderr, "doesn't seem like an lvalue\n");
-			return;
+			exit(EXIT_FAILURE);
 	}
 }
 
