@@ -115,15 +115,15 @@ void debug_print_type(struct Type type)
 	}
 }
 
-void expect_type(struct ExprInfo expr_info, struct Type expected_type,
+void expect_type(struct Type actual_type, struct Type expected_type,
                  const char *message)
 {
 
-	if (!is_compatible(expr_info.type, expected_type)) {
+	if (!is_compatible(actual_type, expected_type)) {
 		fprintf(stderr, "Unmatched type: expected `");
 		debug_print_type(expected_type);
 		fprintf(stderr, "`, but got `");
-		debug_print_type(expr_info.type);
+		debug_print_type(actual_type);
 		fprintf(stderr, "`.\n");
 		fprintf(stderr, "context: %s\n", message);
 		exit(EXIT_FAILURE);

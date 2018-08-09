@@ -93,7 +93,7 @@ struct Expression parse_unary_expression(struct ParserState *ptr_ps,
 		++tokvec;
 		struct Expression expr = parse_cast_expression(ptr_ps, &tokvec);
 		expect_type(
-		    expr.details, INT_TYPE,
+		    expr.details.type, INT_TYPE,
 		    "operand of logical not, bitnot, unary plus or unary minus");
 
 		struct Expression new_expr = unary_op_(expr, kind, expr.details.type);
@@ -450,7 +450,7 @@ parse_assignment_expression(struct ParserState *ptr_ps,
 
 			struct Expression expr2 =
 			    parse_assignment_expression(ptr_ps, &tokvec);
-			expect_type(expr.details, expr2.details.type,
+			expect_type(expr.details.type, expr2.details.type,
 			            "mismatch in assignment operator");
 
 			*ptr_tokvec = tokvec;
@@ -479,7 +479,7 @@ parse_conditional_expression(struct ParserState *ptr_ps,
 
 		*ptr_tokvec = tokvec;
 
-		expect_type(false_branch.details, true_branch.details.type,
+		expect_type(false_branch.details.type, true_branch.details.type,
 		            "mismatch of type in the false branch and the true branch");
 
 		struct Expression *ptr_expr1 = calloc(1, sizeof(struct Expression));

@@ -102,14 +102,9 @@ struct ParamInfo {
 
 int size_of(struct Type type);
 
-struct ExprInfo {
-	struct Type type;
-	struct Type true_type;
-};
-
 extern struct Type INT_TYPE;
 
-void expect_type(struct ExprInfo expr_info, struct Type expected_type,
+void expect_type(struct Type actual_type, struct Type expected_type,
                  const char *message);
 
 struct Type deref_type(struct Type t);
@@ -192,7 +187,10 @@ enum UnaryOp {
 };
 
 struct Expression {
-	struct ExprInfo details;
+	struct {
+		struct Type type;
+		struct Type true_type;
+	} details;
 	enum expr_category category;
 	enum SimpleBinOp simple_binary_operator;
 	enum UnaryOp unary_operator;

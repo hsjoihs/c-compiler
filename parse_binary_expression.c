@@ -149,8 +149,8 @@ parse_inclusive_OR_expression(struct ParserState *ptr_ps,
 
 		struct Expression expr2 =
 		    parse_exclusive_OR_expression(ptr_ps, &tokvec);
-		expect_type(expr.details, INT_TYPE, "left operand of bitOR");
-		expect_type(expr2.details, INT_TYPE, "right operand of bitOR");
+		expect_type(expr.details.type, INT_TYPE, "left operand of bitOR");
+		expect_type(expr2.details.type, INT_TYPE, "right operand of bitOR");
 		expr = simple_binary_op(expr, expr2, kind, INT_TYPE);
 	}
 	*ptr_tokvec = tokvec;
@@ -173,8 +173,8 @@ parse_exclusive_OR_expression(struct ParserState *ptr_ps,
 		++tokvec;
 
 		struct Expression expr2 = parse_AND_expression(ptr_ps, &tokvec);
-		expect_type(expr.details, INT_TYPE, "left operand of XOR");
-		expect_type(expr2.details, INT_TYPE, "right operand of XOR");
+		expect_type(expr.details.type, INT_TYPE, "left operand of XOR");
+		expect_type(expr2.details.type, INT_TYPE, "right operand of XOR");
 		expr = simple_binary_op(expr, expr2, kind, INT_TYPE);
 	}
 	*ptr_tokvec = tokvec;
@@ -196,8 +196,8 @@ static struct Expression parse_AND_expression(struct ParserState *ptr_ps,
 		++tokvec;
 
 		struct Expression expr2 = parse_equality_expression(ptr_ps, &tokvec);
-		expect_type(expr.details, INT_TYPE, "left operand of bitAND");
-		expect_type(expr2.details, INT_TYPE, "right operand of bitAND");
+		expect_type(expr.details.type, INT_TYPE, "left operand of bitAND");
+		expect_type(expr2.details.type, INT_TYPE, "right operand of bitAND");
 		expr = simple_binary_op(expr, expr2, kind, INT_TYPE);
 	}
 	*ptr_tokvec = tokvec;
@@ -220,9 +220,9 @@ parse_equality_expression(struct ParserState *ptr_ps,
 		++tokvec;
 
 		struct Expression expr2 = parse_relational_expression(ptr_ps, &tokvec);
-		expect_type(expr.details, INT_TYPE,
+		expect_type(expr.details.type, INT_TYPE,
 		            "left operand of an equality operator");
-		expect_type(expr2.details, INT_TYPE,
+		expect_type(expr2.details.type, INT_TYPE,
 		            "right operand of an equality operator");
 		expr = simple_binary_op(expr, expr2, kind, INT_TYPE);
 	}
@@ -246,9 +246,9 @@ parse_relational_expression(struct ParserState *ptr_ps,
 		++tokvec;
 
 		struct Expression expr2 = parse_shift_expression(ptr_ps, &tokvec);
-		expect_type(expr.details, INT_TYPE,
+		expect_type(expr.details.type, INT_TYPE,
 		            "left operand of a relational operator");
-		expect_type(expr2.details, INT_TYPE,
+		expect_type(expr2.details.type, INT_TYPE,
 		            "right operand of a relational operator");
 		expr = simple_binary_op(expr, expr2, kind, INT_TYPE);
 	}
@@ -270,8 +270,9 @@ static struct Expression parse_shift_expression(struct ParserState *ptr_ps,
 		++tokvec;
 
 		struct Expression expr2 = parse_additive_expression(ptr_ps, &tokvec);
-		expect_type(expr.details, INT_TYPE, "left operand of a shift operator");
-		expect_type(expr2.details, INT_TYPE,
+		expect_type(expr.details.type, INT_TYPE,
+		            "left operand of a shift operator");
+		expect_type(expr2.details.type, INT_TYPE,
 		            "left operand of a shift operator");
 		expr = simple_binary_op(expr, expr2, kind, INT_TYPE);
 	}
@@ -302,7 +303,7 @@ struct Expression combine_by_add_or_sub(struct Expression expr,
 	} else if (is_pointer(type1)) {
 		// int size = size_of(deref_type(expr_info.type));
 		if (kind == OP_PLUS) {
-			expect_type(expr2.details, INT_TYPE,
+			expect_type(expr2.details.type, INT_TYPE,
 			            "cannot add a pointer to a pointer");
 			return pointer_plusorminus_int(expr, expr2, kind);
 		} else if (is_compatible(type2, INT_TYPE)) {
@@ -355,9 +356,9 @@ parse_multiplicative_expression(struct ParserState *ptr_ps,
 		++tokvec;
 
 		struct Expression expr2 = parse_cast_expression(ptr_ps, &tokvec);
-		expect_type(expr.details, INT_TYPE,
+		expect_type(expr.details.type, INT_TYPE,
 		            "left operand of a multiplicative operator");
-		expect_type(expr2.details, INT_TYPE,
+		expect_type(expr2.details.type, INT_TYPE,
 		            "right operand of a multiplicative operator");
 
 		expr = simple_binary_op(expr, expr2, kind, INT_TYPE);

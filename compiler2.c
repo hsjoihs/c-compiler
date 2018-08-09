@@ -84,8 +84,6 @@ void print_simple_binary_op(enum SimpleBinOp kind)
 	}
 }
 
-struct ExprInfo remove_leftiness(struct ExprInfo info) { return info; }
-
 void print_expression(struct PrinterState *ptr_prs, struct Expression expr);
 void print_expression_as_lvalue(struct PrinterState *ptr_prs,
                                 struct Expression expr);
@@ -594,8 +592,7 @@ void parseprint_statement(struct ParserState *ptr_ps,
 			unimplemented("`return;`");
 		} else {
 			struct Expression expr = parse_expression(ptr_ps, &tokvec);
-			struct ExprInfo expr_info = expr.details;
-			expect_type(expr_info, ptr_ps->func_ret_type,
+			expect_type(expr.details.type, ptr_ps->func_ret_type,
 			            "mismatched type in the return value");
 			expect_and_consume(
 			    &tokvec, SEMICOLON,
