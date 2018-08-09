@@ -226,6 +226,16 @@ struct Token get_token(const char **ptr_to_str)
 		return get_token(ptr_to_str);
 	}
 
+	if (*str == '/' && str[1] == '*') {
+		str += 2;
+		while (*str != '*' || str[1] != '/') {
+			++str;
+		}
+		str += 2;
+		*ptr_to_str = str;
+		return get_token(ptr_to_str);
+	}
+
 	if (*str == '"') {
 		int i = 0;
 		++str;

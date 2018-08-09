@@ -70,6 +70,9 @@ full_compile:
 	./test_ret4.sh 153 'int printf();int puts();int a(int b, int c) {return 3;}int main() {int i; for (i = 1; i <= 12; i++) { int j;j = a(0, i); printf("%d %d", i, j); puts("");} return 0;}' 0
 	./test_ret4.sh 154 'int printf();int puts();int A[200][200];int dfs(int row, int N) { if (row == N) return 1; int ret;ret = 0; int col;for (col = 0; col < N; col++) { int ok; ok = 1; int i; for (i = 1; i < N; i++) { if (row - i >= 0 && col - i >= 0) { ok = ok && A[row - i][col - i] == 0; } if (row - i >= 0) { ok = ok && A[row - i][col] == 0; } if (row - i >= 0 && col + i < N) { ok = ok && A[row - i][col + i] == 0; } } if (ok) { A[row][col] = 1; ret += dfs(row + 1, N); A[row][col] = 0; } } return ret;}int main() {int i; for (i = 1; i < 11; i++) { int j; j = dfs(0, i); printf("%d queen: %d", i, j); puts("");} return 0;}' 0
 	./test_ret4.sh 155 'int printf();int puts();int count;int solve(int n, int col, int *hist){if (col == n) {count+=1;return 0;}int i;int j;for (i = 0, j = 0; i < n; i++) {for (j = 0; j < col && hist [j] != i && (hist [j] - i) != col - j && (hist[j] - i) != j - col; j++){}if (j < col)continue;hist[col] = i;solve(n, col + 1, hist);}return 0;}int main(){int i; int hist[20]; for (i = 2; i < 11; i++) { count=0; solve(i, 0, hist); printf("%d queens: %d", i, count); puts("");} return 0;}' 0
+	./test_ret4.sh 156 'int main(){/**/return 123;}' 123
+	./test_ret4.sh 157 'int main(){/*u89g3wihu-@w3erolk*/ return (123);}' 123
+	./test_ret4.sh 158 'int/*/* 0^[o;:._/-*/main(){return ((((123))));}' 123
 
 	./test_ret4.sh 118 'int main(){int a[1]; int *p; p = a; *p=2; return 174;}' 174
 	./test_ret4.sh 119 'int main(){int a[1]; *(a+0)=2;return 174;}' 174
