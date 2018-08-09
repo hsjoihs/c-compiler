@@ -190,7 +190,7 @@ struct Type3 {
 	struct type3_elem *vector;
 };
 
-void push_to_type3(struct Type3 *ptr, struct type3_elem tok)
+static void push_to_type3(struct Type3 *ptr, struct type3_elem tok)
 {
 	if (ptr->_allocated_length < ptr->length + 1) {
 
@@ -202,7 +202,7 @@ void push_to_type3(struct Type3 *ptr, struct type3_elem tok)
 	++(ptr->length);
 }
 
-struct Type from_type3_to_type(const struct type3_elem *type3)
+static struct Type from_type3_to_type(const struct type3_elem *type3)
 {
 	struct Type type;
 	type.type_category = type3[0].type_category;
