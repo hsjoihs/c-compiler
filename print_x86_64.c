@@ -559,23 +559,6 @@ void gen_epilogue_8byte(int label)
 	       label);
 }
 
-/*
-    value = pop();
-    b = pop();
-    local[offset] = b;
-    push(value);
-*/
-void gen_pop2nd_to_local_8byte(int offset)
-{
-	printf("//gen_pop2nd_to_local_8byte(%d)\n", offset);
-	printf("  movq 8(%%rsp), %%rbx\n"
-	       "  movq %%rbx, %d(%%rbp)\n"
-	       "  movq (%%rsp), %%rax\n"
-	       "  movq %%rax, 8(%%rsp)\n"
-	       "  addq $8, %%rsp\n",
-	       offset);
-}
-
 void gen_cltq(void)
 {
 	printf("//gen_cltq()\n");

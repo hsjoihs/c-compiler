@@ -35,7 +35,6 @@ void gen_push_from_local_8byte(int offset);
 void gen_peek_and_dereference_4byte(void);
 void gen_peek_and_dereference_8byte(void);
 void gen_jump(int label, const char *comment);
-void gen_pop2nd_to_local_8byte(int offset);
 void gen_discard2nd_8byte(void);
 void gen_pop_to_reg_8byte(const char *str);
 void gen_write_register_to_local_8byte(const char *str, int offset);
