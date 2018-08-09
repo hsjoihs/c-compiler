@@ -14,9 +14,7 @@ int main(int argc, char const **argv)
 	while (fgets(buffer, 1024, stdin)) {
 		size += strlen(buffer);
 		if (size > capacity) {
-			do {
-				capacity *= 2;
-			} while (size > capacity);
+			capacity *= 2;
 			str = realloc(str, capacity);
 		}
 		strcat(str, buffer);
