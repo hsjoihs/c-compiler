@@ -66,6 +66,8 @@ void gen_str(int strnum, const char *str);
 void gen_push_address_of_str(int strnum);
 void gen_logical_OR_part1(int label1);
 void gen_logical_OR_part2(int label1, int label2);
+void gen_logical_AND_part1(int label1);
+void gen_logical_AND_part2(int label1, int label2);
 
 #ifdef OSX
 #define PREFIX "_"
