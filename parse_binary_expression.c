@@ -95,7 +95,7 @@ struct Expression binary_op(struct Expression expr, struct Expression expr2,
 
 struct Expression simple_binary_op(struct Expression expr,
                                    struct Expression expr2, enum TokenKind kind,
-                                   struct ExprInfo exprinfo)
+                                   struct Type type)
 {
 	struct Expression *ptr_expr1 = calloc(1, sizeof(struct Expression));
 	struct Expression *ptr_expr2 = calloc(1, sizeof(struct Expression));
@@ -103,7 +103,7 @@ struct Expression simple_binary_op(struct Expression expr,
 	*ptr_expr2 = expr2;
 
 	struct Expression new_expr;
-	new_expr.details = exprinfo;
+	new_expr.details.type = type;
 	new_expr.category = SIMPLE_BINARY_EXPR;
 	new_expr.simple_binary_operator = to_simplebinop(kind);
 	new_expr.ptr1 = ptr_expr1;
@@ -150,7 +150,7 @@ parse_inclusive_OR_expression(struct ParserState *ptr_ps,
 		    parse_exclusive_OR_expression(ptr_ps, &tokvec);
 		expect_type(expr.details, INT_TYPE, "left operand of bitOR");
 		expect_type(expr2.details, INT_TYPE, "right operand of bitOR");
-		expr = simple_binary_op(expr, expr2, kind, UNASSIGNABLE(INT_TYPE));
+		expr = simple_binary_op(expr, expr2, kind, INT_TYPE);
 	}
 	*ptr_tokvec = tokvec;
 	return expr;
@@ -174,7 +174,7 @@ parse_exclusive_OR_expression(struct ParserState *ptr_ps,
 		struct Expression expr2 = parse_AND_expression(ptr_ps, &tokvec);
 		expect_type(expr.details, INT_TYPE, "left operand of XOR");
 		expect_type(expr2.details, INT_TYPE, "right operand of XOR");
-		expr = simple_binary_op(expr, expr2, kind, UNASSIGNABLE(INT_TYPE));
+		expr = simple_binary_op(expr, expr2, kind, INT_TYPE);
 	}
 	*ptr_tokvec = tokvec;
 
@@ -197,7 +197,7 @@ static struct Expression parse_AND_expression(struct ParserState *ptr_ps,
 		struct Expression expr2 = parse_equality_expression(ptr_ps, &tokvec);
 		expect_type(expr.details, INT_TYPE, "left operand of bitAND");
 		expect_type(expr2.details, INT_TYPE, "right operand of bitAND");
-		expr = simple_binary_op(expr, expr2, kind, UNASSIGNABLE(INT_TYPE));
+		expr = simple_binary_op(expr, expr2, kind, INT_TYPE);
 	}
 	*ptr_tokvec = tokvec;
 
@@ -223,7 +223,7 @@ parse_equality_expression(struct ParserState *ptr_ps,
 		            "left operand of an equality operator");
 		expect_type(expr2.details, INT_TYPE,
 		            "right operand of an equality operator");
-		expr = simple_binary_op(expr, expr2, kind, UNASSIGNABLE(INT_TYPE));
+		expr = simple_binary_op(expr, expr2, kind, INT_TYPE);
 	}
 	*ptr_tokvec = tokvec;
 	return expr;
@@ -249,7 +249,7 @@ parse_relational_expression(struct ParserState *ptr_ps,
 		            "left operand of a relational operator");
 		expect_type(expr2.details, INT_TYPE,
 		            "right operand of a relational operator");
-		expr = simple_binary_op(expr, expr2, kind, UNASSIGNABLE(INT_TYPE));
+		expr = simple_binary_op(expr, expr2, kind, INT_TYPE);
 	}
 	*ptr_tokvec = tokvec;
 	return expr;
@@ -272,7 +272,7 @@ static struct Expression parse_shift_expression(struct ParserState *ptr_ps,
 		expect_type(expr.details, INT_TYPE, "left operand of a shift operator");
 		expect_type(expr2.details, INT_TYPE,
 		            "left operand of a shift operator");
-		expr = simple_binary_op(expr, expr2, kind, UNASSIGNABLE(INT_TYPE));
+		expr = simple_binary_op(expr, expr2, kind, INT_TYPE);
 	}
 	*ptr_tokvec = tokvec;
 	return expr;
@@ -287,7 +287,7 @@ struct Expression combine_by_add_or_sub(struct Expression expr,
 
 	if (is_compatible(type1, INT_TYPE)) {
 		if (is_compatible(type2, INT_TYPE)) {
-			return simple_binary_op(expr, expr2, kind, UNASSIGNABLE(INT_TYPE));
+			return simple_binary_op(expr, expr2, kind, INT_TYPE);
 		} else if (is_pointer(type2)) {
 			if (kind == OP_MINUS) {
 				fprintf(stderr, "cannot subtract a pointer from an integer.\n");
@@ -360,7 +360,7 @@ parse_multiplicative_expression(struct ParserState *ptr_ps,
 		expect_type(expr2.details, INT_TYPE,
 		            "right operand of a multiplicative operator");
 
-		expr = simple_binary_op(expr, expr2, kind, UNASSIGNABLE(INT_TYPE));
+		expr = simple_binary_op(expr, expr2, kind, INT_TYPE);
 	}
 	*ptr_tokvec = tokvec;
 	return expr;

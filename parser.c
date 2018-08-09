@@ -535,7 +535,7 @@ struct Expression parse_expression(struct ParserState *ptr_ps,
 
 		struct Expression expr2 = parse_assignment_expression(ptr_ps, &tokvec);
 
-		expr = simple_binary_op(expr, expr2, kind, expr2.details);
+		expr = simple_binary_op(expr, expr2, kind, expr2.details.type);
 	}
 	*ptr_tokvec = tokvec;
 	return expr;
