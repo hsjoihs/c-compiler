@@ -152,7 +152,7 @@ struct Type parse_declarator(const struct Token **ptr_tokvec,
 _Noreturn void unimplemented(const char *str);
 
 enum expr_category {
-	SIMPLE_BINARY_EXPR = 2,
+	SIMPLE_BINARY_EXPR = 1,
 	POINTER_PLUS_INT,
 	POINTER_MINUS_INT,
 	POINTER_MINUS_POINTER,
@@ -171,7 +171,7 @@ enum expr_category {
 };
 
 enum SimpleBinOp {
-	SIMPLE_BIN_OP_PLUS,
+	SIMPLE_BIN_OP_PLUS = 1,
 	SIMPLE_BIN_OP_MINUS,
 	SIMPLE_BIN_OP_ASTERISK,
 	SIMPLE_BIN_OP_SLASH,
@@ -191,7 +191,7 @@ enum SimpleBinOp {
 };
 
 enum UnaryOp {
-	UNARY_OP_NOT,
+	UNARY_OP_NOT = 1,
 	UNARY_OP_TILDA,
 	UNARY_OP_PLUS,
 	UNARY_OP_MINUS,
