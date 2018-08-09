@@ -2,16 +2,16 @@
 #include <assert.h>
 #include <stdlib.h>
 
-struct vector init_vector()
+struct Vector init_vector()
 {
-	struct vector res;
+	struct Vector res;
 	res.length = 0;
 	res._allocated_length = 256;
 	res.vector = calloc(res._allocated_length, sizeof(void *));
 	return res;
 }
 
-void extend_vector(struct vector *ptr)
+void extend_vector(struct Vector *ptr)
 {
 	if (ptr->_allocated_length < ptr->length + 1) {
 		ptr->vector =
@@ -21,14 +21,14 @@ void extend_vector(struct vector *ptr)
 	}
 }
 
-void push_vector(struct vector *ptr, void *tok)
+void push_vector(struct Vector *ptr, void *tok)
 {
 	extend_vector(ptr);
 	ptr->vector[ptr->length] = tok;
 	++(ptr->length);
 }
 
-void *pop_vector(struct vector *ptr)
+void *pop_vector(struct Vector *ptr)
 {
 	if (ptr->length == 0) {
 		assert("tried to pop an empty vector of type `void*`" && 0);
