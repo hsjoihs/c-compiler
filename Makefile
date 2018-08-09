@@ -11,7 +11,6 @@ endif
 test_all_:
 	make format
 	make supplement
-	make intmap_check
 	make assembly_sandbox
 	make full_compile
 	make compile_file
@@ -31,10 +30,6 @@ assembly_sandbox:
 	make format
 	clang -Wall -Wextra -Wimplicit-fallthrough assembly_sandbox.c print_x86_64.c $(CCFLAGS) -o out/assembly_sandbox.out
 	./test_ret3.sh '' s/assembly_sandbox.s out/assembly_sandbox.out 174 out/assembly_sandbox.out
-
-intmap_check:
-	clang -Wall -Wextra -Wimplicit-fallthrough map.c intmap_check.c -o out/intmap_check.out
-	./out/intmap_check.out
 
 compile_file:
 	clang-format -i misc/*.c -style=file

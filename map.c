@@ -40,8 +40,6 @@ void *lookup(const struct Map m, const char *key)
 
 int isElem(const struct Map m, const char *key) { return lookup(m, key) != 0; }
 
-void deletion(struct Map *ptr, const char *key) { insert(ptr, key, 0); }
-
 struct Map init_map(void)
 {
 	struct Map res;
@@ -49,10 +47,4 @@ struct Map init_map(void)
 	res._alloc = 256;
 	res._vec = calloc(res._alloc, sizeof(struct _mapchip));
 	return res;
-}
-
-void *getIth(const struct Map m, int i, const char **ptr_to_str)
-{
-	*ptr_to_str = m._vec[i].ptr;
-	return m._vec[i].value;
 }
