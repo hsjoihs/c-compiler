@@ -215,7 +215,8 @@ struct Type from_type3_to_type(const struct type3_elem *type3)
 			return type;
 
 		case PTR_:
-		case ARRAY: {
+		case ARRAY:
+		case FN: {
 			++type3;
 			struct Type *ptr_to_current_type = calloc(1, sizeof(struct Type));
 			*ptr_to_current_type = from_type3_to_type(type3);
@@ -223,18 +224,10 @@ struct Type from_type3_to_type(const struct type3_elem *type3)
 			type.derived_from = ptr_to_current_type;
 
 			type.array_length = type3[-1].array_length;
-			/* garbage enters here in case of PTR_ */
-			return type;
-		}
-		case FN: {
-			++type3;
-			struct Type *ptr_to_current_type = calloc(1, sizeof(struct Type));
-			*ptr_to_current_type = from_type3_to_type(type3);
-			struct ParamInfos param_infos = type3[-1].param_infos;
+			/* garbage enters here in case of PTR_ and FN */
 
-			type.derived_from = ptr_to_current_type;
-			type.array_length = GARBAGE_INT;
-			type.param_infos = param_infos;
+			type.param_infos = type3[-1].param_infos;
+			/* garbage enters here in case of PTR_ and ARRAY */
 			return type;
 		}
 	}
