@@ -301,42 +301,39 @@ void parse_dcl(const struct Token **ptr_tokvec, struct Type3 *ptr_type3)
 			break;
 		}
 
-		{
+		++tokvec;
+		if (tokvec[0].kind == RIGHT_PAREN) {
 			++tokvec;
-			if (tokvec[0].kind == RIGHT_PAREN) {
-				++tokvec;
-				struct type3_elem f;
-				f.type_category = FUNCTION_RETURNING;
-				f.param_infos.param_vec = (struct ParamInfo **)0;
-				push_to_type3(ptr_type3, f);
-			} else if (can_start_a_type(tokvec)) {
-				struct type3_elem f;
-				f.type_category = FUNCTION_RETURNING;
-				f.param_infos.param_vec =
-				    calloc(100, sizeof(struct ParamInfo *));
+			struct type3_elem f;
+			f.type_category = FUNCTION_RETURNING;
+			f.param_infos.param_vec = (struct ParamInfo **)0;
+			push_to_type3(ptr_type3, f);
+		} else if (can_start_a_type(tokvec)) {
+			struct type3_elem f;
+			f.type_category = FUNCTION_RETURNING;
+			f.param_infos.param_vec = calloc(100, sizeof(struct ParamInfo *));
 
-				f.param_infos.param_vec[0] = parse_param(&tokvec);
+			f.param_infos.param_vec[0] = parse_param(&tokvec);
 
-				int i = 1;
+			int i = 1;
 
-				while (1) {
-					enum TokenKind kind = tokvec[0].kind;
-					if (kind != OP_COMMA) {
-						break;
-					}
-					++tokvec;
-
-					f.param_infos.param_vec[i] = parse_param(&tokvec);
-					i++;
+			while (1) {
+				enum TokenKind kind = tokvec[0].kind;
+				if (kind != OP_COMMA) {
+					break;
 				}
+				++tokvec;
 
-				f.param_infos.param_vec[i] = (struct ParamInfo *)0;
-
-				push_to_type3(ptr_type3, f);
-
-				expect_and_consume(&tokvec, RIGHT_PAREN,
-				                   "closing ) while parsing functional type");
+				f.param_infos.param_vec[i] = parse_param(&tokvec);
+				i++;
 			}
+
+			f.param_infos.param_vec[i] = (struct ParamInfo *)0;
+
+			push_to_type3(ptr_type3, f);
+
+			expect_and_consume(&tokvec, RIGHT_PAREN,
+			                   "closing ) while parsing functional type");
 		}
 	}
 
