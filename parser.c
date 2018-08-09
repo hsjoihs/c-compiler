@@ -65,13 +65,13 @@ parse_assignment_expression(struct ParserState *ptr_ps,
 static struct Expression deref_expr(struct Expression expr);
 
 static struct Expression unary_op_(struct Expression expr, enum TokenKind kind,
-                                   struct ExprInfo exprinfo)
+                                   struct Type type)
 {
 	struct Expression *ptr_expr1 = calloc(1, sizeof(struct Expression));
 	*ptr_expr1 = expr;
 
 	struct Expression new_expr;
-	new_expr.details = exprinfo;
+	new_expr.details.type = type;
 	new_expr.category = UNARY_OP_EXPR;
 	new_expr.unary_operator = to_unaryop(kind);
 	new_expr.ptr1 = ptr_expr1;
@@ -104,7 +104,8 @@ parse_unary_expression(struct ParserState *ptr_ps,
 		    expr.details, INT_TYPE,
 		    "operand of logical not, bitnot, unary plus or unary minus");
 
-		struct Expression new_expr = unary_op_(expr, kind, expr.details);
+		struct Expression new_expr = unary_op_(expr, kind, expr.details.type);
+		new_expr.details.true_type = expr.details.true_type;
 
 		*ptr_tokvec = tokvec;
 		return new_expr;
@@ -123,8 +124,7 @@ parse_unary_expression(struct ParserState *ptr_ps,
 		}
 
 		struct Expression expr = ident_as_lvalue(*ptr_ps, name);
-		struct Expression new_expr =
-		    unary_op_(expr, opkind, UNASSIGNABLE(INT_TYPE));
+		struct Expression new_expr = unary_op_(expr, opkind, INT_TYPE);
 		*ptr_tokvec = tokvec;
 		return new_expr;
 	} else if (tokvec[0].kind == OP_AND) {
@@ -139,8 +139,7 @@ parse_unary_expression(struct ParserState *ptr_ps,
 			*ptr_type = expr.details.type;
 
 			struct Expression new_expr =
-			    unary_op_(expr, OP_AND,
-			              UNASSIGNABLE(ptr_of_type_to_ptr_to_type(ptr_type)));
+			    unary_op_(expr, OP_AND, ptr_of_type_to_ptr_to_type(ptr_type));
 
 			*ptr_tokvec = tokvec;
 			return new_expr;
@@ -165,11 +164,9 @@ static struct Expression deref_expr(struct Expression expr)
 {
 	struct Type type = deref_type(expr.details.type);
 
-	struct ExprInfo new_expr_info;
-	new_expr_info.type = if_array_convert_to_ptr(type);
-	new_expr_info.true_type = type;
-
-	struct Expression new_expr = unary_op_(expr, OP_ASTERISK, new_expr_info);
+	struct Expression new_expr =
+	    unary_op_(expr, OP_ASTERISK, if_array_convert_to_ptr(type));
+	new_expr.details.true_type = type;
 	new_expr.local_var_offset = GARBAGE_INT;
 
 	return new_expr;
