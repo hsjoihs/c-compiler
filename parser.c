@@ -112,7 +112,7 @@ struct Expression parse_unary_expression(struct ParserState *ptr_ps,
 			*ptr_tokvec = tokvec;
 
 		} else {
-			unimplemented("++ followed by non-identifier");
+			unsupported("++ followed by non-identifier");
 		}
 
 		struct Expression expr = ident_as_lvalue(*ptr_ps, name);
@@ -136,7 +136,7 @@ struct Expression parse_unary_expression(struct ParserState *ptr_ps,
 			*ptr_tokvec = tokvec;
 			return new_expr;
 		} else {
-			unimplemented("& followed by non-identifier");
+			unsupported("& followed by non-identifier");
 		}
 
 	} else if (tokvec[0].kind == OP_ASTERISK) {
@@ -530,7 +530,7 @@ parse_argument_expression(struct ParserState *ptr_ps,
 
 	struct Expression expr = parse_assignment_expression(ptr_ps, &tokvec);
 	if (counter > 5) {
-		unimplemented("calling with 7 or more arguments");
+		unsupported("calling with 7 or more arguments");
 	}
 
 	*ptr_tokvec = tokvec;

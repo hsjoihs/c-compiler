@@ -31,8 +31,8 @@ void expect_and_consume(const struct Token **ptr_tokvec, enum TokenKind kind,
 	*ptr_tokvec = tokvec;
 }
 
-_Noreturn void unimplemented(const char *str)
+_Noreturn void unsupported(const char *str)
 {
-	fprintf(stderr, "unimplemented: %s\n", str);
+	fprintf(stderr, "unsupported: %s\n", str);
 	exit(EXIT_FAILURE);
 }

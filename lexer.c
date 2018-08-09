@@ -231,7 +231,7 @@ struct Token get_token(const char **ptr_to_str)
 		++str;
 		for (;; ++i) {
 			if (str[i] == '\\') {
-				unimplemented("escape sequence");
+				unsupported("escape sequence");
 			}
 			if (str[i] == '"') {
 				break;

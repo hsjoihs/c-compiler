@@ -131,7 +131,7 @@ int can_start_a_type(const struct Token *tokvec);
 struct Type parse_declarator(const struct Token **ptr_tokvec,
                              const char **ptr_to_ident_str);
 
-_Noreturn void unimplemented(const char *str);
+_Noreturn void unsupported(const char *str);
 
 enum expr_category {
 	SIMPLE_BINARY_EXPR = 1,

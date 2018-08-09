@@ -106,8 +106,8 @@ void print_expression_as_lvalue(struct PrinterState *ptr_prs,
 					gen_push_from_local_8byte(expr.local_var_offset);
 					break;
 				default:
-					unimplemented("Unsupported width in the "
-					              "assignment operation");
+					unsupported("Unsupported width in the "
+					            "assignment operation");
 			}
 			return;
 		}
@@ -128,8 +128,8 @@ void print_expression_as_lvalue(struct PrinterState *ptr_prs,
 					gen_push_from_global_8byte(name);
 					break;
 				default:
-					unimplemented("Unsupported width in the "
-					              "assignment operation");
+					unsupported("Unsupported width in the "
+					            "assignment operation");
 			}
 			return;
 		}
@@ -149,7 +149,7 @@ void print_expression_as_lvalue(struct PrinterState *ptr_prs,
 							gen_peek_deref_push_8byte();
 							break;
 						default:
-							unimplemented("Unsupported width in deref");
+							unsupported("Unsupported width in deref");
 					}
 					return;
 				}
@@ -193,7 +193,7 @@ void print_expression(struct PrinterState *ptr_prs, struct Expression expr)
 			                               : SIMPLE_BIN_OP_MINUS;
 
 			if (expr.ptr1->category != LOCAL_VAR_) {
-				unimplemented("increment of non-(local variable)");
+				unsupported("increment of non-(local variable)");
 			}
 
 			gen_push_from_local_4byte(expr.ptr1->local_var_offset);
@@ -225,7 +225,7 @@ void print_expression(struct PrinterState *ptr_prs, struct Expression expr)
 					gen_push_from_local_8byte(expr.local_var_offset);
 					break;
 				default:
-					unimplemented("Unsupported width");
+					unsupported("Unsupported width");
 			}
 			return;
 		}
@@ -248,7 +248,7 @@ void print_expression(struct PrinterState *ptr_prs, struct Expression expr)
 					gen_push_from_global_8byte(expr.global_var_name);
 					break;
 				default:
-					unimplemented("Unsupported width in global var");
+					unsupported("Unsupported width in global var");
 			}
 			return;
 		}
@@ -303,8 +303,8 @@ void print_expression(struct PrinterState *ptr_prs, struct Expression expr)
 					gen_assign_8byte();
 					break;
 				default:
-					unimplemented("Unsupported width in the "
-					              "assignment operation");
+					unsupported("Unsupported width in the "
+					            "assignment operation");
 			}
 
 			return;
@@ -334,7 +334,7 @@ void print_expression(struct PrinterState *ptr_prs, struct Expression expr)
 				case UNARY_OP_PLUS_PLUS:
 				case UNARY_OP_MINUS_MINUS: {
 					if (expr.ptr1->category != LOCAL_VAR_) {
-						unimplemented("increment of non-(local variable)");
+						unsupported("increment of non-(local variable)");
 					}
 
 					gen_push_from_local_4byte(expr.ptr1->local_var_offset);
@@ -378,7 +378,7 @@ void print_expression(struct PrinterState *ptr_prs, struct Expression expr)
 							gen_peek_and_dereference_8byte();
 							break;
 						default:
-							unimplemented("Unsupported width");
+							unsupported("Unsupported width");
 					}
 					return;
 				}
@@ -406,7 +406,7 @@ void print_expression(struct PrinterState *ptr_prs, struct Expression expr)
 
 				print_expression(ptr_prs, expr_);
 				if (counter > 5) {
-					unimplemented("calling with 7 or more arguments");
+					unsupported("calling with 7 or more arguments");
 				}
 
 				switch (size_of(expr_.details.type)) {
@@ -420,7 +420,7 @@ void print_expression(struct PrinterState *ptr_prs, struct Expression expr)
 						    get_reg_name_from_arg_pos_8byte(counter));
 						break;
 					default:
-						unimplemented("Unsupported width");
+						unsupported("Unsupported width");
 				}
 			}
 			switch (size_of(ret_type)) {
@@ -434,7 +434,7 @@ void print_expression(struct PrinterState *ptr_prs, struct Expression expr)
 					gen_push_ret_of_8byte(ident_str);
 					break;
 				default:
-					unimplemented("Unsupported width");
+					unsupported("Unsupported width");
 			}
 			return;
 		}
@@ -589,7 +589,7 @@ void parseprint_statement(struct ParserState *ptr_ps,
 		++tokvec;
 		*ptr_tokvec = tokvec;
 		if (tokvec[0].kind == SEMICOLON) {
-			unimplemented("`return;`");
+			unsupported("`return;`");
 		} else {
 			struct Expression expr = parse_expression(ptr_ps, &tokvec);
 			expect_type(expr.details.type, ptr_ps->func_ret_type,
@@ -853,7 +853,7 @@ void print_parameter_declaration(struct ParserState *ptr_ps,
 	ident_str = param_info.ident_str;
 
 	if (counter > 5) {
-		unimplemented("6-or-more parameters");
+		unsupported("6-or-more parameters");
 	}
 
 	ptr_prs->newest_offset -= size_of(type) < 4 ? 4 : size_of(type);
@@ -883,7 +883,7 @@ void print_parameter_declaration(struct ParserState *ptr_ps,
 			    get_reg_name_from_arg_pos_8byte(counter), offset);
 			break;
 		default:
-			unimplemented("Unsupported width in function parameter");
+			unsupported("Unsupported width in function parameter");
 	}
 }
 
@@ -973,7 +973,7 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
 			gen_epilogue_8byte(ptr_prs->return_label_name);
 			break;
 		default:
-			unimplemented("Unsupported width");
+			unsupported("Unsupported width");
 	}
 
 	*ptr_tokvec = tokvec2;
