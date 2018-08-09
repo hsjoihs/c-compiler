@@ -233,7 +233,7 @@ struct Expression parse_postfix_expression(struct ParserState *ptr_ps,
 		expr.category = FUNCCALL_EXPR;
 		expr.arg_expr_vec = args;
 		expr.arg_length = counter;
-		expr.details = UNASSIGNABLE(ret_type);
+		expr.details.type = ret_type;
 		expr.global_var_name = ident_str;
 		return expr;
 
@@ -250,7 +250,7 @@ struct Expression parse_postfix_expression(struct ParserState *ptr_ps,
 		*ptr_expr1 = expr;
 
 		struct Expression new_expr;
-		new_expr.details = UNASSIGNABLE(INT_TYPE);
+		new_expr.details.type = INT_TYPE;
 		new_expr.category =
 		    opkind == OP_PLUS_PLUS ? POSTFIX_INCREMENT : POSTFIX_DECREMENT;
 		new_expr.ptr1 = ptr_expr1;
@@ -286,7 +286,7 @@ struct Expression parse_primary_expression(struct ParserState *ptr_ps,
 		++*ptr_tokvec;
 
 		struct Expression expr;
-		expr.details = UNASSIGNABLE(INT_TYPE);
+		expr.details.type = INT_TYPE;
 		expr.int_value = tokvec[0].int_value;
 		expr.category = INT_VALUE;
 
