@@ -2,11 +2,11 @@
 #include <assert.h>
 #include <stdlib.h>
 
-struct vector init_vector(int initial_length)
+struct vector init_vector()
 {
 	struct vector res;
-	res.length = initial_length;
-	res._allocated_length = (initial_length > 128 ? initial_length : 128) * 2;
+	res.length = 0;
+	res._allocated_length = 256;
 	res.vector = calloc(res._allocated_length, sizeof(void *));
 	return res;
 }

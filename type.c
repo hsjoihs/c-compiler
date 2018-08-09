@@ -250,7 +250,7 @@ struct Type parse_declarator(const struct Token **ptr_tokvec,
 	}
 	++tokvec;
 
-	struct vector vec = init_vector(0);
+	struct vector vec = init_vector();
 
 	int asterisk_num = 0;
 	for (; tokvec[0].kind == OP_ASTERISK; ++tokvec) {
