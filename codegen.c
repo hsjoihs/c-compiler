@@ -844,6 +844,7 @@ static void parseprint_statement(struct ParserState *ptr_ps,
 	const struct Token *tokvec = *ptr_tokvec;
 	if (sta.category == BREAK_STATEMENT ||
 	    sta.category == EXPRESSION_STATEMENT ||
+	    sta.category == RETURN_STATEMENT ||
 	    sta.category == CONTINUE_STATEMENT) {
 		parse_statement(ptr_ps, &tokvec);
 		*ptr_tokvec = tokvec;
@@ -928,9 +929,8 @@ static void parseprint_statement(struct ParserState *ptr_ps,
 	}
 
 	if (sta.category == RETURN_STATEMENT) {
-		struct Statement s_ = parse_statement(ptr_ps, &tokvec);
-		*ptr_tokvec = tokvec;
-		struct Expression expr = s_.expr1;
+
+		struct Expression expr = sta.expr1;
 		print_expression(ptr_prs, expr);
 		/* the first occurrence of return within a function */
 		if (ptr_prs->return_label_name == GARBAGE_INT) {
