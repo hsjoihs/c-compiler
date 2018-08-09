@@ -53,9 +53,6 @@ static struct Expression
 parse_conditional_expression(struct ParserState *ptr_ps,
                              const struct Token **ptr_tokvec);
 static struct Expression
-parse_argument_expression(struct ParserState *ptr_ps,
-                          const struct Token **ptr_tokvec, int counter);
-static struct Expression
 parse_primary_expression(struct ParserState *ptr_ps,
                          const struct Token **ptr_tokvec);
 static struct Expression
@@ -197,8 +194,7 @@ parse_postfix_expression(struct ParserState *ptr_ps,
 		if (tokvec[0].kind == RIGHT_PAREN) {
 			tokvec++;
 		} else {
-
-			args[counter] = parse_argument_expression(ptr_ps, &tokvec, counter);
+			args[counter] = parse_assignment_expression(ptr_ps, &tokvec);
 			++counter;
 
 			while (1) {
@@ -207,8 +203,11 @@ parse_postfix_expression(struct ParserState *ptr_ps,
 					break;
 				}
 				++tokvec;
-				args[counter] =
-				    parse_argument_expression(ptr_ps, &tokvec, counter);
+				if (counter > 5) {
+					unsupported("calling with 7 or more arguments");
+				}
+
+				args[counter] = parse_assignment_expression(ptr_ps, &tokvec);
 				++counter;
 			}
 
@@ -519,21 +518,5 @@ struct Expression parse_expression(struct ParserState *ptr_ps,
 		expr = simple_binary_op(expr, expr2, kind, expr2.details.type);
 	}
 	*ptr_tokvec = tokvec;
-	return expr;
-}
-
-static struct Expression
-parse_argument_expression(struct ParserState *ptr_ps,
-                          const struct Token **ptr_tokvec, int counter)
-{
-	const struct Token *tokvec = *ptr_tokvec;
-
-	struct Expression expr = parse_assignment_expression(ptr_ps, &tokvec);
-	if (counter > 5) {
-		unsupported("calling with 7 or more arguments");
-	}
-
-	*ptr_tokvec = tokvec;
-
 	return expr;
 }
