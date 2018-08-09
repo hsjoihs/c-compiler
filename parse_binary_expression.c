@@ -280,36 +280,50 @@ static struct Expression parse_shift_expression(struct ParserState *ptr_ps,
 	return expr;
 }
 
-struct Expression combine_by_add_or_sub(struct Expression expr,
-                                        struct Expression expr2,
-                                        enum TokenKind kind)
+struct Expression combine_by_add(struct Expression expr,
+                                 struct Expression expr2)
 {
 	struct Type type1 = expr.details.type;
 	struct Type type2 = expr2.details.type;
 
 	if (is_compatible(type1, INT_TYPE)) {
 		if (is_compatible(type2, INT_TYPE)) {
-			return simple_binary_op(expr, expr2, kind, INT_TYPE);
+			return simple_binary_op(expr, expr2, OP_PLUS, INT_TYPE);
 		} else if (is_pointer(type2)) {
-			if (kind == OP_MINUS) {
-				fprintf(stderr, "cannot subtract a pointer from an integer.\n");
-				exit(EXIT_FAILURE);
-			}
-
 			/* swapped */
-			return pointer_plusorminus_int(expr2, expr, kind);
+			return pointer_plusorminus_int(expr2, expr, OP_PLUS);
 		}
 
 	} else if (is_pointer(type1)) {
-		// int size = size_of(deref_type(expr_info.type));
-		if (kind == OP_PLUS) {
-			expect_type(expr2.details.type, INT_TYPE,
-			            "cannot add a pointer to a pointer");
-			return pointer_plusorminus_int(expr, expr2, kind);
-		} else if (is_compatible(type2, INT_TYPE)) {
+
+		expect_type(expr2.details.type, INT_TYPE,
+		            "cannot add a pointer to a pointer");
+		return pointer_plusorminus_int(expr, expr2, OP_PLUS);
+	}
+	fprintf(stderr, "fail\n");
+	exit(EXIT_FAILURE);
+}
+
+struct Expression combine_by_sub(struct Expression expr,
+                                 struct Expression expr2)
+{
+	struct Type type1 = expr.details.type;
+	struct Type type2 = expr2.details.type;
+
+	if (is_compatible(type1, INT_TYPE)) {
+		if (is_compatible(type2, INT_TYPE)) {
+			return simple_binary_op(expr, expr2, OP_MINUS, INT_TYPE);
+		} else if (is_pointer(type2)) {
+
+			fprintf(stderr, "cannot subtract a pointer from an integer.\n");
+			exit(EXIT_FAILURE);
+		}
+
+	} else if (is_pointer(type1)) {
+		if (is_compatible(type2, INT_TYPE)) {
 
 			/* pointer minus int */
-			return pointer_plusorminus_int(expr, expr2, kind);
+			return pointer_plusorminus_int(expr, expr2, OP_MINUS);
 		} else {
 			/* pointer minus pointer */
 			return binary_op(expr, expr2, POINTER_MINUS_POINTER, INT_TYPE);
@@ -317,6 +331,17 @@ struct Expression combine_by_add_or_sub(struct Expression expr,
 	}
 	fprintf(stderr, "fail\n");
 	exit(EXIT_FAILURE);
+}
+
+struct Expression combine_by_add_or_sub(struct Expression expr,
+                                        struct Expression expr2,
+                                        enum TokenKind kind)
+{
+	if (kind == OP_PLUS) {
+		return combine_by_add(expr, expr2);
+	} else {
+		return combine_by_sub(expr, expr2);
+	}
 }
 
 static struct Expression
