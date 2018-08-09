@@ -270,12 +270,7 @@ void parse_dirdcl(const struct Token **ptr_tokvec, struct Type3 *ptr_type3)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 
-	if (tokvec[0].kind == LEFT_PAREN) {
-		++tokvec;
-		parse_dcl(&tokvec, ptr_type3);
-		expect_and_consume(&tokvec, RIGHT_PAREN,
-		                   "closing ) while parsing a declaration");
-	} else if (tokvec[0].kind == IDENT_OR_RESERVED) {
+	if (tokvec[0].kind == IDENT_OR_RESERVED) {
 		ptr_type3->ident_str = tokvec[0].ident_str;
 		++tokvec;
 	} else {
