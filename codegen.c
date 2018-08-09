@@ -1174,7 +1174,7 @@ static void parseprint_compound_statement(struct ParserState *ptr_ps,
 				ptr_ps->scope_chain = current_table;
 
 				return;
-			} else if (can_start_a_type(tokvec)) {
+			} else if (ptr_ith->category == DECLARATION_STATEMENT) {
 				struct Type vartype;
 
 				const char *str;
@@ -1182,13 +1182,6 @@ static void parseprint_compound_statement(struct ParserState *ptr_ps,
 				expect_and_consume(
 				    &tokvec, SEMICOLON,
 				    "semicolon at the end of variable definition");
-
-				/* while function prototypes are also allowed here in C, I will
-				 * not implement it here */
-				if (vartype.type_category == FN) {
-					fprintf(stderr, "cannot declare function here\n");
-					exit(EXIT_FAILURE);
-				}
 
 				ptr_ps->newest_offset -=
 				    size_of(vartype) < 4 ? 4 : size_of(vartype);
@@ -1204,11 +1197,8 @@ static void parseprint_compound_statement(struct ParserState *ptr_ps,
 				ptr_ps->scope_chain.var_table = map_;
 
 				struct Statement s;
-				s.category = DECLARATION_STATEMENT;
 				s.declaration.type = vartype;
 				s.declaration.ident_str = str;
-				struct Statement *ptr_s = calloc(1, sizeof(struct Statement));
-				*ptr_s = s;
 			} else {
 				const struct Token *tokvec2 = tokvec;
 				struct Statement s = parse_statement(ptr_ps, &tokvec2);
