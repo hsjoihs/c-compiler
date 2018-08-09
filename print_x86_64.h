@@ -14,8 +14,6 @@ void gen_epilogue(int label);
 void gen_push_ret_of_4byte(const char *fname);
 void gen_pop_to_reg_4byte(const char *str);
 void gen_write_register_to_local_4byte(const char *str, int offset);
-void gen_logical_AND_set(int offset, int label1);
-void gen_logical_AND_final(int final_depth, int label1, int label2);
 void gen_ternary_part1(int label1, int label2);
 void gen_ternary_part2(int label1, int label2);
 void gen_ternary_part3(int label1, int label2);

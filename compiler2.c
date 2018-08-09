@@ -279,10 +279,23 @@ void print_expression_(struct PrinterState *ptr_prs, struct Expression expr)
 			int label2 = get_new_label_name(ptr_prs);
 			print_expression_(ptr_prs, *expr.ptr1);
 
-			gen_logical_AND_set(0, label1);
+			printf("  addq $%d, %%rsp\n", 0 * 8);
+			printf("  cmpl $0, %d(%%rsp)\n", -0 * 8);
+			printf("  je .L%d\n", label1);
+			printf("  subq $%d, %%rsp\n", 0 * 8);
 			print_expression_(ptr_prs, *expr.ptr2);
-			gen_logical_AND_set(1, label1);
-			gen_logical_AND_final(1, label1, label2);
+			printf("  addq $%d, %%rsp\n", 1 * 8);
+			printf("  cmpl $0, %d(%%rsp)\n", -1 * 8);
+			printf("  je .L%d\n", label1);
+			printf("  subq $%d, %%rsp\n", 1 * 8);
+			printf("  addq $%d, %%rsp\n", 1 * 8);
+			printf("  movl $1, %%eax\n"
+			       "  jmp .L%d\n"
+			       ".L%d:\n"
+			       "  movl $0, %%eax\n"
+			       ".L%d:\n"
+			       "  movl %%eax, (%%rsp)\n",
+			       label2, label1, label2);
 			return;
 		}
 
