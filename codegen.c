@@ -635,7 +635,8 @@ static struct Statement parseprint_statement(struct ParserState *ptr_ps,
 		ptr_prs->continue_label_name = cont_label;
 
 		gen_label(label1);
-		parseprint_statement(ptr_ps, ptr_prs, &tokvec);
+		struct Statement inner_s =
+		    parseprint_statement(ptr_ps, ptr_prs, &tokvec);
 		gen_label(cont_label);
 
 		expect_and_consume(&tokvec, RES_WHILE, "`while` of do-while");
@@ -655,7 +656,15 @@ static struct Statement parseprint_statement(struct ParserState *ptr_ps,
 		ptr_prs->break_label_name = stashed_break_label;
 		ptr_prs->continue_label_name = stashed_continue_label;
 		*ptr_tokvec = tokvec;
-		return NOINFO;
+
+		struct Statement s;
+		s.category = DO_WHILE_STATEMENT;
+		s.expr1 = expr;
+
+		struct Statement *ptr_inner_s = calloc(1, sizeof(struct Statement));
+		*ptr_inner_s = inner_s;
+		s.inner_statement = ptr_inner_s;
+		return s;
 	}
 
 	if (tokvec[0].kind == RES_WHILE) {
@@ -682,7 +691,8 @@ static struct Statement parseprint_statement(struct ParserState *ptr_ps,
 
 		gen_while_part2(label1, break_label);
 
-		parseprint_statement(ptr_ps, ptr_prs, &tokvec);
+		struct Statement inner_s =
+		    parseprint_statement(ptr_ps, ptr_prs, &tokvec);
 
 		gen_label(cont_label);
 		gen_for_part4(label1, break_label);
@@ -693,7 +703,15 @@ static struct Statement parseprint_statement(struct ParserState *ptr_ps,
 		ptr_prs->continue_label_name = stashed_continue_label;
 
 		*ptr_tokvec = tokvec;
-		return NOINFO;
+
+		struct Statement s;
+		s.category = WHILE_STATEMENT;
+		s.expr1 = expr;
+
+		struct Statement *ptr_inner_s = calloc(1, sizeof(struct Statement));
+		*ptr_inner_s = inner_s;
+		s.inner_statement = ptr_inner_s;
+		return s;
 	}
 
 	if (tokvec[0].kind == RES_BREAK) {
