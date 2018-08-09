@@ -393,27 +393,27 @@ enum SimpleBinOp op_before_assign(enum TokenKind kind)
 {
 	switch (kind) {
 		case OP_EQ:
-			return (SIMPLE_BIN_OP_COMMA);
+			return SIMPLE_BIN_OP_COMMA;
 		case OP_PLUS_EQ:
-			return (SIMPLE_BIN_OP_PLUS);
+			return SIMPLE_BIN_OP_PLUS;
 		case OP_MINUS_EQ:
-			return (SIMPLE_BIN_OP_MINUS);
+			return SIMPLE_BIN_OP_MINUS;
 		case OP_ASTERISK_EQ:
-			return (SIMPLE_BIN_OP_ASTERISK);
+			return SIMPLE_BIN_OP_ASTERISK;
 		case OP_SLASH_EQ:
-			return (SIMPLE_BIN_OP_SLASH);
+			return SIMPLE_BIN_OP_SLASH;
 		case OP_PERCENT_EQ:
-			return (SIMPLE_BIN_OP_PERCENT);
+			return SIMPLE_BIN_OP_PERCENT;
 		case OP_LSHIFT_EQ:
-			return (SIMPLE_BIN_OP_LSHIFT);
+			return SIMPLE_BIN_OP_LSHIFT;
 		case OP_RSHIFT_EQ:
-			return (SIMPLE_BIN_OP_RSHIFT);
+			return SIMPLE_BIN_OP_RSHIFT;
 		case OP_AND_EQ:
-			return (SIMPLE_BIN_OP_AND);
+			return SIMPLE_BIN_OP_AND;
 		case OP_HAT_EQ:
-			return (SIMPLE_BIN_OP_HAT);
+			return SIMPLE_BIN_OP_HAT;
 		case OP_OR_EQ:
-			return (SIMPLE_BIN_OP_OR);
+			return SIMPLE_BIN_OP_OR;
 		default:
 			assert("op_before_assign called before a non-assignment operator" &&
 			       0);
