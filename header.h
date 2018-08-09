@@ -215,8 +215,6 @@ struct Expression simple_binary_op(struct Expression expr,
                                    struct Expression expr2, enum TokenKind kind,
                                    struct Type type);
 
-void print_simple_binary_op(enum SimpleBinOp kind);
-
 enum UnaryOp to_unaryop(enum TokenKind t);
 
 int is_array(struct Type t);

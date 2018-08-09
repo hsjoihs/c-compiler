@@ -3,15 +3,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int get_new_label_name(struct PrinterState *ptr_prs);
-const char *get_reg_name_from_arg_pos_4byte(int counter);
-const char *get_reg_name_from_arg_pos_8byte(int counter);
+static int get_new_label_name(struct PrinterState *ptr_prs);
+static const char *get_reg_name_from_arg_pos_4byte(int counter);
+static const char *get_reg_name_from_arg_pos_8byte(int counter);
 
-void parseprint_compound_statement(struct ParserState *ptr_ps,
-                                   struct PrinterState *ptr_prs,
-                                   const struct Token **ptr_tokvec);
+static void parseprint_compound_statement(struct ParserState *ptr_ps,
+                                          struct PrinterState *ptr_prs,
+                                          const struct Token **ptr_tokvec);
 
-void print_simple_binary_op(enum SimpleBinOp kind)
+static void print_simple_binary_op(enum SimpleBinOp kind)
 {
 	switch (kind) {
 		case SIMPLE_BIN_OP_PLUS:
@@ -68,12 +68,13 @@ void print_simple_binary_op(enum SimpleBinOp kind)
 	}
 }
 
-void print_expression(struct PrinterState *ptr_prs, struct Expression expr);
-void print_expression_as_lvalue(struct PrinterState *ptr_prs,
-                                struct Expression expr);
+static void print_expression(struct PrinterState *ptr_prs,
+                             struct Expression expr);
+static void print_expression_as_lvalue(struct PrinterState *ptr_prs,
+                                       struct Expression expr);
 
-void print_expression_as_lvalue(struct PrinterState *ptr_prs,
-                                struct Expression expr)
+static void print_expression_as_lvalue(struct PrinterState *ptr_prs,
+                                       struct Expression expr)
 {
 	switch (expr.category) {
 		case LOCAL_VAR_: {
@@ -148,7 +149,8 @@ void print_expression_as_lvalue(struct PrinterState *ptr_prs,
 	}
 }
 
-void print_expression(struct PrinterState *ptr_prs, struct Expression expr)
+static void print_expression(struct PrinterState *ptr_prs,
+                             struct Expression expr)
 {
 	switch (expr.category) {
 		case POINTER_MINUS_POINTER: {
@@ -467,7 +469,7 @@ int isAssign(enum TokenKind opkind)
 	        opkind == OP_HAT_EQ || opkind == OP_OR_EQ);
 }
 
-const char *get_reg_name_from_arg_pos_4byte(int counter)
+static const char *get_reg_name_from_arg_pos_4byte(int counter)
 {
 	switch (counter) {
 		case 0:
@@ -487,7 +489,7 @@ const char *get_reg_name_from_arg_pos_4byte(int counter)
 	}
 }
 
-const char *get_reg_name_from_arg_pos_8byte(int counter)
+static const char *get_reg_name_from_arg_pos_8byte(int counter)
 {
 	switch (counter) {
 		case 0:
@@ -507,7 +509,7 @@ const char *get_reg_name_from_arg_pos_8byte(int counter)
 	}
 }
 
-int get_new_label_name(struct PrinterState *ptr_prs)
+static int get_new_label_name(struct PrinterState *ptr_prs)
 {
 	return ++(ptr_prs->final_label_name);
 }
@@ -522,9 +524,9 @@ struct Expression integer_1(void)
 	return expr;
 }
 
-void parseprint_statement(struct ParserState *ptr_ps,
-                          struct PrinterState *ptr_prs,
-                          const struct Token **ptr_tokvec)
+static void parseprint_statement(struct ParserState *ptr_ps,
+                                 struct PrinterState *ptr_prs,
+                                 const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 	if (tokvec[0].kind == LEFT_BRACE) {
@@ -749,9 +751,9 @@ void parse_final(const struct Token **ptr_tokvec)
 	return;
 }
 
-void parseprint_compound_statement(struct ParserState *ptr_ps,
-                                   struct PrinterState *ptr_prs,
-                                   const struct Token **ptr_tokvec)
+static void parseprint_compound_statement(struct ParserState *ptr_ps,
+                                          struct PrinterState *ptr_prs,
+                                          const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 	if (tokvec[0].kind == LEFT_BRACE) {
@@ -813,9 +815,10 @@ void parseprint_compound_statement(struct ParserState *ptr_ps,
 	}
 }
 
-void print_parameter_declaration(struct ParserState *ptr_ps,
-                                 struct PrinterState *ptr_prs, int counter,
-                                 struct ParamInfos param_infos)
+static void print_parameter_declaration(struct ParserState *ptr_ps,
+                                        struct PrinterState *ptr_prs,
+                                        int counter,
+                                        struct ParamInfos param_infos)
 {
 
 	struct ParamInfo param_info = *(param_infos.param_vec[counter]);
