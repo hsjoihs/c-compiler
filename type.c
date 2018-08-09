@@ -238,7 +238,7 @@ struct ParamInfo *parse_param(const struct Token **ptr_tokvec)
 	const char *ident_str;
 	struct ParamInfo *ptr_param_info = calloc(1, sizeof(struct ParamInfo));
 
-	struct Type type = parse_var_declarator(ptr_tokvec, &ident_str);
+	struct Type type = parse_declarator(ptr_tokvec, &ident_str);
 	if (type.type_category == FN) {
 		/* shall be adjusted to `pointer to func`, according to the spec */
 		struct Type *ptr_type = calloc(1, sizeof(struct Type));
@@ -360,19 +360,6 @@ struct Type parse_declarator(const struct Token **ptr_tokvec,
 	struct Type type = from_type3_to_type(type3.vector);
 
 	return type;
-}
-
-struct Type parse_var_declarator(const struct Token **ptr_tokvec,
-                                 const char **ptr_to_ident_str)
-{
-	struct Type type = parse_declarator(ptr_tokvec, ptr_to_ident_str);
-	if (type.type_category == FN) {
-		fprintf(stderr,
-		        "Expected a non-function type, but got function type\n");
-		exit(EXIT_FAILURE);
-	} else {
-		return type;
-	}
 }
 
 int can_start_a_type(const struct Token *tokvec)

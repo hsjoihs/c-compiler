@@ -120,8 +120,6 @@ int is_compatible(struct Type t1, struct Type t2);
 int is_pointer(struct Type t);
 struct Type ptr_of_type_to_ptr_to_type(struct Type *ptr_type);
 
-struct Type parse_var_declarator(const struct Token **ptr_tokvec,
-                                 const char **ptr_to_ident_str);
 void expect_and_consume(const struct Token **ptr_tokvec, enum TokenKind kind,
                         const char *str);
 _Noreturn void error_unexpected_token(const struct Token *tokvec,
