@@ -842,8 +842,11 @@ static struct Statement parseprint_statement(struct ParserState *ptr_ps,
 {
 	const struct Token *tokvec = *ptr_tokvec;
 	if (tokvec[0].kind == LEFT_BRACE) {
-		struct Statement s =
-		    parseprint_compound_statement(ptr_ps, ptr_prs, &tokvec);
+		const struct Token *tokvec2 = tokvec;
+		struct Statement s = parse_compound_statement(ptr_ps, &tokvec2);
+		parseprint_compound_statement(ptr_ps, ptr_prs, &tokvec);
+		assert(tokvec2 == tokvec);
+
 		*ptr_tokvec = tokvec;
 		return s;
 	}
@@ -861,8 +864,10 @@ static struct Statement parseprint_statement(struct ParserState *ptr_ps,
 
 		gen_if_else_part1(label1, label2);
 
-		struct Statement inner_s =
-		    parseprint_statement(ptr_ps, ptr_prs, &tokvec);
+		const struct Token *tokvec2 = tokvec;
+		struct Statement inner_s = parse_statement(ptr_ps, &tokvec2);
+		parseprint_statement(ptr_ps, ptr_prs, &tokvec);
+		assert(tokvec2 == tokvec);
 
 		gen_if_else_part2(label1, label2);
 
@@ -871,8 +876,11 @@ static struct Statement parseprint_statement(struct ParserState *ptr_ps,
 
 		if (tokvec[0].kind == RES_ELSE) { /* must bind to the most inner one */
 			++tokvec;
-			struct Statement inner_s2 =
-			    parseprint_statement(ptr_ps, ptr_prs, &tokvec);
+
+			const struct Token *tokvec2 = tokvec;
+			struct Statement inner_s2 = parse_statement(ptr_ps, &tokvec2);
+			parseprint_statement(ptr_ps, ptr_prs, &tokvec);
+			assert(tokvec2 == tokvec);
 			gen_if_else_part3(label1, label2);
 			struct Statement *ptr_inner_s2 =
 			    calloc(1, sizeof(struct Statement));
@@ -946,8 +954,10 @@ static struct Statement parseprint_statement(struct ParserState *ptr_ps,
 		ptr_prs->continue_label_name = cont_label;
 
 		gen_label(label1);
-		struct Statement inner_s =
-		    parseprint_statement(ptr_ps, ptr_prs, &tokvec);
+		const struct Token *tokvec2 = tokvec;
+		struct Statement inner_s = parse_statement(ptr_ps, &tokvec2);
+		parseprint_statement(ptr_ps, ptr_prs, &tokvec);
+		assert(tokvec2 == tokvec);
 		gen_label(cont_label);
 
 		expect_and_consume(&tokvec, RES_WHILE, "`while` of do-while");
@@ -1002,8 +1012,10 @@ static struct Statement parseprint_statement(struct ParserState *ptr_ps,
 
 		gen_while_part2(label1, break_label);
 
-		struct Statement inner_s =
-		    parseprint_statement(ptr_ps, ptr_prs, &tokvec);
+		const struct Token *tokvec2 = tokvec;
+		struct Statement inner_s = parse_statement(ptr_ps, &tokvec2);
+		parseprint_statement(ptr_ps, ptr_prs, &tokvec);
+		assert(tokvec2 == tokvec);
 
 		gen_label(cont_label);
 		gen_for_part4(label1, break_label);
@@ -1101,8 +1113,10 @@ static struct Statement parseprint_statement(struct ParserState *ptr_ps,
 		gen_label(label1);
 		print_expression(ptr_prs, expr2); /* expression2 */
 		gen_while_part2(label1, break_label);
-		struct Statement inner_s =
-		    parseprint_statement(ptr_ps, ptr_prs, &tokvec);
+		const struct Token *tokvec2 = tokvec;
+		struct Statement inner_s = parse_statement(ptr_ps, &tokvec2);
+		parseprint_statement(ptr_ps, ptr_prs, &tokvec);
+		assert(tokvec2 == tokvec);
 		gen_label(cont_label);
 		print_expression(ptr_prs, expr3);
 		gen_discard();
@@ -1216,8 +1230,10 @@ parseprint_compound_statement(struct ParserState *ptr_ps,
 				*ptr_s = s;
 				push_vector(&statement.statement_vector, ptr_s);
 			} else {
-				struct Statement s =
-				    parseprint_statement(ptr_ps, ptr_prs, &tokvec);
+				const struct Token *tokvec2 = tokvec;
+				struct Statement s = parse_statement(ptr_ps, &tokvec2);
+				parseprint_statement(ptr_ps, ptr_prs, &tokvec);
+				assert(tokvec2 == tokvec);
 				struct Statement *ptr_s = calloc(1, sizeof(struct Statement));
 				*ptr_s = s;
 				push_vector(&statement.statement_vector, ptr_s);
