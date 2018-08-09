@@ -858,29 +858,29 @@ static struct Statement parseprint_statement(struct ParserState *ptr_ps,
 		struct Expression expr = parse_expression(ptr_ps, &tokvec);
 		expect_and_consume(&tokvec, RIGHT_PAREN, "right parenthesis of `if`");
 
-		int label1 = get_new_label_name(ptr_prs);
-		int label2 = get_new_label_name(ptr_prs);
-		print_expression(ptr_prs, expr);
-
-		gen_if_else_part1(label1, label2);
-
 		const struct Token *tokvec2 = tokvec;
-		struct Statement inner_s = parse_statement(ptr_ps, &tokvec2);
-		parseprint_statement(ptr_ps, ptr_prs, &tokvec);
-		assert(tokvec2 == tokvec);
-
-		gen_if_else_part2(label1, label2);
+		struct Statement inner_s = parse_statement(ptr_ps, &tokvec);
 
 		struct Statement *ptr_inner_s = calloc(1, sizeof(struct Statement));
 		*ptr_inner_s = inner_s;
 
 		if (tokvec[0].kind == RES_ELSE) { /* must bind to the most inner one */
 			++tokvec;
+			int label1 = get_new_label_name(ptr_prs);
+			int label2 = get_new_label_name(ptr_prs);
+			print_expression(ptr_prs, expr);
 
-			const struct Token *tokvec2 = tokvec;
-			struct Statement inner_s2 = parse_statement(ptr_ps, &tokvec2);
+			gen_if_else_part1(label1, label2);
+
+			parseprint_statement(ptr_ps, ptr_prs, &tokvec2);
+			assert(tokvec2 == tokvec - 1);
+
+			gen_if_else_part2(label1, label2);
+
+			const struct Token *tokvec3 = tokvec;
+			struct Statement inner_s2 = parse_statement(ptr_ps, &tokvec3);
 			parseprint_statement(ptr_ps, ptr_prs, &tokvec);
-			assert(tokvec2 == tokvec);
+			assert(tokvec3 == tokvec);
 			gen_if_else_part3(label1, label2);
 			struct Statement *ptr_inner_s2 =
 			    calloc(1, sizeof(struct Statement));
@@ -896,8 +896,6 @@ static struct Statement parseprint_statement(struct ParserState *ptr_ps,
 			push_vector(&s.statement_vector, ptr_inner_s2);
 			return s;
 		} else {
-			gen_if_else_part3(label1, label2);
-
 			*ptr_tokvec = tokvec;
 
 			struct Statement s;
@@ -905,6 +903,18 @@ static struct Statement parseprint_statement(struct ParserState *ptr_ps,
 			s.expr1 = expr;
 
 			s.inner_statement = ptr_inner_s;
+			int label1 = get_new_label_name(ptr_prs);
+			int label2 = get_new_label_name(ptr_prs);
+			print_expression(ptr_prs, expr);
+
+			gen_if_else_part1(label1, label2);
+
+			parseprint_statement(ptr_ps, ptr_prs, &tokvec2);
+			assert(tokvec2 == tokvec);
+
+			gen_if_else_part2(label1, label2);
+			gen_if_else_part3(label1, label2);
+
 			return s;
 		}
 	}
