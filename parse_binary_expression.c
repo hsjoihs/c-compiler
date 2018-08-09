@@ -304,8 +304,8 @@ struct Expression combine_by_add(struct Expression expr,
 	exit(EXIT_FAILURE);
 }
 
-struct Expression combine_by_sub(struct Expression expr,
-                                 struct Expression expr2)
+static struct Expression combine_by_sub(struct Expression expr,
+                                        struct Expression expr2)
 {
 	struct Type type1 = expr.details.type;
 	struct Type type2 = expr2.details.type;
@@ -333,17 +333,6 @@ struct Expression combine_by_sub(struct Expression expr,
 	exit(EXIT_FAILURE);
 }
 
-struct Expression combine_by_add_or_sub(struct Expression expr,
-                                        struct Expression expr2,
-                                        enum TokenKind kind)
-{
-	if (kind == OP_PLUS) {
-		return combine_by_add(expr, expr2);
-	} else {
-		return combine_by_sub(expr, expr2);
-	}
-}
-
 static struct Expression
 parse_additive_expression(struct ParserState *ptr_ps,
                           const struct Token **ptr_tokvec)
@@ -360,7 +349,11 @@ parse_additive_expression(struct ParserState *ptr_ps,
 
 		struct Expression expr2 =
 		    parse_multiplicative_expression(ptr_ps, &tokvec);
-		expr = combine_by_add_or_sub(expr, expr2, kind);
+		if (kind == OP_PLUS) {
+			expr = combine_by_add(expr, expr2);
+		} else {
+			expr = combine_by_sub(expr, expr2);
+		}
 	}
 	*ptr_tokvec = tokvec;
 	return expr;

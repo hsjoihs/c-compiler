@@ -260,7 +260,7 @@ parse_postfix_expression(struct ParserState *ptr_ps,
 				struct Expression expr2 = parse_expression(ptr_ps, &tokvec);
 				expect_and_consume(&tokvec, RIGHT_BRACKET, "right bracket ]");
 
-				expr = deref_expr(combine_by_add_or_sub(expr, expr2, OP_PLUS));
+				expr = deref_expr(combine_by_add(expr, expr2));
 			} else {
 				break;
 			}
