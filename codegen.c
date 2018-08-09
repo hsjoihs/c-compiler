@@ -831,9 +831,10 @@ parse_compound_statement(struct ParserState *ptr_ps,
 	exit(EXIT_FAILURE);
 }
 
-static struct Statement parseprint_compound_statement(
-    struct ParserState *ptr_ps, struct PrinterState *ptr_prs,
-    const struct Token **ptr_tokvec, struct Statement sta);
+static void parseprint_compound_statement(struct ParserState *ptr_ps,
+                                          struct PrinterState *ptr_prs,
+                                          const struct Token **ptr_tokvec,
+                                          struct Statement sta);
 
 static void parseprint_statement(struct ParserState *ptr_ps,
                                  struct PrinterState *ptr_prs,
@@ -1142,9 +1143,10 @@ void parse_final(const struct Token **ptr_tokvec)
 	return;
 }
 
-static struct Statement parseprint_compound_statement(
-    struct ParserState *ptr_ps, struct PrinterState *ptr_prs,
-    const struct Token **ptr_tokvec, struct Statement sta)
+static void parseprint_compound_statement(struct ParserState *ptr_ps,
+                                          struct PrinterState *ptr_prs,
+                                          const struct Token **ptr_tokvec,
+                                          struct Statement sta)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 	struct Statement statement;
@@ -1173,7 +1175,7 @@ static struct Statement parseprint_compound_statement(
 				*ptr_tokvec = tokvec;
 				ptr_ps->scope_chain = current_table;
 
-				return statement;
+				return;
 			} else if (can_start_a_type(tokvec)) {
 				struct Type vartype;
 
