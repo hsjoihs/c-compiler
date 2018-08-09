@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+int is_strictly_equal(struct Type t1, struct Type t2);
+
 struct Type INT_TYPE = {INT_, 0, GARBAGE_INT, {(struct ParamInfo **)0}};
 struct Type CHAR_TYPE = {CHAR_, 0, GARBAGE_INT, {(struct ParamInfo **)0}};
 
@@ -292,7 +294,13 @@ void parse_dirdcl(const struct Token **ptr_tokvec, struct Type3 *ptr_type3)
 			a.type_category = ARRAY_OF;
 			a.array_length = length;
 			push_to_type3(ptr_type3, a);
-		} else if (tokvec[0].kind == LEFT_PAREN) {
+			continue;
+		}
+		if (tokvec[0].kind != LEFT_PAREN) {
+			break;
+		}
+
+		{
 			++tokvec;
 			if (tokvec[0].kind == RIGHT_PAREN) {
 				++tokvec;
@@ -328,8 +336,6 @@ void parse_dirdcl(const struct Token **ptr_tokvec, struct Type3 *ptr_type3)
 				expect_and_consume(&tokvec, RIGHT_PAREN,
 				                   "closing ) while parsing functional type");
 			}
-		} else {
-			break;
 		}
 	}
 	*ptr_tokvec = tokvec;
