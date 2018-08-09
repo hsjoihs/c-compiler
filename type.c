@@ -326,25 +326,22 @@ struct Type parse_declarator(const struct Token **ptr_tokvec,
 	}
 
 	while (asterisk_num-- > 0) {
-		struct Elem p = {PTR_, GARBAGE_INT, {(struct ParamInfo **)0}};
 		struct Elem *ptr = calloc(1, sizeof(struct Elem));
-		*ptr = p;
+		ptr->type_category = PTR_;
 		push_vector(&vec, ptr);
 	}
 
 	*ptr_tokvec = tokvec;
 
-	struct Elem i = {INT_, GARBAGE_INT, {(struct ParamInfo **)0}};
-	if (base_type == RES_CHAR) {
-		i.type_category = CHAR_;
-	}
 	struct Elem *ptr = calloc(1, sizeof(struct Elem));
-	*ptr = i;
+	if (base_type == RES_CHAR) {
+		ptr->type_category = CHAR_;
+	} else {
+		ptr->type_category = INT_;
+	}
 	push_vector(&vec, ptr);
 
-	struct Type type = from_type3_to_type(vec.vector);
-
-	return type;
+	return from_type3_to_type(vec.vector);
 }
 
 int can_start_a_type(const struct Token *tokvec)
