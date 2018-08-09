@@ -709,3 +709,26 @@ void gen_push_address_of_str(int strnum)
 	       "  movq %%rax, (%%rsp)\n",
 	       strnum);
 }
+
+void gen_logical_OR_part1(int label1)
+{
+	printf("//gen_logical_OR_part1(%d)\n", label1);
+	printf("  cmpl $0, (%%rsp)\n");
+	printf("  jne .L%d\n", label1);
+}
+
+void gen_logical_OR_part2(int label1, int label2)
+{
+	printf("//gen_logical_OR_part2(%d, %d)\n", label1, label2);
+	printf("  addq $8, %%rsp\n"
+	       "  cmpl $0, -8(%%rsp)\n"
+	       "  jne .L%d\n",
+	       label1);
+	printf("  movl $0, %%eax\n"
+	       "  jmp .L%d\n",
+	       label2);
+	printf(".L%d:\n", label1);
+	printf("  movl $1, %%eax\n");
+	printf(".L%d:\n", label2);
+	printf("  movl %%eax, (%%rsp)\n");
+}

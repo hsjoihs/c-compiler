@@ -268,19 +268,9 @@ void print_expression_(struct PrinterState *ptr_prs, struct Expression expr)
 			int label2 = get_new_label_name(ptr_prs);
 			print_expression_(ptr_prs, *expr.ptr1);
 
-			printf("  cmpl $0, (%%rsp)\n");
-			printf("  jne .L%d\n", label1);
+			gen_logical_OR_part1(label1);
 			print_expression_(ptr_prs, *expr.ptr2);
-			printf("  addq $8, %%rsp\n");
-			printf("  cmpl $0, -8(%%rsp)\n");
-			printf("  jne .L%d\n", label1);
-			printf("  movl $0, %%eax\n"
-			       "  jmp .L%d\n"
-			       ".L%d:\n"
-			       "  movl $1, %%eax\n"
-			       ".L%d:\n"
-			       "  movl %%eax, (%%rsp)\n",
-			       label2, label1, label2);
+			gen_logical_OR_part2(label1, label2);
 			return;
 		}
 		case LOGICAL_AND_EXPR: {
