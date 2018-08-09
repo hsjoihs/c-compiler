@@ -831,10 +831,9 @@ parse_compound_statement(struct ParserState *ptr_ps,
 	exit(EXIT_FAILURE);
 }
 
-static struct Statement
-parseprint_compound_statement(struct ParserState *ptr_ps,
-                              struct PrinterState *ptr_prs,
-                              const struct Token **ptr_tokvec);
+static struct Statement parseprint_compound_statement(
+    struct ParserState *ptr_ps, struct PrinterState *ptr_prs,
+    const struct Token **ptr_tokvec, struct Statement sta);
 
 static void parseprint_statement(struct ParserState *ptr_ps,
                                  struct PrinterState *ptr_prs,
@@ -853,7 +852,7 @@ static void parseprint_statement(struct ParserState *ptr_ps,
 	if (sta.category == COMPOUND_STATEMENT) {
 		const struct Token *tokvec2 = tokvec;
 		struct Statement s = parse_compound_statement(ptr_ps, &tokvec2);
-		parseprint_compound_statement(ptr_ps, ptr_prs, &tokvec);
+		parseprint_compound_statement(ptr_ps, ptr_prs, &tokvec, s);
 		assert(tokvec2 == tokvec);
 
 		*ptr_tokvec = tokvec;
@@ -1143,10 +1142,9 @@ void parse_final(const struct Token **ptr_tokvec)
 	return;
 }
 
-static struct Statement
-parseprint_compound_statement(struct ParserState *ptr_ps,
-                              struct PrinterState *ptr_prs,
-                              const struct Token **ptr_tokvec)
+static struct Statement parseprint_compound_statement(
+    struct ParserState *ptr_ps, struct PrinterState *ptr_prs,
+    const struct Token **ptr_tokvec, struct Statement sta)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 	struct Statement statement;
@@ -1345,7 +1343,9 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
 		} while (param_infos.param_vec[counter]);
 	}
 
-	parseprint_compound_statement(ptr_ps, ptr_prs, &tokvec2);
+	const struct Token *tokvec = tokvec2;
+	struct Statement sta = parse_compound_statement(ptr_ps, &tokvec2);
+	parseprint_compound_statement(ptr_ps, ptr_prs, &tokvec, sta);
 
 	gen_before_epilogue(label1, label2, -(ptr_ps->newest_offset));
 	switch (size_of(ret_type)) {
