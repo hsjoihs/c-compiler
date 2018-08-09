@@ -101,6 +101,7 @@ void print_expression_as_lvalue_(struct PrinterState *ptr_prs,
 {
 	switch (expr.category) {
 		case LOCAL_VAR_: {
+			assert(expr.details.info == LOCAL_VAR);
 			gen_push_address_of_local(expr.details.offset);
 
 			switch (size_of(expr.details.type)) {
@@ -120,6 +121,7 @@ void print_expression_as_lvalue_(struct PrinterState *ptr_prs,
 			return;
 		}
 		case GLOBAL_VAR_: {
+			assert(expr.details.info == GLOBAL_VAR);
 			const char *name = expr.global_var_name;
 			gen_push_address_of_global(name);
 			struct Type type = expr.details.type;
@@ -144,6 +146,7 @@ void print_expression_as_lvalue_(struct PrinterState *ptr_prs,
 		case UNARY_OP_EXPR:
 			switch (expr.unary_operator) {
 				case UNARY_OP_ASTERISK: {
+					assert(expr.details.info == DEREFERENCED_ADDRESS);
 					print_expression_(ptr_prs, *expr.ptr1);
 					struct Type type = expr.details.type;
 					switch (size_of(type)) {
@@ -218,6 +221,8 @@ void print_expression_(struct PrinterState *ptr_prs, struct Expression expr)
 		}
 
 		case LOCAL_VAR_: {
+			assert(expr.details.info == LOCAL_VAR ||
+			       expr.details.info == NOT_ASSIGNABLE);
 			if (is_array(expr.details.true_type)) {
 				gen_push_address_of_local(expr.details.offset);
 				return;
@@ -239,6 +244,8 @@ void print_expression_(struct PrinterState *ptr_prs, struct Expression expr)
 		}
 
 		case GLOBAL_VAR_: {
+			assert(expr.details.info == GLOBAL_VAR ||
+			       expr.details.info == NOT_ASSIGNABLE);
 			printf("//global `%s` as rvalue\n", expr.global_var_name);
 
 			if (is_array(expr.details.true_type)) {
@@ -369,6 +376,7 @@ void print_expression_(struct PrinterState *ptr_prs, struct Expression expr)
 				}
 
 				case UNARY_OP_ASTERISK: {
+					assert(expr.details.info == DEREFERENCED_ADDRESS);
 					print_expression_(ptr_prs, *expr.ptr1);
 					struct Type type = expr.details.type;
 					struct Type true_type = expr.details.true_type;
