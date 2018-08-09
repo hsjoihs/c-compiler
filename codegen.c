@@ -911,7 +911,7 @@ parseprint_compound_statement(struct ParserState *ptr_ps,
 					exit(EXIT_FAILURE);
 				}
 
-				ptr_prs->newest_offset -=
+				ptr_ps->newest_offset -=
 				    size_of(vartype) < 4 ? 4 : size_of(vartype);
 				expect_and_consume(
 				    &tokvec, SEMICOLON,
@@ -921,7 +921,7 @@ parseprint_compound_statement(struct ParserState *ptr_ps,
 
 				struct LocalVarInfo *ptr_varinfo =
 				    calloc(1, sizeof(struct LocalVarInfo));
-				ptr_varinfo->offset = ptr_prs->newest_offset;
+				ptr_varinfo->offset = ptr_ps->newest_offset;
 				ptr_varinfo->type = vartype;
 				insert(&map_, str, ptr_varinfo);
 
@@ -962,11 +962,11 @@ static void print_parameter_declaration(struct ParserState *ptr_ps,
 		unsupported("6-or-more parameters");
 	}
 
-	ptr_prs->newest_offset -= size_of(type) < 4 ? 4 : size_of(type);
+	ptr_ps->newest_offset -= size_of(type) < 4 ? 4 : size_of(type);
 
 	struct Map map_ = ptr_ps->scope_chain.var_table;
 	struct LocalVarInfo *ptr_varinfo = calloc(1, sizeof(struct LocalVarInfo));
-	ptr_varinfo->offset = ptr_prs->newest_offset;
+	ptr_varinfo->offset = ptr_ps->newest_offset;
 	ptr_varinfo->type = type;
 
 	insert(&map_, ident_str, ptr_varinfo);
@@ -1025,7 +1025,7 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
 	ptr_prs->break_label_name = GARBAGE_INT;    /* INITIALIZE */
 	ptr_prs->continue_label_name = GARBAGE_INT; /* INITIALIZE */
 	/* 8 is the space to store the address to handle deref */
-	ptr_prs->newest_offset = -8;
+	ptr_ps->newest_offset = -8;
 	ptr_ps->func_ret_type = ret_type;
 
 	struct Map retmap = ptr_ps->func_info_map;
@@ -1069,7 +1069,7 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
 
 	parseprint_compound_statement(ptr_ps, ptr_prs, &tokvec2);
 
-	gen_before_epilogue(label1, label2, -(ptr_prs->newest_offset));
+	gen_before_epilogue(label1, label2, -(ptr_ps->newest_offset));
 	switch (size_of(ret_type)) {
 		case 1:
 		case 4:

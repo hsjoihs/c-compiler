@@ -19,6 +19,7 @@ struct ParserState {
 	struct Map global_vars_type_map;
 	struct Map func_info_map;
 	struct Type func_ret_type;
+	int newest_offset;
 };
 
 int isAssign(enum TokenKind opkind);

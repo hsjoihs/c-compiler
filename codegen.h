@@ -6,7 +6,6 @@
 #include "print_x86_64.h"
 
 struct PrinterState {
-	int newest_offset;
 	int final_label_name;
 	int return_label_name;   /* the label at the end of the function */
 	int break_label_name;    /* the label at the end of the current loop */
