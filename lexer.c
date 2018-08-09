@@ -483,6 +483,7 @@ struct Token get_token(const char **ptr_to_str)
 		t.kind = LIT_DEC_INTEGER;
 		t.int_value = 0;
 		if (str[1] == 'x' || str[1] == 'X') {
+			unsupported("hex");
 			str += 2;
 			/* hexadecimal */
 			do {
@@ -502,6 +503,7 @@ struct Token get_token(const char **ptr_to_str)
 				if (*str >= '0' &&
 				    *str <= '7') { /* portable, since it is guaranteed
 					                  that '0' - '9' are consecutive */
+					unsupported("octal");
 					t.int_value *= 8;
 					t.int_value += *str - '0'; /* portable */
 					++str;
