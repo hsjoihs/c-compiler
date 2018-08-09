@@ -551,6 +551,291 @@ struct Statement {
 };
 
 static struct Statement
+parse_compound_statement(struct ParserState *ptr_ps,
+                         struct PrinterState *ptr_prs,
+                         const struct Token **ptr_tokvec);
+
+static struct Statement parse_statement(struct ParserState *ptr_ps,
+                                        struct PrinterState *ptr_prs,
+                                        const struct Token **ptr_tokvec)
+{
+	const struct Token *tokvec = *ptr_tokvec;
+	if (tokvec[0].kind == LEFT_BRACE) {
+		struct Statement s = parse_compound_statement(ptr_ps, ptr_prs, &tokvec);
+		*ptr_tokvec = tokvec;
+		return s;
+	}
+
+	if (tokvec[0].kind == RES_IF) { /* or SWITCH */
+		++tokvec;
+		expect_and_consume(&tokvec, LEFT_PAREN,
+		                   "left parenthesis immediately after `if`");
+		struct Expression expr = parse_expression(ptr_ps, &tokvec);
+		expect_and_consume(&tokvec, RIGHT_PAREN, "right parenthesis of `if`");
+
+		struct Statement inner_s = parse_statement(ptr_ps, ptr_prs, &tokvec);
+
+		struct Statement *ptr_inner_s = calloc(1, sizeof(struct Statement));
+		*ptr_inner_s = inner_s;
+
+		if (tokvec[0].kind == RES_ELSE) { /* must bind to the most inner one */
+			++tokvec;
+			struct Statement inner_s2 =
+			    parse_statement(ptr_ps, ptr_prs, &tokvec);
+			struct Statement *ptr_inner_s2 =
+			    calloc(1, sizeof(struct Statement));
+			*ptr_inner_s2 = inner_s2;
+
+			*ptr_tokvec = tokvec;
+
+			struct Statement s;
+			s.category = IF_ELSE_STATEMENT;
+			s.expr1 = expr;
+			s.statement_vector = init_vector();
+			push_vector(&s.statement_vector, ptr_inner_s);
+			push_vector(&s.statement_vector, ptr_inner_s2);
+			return s;
+		} else {
+
+			*ptr_tokvec = tokvec;
+
+			struct Statement s;
+			s.category = IF_STATEMENT;
+			s.expr1 = expr;
+
+			s.inner_statement = ptr_inner_s;
+			return s;
+		}
+	}
+
+	if (tokvec[0].kind == RES_RETURN) {
+		++tokvec;
+		*ptr_tokvec = tokvec;
+		if (tokvec[0].kind == SEMICOLON) {
+			unsupported("`return;`");
+		} else {
+			struct Expression expr = parse_expression(ptr_ps, &tokvec);
+			expect_type(expr.details.type, ptr_ps->func_ret_type,
+			            "mismatched type in the return value");
+			expect_and_consume(
+			    &tokvec, SEMICOLON,
+			    "semicolon after `return` followed by an expression");
+			*ptr_tokvec = tokvec;
+
+			struct Statement s;
+			s.category = RETURN_STATEMENT;
+			s.expr1 = expr;
+			return s;
+		}
+	}
+
+	if (tokvec[0].kind == RES_DO) {
+		++tokvec;
+
+		struct Statement inner_s = parse_statement(ptr_ps, ptr_prs, &tokvec);
+
+		expect_and_consume(&tokvec, RES_WHILE, "`while` of do-while");
+		expect_and_consume(&tokvec, LEFT_PAREN, "left parenthesis of do-while");
+
+		struct Expression expr = parse_expression(ptr_ps, &tokvec);
+
+		expect_and_consume(&tokvec, RIGHT_PAREN,
+		                   "right parenthesis of do-while");
+		expect_and_consume(&tokvec, SEMICOLON, "semicolon after do-while");
+		*ptr_tokvec = tokvec;
+
+		struct Statement s;
+		s.category = DO_WHILE_STATEMENT;
+		s.expr1 = expr;
+
+		struct Statement *ptr_inner_s = calloc(1, sizeof(struct Statement));
+		*ptr_inner_s = inner_s;
+		s.inner_statement = ptr_inner_s;
+		return s;
+	}
+
+	if (tokvec[0].kind == RES_WHILE) {
+		++tokvec;
+
+		expect_and_consume(&tokvec, LEFT_PAREN, "left parenthesis of while");
+
+		struct Expression expr = parse_expression(ptr_ps, &tokvec);
+
+		expect_and_consume(&tokvec, RIGHT_PAREN, "left parenthesis of while");
+
+		struct Statement inner_s = parse_statement(ptr_ps, ptr_prs, &tokvec);
+
+		*ptr_tokvec = tokvec;
+
+		struct Statement s;
+		s.category = WHILE_STATEMENT;
+		s.expr1 = expr;
+
+		struct Statement *ptr_inner_s = calloc(1, sizeof(struct Statement));
+		*ptr_inner_s = inner_s;
+		s.inner_statement = ptr_inner_s;
+		return s;
+	}
+
+	if (tokvec[0].kind == RES_BREAK) {
+		++tokvec;
+		expect_and_consume(&tokvec, SEMICOLON, "semicolon after `break`");
+		*ptr_tokvec = tokvec;
+
+		struct Statement s;
+		s.category = BREAK_STATEMENT;
+		return s;
+	}
+
+	if (tokvec[0].kind == RES_CONTINUE) {
+		++tokvec;
+		expect_and_consume(&tokvec, SEMICOLON, "semicolon after `continue`");
+		*ptr_tokvec = tokvec;
+
+		struct Statement s;
+		s.category = CONTINUE_STATEMENT;
+		return s;
+	}
+
+	if (tokvec[0].kind == RES_FOR) {
+
+		++tokvec;
+		expect_and_consume(&tokvec, LEFT_PAREN, "left parenthesis of `for`");
+
+		struct Expression expr1;
+		struct Expression expr2;
+		struct Expression expr3;
+
+		if (tokvec[0].kind == SEMICOLON) { /* expression1 is missing */
+			expr1 = integer_1();
+		} else {
+			expr1 = parse_expression(ptr_ps, &tokvec);
+		}
+		expect_and_consume(&tokvec, SEMICOLON, "first semicolon of `for`");
+
+		if (tokvec[0].kind == SEMICOLON) { /* expression2 is missing */
+			expr2 = integer_1();
+		} else {
+			expr2 = parse_expression(ptr_ps, &tokvec);
+		}
+		expect_and_consume(&tokvec, SEMICOLON, "second semicolon of `for`");
+
+		if (tokvec[0].kind == RIGHT_PAREN) { /* expression3 is missing */
+			expr3 = integer_1();
+		} else {
+			expr3 = parse_expression(ptr_ps, &tokvec);
+		}
+		expect_and_consume(&tokvec, RIGHT_PAREN, "right parenthesis of `for`");
+
+		struct Statement inner_s = parse_statement(ptr_ps, ptr_prs, &tokvec);
+		*ptr_tokvec = tokvec;
+
+		*ptr_tokvec = tokvec;
+
+		struct Statement s;
+		s.category = FOR_STATEMENT;
+		s.expr1 = expr1;
+		s.expr2 = expr2;
+		s.expr3 = expr3;
+		struct Statement *ptr_inner_s = calloc(1, sizeof(struct Statement));
+		*ptr_inner_s = inner_s;
+		s.inner_statement = ptr_inner_s;
+		return s;
+	}
+
+	struct Expression expr = parse_expression(ptr_ps, &tokvec);
+
+	expect_and_consume(&tokvec, SEMICOLON, "semicolon after an expression");
+
+	*ptr_tokvec = tokvec;
+
+	struct Statement s;
+	s.category = EXPRESSION_STATEMENT;
+	s.expr1 = expr;
+	return s;
+}
+
+static struct Statement
+parse_compound_statement(struct ParserState *ptr_ps,
+                         struct PrinterState *ptr_prs,
+                         const struct Token **ptr_tokvec)
+{
+	const struct Token *tokvec = *ptr_tokvec;
+	struct Statement statement;
+	statement.category = COMPOUND_STATEMENT;
+	statement.statement_vector = init_vector();
+	if (tokvec[0].kind == LEFT_BRACE) {
+
+		struct LocalVarTableList current_table = ptr_ps->scope_chain;
+
+		struct LocalVarTableList new_table;
+		new_table.var_table = init_map();
+
+		/* current_table disappears at the end of this function,
+		   but there is no problem because new_table itself gets overwritten at
+		   the end of this function.
+		 */
+		new_table.outer = &current_table;
+
+		ptr_ps->scope_chain = new_table;
+
+		++tokvec;
+		*ptr_tokvec = tokvec;
+		while (1) {
+			if (tokvec[0].kind == RIGHT_BRACE) {
+				++tokvec;
+				*ptr_tokvec = tokvec;
+				ptr_ps->scope_chain = current_table;
+
+				return statement;
+			} else if (can_start_a_type(tokvec)) {
+				struct Type vartype;
+
+				const char *str;
+				vartype = parse_declarator(&tokvec, &str);
+
+				/* while function prototypes are also allowed here in C, I will
+				 * not implement it here */
+				if (vartype.type_category == FN) {
+					fprintf(stderr, "cannot declare function here\n");
+					exit(EXIT_FAILURE);
+				}
+
+				ptr_ps->newest_offset -=
+				    size_of(vartype) < 4 ? 4 : size_of(vartype);
+				expect_and_consume(
+				    &tokvec, SEMICOLON,
+				    "semicolon at the end of variable definition");
+
+				struct Map map_ = ptr_ps->scope_chain.var_table;
+
+				struct LocalVarInfo *ptr_varinfo =
+				    calloc(1, sizeof(struct LocalVarInfo));
+				ptr_varinfo->offset = ptr_ps->newest_offset;
+				ptr_varinfo->type = vartype;
+				insert(&map_, str, ptr_varinfo);
+
+				ptr_ps->scope_chain.var_table = map_;
+
+				struct Statement s;
+				s.category = DECLARATION_STATEMENT;
+				s.declaration.type = vartype;
+				s.declaration.ident_str = str;
+				struct Statement *ptr_s = calloc(1, sizeof(struct Statement));
+				*ptr_s = s;
+				push_vector(&statement.statement_vector, ptr_s);
+			} else {
+				struct Statement s = parse_statement(ptr_ps, ptr_prs, &tokvec);
+				struct Statement *ptr_s = calloc(1, sizeof(struct Statement));
+				*ptr_s = s;
+				push_vector(&statement.statement_vector, ptr_s);
+			}
+		}
+	}
+	exit(EXIT_FAILURE);
+}
+
+static struct Statement
 parseprint_compound_statement(struct ParserState *ptr_ps,
                               struct PrinterState *ptr_prs,
                               const struct Token **ptr_tokvec);
@@ -946,9 +1231,7 @@ parseprint_compound_statement(struct ParserState *ptr_ps,
 	exit(EXIT_FAILURE);
 }
 
-static void print_parameter_declaration(struct ParserState *ptr_ps,
-                                        struct PrinterState *ptr_prs,
-                                        int counter,
+static void print_parameter_declaration(struct ParserState *ptr_ps, int counter,
                                         struct ParamInfos param_infos)
 {
 
@@ -1062,7 +1345,7 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
 		int counter = 0;
 
 		do {
-			print_parameter_declaration(ptr_ps, ptr_prs, counter, param_infos);
+			print_parameter_declaration(ptr_ps, counter, param_infos);
 			++counter;
 		} while (param_infos.param_vec[counter]);
 	}
