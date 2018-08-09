@@ -921,34 +921,23 @@ static struct Statement parseprint_statement(struct ParserState *ptr_ps,
 	}
 
 	if (sta.category == RETURN_STATEMENT) {
-		++tokvec;
+		struct Statement s_ = parse_statement(ptr_ps, &tokvec);
 		*ptr_tokvec = tokvec;
-		if (tokvec[0].kind == SEMICOLON) {
-			unsupported("`return;`");
+		struct Expression expr = s_.expr1;
+		print_expression(ptr_prs, expr);
+		/* the first occurrence of return within a function */
+		if (ptr_prs->return_label_name == GARBAGE_INT) {
+			int ret_label = get_new_label_name(ptr_prs);
+			ptr_prs->return_label_name = ret_label;
+			gen_jump(ret_label, "return");
 		} else {
-			struct Expression expr = parse_expression(ptr_ps, &tokvec);
-			expect_type(expr.details.type, ptr_ps->func_ret_type,
-			            "mismatched type in the return value");
-			expect_and_consume(
-			    &tokvec, SEMICOLON,
-			    "semicolon after `return` followed by an expression");
-			*ptr_tokvec = tokvec;
-
-			print_expression(ptr_prs, expr);
-			/* the first occurrence of return within a function */
-			if (ptr_prs->return_label_name == GARBAGE_INT) {
-				int ret_label = get_new_label_name(ptr_prs);
-				ptr_prs->return_label_name = ret_label;
-				gen_jump(ret_label, "return");
-			} else {
-				gen_jump(ptr_prs->return_label_name, "return");
-			}
-
-			struct Statement s;
-			s.category = RETURN_STATEMENT;
-			s.expr1 = expr;
-			return s;
+			gen_jump(ptr_prs->return_label_name, "return");
 		}
+
+		struct Statement s;
+		s.category = RETURN_STATEMENT;
+		s.expr1 = expr;
+		return s;
 	}
 
 	if (sta.category == DO_WHILE_STATEMENT) {
@@ -1049,8 +1038,7 @@ static struct Statement parseprint_statement(struct ParserState *ptr_ps,
 	}
 
 	if (sta.category == BREAK_STATEMENT) {
-		++tokvec;
-		expect_and_consume(&tokvec, SEMICOLON, "semicolon after `break`");
+		parse_statement(ptr_ps, &tokvec);
 		*ptr_tokvec = tokvec;
 
 		if (ptr_prs->break_label_name == GARBAGE_INT) {
