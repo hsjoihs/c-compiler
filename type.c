@@ -179,7 +179,7 @@ struct Type ptr_of_type_to_arr_of_type(struct Type *ptr_type, int length)
  * pure parsers with respect to types. *
  ***************************************/
 
-struct type3_elem {
+struct Elem {
 	enum typ_ type_category;
 	int array_length;
 	struct ParamInfos param_infos;
@@ -188,7 +188,7 @@ struct type3_elem {
 static struct Type from_type3_to_type(void **type3)
 {
 	struct Type type;
-	struct type3_elem elem = *(struct type3_elem *)type3[0];
+	struct Elem elem = *(struct Elem *)type3[0];
 	type.type_category = elem.type_category;
 	switch (elem.type_category) {
 		case INT_:
@@ -273,10 +273,10 @@ struct Type parse_declarator(const struct Token **ptr_tokvec,
 			expect_and_consume(&tokvec, RIGHT_BRACKET,
 			                   "closing ] while parsing a declaration");
 
-			struct type3_elem a;
+			struct Elem a;
 			a.type_category = ARRAY;
 			a.array_length = length;
-			struct type3_elem *ptr = calloc(1, sizeof(struct type3_elem));
+			struct Elem *ptr = calloc(1, sizeof(struct Elem));
 			*ptr = a;
 			push_vector(&vec, ptr);
 			continue;
@@ -288,14 +288,14 @@ struct Type parse_declarator(const struct Token **ptr_tokvec,
 		++tokvec;
 		if (tokvec[0].kind == RIGHT_PAREN) {
 			++tokvec;
-			struct type3_elem f;
+			struct Elem f;
 			f.type_category = FN;
 			f.param_infos.param_vec = (struct ParamInfo **)0; /* crucial */
-			struct type3_elem *ptr = calloc(1, sizeof(struct type3_elem));
+			struct Elem *ptr = calloc(1, sizeof(struct Elem));
 			*ptr = f;
 			push_vector(&vec, ptr);
 		} else if (can_start_a_type(tokvec)) {
-			struct type3_elem f;
+			struct Elem f;
 			f.type_category = FN;
 			f.param_infos.param_vec = calloc(100, sizeof(struct ParamInfo *));
 
@@ -316,7 +316,7 @@ struct Type parse_declarator(const struct Token **ptr_tokvec,
 
 			f.param_infos.param_vec[i] = (struct ParamInfo *)0; /* crucial */
 
-			struct type3_elem *ptr = calloc(1, sizeof(struct type3_elem));
+			struct Elem *ptr = calloc(1, sizeof(struct Elem));
 			*ptr = f;
 			push_vector(&vec, ptr);
 
@@ -326,19 +326,19 @@ struct Type parse_declarator(const struct Token **ptr_tokvec,
 	}
 
 	while (asterisk_num-- > 0) {
-		struct type3_elem p = {PTR_, GARBAGE_INT, {(struct ParamInfo **)0}};
-		struct type3_elem *ptr = calloc(1, sizeof(struct type3_elem));
+		struct Elem p = {PTR_, GARBAGE_INT, {(struct ParamInfo **)0}};
+		struct Elem *ptr = calloc(1, sizeof(struct Elem));
 		*ptr = p;
 		push_vector(&vec, ptr);
 	}
 
 	*ptr_tokvec = tokvec;
 
-	struct type3_elem i = {INT_, GARBAGE_INT, {(struct ParamInfo **)0}};
+	struct Elem i = {INT_, GARBAGE_INT, {(struct ParamInfo **)0}};
 	if (kind == RES_CHAR) {
 		i.type_category = CHAR_;
 	}
-	struct type3_elem *ptr = calloc(1, sizeof(struct type3_elem));
+	struct Elem *ptr = calloc(1, sizeof(struct Elem));
 	*ptr = i;
 	push_vector(&vec, ptr);
 
