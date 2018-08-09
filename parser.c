@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-struct Type resolve_name_globally(struct map m, const char *str)
+static struct Type resolve_name_globally(struct map m, const char *str)
 {
 	if (isElem(m, str)) {
 		struct Type *ptr_type = lookup(m, str);
@@ -46,24 +46,26 @@ enum UnaryOp to_unaryop(enum TokenKind t)
 	}
 }
 
-struct Expression parse_postfix_expression(struct ParserState *ptr_ps,
-                                           const struct Token **ptr_tokvec);
-struct Expression parse_conditional_expression(struct ParserState *ptr_ps,
-                                               const struct Token **ptr_tokvec);
-struct Expression parse_argument_expression(struct ParserState *ptr_ps,
-                                            const struct Token **ptr_tokvec,
-                                            int counter);
-struct Expression parse_primary_expression(struct ParserState *ptr_ps,
-                                           const struct Token **ptr_tokvec);
-struct Expression parse_assignment_expression(struct ParserState *ptr_ps,
-                                              const struct Token **ptr_tokvec);
-struct Expression parse_cast_expression(struct ParserState *ptr_ps,
-                                        const struct Token **ptr_tokvec);
+static struct Expression
+parse_postfix_expression(struct ParserState *ptr_ps,
+                         const struct Token **ptr_tokvec);
+static struct Expression
+parse_conditional_expression(struct ParserState *ptr_ps,
+                             const struct Token **ptr_tokvec);
+static struct Expression
+parse_argument_expression(struct ParserState *ptr_ps,
+                          const struct Token **ptr_tokvec, int counter);
+static struct Expression
+parse_primary_expression(struct ParserState *ptr_ps,
+                         const struct Token **ptr_tokvec);
+static struct Expression
+parse_assignment_expression(struct ParserState *ptr_ps,
+                            const struct Token **ptr_tokvec);
 
-struct Expression deref_expr(struct Expression expr);
+static struct Expression deref_expr(struct Expression expr);
 
-struct Expression unary_op_(struct Expression expr, enum TokenKind kind,
-                            struct ExprInfo exprinfo)
+static struct Expression unary_op_(struct Expression expr, enum TokenKind kind,
+                                   struct ExprInfo exprinfo)
 {
 	struct Expression *ptr_expr1 = calloc(1, sizeof(struct Expression));
 	*ptr_expr1 = expr;
@@ -159,7 +161,7 @@ parse_unary_expression(struct ParserState *ptr_ps,
 	}
 }
 
-struct Expression deref_expr(struct Expression expr)
+static struct Expression deref_expr(struct Expression expr)
 {
 	struct Type type = deref_type(expr.details.type);
 
@@ -179,8 +181,9 @@ struct Expression parse_cast_expression(struct ParserState *ptr_ps,
 	return parse_unary_expression(ptr_ps, ptr_tokvec);
 }
 
-struct Expression parse_postfix_expression(struct ParserState *ptr_ps,
-                                           const struct Token **ptr_tokvec)
+static struct Expression
+parse_postfix_expression(struct ParserState *ptr_ps,
+                         const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 	if (tokvec[0].kind == IDENT_OR_RESERVED && tokvec[1].kind == LEFT_PAREN) {
@@ -278,8 +281,9 @@ struct Expression parse_postfix_expression(struct ParserState *ptr_ps,
 	}
 }
 
-struct Expression parse_primary_expression(struct ParserState *ptr_ps,
-                                           const struct Token **ptr_tokvec)
+static struct Expression
+parse_primary_expression(struct ParserState *ptr_ps,
+                         const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 	if (tokvec[0].kind == LIT_DEC_INTEGER) {
@@ -432,8 +436,9 @@ struct Expression assignment_expr(struct Expression expr,
 	return new_expr;
 }
 
-struct Expression parse_assignment_expression(struct ParserState *ptr_ps,
-                                              const struct Token **ptr_tokvec)
+static struct Expression
+parse_assignment_expression(struct ParserState *ptr_ps,
+                            const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 
@@ -473,8 +478,9 @@ struct Expression parse_assignment_expression(struct ParserState *ptr_ps,
 	}
 }
 
-struct Expression parse_conditional_expression(struct ParserState *ptr_ps,
-                                               const struct Token **ptr_tokvec)
+static struct Expression
+parse_conditional_expression(struct ParserState *ptr_ps,
+                             const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 	struct Expression expr = parse_logical_OR_expression(ptr_ps, &tokvec);
@@ -535,9 +541,9 @@ struct Expression parse_expression(struct ParserState *ptr_ps,
 	return expr;
 }
 
-struct Expression parse_argument_expression(struct ParserState *ptr_ps,
-                                            const struct Token **ptr_tokvec,
-                                            int counter)
+static struct Expression
+parse_argument_expression(struct ParserState *ptr_ps,
+                          const struct Token **ptr_tokvec, int counter)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 

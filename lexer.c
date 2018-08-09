@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-int from_hex(char c);
+static int from_hex(char c);
 
 void read_all_tokens_debug(const char *str)
 {
@@ -589,7 +589,7 @@ struct Token get_token(const char **ptr_to_str)
 	exit(EXIT_FAILURE);
 }
 
-int from_hex(char c)
+static int from_hex(char c)
 {
 	switch (c) {
 		case '0':
@@ -626,6 +626,8 @@ int from_hex(char c)
 	}
 }
 
+static int count_all_tokens(const char *str);
+
 struct Token *read_all_tokens_(const char *str)
 {
 	struct Token tok;
@@ -654,7 +656,7 @@ struct Token *read_all_tokens_(const char *str)
 	return tokvec;
 }
 
-int count_all_tokens(const char *str)
+static int count_all_tokens(const char *str)
 {
 	struct Token tok;
 	int count = 1;
