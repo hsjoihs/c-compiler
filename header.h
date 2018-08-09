@@ -112,7 +112,6 @@ extern struct Type INT_TYPE;
 
 void expect_type(struct ExprInfo expr_info, struct Type expected_type,
                  const char *message);
-struct ExprInfo remove_leftiness(struct ExprInfo info);
 
 struct ExprInfo UNASSIGNABLE(struct Type type);
 

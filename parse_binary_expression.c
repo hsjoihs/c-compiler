@@ -46,12 +46,6 @@ enum SimpleBinOp to_simplebinop(enum TokenKind t)
 	}
 }
 
-struct Expression remove_leftiness_(struct Expression expr)
-{
-	expr.details = remove_leftiness(expr.details);
-	return expr;
-}
-
 struct Expression
 parse_inclusive_OR_expression(struct ParserState *ptr_ps,
                               const struct Token **ptr_tokvec);
@@ -149,7 +143,7 @@ struct Expression parse_inclusive_OR_expression(struct ParserState *ptr_ps,
 		++tokvec;
 
 		struct Expression expr2 =
-		    remove_leftiness_(parse_exclusive_OR_expression(ptr_ps, &tokvec));
+		    parse_exclusive_OR_expression(ptr_ps, &tokvec);
 		expect_type(expr.details, INT_TYPE, "left operand of bitOR");
 		expect_type(expr2.details, INT_TYPE, "right operand of bitOR");
 		expr = simple_binary_op(expr, expr2, kind, UNASSIGNABLE(INT_TYPE));
@@ -172,8 +166,7 @@ struct Expression parse_exclusive_OR_expression(struct ParserState *ptr_ps,
 		}
 		++tokvec;
 
-		struct Expression expr2 =
-		    remove_leftiness_(parse_AND_expression(ptr_ps, &tokvec));
+		struct Expression expr2 = parse_AND_expression(ptr_ps, &tokvec);
 		expect_type(expr.details, INT_TYPE, "left operand of XOR");
 		expect_type(expr2.details, INT_TYPE, "right operand of XOR");
 		expr = simple_binary_op(expr, expr2, kind, UNASSIGNABLE(INT_TYPE));
@@ -196,8 +189,7 @@ struct Expression parse_AND_expression(struct ParserState *ptr_ps,
 		}
 		++tokvec;
 
-		struct Expression expr2 =
-		    remove_leftiness_(parse_equality_expression(ptr_ps, &tokvec));
+		struct Expression expr2 = parse_equality_expression(ptr_ps, &tokvec);
 		expect_type(expr.details, INT_TYPE, "left operand of bitAND");
 		expect_type(expr2.details, INT_TYPE, "right operand of bitAND");
 		expr = simple_binary_op(expr, expr2, kind, UNASSIGNABLE(INT_TYPE));
@@ -220,8 +212,7 @@ struct Expression parse_equality_expression(struct ParserState *ptr_ps,
 		}
 		++tokvec;
 
-		struct Expression expr2 =
-		    remove_leftiness_(parse_relational_expression(ptr_ps, &tokvec));
+		struct Expression expr2 = parse_relational_expression(ptr_ps, &tokvec);
 		expect_type(expr.details, INT_TYPE,
 		            "left operand of an equality operator");
 		expect_type(expr2.details, INT_TYPE,
@@ -246,8 +237,7 @@ struct Expression parse_relational_expression(struct ParserState *ptr_ps,
 		}
 		++tokvec;
 
-		struct Expression expr2 =
-		    remove_leftiness_(parse_shift_expression(ptr_ps, &tokvec));
+		struct Expression expr2 = parse_shift_expression(ptr_ps, &tokvec);
 		expect_type(expr.details, INT_TYPE,
 		            "left operand of a relational operator");
 		expect_type(expr2.details, INT_TYPE,
@@ -271,8 +261,7 @@ struct Expression parse_shift_expression(struct ParserState *ptr_ps,
 		}
 		++tokvec;
 
-		struct Expression expr2 =
-		    remove_leftiness_(parse_additive_expression(ptr_ps, &tokvec));
+		struct Expression expr2 = parse_additive_expression(ptr_ps, &tokvec);
 		expect_type(expr.details, INT_TYPE, "left operand of a shift operator");
 		expect_type(expr2.details, INT_TYPE,
 		            "left operand of a shift operator");
@@ -336,7 +325,7 @@ struct Expression parse_additive_expression(struct ParserState *ptr_ps,
 		++tokvec;
 
 		struct Expression expr2 =
-		    remove_leftiness_(parse_multiplicative_expression(ptr_ps, &tokvec));
+		    parse_multiplicative_expression(ptr_ps, &tokvec);
 		expr = combine_by_add_or_sub(expr, expr2, kind);
 	}
 	*ptr_tokvec = tokvec;
@@ -357,8 +346,7 @@ parse_multiplicative_expression(struct ParserState *ptr_ps,
 		}
 		++tokvec;
 
-		struct Expression expr2 =
-		    remove_leftiness_(parse_cast_expression(ptr_ps, &tokvec));
+		struct Expression expr2 = parse_cast_expression(ptr_ps, &tokvec);
 		expect_type(expr.details, INT_TYPE,
 		            "left operand of an multiplicative operator");
 		expect_type(expr2.details, INT_TYPE,

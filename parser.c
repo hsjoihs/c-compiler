@@ -98,8 +98,7 @@ parse_unary_expression(struct ParserState *ptr_ps,
 	    tokvec[0].kind == OP_PLUS || tokvec[0].kind == OP_MINUS) {
 		enum TokenKind kind = tokvec[0].kind;
 		++tokvec;
-		struct Expression expr =
-		    remove_leftiness_(parse_cast_expression(ptr_ps, &tokvec));
+		struct Expression expr = parse_cast_expression(ptr_ps, &tokvec);
 		expect_type(
 		    expr.details, INT_TYPE,
 		    "operand of logical not, bitnot, unary plus or unary minus");
@@ -150,8 +149,7 @@ parse_unary_expression(struct ParserState *ptr_ps,
 
 	} else if (tokvec[0].kind == OP_ASTERISK) {
 		++tokvec;
-		struct Expression expr =
-		    remove_leftiness_(parse_cast_expression(ptr_ps, &tokvec));
+		struct Expression expr = parse_cast_expression(ptr_ps, &tokvec);
 
 		*ptr_tokvec = tokvec;
 		return deref_expr(expr);
@@ -425,7 +423,7 @@ struct Expression assignment_expr(struct Expression expr,
 	*ptr_expr2 = expr2;
 
 	struct Expression new_expr;
-	new_expr.details = remove_leftiness(expr.details);
+	new_expr.details = expr.details;
 	new_expr.category = ASSIGNMENT_EXPR;
 	new_expr.simple_binary_operator = op_before_assign(opkind);
 	new_expr.ptr1 = ptr_expr1;
@@ -506,7 +504,7 @@ struct Expression parse_conditional_expression(struct ParserState *ptr_ps,
 		*ptr_expr3 = false_branch;
 
 		struct Expression new_expr;
-		new_expr.details = remove_leftiness(true_branch.details);
+		new_expr.details = true_branch.details;
 		new_expr.category = CONDITIONAL_EXPR;
 		new_expr.ptr1 = ptr_expr1;
 		new_expr.ptr2 = ptr_expr2;
@@ -530,8 +528,7 @@ struct Expression parse_expression(struct ParserState *ptr_ps,
 		}
 		++tokvec;
 
-		struct Expression expr2 =
-		    remove_leftiness_(parse_assignment_expression(ptr_ps, &tokvec));
+		struct Expression expr2 = parse_assignment_expression(ptr_ps, &tokvec);
 
 		expr = simple_binary_op(expr, expr2, kind, expr2.details);
 	}
