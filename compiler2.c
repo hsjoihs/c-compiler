@@ -95,17 +95,17 @@ void print_expression_as_lvalue_(struct PrinterState *ptr_prs,
 {
 	switch (expr.category) {
 		case LOCAL_VAR_: {
-			gen_push_address_of_local(expr.details.offset);
+			gen_push_address_of_local(expr.local_var_offset);
 
 			switch (size_of(expr.details.type)) {
 				case 1:
-					gen_push_from_local_1byte(expr.details.offset);
+					gen_push_from_local_1byte(expr.local_var_offset);
 					break;
 				case 4:
-					gen_push_from_local_4byte(expr.details.offset);
+					gen_push_from_local_4byte(expr.local_var_offset);
 					break;
 				case 8:
-					gen_push_from_local_8byte(expr.details.offset);
+					gen_push_from_local_8byte(expr.local_var_offset);
 					break;
 				default:
 					unimplemented("Unsupported width in the "
@@ -198,12 +198,12 @@ void print_expression_(struct PrinterState *ptr_prs, struct Expression expr)
 				unimplemented("increment of non-(local variable)");
 			}
 
-			gen_push_from_local_4byte(expr.ptr1->details.offset);
+			gen_push_from_local_4byte(expr.ptr1->local_var_offset);
 			gen_push_int(1);
 
 			print_simple_binary_op(opkind2);
 
-			gen_write_to_local(expr.ptr1->details.offset);
+			gen_write_to_local(expr.ptr1->local_var_offset);
 
 			gen_push_int(-1);
 			print_simple_binary_op(opkind2);
@@ -213,18 +213,18 @@ void print_expression_(struct PrinterState *ptr_prs, struct Expression expr)
 
 		case LOCAL_VAR_: {
 			if (is_array(expr.details.true_type)) {
-				gen_push_address_of_local(expr.details.offset);
+				gen_push_address_of_local(expr.local_var_offset);
 				return;
 			}
 			switch (size_of(expr.details.type)) {
 				case 1:
-					gen_push_from_local_1byte(expr.details.offset);
+					gen_push_from_local_1byte(expr.local_var_offset);
 					break;
 				case 4:
-					gen_push_from_local_4byte(expr.details.offset);
+					gen_push_from_local_4byte(expr.local_var_offset);
 					break;
 				case 8:
-					gen_push_from_local_8byte(expr.details.offset);
+					gen_push_from_local_8byte(expr.local_var_offset);
 					break;
 				default:
 					unimplemented("Unsupported width");
@@ -341,20 +341,20 @@ void print_expression_(struct PrinterState *ptr_prs, struct Expression expr)
 						unimplemented("increment of non-(local variable)");
 					}
 
-					gen_push_from_local_4byte(expr.ptr1->details.offset);
+					gen_push_from_local_4byte(expr.ptr1->local_var_offset);
 					gen_push_int(1);
 					print_simple_binary_op(expr.unary_operator ==
 					                               UNARY_OP_PLUS_PLUS
 					                           ? SIMPLE_BIN_OP_PLUS
 					                           : SIMPLE_BIN_OP_MINUS);
 
-					gen_write_to_local(expr.ptr1->details.offset);
+					gen_write_to_local(expr.ptr1->local_var_offset);
 					return;
 				}
 
 				case UNARY_OP_AND: {
 					if (expr.ptr1->category == LOCAL_VAR_) {
-						gen_push_address_of_local(expr.ptr1->details.offset);
+						gen_push_address_of_local(expr.ptr1->local_var_offset);
 						return;
 					} else if (expr.ptr1->category == GLOBAL_VAR_) {
 						gen_push_address_of_global(expr.ptr1->global_var_name);

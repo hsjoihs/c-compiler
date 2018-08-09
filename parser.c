@@ -82,7 +82,6 @@ struct Expression unary_op_(struct Expression expr, enum TokenKind kind,
 struct ExprInfo UNASSIGNABLE(struct Type type) {
 	struct ExprInfo expr_info;
 	expr_info.type = type;
-	expr_info.offset = GARBAGE_INT;
 
 	return expr_info;
 }
@@ -167,9 +166,9 @@ struct Expression deref_expr(struct Expression expr)
 	struct ExprInfo new_expr_info;
 	new_expr_info.type = if_array_convert_to_ptr(type);
 	new_expr_info.true_type = type;
-	new_expr_info.offset = GARBAGE_INT;
 
 	struct Expression new_expr = unary_op_(expr, OP_ASTERISK, new_expr_info);
+	new_expr.local_var_offset = GARBAGE_INT;
 
 	return new_expr;
 }
@@ -316,11 +315,11 @@ struct Expression parse_primary_expression(struct ParserState *ptr_ps,
 			struct ExprInfo expr_info;
 			expr_info.type = if_array_convert_to_ptr(info.type);
 			expr_info.true_type = info.type;
-			expr_info.offset = info.offset;
 
 			struct Expression expr;
 			expr.details = expr_info;
 			expr.category = LOCAL_VAR_;
+			expr.local_var_offset = info.offset;
 			return expr;
 		}
 	} else if (tokvec[0].kind == LEFT_PAREN) {
@@ -338,12 +337,12 @@ struct Expression parse_primary_expression(struct ParserState *ptr_ps,
 		expr_info.type = ptr_of_type_to_ptr_to_type(ptr_char);
 		expr_info.true_type = ptr_of_type_to_arr_of_type(
 		    ptr_char, strlen(tokvec[0].literal_str) + 1);
-		expr_info.offset = GARBAGE_INT;
 
 		struct Expression expr;
 		expr.details = expr_info;
 		expr.category = STRING_LITERAL;
 		expr.literal_string = tokvec[0].literal_str;
+		expr.local_var_offset = GARBAGE_INT;
 
 		++*ptr_tokvec;
 		return expr;
@@ -363,7 +362,7 @@ struct Expression ident_as_lvalue(struct ParserState ps, const char *name)
 
 		struct Expression expr;
 		expr.details.type = type;
-		expr.details.offset = GARBAGE_INT;
+		expr.local_var_offset = GARBAGE_INT;
 		expr.category = GLOBAL_VAR_;
 		expr.global_var_name = name;
 		return expr;
@@ -376,7 +375,7 @@ struct Expression ident_as_lvalue(struct ParserState ps, const char *name)
 
 		struct Expression expr;
 		expr.details.type = info.type;
-		expr.details.offset = info.offset;
+		expr.local_var_offset = info.offset;
 		expr.category = LOCAL_VAR_;
 		return expr;
 	}

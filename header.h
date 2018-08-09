@@ -105,7 +105,6 @@ int size_of(struct Type type);
 struct ExprInfo {
 	struct Type type;
 	struct Type true_type;
-	int offset;
 };
 
 extern struct Type INT_TYPE;
@@ -207,6 +206,7 @@ struct Expression {
 	const char *literal_string;
 	struct Expression *arg_expr_vec;
 	int arg_length;
+	int local_var_offset;
 };
 
 struct Expression parse_cast_expression(struct ParserState *ptr_ps,
