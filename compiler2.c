@@ -15,7 +15,7 @@ struct PrinterState {
 	int break_label_name;    /* the label at the end of the current loop */
 	int continue_label_name; /* the label at the beginning of the current loop
 	                          */
-	struct map string_constant_pool;
+	struct Map string_constant_pool;
 	int pool_largest_id;
 };
 
@@ -825,7 +825,7 @@ void parseprint_compound_statement(struct ParserState *ptr_ps,
 				    &tokvec, SEMICOLON,
 				    "semicolon at the end of variable definition");
 
-				struct map map_ = ptr_ps->scope_chain.var_table;
+				struct Map map_ = ptr_ps->scope_chain.var_table;
 
 				struct LocalVarInfo *ptr_varinfo =
 				    calloc(1, sizeof(struct LocalVarInfo));
@@ -858,7 +858,7 @@ void print_parameter_declaration(struct ParserState *ptr_ps,
 
 	ptr_prs->newest_offset -= size_of(type) < 4 ? 4 : size_of(type);
 
-	struct map map_ = ptr_ps->scope_chain.var_table;
+	struct Map map_ = ptr_ps->scope_chain.var_table;
 	struct LocalVarInfo *ptr_varinfo = calloc(1, sizeof(struct LocalVarInfo));
 	ptr_varinfo->offset = ptr_prs->newest_offset;
 	ptr_varinfo->type = type;
@@ -897,7 +897,7 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
 	struct Type declarator_type = parse_declarator(&tokvec2, &declarator_name);
 	if (declarator_type.type_category != FN && tokvec2[0].kind == SEMICOLON) {
 		++tokvec2; /* consume the semicolon */
-		struct map globalmap = ptr_ps->global_vars_type_map;
+		struct Map globalmap = ptr_ps->global_vars_type_map;
 
 		struct Type *ptr_type = calloc(1, sizeof(struct Type));
 		*ptr_type = declarator_type;
@@ -922,7 +922,7 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
 	ptr_prs->newest_offset = -8;
 	ptr_ps->func_ret_type = ret_type;
 
-	struct map retmap = ptr_ps->func_info_map;
+	struct Map retmap = ptr_ps->func_info_map;
 
 	struct FuncInfo *ptr_func_info = calloc(1, sizeof(struct FuncInfo));
 	ptr_func_info->ret_type = ret_type;
@@ -979,7 +979,7 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
 	*ptr_tokvec = tokvec2;
 }
 
-void print_string_pool(struct map pool)
+void print_string_pool(struct Map pool)
 {
 	for (int i = 0; i < pool._length; ++i) {
 		const char *str;

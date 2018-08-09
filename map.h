@@ -1,13 +1,13 @@
 
-struct map {
+struct Map {
 	int _length;
 	int _alloc;
 	struct _mapchip *_vec;
 };
 
-void insert(struct map *map_ptr, const char *key, void *value);
-void *lookup(const struct map map, const char *key);
-void deletion(struct map *map_ptr, const char *key);
-struct map init_map(void);
-int isElem(const struct map map, const char *key);
-void *getIth(const struct map m, int i, const char **ptr_to_str);
+void insert(struct Map *map_ptr, const char *key, void *value);
+void *lookup(const struct Map map, const char *key);
+void deletion(struct Map *map_ptr, const char *key);
+struct Map init_map(void);
+int isElem(const struct Map map, const char *key);
+void *getIth(const struct Map m, int i, const char **ptr_to_str);

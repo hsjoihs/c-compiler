@@ -10,14 +10,14 @@ struct LocalVarInfo {
 };
 
 struct LocalVarTableList {
-	struct map var_table;
+	struct Map var_table;
 	struct LocalVarTableList *outer;
 };
 
 struct ParserState {
 	struct LocalVarTableList scope_chain;
-	struct map global_vars_type_map;
-	struct map func_info_map;
+	struct Map global_vars_type_map;
+	struct Map func_info_map;
 	struct Type func_ret_type;
 };
 

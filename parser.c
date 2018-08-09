@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-static struct Type resolve_name_globally(struct map m, const char *str)
+static struct Type resolve_name_globally(struct Map m, const char *str)
 {
 	if (isElem(m, str)) {
 		struct Type *ptr_type = lookup(m, str);

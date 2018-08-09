@@ -10,7 +10,7 @@ struct _mapchip {
 };
 
 /* it overrides; it does not overwrite. */
-void insert(struct map *ptr, const char *key, void *value)
+void insert(struct Map *ptr, const char *key, void *value)
 {
 	struct _mapchip a;
 	a.ptr = key;
@@ -28,7 +28,7 @@ void insert(struct map *ptr, const char *key, void *value)
 	++(ptr->_length);
 }
 
-void *lookup(const struct map m, const char *key)
+void *lookup(const struct Map m, const char *key)
 {
 	for (int i = (m._length) - 1; i >= 0; --i) {
 		if (strcmp(m._vec[i].ptr, key) == 0) {
@@ -38,20 +38,20 @@ void *lookup(const struct map m, const char *key)
 	return 0;
 }
 
-int isElem(const struct map m, const char *key) { return lookup(m, key) != 0; }
+int isElem(const struct Map m, const char *key) { return lookup(m, key) != 0; }
 
-void deletion(struct map *ptr, const char *key) { insert(ptr, key, 0); }
+void deletion(struct Map *ptr, const char *key) { insert(ptr, key, 0); }
 
-struct map init_map(void)
+struct Map init_map(void)
 {
-	struct map res;
+	struct Map res;
 	res._length = 0;
 	res._alloc = 256;
 	res._vec = calloc(res._alloc, sizeof(struct _mapchip));
 	return res;
 }
 
-void *getIth(const struct map m, int i, const char **ptr_to_str)
+void *getIth(const struct Map m, int i, const char **ptr_to_str)
 {
 	*ptr_to_str = m._vec[i].ptr;
 	return m._vec[i].value;
