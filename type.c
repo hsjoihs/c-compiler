@@ -1,4 +1,5 @@
 #include "header.h"
+#include "vector.h"
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -184,29 +185,12 @@ struct type3_elem {
 	struct ParamInfos param_infos;
 };
 
-struct Type3 {
-	int length;
-	int _allocated_length;
-	struct type3_elem *vector;
-};
-
-static void push_to_type3(struct Type3 *ptr, struct type3_elem tok)
-{
-	if (ptr->_allocated_length < ptr->length + 1) {
-
-		ptr->vector = realloc(ptr->vector, ptr->_allocated_length * 2 *
-		                                       sizeof(struct type3_elem));
-		ptr->_allocated_length *= 2;
-	}
-	ptr->vector[ptr->length] = tok;
-	++(ptr->length);
-}
-
-static struct Type from_type3_to_type(const struct type3_elem *type3)
+static struct Type from_type3_to_type(void **type3)
 {
 	struct Type type;
-	type.type_category = type3[0].type_category;
-	switch (type3[0].type_category) {
+	struct type3_elem elem = *(struct type3_elem *)type3[0];
+	type.type_category = elem.type_category;
+	switch (elem.type_category) {
 		case INT_:
 			return type;
 
@@ -216,9 +200,9 @@ static struct Type from_type3_to_type(const struct type3_elem *type3)
 		case PTR_:
 		case ARRAY:
 		case FN: {
-			type.array_length = type3[0].array_length;
+			type.array_length = elem.array_length;
 			/* garbage enters here in case of PTR_ and FN */
-			type.param_infos = type3[0].param_infos;
+			type.param_infos = elem.param_infos;
 			/* garbage enters here in case of PTR_ and ARRAY */
 
 			struct Type *ptr_to_current_type = calloc(1, sizeof(struct Type));
@@ -266,10 +250,7 @@ struct Type parse_declarator(const struct Token **ptr_tokvec,
 	}
 	++tokvec;
 
-	struct Type3 type3;
-	type3.length = 0;
-	type3._allocated_length = 30;
-	type3.vector = calloc(30, sizeof(struct type3_elem));
+	struct vector vec = init_vector(0);
 
 	int asterisk_num = 0;
 	for (; tokvec[0].kind == OP_ASTERISK; ++tokvec) {
@@ -295,7 +276,9 @@ struct Type parse_declarator(const struct Token **ptr_tokvec,
 			struct type3_elem a;
 			a.type_category = ARRAY;
 			a.array_length = length;
-			push_to_type3(&type3, a);
+			struct type3_elem *ptr = calloc(1, sizeof(struct type3_elem));
+			*ptr = a;
+			push_vector(&vec, ptr);
 			continue;
 		}
 		if (tokvec[0].kind != LEFT_PAREN) {
@@ -308,7 +291,9 @@ struct Type parse_declarator(const struct Token **ptr_tokvec,
 			struct type3_elem f;
 			f.type_category = FN;
 			f.param_infos.param_vec = (struct ParamInfo **)0; /* crucial */
-			push_to_type3(&type3, f);
+			struct type3_elem *ptr = calloc(1, sizeof(struct type3_elem));
+			*ptr = f;
+			push_vector(&vec, ptr);
 		} else if (can_start_a_type(tokvec)) {
 			struct type3_elem f;
 			f.type_category = FN;
@@ -331,7 +316,9 @@ struct Type parse_declarator(const struct Token **ptr_tokvec,
 
 			f.param_infos.param_vec[i] = (struct ParamInfo *)0; /* crucial */
 
-			push_to_type3(&type3, f);
+			struct type3_elem *ptr = calloc(1, sizeof(struct type3_elem));
+			*ptr = f;
+			push_vector(&vec, ptr);
 
 			expect_and_consume(&tokvec, RIGHT_PAREN,
 			                   "closing ) while parsing functional type");
@@ -340,7 +327,9 @@ struct Type parse_declarator(const struct Token **ptr_tokvec,
 
 	while (asterisk_num-- > 0) {
 		struct type3_elem p = {PTR_, GARBAGE_INT, {(struct ParamInfo **)0}};
-		push_to_type3(&type3, p);
+		struct type3_elem *ptr = calloc(1, sizeof(struct type3_elem));
+		*ptr = p;
+		push_vector(&vec, ptr);
 	}
 
 	*ptr_tokvec = tokvec;
@@ -349,9 +338,11 @@ struct Type parse_declarator(const struct Token **ptr_tokvec,
 	if (kind == RES_CHAR) {
 		i.type_category = CHAR_;
 	}
-	push_to_type3(&type3, i);
+	struct type3_elem *ptr = calloc(1, sizeof(struct type3_elem));
+	*ptr = i;
+	push_vector(&vec, ptr);
 
-	struct Type type = from_type3_to_type(type3.vector);
+	struct Type type = from_type3_to_type(vec.vector);
 
 	return type;
 }
