@@ -990,11 +990,14 @@ static void parseprint_statement(struct ParserState *ptr_ps,
 
 	if (sta.category == WHILE_STATEMENT) {
 		++tokvec;
+		expect_and_consume(&tokvec, LEFT_PAREN, "left parenthesis of while");
+		struct Expression expr = parse_expression(ptr_ps, &tokvec);
+		expect_and_consume(&tokvec, RIGHT_PAREN, "left parenthesis of while");
+		const struct Token *tokvec2 = tokvec;
+		struct Statement inner_s = parse_statement(ptr_ps, &tokvec);
 
 		int stashed_break_label = ptr_prs->break_label_name;
 		int stashed_continue_label = ptr_prs->continue_label_name;
-
-		expect_and_consume(&tokvec, LEFT_PAREN, "left parenthesis of while");
 
 		int label1 = get_new_label_name(ptr_prs);
 		int break_label = get_new_label_name(ptr_prs);
@@ -1004,17 +1007,11 @@ static void parseprint_statement(struct ParserState *ptr_ps,
 
 		gen_label(label1);
 
-		struct Expression expr = parse_expression(ptr_ps, &tokvec);
-
 		print_expression(ptr_prs, expr);
-
-		expect_and_consume(&tokvec, RIGHT_PAREN, "left parenthesis of while");
 
 		gen_while_part2(label1, break_label);
 
-		const struct Token *tokvec2 = tokvec;
-		struct Statement inner_s = parse_statement(ptr_ps, &tokvec2);
-		parseprint_statement(ptr_ps, ptr_prs, &tokvec, inner_s);
+		parseprint_statement(ptr_ps, ptr_prs, &tokvec2, inner_s);
 		assert(tokvec2 == tokvec);
 
 		gen_label(cont_label);
@@ -1047,15 +1044,11 @@ static void parseprint_statement(struct ParserState *ptr_ps,
 		} else {
 			gen_jump(ptr_prs->break_label_name, "break");
 		}
-
-		struct Statement s;
-		s.category = BREAK_STATEMENT;
 		return;
 	}
 
 	if (sta.category == CONTINUE_STATEMENT) {
-		++tokvec;
-		expect_and_consume(&tokvec, SEMICOLON, "semicolon after `continue`");
+		parse_statement(ptr_ps, &tokvec);
 		*ptr_tokvec = tokvec;
 
 		if (ptr_prs->continue_label_name == GARBAGE_INT) {
@@ -1064,9 +1057,6 @@ static void parseprint_statement(struct ParserState *ptr_ps,
 		} else {
 			gen_jump(ptr_prs->continue_label_name, "continue");
 		}
-
-		struct Statement s;
-		s.category = CONTINUE_STATEMENT;
 		return;
 	}
 
