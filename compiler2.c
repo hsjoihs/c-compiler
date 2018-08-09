@@ -268,10 +268,23 @@ void print_expression_(struct PrinterState *ptr_prs, struct Expression expr)
 			int label2 = get_new_label_name(ptr_prs);
 			print_expression_(ptr_prs, *expr.ptr1);
 
-			gen_logical_OR_set(0, label1);
+			printf("  addq $%d, %%rsp\n", 0 * 8);
+			printf("  cmpl $0, %d(%%rsp)\n", -0 * 8);
+			printf("  jne .L%d\n", label1);
+			printf("  subq $%d, %%rsp\n", 0 * 8);
 			print_expression_(ptr_prs, *expr.ptr2);
-			gen_logical_OR_set(1, label1);
-			gen_logical_OR_final(1, label1, label2);
+			printf("  addq $%d, %%rsp\n", 1 * 8);
+			printf("  cmpl $0, %d(%%rsp)\n", -1 * 8);
+			printf("  jne .L%d\n", label1);
+			printf("  subq $%d, %%rsp\n", 1 * 8);
+			printf("  addq $%d, %%rsp\n", 1 * 8);
+			printf("  movl $0, %%eax\n"
+			       "  jmp .L%d\n"
+			       ".L%d:\n"
+			       "  movl $1, %%eax\n"
+			       ".L%d:\n"
+			       "  movl %%eax, (%%rsp)\n",
+			       label2, label1, label2);
 			return;
 		}
 		case LOGICAL_AND_EXPR: {
@@ -997,7 +1010,7 @@ int main(int argc, char const **argv)
 {
 	char *str;
 
-	str = calloc(10000, sizeof(char));
+	str = calloc(50000, sizeof(char));
 
 	/* const char* str = "123+456-789"; */
 	scanf("%[^\n]s", str); /* VULNERABLE!!! */

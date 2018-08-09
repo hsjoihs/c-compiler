@@ -435,29 +435,6 @@ void gen_ternary_part3(int label1, int label2)
 	       label2);
 }
 
-void gen_logical_OR_set(int depth, int label1)
-{
-	printf("//gen_logical_OR_set(%d, %d);\n", depth, label1);
-	printf("  addq $%d, %%rsp\n", depth * 8);
-	printf("  cmpl $0, %d(%%rsp)\n", -depth * 8);
-	printf("  jne .L%d\n", label1);
-	printf("  subq $%d, %%rsp\n", depth * 8);
-}
-
-void gen_logical_OR_final(int final_depth, int label1, int label2)
-{
-	printf("//gen_logical_OR_final(%d, %d, %d);\n", final_depth, label1,
-	       label2);
-	printf("  addq $%d, %%rsp\n", final_depth * 8);
-	printf("  movl $0, %%eax\n"
-	       "  jmp .L%d\n"
-	       ".L%d:\n"
-	       "  movl $1, %%eax\n"
-	       ".L%d:\n"
-	       "  movl %%eax, (%%rsp)\n",
-	       label2, label1, label2);
-}
-
 void gen_logical_AND_set(int depth, int label1)
 {
 	printf("//gen_logical_AND_set(%d, %d);\n", depth, label1);
