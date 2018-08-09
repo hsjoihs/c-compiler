@@ -552,16 +552,14 @@ struct Statement {
 
 static struct Statement
 parse_compound_statement(struct ParserState *ptr_ps,
-                         struct PrinterState *ptr_prs,
                          const struct Token **ptr_tokvec);
 
 static struct Statement parse_statement(struct ParserState *ptr_ps,
-                                        struct PrinterState *ptr_prs,
                                         const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 	if (tokvec[0].kind == LEFT_BRACE) {
-		struct Statement s = parse_compound_statement(ptr_ps, ptr_prs, &tokvec);
+		struct Statement s = parse_compound_statement(ptr_ps, &tokvec);
 		*ptr_tokvec = tokvec;
 		return s;
 	}
@@ -573,15 +571,14 @@ static struct Statement parse_statement(struct ParserState *ptr_ps,
 		struct Expression expr = parse_expression(ptr_ps, &tokvec);
 		expect_and_consume(&tokvec, RIGHT_PAREN, "right parenthesis of `if`");
 
-		struct Statement inner_s = parse_statement(ptr_ps, ptr_prs, &tokvec);
+		struct Statement inner_s = parse_statement(ptr_ps, &tokvec);
 
 		struct Statement *ptr_inner_s = calloc(1, sizeof(struct Statement));
 		*ptr_inner_s = inner_s;
 
 		if (tokvec[0].kind == RES_ELSE) { /* must bind to the most inner one */
 			++tokvec;
-			struct Statement inner_s2 =
-			    parse_statement(ptr_ps, ptr_prs, &tokvec);
+			struct Statement inner_s2 = parse_statement(ptr_ps, &tokvec);
 			struct Statement *ptr_inner_s2 =
 			    calloc(1, sizeof(struct Statement));
 			*ptr_inner_s2 = inner_s2;
@@ -632,7 +629,7 @@ static struct Statement parse_statement(struct ParserState *ptr_ps,
 	if (tokvec[0].kind == RES_DO) {
 		++tokvec;
 
-		struct Statement inner_s = parse_statement(ptr_ps, ptr_prs, &tokvec);
+		struct Statement inner_s = parse_statement(ptr_ps, &tokvec);
 
 		expect_and_consume(&tokvec, RES_WHILE, "`while` of do-while");
 		expect_and_consume(&tokvec, LEFT_PAREN, "left parenthesis of do-while");
@@ -663,7 +660,7 @@ static struct Statement parse_statement(struct ParserState *ptr_ps,
 
 		expect_and_consume(&tokvec, RIGHT_PAREN, "left parenthesis of while");
 
-		struct Statement inner_s = parse_statement(ptr_ps, ptr_prs, &tokvec);
+		struct Statement inner_s = parse_statement(ptr_ps, &tokvec);
 
 		*ptr_tokvec = tokvec;
 
@@ -727,7 +724,7 @@ static struct Statement parse_statement(struct ParserState *ptr_ps,
 		}
 		expect_and_consume(&tokvec, RIGHT_PAREN, "right parenthesis of `for`");
 
-		struct Statement inner_s = parse_statement(ptr_ps, ptr_prs, &tokvec);
+		struct Statement inner_s = parse_statement(ptr_ps, &tokvec);
 		*ptr_tokvec = tokvec;
 
 		*ptr_tokvec = tokvec;
@@ -757,7 +754,6 @@ static struct Statement parse_statement(struct ParserState *ptr_ps,
 
 static struct Statement
 parse_compound_statement(struct ParserState *ptr_ps,
-                         struct PrinterState *ptr_prs,
                          const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
@@ -825,7 +821,7 @@ parse_compound_statement(struct ParserState *ptr_ps,
 				*ptr_s = s;
 				push_vector(&statement.statement_vector, ptr_s);
 			} else {
-				struct Statement s = parse_statement(ptr_ps, ptr_prs, &tokvec);
+				struct Statement s = parse_statement(ptr_ps, &tokvec);
 				struct Statement *ptr_s = calloc(1, sizeof(struct Statement));
 				*ptr_s = s;
 				push_vector(&statement.statement_vector, ptr_s);
