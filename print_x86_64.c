@@ -732,3 +732,127 @@ void gen_logical_AND_part2(int label1, int label2)
 	printf(".L%d:\n", label2);
 	printf("  movl %%eax, (%%rsp)\n");
 }
+
+void gen_push_from_local_nbyte(int n, int offset)
+{
+	switch (n) {
+		case 1:
+			gen_push_from_local_1byte(offset);
+			break;
+		case 4:
+			gen_push_from_local_4byte(offset);
+			break;
+		case 8:
+			gen_push_from_local_8byte(offset);
+			break;
+		default:
+			fprintf(stderr, "Unsupported width\n");
+			exit(EXIT_FAILURE);
+	}
+}
+
+void gen_peek_deref_push_nbyte(int n)
+{
+	switch (n) {
+		case 1:
+			gen_peek_deref_push_1byte();
+			break;
+		case 4:
+			gen_peek_deref_push_4byte();
+			break;
+		case 8:
+			gen_peek_deref_push_8byte();
+			break;
+		default:
+			fprintf(stderr, "Unsupported width\n");
+			exit(EXIT_FAILURE);
+	}
+}
+
+void gen_push_from_global_nbyte(int n, const char *name)
+{
+	switch (n) {
+		case 1:
+			gen_push_from_global_1byte(name);
+			break;
+		case 4:
+			gen_push_from_global_4byte(name);
+			break;
+		case 8:
+			gen_push_from_global_8byte(name);
+			break;
+		default:
+			fprintf(stderr, "Unsupported width\n");
+			exit(EXIT_FAILURE);
+	}
+}
+
+void gen_assign_nbyte(int n)
+{
+	switch (n) {
+		case 1:
+			gen_assign_1byte();
+			break;
+		case 4:
+			gen_assign_4byte();
+			break;
+		case 8:
+			gen_assign_8byte();
+			break;
+		default:
+			fprintf(stderr, "Unsupported width\n");
+			exit(EXIT_FAILURE);
+	}
+}
+
+void gen_peek_and_dereference_nbyte(int n)
+{
+	switch (n) {
+		case 1:
+			gen_peek_and_dereference_1byte();
+			break;
+		case 4:
+			gen_peek_and_dereference_4byte();
+			break;
+		case 8:
+			gen_peek_and_dereference_8byte();
+			break;
+		default:
+			fprintf(stderr, "Unsupported width\n");
+			exit(EXIT_FAILURE);
+	}
+}
+
+void gen_push_ret_of_nbyte(int n, const char *ident_str)
+{
+	switch (n) {
+		case 1:
+			gen_push_ret_of_1byte(ident_str);
+			break;
+		case 4:
+			gen_push_ret_of_4byte(ident_str);
+			break;
+		case 8:
+			gen_push_ret_of_8byte(ident_str);
+			break;
+		default:
+			fprintf(stderr, "Unsupported width\n");
+			exit(EXIT_FAILURE);
+	}
+}
+
+void gen_epilogue_nbyte(int n, int label_name)
+{
+	switch (n) {
+		case 1:
+		case 4:
+			gen_epilogue(label_name);
+			break;
+		case 8:
+			gen_epilogue_8byte(label_name);
+			break;
+		default:
+			fprintf(stderr, "Unsupported width\n");
+			exit(EXIT_FAILURE);
+	}
+}

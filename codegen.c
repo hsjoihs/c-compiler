@@ -98,20 +98,8 @@ static void print_expression_as_lvalue(struct PrinterState *ptr_prs,
 			struct Type type = expr.details.type;
 
 			printf("//load from global `%s`\n", name);
-			switch (size_of(type)) {
-				case 1:
-					gen_push_from_global_1byte(name);
-					break;
-				case 4:
-					gen_push_from_global_4byte(name);
-					break;
-				case 8:
-					gen_push_from_global_8byte(name);
-					break;
-				default:
-					unsupported("Unsupported width in the "
-					            "assignment operation");
-			}
+			gen_push_from_global_nbyte(size_of(type), name);
+
 			return;
 		}
 		case UNARY_OP_EXPR:
@@ -119,19 +107,7 @@ static void print_expression_as_lvalue(struct PrinterState *ptr_prs,
 				case UNARY_OP_ASTERISK: {
 					print_expression(ptr_prs, *expr.ptr1);
 					struct Type type = expr.details.type;
-					switch (size_of(type)) {
-						case 1:
-							gen_peek_deref_push_1byte();
-							break;
-						case 4:
-							gen_peek_deref_push_4byte();
-							break;
-						case 8:
-							gen_peek_deref_push_8byte();
-							break;
-						default:
-							unsupported("Unsupported width in deref");
-					}
+					gen_peek_deref_push_nbyte(size_of(type));
 					return;
 				}
 				default:
@@ -196,19 +172,9 @@ static void print_expression(struct PrinterState *ptr_prs,
 				gen_push_address_of_local(expr.local_var_offset);
 				return;
 			}
-			switch (size_of(expr.details.type)) {
-				case 1:
-					gen_push_from_local_1byte(expr.local_var_offset);
-					break;
-				case 4:
-					gen_push_from_local_4byte(expr.local_var_offset);
-					break;
-				case 8:
-					gen_push_from_local_8byte(expr.local_var_offset);
-					break;
-				default:
-					unsupported("Unsupported width");
-			}
+			gen_push_from_local_nbyte(size_of(expr.details.type),
+			                          expr.local_var_offset);
+
 			return;
 		}
 
@@ -219,19 +185,10 @@ static void print_expression(struct PrinterState *ptr_prs,
 				gen_push_address_of_global(expr.global_var_name);
 				return;
 			}
-			switch (size_of(expr.details.type)) {
-				case 1:
-					gen_push_from_global_1byte(expr.global_var_name);
-					break;
-				case 4:
-					gen_push_from_global_4byte(expr.global_var_name);
-					break;
-				case 8:
-					gen_push_from_global_8byte(expr.global_var_name);
-					break;
-				default:
-					unsupported("Unsupported width in global var");
-			}
+
+			gen_push_from_global_nbyte(size_of(expr.details.type),
+			                           expr.global_var_name);
+
 			return;
 		}
 
@@ -274,20 +231,7 @@ static void print_expression(struct PrinterState *ptr_prs,
 
 			struct Type type = expr.ptr1->details.type;
 
-			switch (size_of(type)) {
-				case 1:
-					gen_assign_1byte();
-					break;
-				case 4:
-					gen_assign_4byte();
-					break;
-				case 8:
-					gen_assign_8byte();
-					break;
-				default:
-					unsupported("Unsupported width in the "
-					            "assignment operation");
-			}
+			gen_assign_nbyte(size_of(type));
 
 			return;
 		}
@@ -349,19 +293,8 @@ static void print_expression(struct PrinterState *ptr_prs,
 						/* do not dereference, if it is an array */
 						return;
 					}
-					switch (size_of(type)) {
-						case 1:
-							gen_peek_and_dereference_1byte();
-							break;
-						case 4:
-							gen_peek_and_dereference_4byte();
-							break;
-						case 8:
-							gen_peek_and_dereference_8byte();
-							break;
-						default:
-							unsupported("Unsupported width");
-					}
+					gen_peek_and_dereference_nbyte(size_of(type));
+
 					return;
 				}
 			}
@@ -405,19 +338,8 @@ static void print_expression(struct PrinterState *ptr_prs,
 						unsupported("Unsupported width");
 				}
 			}
-			switch (size_of(ret_type)) {
-				case 1:
-					gen_push_ret_of_1byte(ident_str);
-					break;
-				case 4:
-					gen_push_ret_of_4byte(ident_str);
-					break;
-				case 8:
-					gen_push_ret_of_8byte(ident_str);
-					break;
-				default:
-					unsupported("Unsupported width");
-			}
+			gen_push_ret_of_nbyte(size_of(ret_type), ident_str);
+
 			return;
 		}
 
@@ -1328,17 +1250,7 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
 	parseprint_compound_statement(ptr_ps, ptr_prs, &tokvec, sta);
 
 	gen_before_epilogue(label1, label2, -(ptr_ps->newest_offset));
-	switch (size_of(ret_type)) {
-		case 1:
-		case 4:
-			gen_epilogue(ptr_prs->return_label_name);
-			break;
-		case 8:
-			gen_epilogue_8byte(ptr_prs->return_label_name);
-			break;
-		default:
-			unsupported("Unsupported width");
-	}
+	gen_epilogue_nbyte(size_of(ret_type), ptr_prs->return_label_name);
 
 	*ptr_tokvec = tokvec2;
 }
