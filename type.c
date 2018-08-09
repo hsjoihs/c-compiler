@@ -205,24 +205,20 @@ void push_to_type3(struct Type3 *ptr, struct type3_elem tok)
 
 struct Type from_type3_to_type(const struct type3_elem *type3)
 {
+	struct Type type;
+	type.type_category = type3[0].type_category;
 	switch (type3[0].type_category) {
-		case INT_: {
-			struct Type type;
-			type.type_category = INT_;
+		case INT_:
 			return type;
-		}
-		case CHAR_: {
-			struct Type type;
-			type.type_category = CHAR_;
+
+		case CHAR_:
 			return type;
-		}
+
 		case PTR_: {
 			++type3;
 			struct Type *ptr_to_current_type = calloc(1, sizeof(struct Type));
 			*ptr_to_current_type = from_type3_to_type(type3);
 
-			struct Type type;
-			type.type_category = PTR_;
 			type.derived_from = ptr_to_current_type;
 			type.array_length = GARBAGE_INT;
 			return type;
@@ -232,8 +228,6 @@ struct Type from_type3_to_type(const struct type3_elem *type3)
 			struct Type *ptr_to_current_type = calloc(1, sizeof(struct Type));
 			*ptr_to_current_type = from_type3_to_type(type3);
 
-			struct Type type;
-			type.type_category = ARRAY;
 			type.derived_from = ptr_to_current_type;
 			type.array_length = type3[-1].array_length;
 			return type;
@@ -244,8 +238,6 @@ struct Type from_type3_to_type(const struct type3_elem *type3)
 			*ptr_to_current_type = from_type3_to_type(type3);
 			struct ParamInfos param_infos = type3[-1].param_infos;
 
-			struct Type type;
-			type.type_category = FN;
 			type.derived_from = ptr_to_current_type;
 			type.array_length = GARBAGE_INT;
 			type.param_infos = param_infos;
