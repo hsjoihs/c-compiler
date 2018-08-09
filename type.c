@@ -188,7 +188,6 @@ struct Type3 {
 	int length;
 	int _allocated_length;
 	struct type3_elem *vector;
-	const char *ident_str;
 };
 
 void push_to_type3(struct Type3 *ptr, struct type3_elem tok)
@@ -271,7 +270,6 @@ struct Type parse_declarator(const struct Token **ptr_tokvec,
 	type3.length = 0;
 	type3._allocated_length = 30;
 	type3.vector = calloc(30, sizeof(struct type3_elem));
-	type3.ident_str = NULL;
 
 	int asterisk_num = 0;
 	for (; tokvec[0].kind == OP_ASTERISK; ++tokvec) {
@@ -279,7 +277,7 @@ struct Type parse_declarator(const struct Token **ptr_tokvec,
 	}
 
 	if (tokvec[0].kind == IDENT_OR_RESERVED) {
-		type3.ident_str = tokvec[0].ident_str;
+		*ptr_to_ident_str = tokvec[0].ident_str;
 		++tokvec;
 	} else {
 		error_unexpected_token(tokvec, "an identifier in the declarator");
@@ -346,8 +344,6 @@ struct Type parse_declarator(const struct Token **ptr_tokvec,
 	}
 
 	*ptr_tokvec = tokvec;
-
-	*ptr_to_ident_str = type3.ident_str;
 
 	struct type3_elem i = {INT_, GARBAGE_INT, {(struct ParamInfo **)0}};
 	if (kind == RES_CHAR) {
