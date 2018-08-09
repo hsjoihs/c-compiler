@@ -641,7 +641,10 @@ static struct Statement parseprint_statement(struct ParserState *ptr_ps,
 				gen_jump(ptr_prs->return_label_name, "return");
 			}
 
-			return NOINFO;
+			struct Statement s;
+			s.category = RETURN_STATEMENT;
+			s.expr1 = expr;
+			return s;
 		}
 	}
 
@@ -814,7 +817,8 @@ static struct Statement parseprint_statement(struct ParserState *ptr_ps,
 		gen_label(label1);
 		print_expression(ptr_prs, expr2); /* expression2 */
 		gen_while_part2(label1, break_label);
-		parseprint_statement(ptr_ps, ptr_prs, &tokvec);
+		struct Statement inner_s =
+		    parseprint_statement(ptr_ps, ptr_prs, &tokvec);
 		gen_label(cont_label);
 		print_expression(ptr_prs, expr3);
 		gen_discard();
@@ -825,7 +829,16 @@ static struct Statement parseprint_statement(struct ParserState *ptr_ps,
 		ptr_prs->continue_label_name = stashed_continue_label;
 
 		*ptr_tokvec = tokvec;
-		return NOINFO;
+
+		struct Statement s;
+		s.category = FOR_STATEMENT;
+		s.expr1 = expr1;
+		s.expr2 = expr2;
+		s.expr3 = expr3;
+		struct Statement *ptr_inner_s = calloc(1, sizeof(struct Statement));
+		*ptr_inner_s = inner_s;
+		s.inner_statement = ptr_inner_s;
+		return s;
 	}
 
 	struct Expression expr = parse_expression(ptr_ps, &tokvec);
