@@ -214,9 +214,6 @@ struct Expression parse_cast_expression(struct ParserState *ptr_ps,
 struct Expression parse_logical_OR_expression(struct ParserState *ptr_ps,
                                               const struct Token **ptr_tokvec);
 
-struct Expression binary_op(struct Expression expr, struct Expression expr2,
-                            enum expr_category cat, struct ExprInfo exprinfo);
-
 enum SimpleBinOp to_simplebinop(enum TokenKind t);
 struct Expression simple_binary_op(struct Expression expr,
                                    struct Expression expr2, enum TokenKind kind,

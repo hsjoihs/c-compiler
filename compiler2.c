@@ -545,7 +545,7 @@ int get_new_label_name(struct PrinterState *ptr_prs)
 struct Expression integer_1(void)
 {
 	struct Expression expr;
-	expr.details = UNASSIGNABLE(INT_TYPE);
+	expr.details.type = INT_TYPE;
 	expr.int_value = 1;
 	expr.category = INT_VALUE;
 
