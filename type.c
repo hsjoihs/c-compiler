@@ -283,15 +283,13 @@ struct Type parse_declarator(const struct Token **ptr_tokvec,
 	type3.vector = calloc(30, sizeof(struct type3_elem));
 	type3.ident_str = NULL;
 
-	struct Type3 *ptr_type3 = &type3;
-
-	int ns = 0;
+	int asterisk_num = 0;
 	for (; tokvec[0].kind == OP_ASTERISK; ++tokvec) {
-		ns++;
+		asterisk_num++;
 	}
 
 	if (tokvec[0].kind == IDENT_OR_RESERVED) {
-		ptr_type3->ident_str = tokvec[0].ident_str;
+		type3.ident_str = tokvec[0].ident_str;
 		++tokvec;
 	} else {
 		error_unexpected_token(tokvec, "( or an identifier in the declarator");
@@ -309,7 +307,7 @@ struct Type parse_declarator(const struct Token **ptr_tokvec,
 			struct type3_elem a;
 			a.type_category = ARRAY_OF;
 			a.array_length = length;
-			push_to_type3(ptr_type3, a);
+			push_to_type3(&type3, a);
 			continue;
 		}
 		if (tokvec[0].kind != LEFT_PAREN) {
@@ -322,7 +320,7 @@ struct Type parse_declarator(const struct Token **ptr_tokvec,
 			struct type3_elem f;
 			f.type_category = FUNCTION_RETURNING;
 			f.param_infos.param_vec = (struct ParamInfo **)0;
-			push_to_type3(ptr_type3, f);
+			push_to_type3(&type3, f);
 		} else if (can_start_a_type(tokvec)) {
 			struct type3_elem f;
 			f.type_category = FUNCTION_RETURNING;
@@ -345,17 +343,17 @@ struct Type parse_declarator(const struct Token **ptr_tokvec,
 
 			f.param_infos.param_vec[i] = (struct ParamInfo *)0;
 
-			push_to_type3(ptr_type3, f);
+			push_to_type3(&type3, f);
 
 			expect_and_consume(&tokvec, RIGHT_PAREN,
 			                   "closing ) while parsing functional type");
 		}
 	}
 
-	while (ns-- > 0) {
+	while (asterisk_num-- > 0) {
 		struct type3_elem p = {
 		    POINTER_TO, GARBAGE_INT, {(struct ParamInfo **)0}};
-		push_to_type3(ptr_type3, p);
+		push_to_type3(&type3, p);
 	}
 
 	*ptr_tokvec = tokvec;
