@@ -533,7 +533,8 @@ enum StatementCategory {
 	CONTINUE_STATEMENT,
 	TOPLEVEL_VAR_DEFINITION,
 	TOPLEVEL_FUNCTION_DEFINITION,
-	EXPRESSION_STATEMENT
+	EXPRESSION_STATEMENT,
+	DECLARATION_STATEMENT,
 };
 
 struct Statement {
@@ -543,6 +544,10 @@ struct Statement {
 	struct Expression expr2;
 	struct Expression expr3;
 	struct Statement *inner_statement;
+	struct {
+		struct Type type;
+		const char *ident_str;
+	} declaration;
 };
 
 struct Statement NOINFO = {UNKNOWN};
@@ -868,6 +873,9 @@ parseprint_compound_statement(struct ParserState *ptr_ps,
                               const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
+	struct Statement statement;
+	statement.category = COMPOUND_STATEMENT;
+	statement.statement_vector = init_vector();
 	if (tokvec[0].kind == LEFT_BRACE) {
 
 		struct LocalVarTableList current_table = ptr_ps->scope_chain;
@@ -891,7 +899,7 @@ parseprint_compound_statement(struct ParserState *ptr_ps,
 				*ptr_tokvec = tokvec;
 				ptr_ps->scope_chain = current_table;
 
-				return NOINFO;
+				return statement;
 			} else if (can_start_a_type(tokvec)) {
 				struct Type vartype;
 
@@ -920,8 +928,20 @@ parseprint_compound_statement(struct ParserState *ptr_ps,
 				insert(&map_, str, ptr_varinfo);
 
 				ptr_ps->scope_chain.var_table = map_;
+
+				struct Statement s;
+				s.category = DECLARATION_STATEMENT;
+				s.declaration.type = vartype;
+				s.declaration.ident_str = str;
+				struct Statement *ptr_s = calloc(1, sizeof(struct Statement));
+				*ptr_s = s;
+				push_vector(&statement.statement_vector, ptr_s);
 			} else {
-				parseprint_statement(ptr_ps, ptr_prs, &tokvec);
+				struct Statement s =
+				    parseprint_statement(ptr_ps, ptr_prs, &tokvec);
+				struct Statement *ptr_s = calloc(1, sizeof(struct Statement));
+				*ptr_s = s;
+				push_vector(&statement.statement_vector, ptr_s);
 			}
 		}
 	}
