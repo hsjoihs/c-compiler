@@ -842,7 +842,7 @@ static struct Statement parseprint_statement(struct ParserState *ptr_ps,
                                              struct Statement sta)
 {
 	const struct Token *tokvec = *ptr_tokvec;
-	if (tokvec[0].kind == LEFT_BRACE) {
+	if (sta.category == COMPOUND_STATEMENT) {
 		const struct Token *tokvec2 = tokvec;
 		struct Statement s = parse_compound_statement(ptr_ps, &tokvec2);
 		parseprint_compound_statement(ptr_ps, ptr_prs, &tokvec);
@@ -852,7 +852,7 @@ static struct Statement parseprint_statement(struct ParserState *ptr_ps,
 		return s;
 	}
 
-	if (tokvec[0].kind == RES_IF) { /* or SWITCH */
+	if (sta.category == IF_STATEMENT || sta.category == IF_ELSE_STATEMENT) {
 		++tokvec;
 		expect_and_consume(&tokvec, LEFT_PAREN,
 		                   "left parenthesis immediately after `if`");
@@ -920,7 +920,7 @@ static struct Statement parseprint_statement(struct ParserState *ptr_ps,
 		}
 	}
 
-	if (tokvec[0].kind == RES_RETURN) {
+	if (sta.category == RETURN_STATEMENT) {
 		++tokvec;
 		*ptr_tokvec = tokvec;
 		if (tokvec[0].kind == SEMICOLON) {
@@ -951,7 +951,7 @@ static struct Statement parseprint_statement(struct ParserState *ptr_ps,
 		}
 	}
 
-	if (tokvec[0].kind == RES_DO) {
+	if (sta.category == DO_WHILE_STATEMENT) {
 		++tokvec;
 
 		int stashed_break_label = ptr_prs->break_label_name;
@@ -999,7 +999,7 @@ static struct Statement parseprint_statement(struct ParserState *ptr_ps,
 		return s;
 	}
 
-	if (tokvec[0].kind == RES_WHILE) {
+	if (sta.category == WHILE_STATEMENT) {
 		++tokvec;
 
 		int stashed_break_label = ptr_prs->break_label_name;
@@ -1048,7 +1048,7 @@ static struct Statement parseprint_statement(struct ParserState *ptr_ps,
 		return s;
 	}
 
-	if (tokvec[0].kind == RES_BREAK) {
+	if (sta.category == BREAK_STATEMENT) {
 		++tokvec;
 		expect_and_consume(&tokvec, SEMICOLON, "semicolon after `break`");
 		*ptr_tokvec = tokvec;
@@ -1065,7 +1065,7 @@ static struct Statement parseprint_statement(struct ParserState *ptr_ps,
 		return s;
 	}
 
-	if (tokvec[0].kind == RES_CONTINUE) {
+	if (sta.category == CONTINUE_STATEMENT) {
 		++tokvec;
 		expect_and_consume(&tokvec, SEMICOLON, "semicolon after `continue`");
 		*ptr_tokvec = tokvec;
@@ -1082,7 +1082,7 @@ static struct Statement parseprint_statement(struct ParserState *ptr_ps,
 		return s;
 	}
 
-	if (tokvec[0].kind == RES_FOR) {
+	if (sta.category == FOR_STATEMENT) {
 		int stashed_break_label = ptr_prs->break_label_name;
 		int stashed_continue_label = ptr_prs->continue_label_name;
 		int label1 = get_new_label_name(ptr_prs);
@@ -1150,6 +1150,7 @@ static struct Statement parseprint_statement(struct ParserState *ptr_ps,
 		return s;
 	}
 
+	assert(sta.category == EXPRESSION_STATEMENT);
 	struct Expression expr = parse_expression(ptr_ps, &tokvec);
 
 	print_expression(ptr_prs, expr);
