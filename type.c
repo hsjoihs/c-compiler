@@ -266,9 +266,14 @@ struct ParamInfo *parse_param(const struct Token **ptr_tokvec)
 	return ptr_param_info;
 }
 
-void parse_dirdcl(const struct Token **ptr_tokvec, struct Type3 *ptr_type3)
+void parse_dcl(const struct Token **ptr_tokvec, struct Type3 *ptr_type3)
 {
 	const struct Token *tokvec = *ptr_tokvec;
+
+	int ns = 0;
+	for (; tokvec[0].kind == OP_ASTERISK; ++tokvec) {
+		ns++;
+	}
 
 	if (tokvec[0].kind == IDENT_OR_RESERVED) {
 		ptr_type3->ident_str = tokvec[0].ident_str;
@@ -334,19 +339,6 @@ void parse_dirdcl(const struct Token **ptr_tokvec, struct Type3 *ptr_type3)
 			}
 		}
 	}
-	*ptr_tokvec = tokvec;
-}
-
-void parse_dcl(const struct Token **ptr_tokvec, struct Type3 *ptr_type3)
-{
-	const struct Token *tokvec = *ptr_tokvec;
-
-	int ns = 0;
-	for (; tokvec[0].kind == OP_ASTERISK; ++tokvec) {
-		ns++;
-	}
-
-	parse_dirdcl(&tokvec, ptr_type3);
 
 	while (ns-- > 0) {
 		struct type3_elem p = {
