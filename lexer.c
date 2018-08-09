@@ -4,8 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-static int from_hex(char c);
-
 void read_all_tokens_debug(const char *str)
 {
 	struct Token tok;
@@ -482,37 +480,11 @@ struct Token get_token(const char **ptr_to_str)
 	if (*str == '0') {
 		t.kind = LIT_DEC_INTEGER;
 		t.int_value = 0;
-		if (str[1] == 'x' || str[1] == 'X') {
-			unsupported("hex");
-			str += 2;
-			/* hexadecimal */
-			do {
-				if (from_hex(*str) != -1) {
-					t.int_value *= 16;
-					t.int_value += from_hex(*str);
-					++str;
-				} else {
-					*ptr_to_str = str;
-					return t;
-				}
-			} while (1);
-		} else {
-			++str;
 
-			do {
-				if (*str >= '0' &&
-				    *str <= '7') { /* portable, since it is guaranteed
-					                  that '0' - '9' are consecutive */
-					unsupported("octal");
-					t.int_value *= 8;
-					t.int_value += *str - '0'; /* portable */
-					++str;
-				} else {
-					*ptr_to_str = str;
-					return t;
-				}
-			} while (1);
-		}
+		++str;
+
+		*ptr_to_str = str;
+		return t;
 	}
 
 	if (*str >= '1' && *str <= '9') {
@@ -599,43 +571,6 @@ struct Token get_token(const char **ptr_to_str)
 
 	fprintf(stderr, "Found unexpected character: '%c' (%d)\n", *str, (int)*str);
 	exit(EXIT_FAILURE);
-}
-
-static int from_hex(char c)
-{
-	switch (c) {
-		case '0':
-		case '1':
-		case '2':
-		case '3':
-		case '4':
-		case '5':
-		case '6':
-		case '7':
-		case '8':
-		case '9':
-			return c - '0';
-
-		/* works for EBCDIC, too! */
-		case 'a':
-		case 'b':
-		case 'c':
-		case 'd':
-		case 'e':
-		case 'f':
-			return c - 'a' + 10;
-
-		case 'A':
-		case 'B':
-		case 'C':
-		case 'D':
-		case 'E':
-		case 'F':
-			return c - 'A' + 10;
-
-		default:
-			return -1;
-	}
 }
 
 static int count_all_tokens(const char *str);
