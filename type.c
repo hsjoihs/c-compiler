@@ -307,7 +307,7 @@ struct Type parse_declarator(const struct Token **ptr_tokvec,
 			++tokvec;
 			struct type3_elem f;
 			f.type_category = FN;
-			f.param_infos.param_vec = (struct ParamInfo **)0;
+			f.param_infos.param_vec = (struct ParamInfo **)0; /* crucial */
 			push_to_type3(&type3, f);
 		} else if (can_start_a_type(tokvec)) {
 			struct type3_elem f;
@@ -329,7 +329,7 @@ struct Type parse_declarator(const struct Token **ptr_tokvec,
 				i++;
 			}
 
-			f.param_infos.param_vec[i] = (struct ParamInfo *)0;
+			f.param_infos.param_vec[i] = (struct ParamInfo *)0; /* crucial */
 
 			push_to_type3(&type3, f);
 
