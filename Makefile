@@ -37,11 +37,15 @@ intmap_check:
 	./out/intmap_check.out
 
 compile_file:
+	clang-format -i misc/*.c -style=file
 	make supplement
 	make notest
 	cat misc/nqueen2.c | ./out/compiler.out > s/nqueen2.s
 	gcc s/nqueen2.s s/supplement.s -o out/nqueen2.out
 	./out/nqueen2.out
+	cat misc/nqueen3.c | ./out/compiler.out > s/nqueen3.s
+	gcc s/nqueen3.s s/supplement.s -o out/nqueen3.out
+	./out/nqueen3.out
 	cat misc/nqueen4.c | ./out/compiler.out > s/nqueen4.s
 	gcc s/nqueen4.s s/supplement.s -o out/nqueen4.out
 	./out/nqueen4.out
