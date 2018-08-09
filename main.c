@@ -5,12 +5,23 @@
 
 int main(int argc, char const **argv)
 {
-	char *str;
 
-	str = calloc(50000, sizeof(char));
+	int size = 1;
+	int capacity = 50000;
+	char *str = calloc(capacity, sizeof(char));
+	char *buffer = calloc(1024, sizeof(char));
 
-	/* const char* str = "123+456-789"; */
-	scanf("%[^\n]s", str); /* VULNERABLE!!! */
+	while (fgets(buffer, 1024, stdin)) {
+		size += strlen(buffer);
+		if (size > capacity) {
+			do {
+				capacity *= 2;
+			} while (size > capacity);
+			str = realloc(str, capacity);
+		}
+		strcat(str, buffer);
+	}
+
 	if (argc == 2) {
 		if (strcmp(argv[1], "--lexer-debug") == 0) {
 			read_all_tokens_debug(str);

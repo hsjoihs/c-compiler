@@ -14,6 +14,7 @@ test_all_:
 	make intmap_check
 	make assembly_sandbox
 	make full_compile
+	make compile_file
 	make check_error
 
 format:
@@ -34,6 +35,16 @@ assembly_sandbox:
 intmap_check:
 	clang -Wall -Wextra -Wimplicit-fallthrough map.c intmap_check.c -o out/intmap_check.out
 	./out/intmap_check.out
+
+compile_file:
+	make supplement
+	make notest
+	cat misc/nqueen2.c | ./out/compiler.out > s/nqueen2.s
+	gcc s/nqueen2.s s/supplement.s -o out/nqueen2.out
+	./out/nqueen2.out
+	cat misc/nqueen4.c | ./out/compiler.out > s/nqueen4.s
+	gcc s/nqueen4.s s/supplement.s -o out/nqueen4.out
+	./out/nqueen4.out
 
 warn:
 	make format
