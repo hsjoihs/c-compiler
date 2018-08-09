@@ -558,9 +558,10 @@ static struct Statement parseprint_statement(struct ParserState *ptr_ps,
 {
 	const struct Token *tokvec = *ptr_tokvec;
 	if (tokvec[0].kind == LEFT_BRACE) {
-		parseprint_compound_statement(ptr_ps, ptr_prs, &tokvec);
+		struct Statement s =
+		    parseprint_compound_statement(ptr_ps, ptr_prs, &tokvec);
 		*ptr_tokvec = tokvec;
-		return NOINFO;
+		return s;
 	}
 
 	if (tokvec[0].kind == RES_IF) { /* or SWITCH */
@@ -589,13 +590,19 @@ static struct Statement parseprint_statement(struct ParserState *ptr_ps,
 			struct Statement inner_s2 =
 			    parseprint_statement(ptr_ps, ptr_prs, &tokvec);
 			gen_if_else_part3(label1, label2);
+			struct Statement *ptr_inner_s2 =
+			    calloc(1, sizeof(struct Statement));
+			*ptr_inner_s2 = inner_s2;
 
 			*ptr_tokvec = tokvec;
 
 			struct Statement s;
 			s.category = IF_ELSE_STATEMENT;
 			s.expr1 = expr;
-			return NOINFO;
+			s.statement_vector = init_vector();
+			push_vector(&s.statement_vector, ptr_inner_s);
+			push_vector(&s.statement_vector, ptr_inner_s2);
+			return s;
 		} else {
 			gen_if_else_part3(label1, label2);
 
