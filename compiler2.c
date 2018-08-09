@@ -268,16 +268,12 @@ void print_expression_(struct PrinterState *ptr_prs, struct Expression expr)
 			int label2 = get_new_label_name(ptr_prs);
 			print_expression_(ptr_prs, *expr.ptr1);
 
-			printf("  addq $%d, %%rsp\n", 0 * 8);
-			printf("  cmpl $0, %d(%%rsp)\n", -0 * 8);
+			printf("  cmpl $0, (%%rsp)\n");
 			printf("  jne .L%d\n", label1);
-			printf("  subq $%d, %%rsp\n", 0 * 8);
 			print_expression_(ptr_prs, *expr.ptr2);
-			printf("  addq $%d, %%rsp\n", 1 * 8);
-			printf("  cmpl $0, %d(%%rsp)\n", -1 * 8);
+			printf("  addq $8, %%rsp\n");
+			printf("  cmpl $0, -8(%%rsp)\n");
 			printf("  jne .L%d\n", label1);
-			printf("  subq $%d, %%rsp\n", 1 * 8);
-			printf("  addq $%d, %%rsp\n", 1 * 8);
 			printf("  movl $0, %%eax\n"
 			       "  jmp .L%d\n"
 			       ".L%d:\n"
