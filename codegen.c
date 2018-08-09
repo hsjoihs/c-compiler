@@ -524,6 +524,31 @@ struct Expression integer_1(void)
 	return expr;
 }
 
+enum StatementCategory {
+	UNKNOWN = 1,
+	COMPOUND_STATEMENT,
+	IF_STATEMENT,
+	FOR_STATEMENT,
+	WHILE_STATEMENT,
+	DO_WHILE_STATEMENT,
+	RETURN_STATEMENT,
+	BREAK_STATEMENT,
+	CONTINUE_STATEMENT,
+	TOPLEVEL_VAR_DEFINITION,
+	TOPLEVEL_FUNCTION_DEFINITION,
+};
+
+struct Statement {
+	enum StatementCategory category;
+	struct Vector statement_vector;
+	struct Expression expr1;
+	struct Expression expr2;
+	struct Expression expr3;
+	struct Statement *inner_statement;
+};
+
+struct Statement NOINFO = {UNKNOWN};
+
 static void parseprint_statement(struct ParserState *ptr_ps,
                                  struct PrinterState *ptr_prs,
                                  const struct Token **ptr_tokvec)
