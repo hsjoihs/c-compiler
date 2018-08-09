@@ -2,7 +2,7 @@
 #include <assert.h>
 #include <stdlib.h>
 
-struct Vector init_vector()
+struct Vector init_vector(void)
 {
 	struct Vector res;
 	res.length = 0;

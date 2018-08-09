@@ -188,7 +188,7 @@ struct Elem {
 static struct Type from_type3_to_type(const void **type3)
 {
 	struct Type type;
-	struct Elem elem = *(struct Elem *)type3[0];
+	struct Elem elem = *(const struct Elem *)type3[0];
 	type.type_category = elem.type_category;
 	switch (elem.type_category) {
 		case INT_:
@@ -243,9 +243,9 @@ struct Type parse_declarator(const struct Token **ptr_tokvec,
 {
 	const struct Token *tokvec = *ptr_tokvec;
 
-	enum TokenKind kind = tokvec[0].kind;
+	enum TokenKind base_type = tokvec[0].kind;
 
-	if (kind != RES_INT && kind != RES_CHAR) {
+	if (base_type != RES_INT && base_type != RES_CHAR) {
 		error_unexpected_token(tokvec, "type name `int` or `char`");
 	}
 	++tokvec;
@@ -335,7 +335,7 @@ struct Type parse_declarator(const struct Token **ptr_tokvec,
 	*ptr_tokvec = tokvec;
 
 	struct Elem i = {INT_, GARBAGE_INT, {(struct ParamInfo **)0}};
-	if (kind == RES_CHAR) {
+	if (base_type == RES_CHAR) {
 		i.type_category = CHAR_;
 	}
 	struct Elem *ptr = calloc(1, sizeof(struct Elem));
