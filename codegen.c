@@ -1149,9 +1149,6 @@ static void parseprint_compound_statement(struct ParserState *ptr_ps,
                                           struct Statement sta)
 {
 	const struct Token *tokvec = *ptr_tokvec;
-	struct Statement statement;
-	statement.category = COMPOUND_STATEMENT;
-	statement.statement_vector = init_vector();
 	{
 
 		struct LocalVarTableList current_table = ptr_ps->scope_chain;
@@ -1168,7 +1165,6 @@ static void parseprint_compound_statement(struct ParserState *ptr_ps,
 		ptr_ps->scope_chain = new_table;
 
 		++tokvec;
-		*ptr_tokvec = tokvec;
 		while (1) {
 			if (tokvec[0].kind == RIGHT_BRACE) {
 				++tokvec;
@@ -1211,7 +1207,6 @@ static void parseprint_compound_statement(struct ParserState *ptr_ps,
 				s.declaration.ident_str = str;
 				struct Statement *ptr_s = calloc(1, sizeof(struct Statement));
 				*ptr_s = s;
-				push_vector(&statement.statement_vector, ptr_s);
 			} else {
 				const struct Token *tokvec2 = tokvec;
 				struct Statement s = parse_statement(ptr_ps, &tokvec2);
@@ -1219,7 +1214,6 @@ static void parseprint_compound_statement(struct ParserState *ptr_ps,
 				assert(tokvec2 == tokvec);
 				struct Statement *ptr_s = calloc(1, sizeof(struct Statement));
 				*ptr_s = s;
-				push_vector(&statement.statement_vector, ptr_s);
 			}
 		}
 	}
