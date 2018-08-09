@@ -124,7 +124,7 @@ void expect_and_consume(const struct Token **ptr_tokvec, enum TokenKind kind,
 _Noreturn void error_unexpected_token(const struct Token *tokvec,
                                       const char *str);
 
-struct Token *read_all_tokens_(const char *str);
+struct Token *read_all_tokens(const char *str);
 
 void debug_print_type(struct Type type);
 
@@ -214,9 +214,8 @@ struct Expression parse_cast_expression(struct ParserState *ptr_ps,
 struct Expression parse_logical_OR_expression(struct ParserState *ptr_ps,
                                               const struct Token **ptr_tokvec);
 
-struct Expression remove_leftiness_(struct Expression expr);
-struct Expression binary_op_(struct Expression expr, struct Expression expr2,
-                             enum expr_category cat, struct ExprInfo exprinfo);
+struct Expression binary_op(struct Expression expr, struct Expression expr2,
+                            enum expr_category cat, struct ExprInfo exprinfo);
 
 enum SimpleBinOp to_simplebinop(enum TokenKind t);
 struct Expression simple_binary_op(struct Expression expr,

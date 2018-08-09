@@ -628,7 +628,7 @@ static int from_hex(char c)
 
 static int count_all_tokens(const char *str);
 
-struct Token *read_all_tokens_(const char *str)
+struct Token *read_all_tokens(const char *str)
 {
 	struct Token tok;
 	int tok_num;

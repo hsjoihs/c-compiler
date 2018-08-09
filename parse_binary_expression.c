@@ -75,8 +75,8 @@ static struct Expression
 parse_logical_AND_expression(struct ParserState *ptr_ps,
                              const struct Token **ptr_tokvec);
 
-struct Expression binary_op_(struct Expression expr, struct Expression expr2,
-                             enum expr_category cat, struct ExprInfo exprinfo)
+struct Expression binary_op(struct Expression expr, struct Expression expr2,
+                            enum expr_category cat, struct ExprInfo exprinfo)
 {
 	struct Expression *ptr_expr1 = calloc(1, sizeof(struct Expression));
 	struct Expression *ptr_expr2 = calloc(1, sizeof(struct Expression));
@@ -310,8 +310,8 @@ struct Expression combine_by_add_or_sub(struct Expression expr,
 			return pointer_plusorminus_int(expr, expr2, kind);
 		} else {
 			/* pointer minus pointer */
-			return binary_op_(expr, expr2, POINTER_MINUS_POINTER,
-			                  UNASSIGNABLE(INT_TYPE));
+			return binary_op(expr, expr2, POINTER_MINUS_POINTER,
+			                 UNASSIGNABLE(INT_TYPE));
 		}
 	}
 	fprintf(stderr, "fail\n");
@@ -387,8 +387,8 @@ parse_logical_AND_expression(struct ParserState *ptr_ps,
 		    parse_inclusive_OR_expression(ptr_ps, &tokvec);
 		++counter;
 
-		first_expr = binary_op_(first_expr, expr2, LOGICAL_AND_EXPR,
-		                        UNASSIGNABLE(INT_TYPE));
+		first_expr = binary_op(first_expr, expr2, LOGICAL_AND_EXPR,
+		                       UNASSIGNABLE(INT_TYPE));
 	}
 
 	*ptr_tokvec = tokvec;
@@ -411,7 +411,7 @@ struct Expression parse_logical_OR_expression(struct ParserState *ptr_ps,
 		++tokvec;
 		struct Expression expr2 = parse_logical_AND_expression(ptr_ps, &tokvec);
 
-		expr = binary_op_(expr, expr2, LOGICAL_OR_EXPR, UNASSIGNABLE(INT_TYPE));
+		expr = binary_op(expr, expr2, LOGICAL_OR_EXPR, UNASSIGNABLE(INT_TYPE));
 	}
 
 	*ptr_tokvec = tokvec;
