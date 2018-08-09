@@ -219,10 +219,6 @@ void print_simple_binary_op(enum SimpleBinOp kind);
 
 enum UnaryOp to_unaryop(enum TokenKind t);
 
-struct Expression combine_by_add_or_sub(struct Expression expr,
-                                        struct Expression expr2,
-                                        enum TokenKind kind);
-
 int is_array(struct Type t);
 struct Type if_array_convert_to_ptr(struct Type t);
 enum SimpleBinOp op_before_assign(enum TokenKind kind);
