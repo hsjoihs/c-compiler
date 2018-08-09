@@ -150,8 +150,8 @@ struct Expression parse_inclusive_OR_expression(struct ParserState *ptr_ps,
 
 		struct Expression expr2 =
 		    remove_leftiness_(parse_exclusive_OR_expression(ptr_ps, &tokvec));
-		expect_type(expr.details, INT_TYPE, 3);
-		expect_type(expr2.details, INT_TYPE, 4);
+		expect_type(expr.details, INT_TYPE, "left operand of bitOR");
+		expect_type(expr2.details, INT_TYPE, "right operand of bitOR");
 		expr = simple_binary_op(expr, expr2, kind, UNASSIGNABLE(INT_TYPE));
 	}
 	*ptr_tokvec = tokvec;
@@ -174,8 +174,8 @@ struct Expression parse_exclusive_OR_expression(struct ParserState *ptr_ps,
 
 		struct Expression expr2 =
 		    remove_leftiness_(parse_AND_expression(ptr_ps, &tokvec));
-		expect_type(expr.details, INT_TYPE, 5);
-		expect_type(expr2.details, INT_TYPE, 6);
+		expect_type(expr.details, INT_TYPE, "left operand of XOR");
+		expect_type(expr2.details, INT_TYPE, "right operand of XOR");
 		expr = simple_binary_op(expr, expr2, kind, UNASSIGNABLE(INT_TYPE));
 	}
 	*ptr_tokvec = tokvec;
@@ -198,8 +198,8 @@ struct Expression parse_AND_expression(struct ParserState *ptr_ps,
 
 		struct Expression expr2 =
 		    remove_leftiness_(parse_equality_expression(ptr_ps, &tokvec));
-		expect_type(expr.details, INT_TYPE, 7);
-		expect_type(expr2.details, INT_TYPE, 8);
+		expect_type(expr.details, INT_TYPE, "left operand of bitAND");
+		expect_type(expr2.details, INT_TYPE, "right operand of bitAND");
 		expr = simple_binary_op(expr, expr2, kind, UNASSIGNABLE(INT_TYPE));
 	}
 	*ptr_tokvec = tokvec;
@@ -222,8 +222,10 @@ struct Expression parse_equality_expression(struct ParserState *ptr_ps,
 
 		struct Expression expr2 =
 		    remove_leftiness_(parse_relational_expression(ptr_ps, &tokvec));
-		expect_type(expr.details, INT_TYPE, 9);
-		expect_type(expr2.details, INT_TYPE, 10);
+		expect_type(expr.details, INT_TYPE,
+		            "left operand of an equality operator");
+		expect_type(expr2.details, INT_TYPE,
+		            "right operand of an equality operator");
 		expr = simple_binary_op(expr, expr2, kind, UNASSIGNABLE(INT_TYPE));
 	}
 	*ptr_tokvec = tokvec;
@@ -246,8 +248,10 @@ struct Expression parse_relational_expression(struct ParserState *ptr_ps,
 
 		struct Expression expr2 =
 		    remove_leftiness_(parse_shift_expression(ptr_ps, &tokvec));
-		expect_type(expr.details, INT_TYPE, 11);
-		expect_type(expr2.details, INT_TYPE, 12);
+		expect_type(expr.details, INT_TYPE,
+		            "left operand of a relational operator");
+		expect_type(expr2.details, INT_TYPE,
+		            "right operand of a relational operator");
 		expr = simple_binary_op(expr, expr2, kind, UNASSIGNABLE(INT_TYPE));
 	}
 	*ptr_tokvec = tokvec;
@@ -269,8 +273,9 @@ struct Expression parse_shift_expression(struct ParserState *ptr_ps,
 
 		struct Expression expr2 =
 		    remove_leftiness_(parse_additive_expression(ptr_ps, &tokvec));
-		expect_type(expr.details, INT_TYPE, 13);
-		expect_type(expr2.details, INT_TYPE, 14);
+		expect_type(expr.details, INT_TYPE, "left operand of a shift operator");
+		expect_type(expr2.details, INT_TYPE,
+		            "left operand of a shift operator");
 		expr = simple_binary_op(expr, expr2, kind, UNASSIGNABLE(INT_TYPE));
 	}
 	*ptr_tokvec = tokvec;
@@ -300,9 +305,8 @@ struct Expression combine_by_add_or_sub(struct Expression expr,
 	} else if (is_pointer(type1)) {
 		// int size = size_of(deref_type(expr_info.type));
 		if (kind == OP_PLUS) {
-			expect_type(expr2.details, INT_TYPE, 30);
-			/* cannot add a pointer to a pointer*/
-
+			expect_type(expr2.details, INT_TYPE,
+			            "cannot add a pointer to a pointer");
 			return pointer_plusorminus_int(expr, expr2, kind);
 		} else if (is_compatible(type2, INT_TYPE)) {
 
@@ -355,8 +359,10 @@ parse_multiplicative_expression(struct ParserState *ptr_ps,
 
 		struct Expression expr2 =
 		    remove_leftiness_(parse_cast_expression(ptr_ps, &tokvec));
-		expect_type(expr.details, INT_TYPE, 17);
-		expect_type(expr2.details, INT_TYPE, 18);
+		expect_type(expr.details, INT_TYPE,
+		            "left operand of an multiplicative operator");
+		expect_type(expr2.details, INT_TYPE,
+		            "right operand of an multiplicative operator");
 
 		expr = simple_binary_op(expr, expr2, kind, UNASSIGNABLE(INT_TYPE));
 	}

@@ -603,7 +603,8 @@ void parseprint_statement(struct ParserState *ptr_ps,
 		} else {
 			struct Expression expr = parse_expression(ptr_ps, &tokvec);
 			struct ExprInfo expr_info = expr.details;
-			expect_type(expr_info, ptr_ps->func_ret_type, 20);
+			expect_type(expr_info, ptr_ps->func_ret_type,
+			            "mismatched type in the return value");
 			expect_and_consume(
 			    &tokvec, SEMICOLON,
 			    "semicolon after `return` followed by an expression");

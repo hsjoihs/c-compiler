@@ -115,7 +115,8 @@ void debug_print_type(struct Type type)
 	}
 }
 
-void expect_type(struct ExprInfo expr_info, struct Type expected_type, int id)
+void expect_type(struct ExprInfo expr_info, struct Type expected_type,
+                 const char *message)
 {
 
 	if (!is_compatible(expr_info.type, expected_type)) {
@@ -124,7 +125,7 @@ void expect_type(struct ExprInfo expr_info, struct Type expected_type, int id)
 		fprintf(stderr, "`, but got `");
 		debug_print_type(expr_info.type);
 		fprintf(stderr, "`.\n");
-		fprintf(stderr, "Debug info: my typecheck # is %d\n", id);
+		fprintf(stderr, "context: %s\n", message);
 		exit(EXIT_FAILURE);
 	}
 }
