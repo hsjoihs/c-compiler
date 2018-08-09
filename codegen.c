@@ -836,10 +836,10 @@ parseprint_compound_statement(struct ParserState *ptr_ps,
                               struct PrinterState *ptr_prs,
                               const struct Token **ptr_tokvec);
 
-static struct Statement parseprint_statement(struct ParserState *ptr_ps,
-                                             struct PrinterState *ptr_prs,
-                                             const struct Token **ptr_tokvec,
-                                             struct Statement sta)
+static void parseprint_statement(struct ParserState *ptr_ps,
+                                 struct PrinterState *ptr_prs,
+                                 const struct Token **ptr_tokvec,
+                                 struct Statement sta)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 	if (sta.category == COMPOUND_STATEMENT) {
@@ -849,7 +849,7 @@ static struct Statement parseprint_statement(struct ParserState *ptr_ps,
 		assert(tokvec2 == tokvec);
 
 		*ptr_tokvec = tokvec;
-		return s;
+		return;
 	}
 
 	if (sta.category == IF_STATEMENT || sta.category == IF_ELSE_STATEMENT) {
@@ -895,7 +895,7 @@ static struct Statement parseprint_statement(struct ParserState *ptr_ps,
 			s.statement_vector = init_vector();
 			push_vector(&s.statement_vector, ptr_inner_s);
 			push_vector(&s.statement_vector, ptr_inner_s2);
-			return s;
+			return;
 		} else {
 			*ptr_tokvec = tokvec;
 
@@ -916,7 +916,7 @@ static struct Statement parseprint_statement(struct ParserState *ptr_ps,
 			gen_if_else_part2(label1, label2);
 			gen_if_else_part3(label1, label2);
 
-			return s;
+			return;
 		}
 	}
 
@@ -937,7 +937,7 @@ static struct Statement parseprint_statement(struct ParserState *ptr_ps,
 		struct Statement s;
 		s.category = RETURN_STATEMENT;
 		s.expr1 = expr;
-		return s;
+		return;
 	}
 
 	if (sta.category == DO_WHILE_STATEMENT) {
@@ -985,7 +985,7 @@ static struct Statement parseprint_statement(struct ParserState *ptr_ps,
 		struct Statement *ptr_inner_s = calloc(1, sizeof(struct Statement));
 		*ptr_inner_s = inner_s;
 		s.inner_statement = ptr_inner_s;
-		return s;
+		return;
 	}
 
 	if (sta.category == WHILE_STATEMENT) {
@@ -1034,7 +1034,7 @@ static struct Statement parseprint_statement(struct ParserState *ptr_ps,
 		struct Statement *ptr_inner_s = calloc(1, sizeof(struct Statement));
 		*ptr_inner_s = inner_s;
 		s.inner_statement = ptr_inner_s;
-		return s;
+		return;
 	}
 
 	if (sta.category == BREAK_STATEMENT) {
@@ -1050,7 +1050,7 @@ static struct Statement parseprint_statement(struct ParserState *ptr_ps,
 
 		struct Statement s;
 		s.category = BREAK_STATEMENT;
-		return s;
+		return;
 	}
 
 	if (sta.category == CONTINUE_STATEMENT) {
@@ -1067,7 +1067,7 @@ static struct Statement parseprint_statement(struct ParserState *ptr_ps,
 
 		struct Statement s;
 		s.category = CONTINUE_STATEMENT;
-		return s;
+		return;
 	}
 
 	if (sta.category == FOR_STATEMENT) {
@@ -1135,7 +1135,7 @@ static struct Statement parseprint_statement(struct ParserState *ptr_ps,
 		struct Statement *ptr_inner_s = calloc(1, sizeof(struct Statement));
 		*ptr_inner_s = inner_s;
 		s.inner_statement = ptr_inner_s;
-		return s;
+		return;
 	}
 
 	assert(sta.category == EXPRESSION_STATEMENT);
@@ -1150,7 +1150,7 @@ static struct Statement parseprint_statement(struct ParserState *ptr_ps,
 	struct Statement s;
 	s.category = EXPRESSION_STATEMENT;
 	s.expr1 = expr;
-	return s;
+	return;
 }
 
 void parse_final(const struct Token **ptr_tokvec)
