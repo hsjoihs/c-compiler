@@ -292,7 +292,7 @@ struct Type parse_declarator(const struct Token **ptr_tokvec,
 		type3.ident_str = tokvec[0].ident_str;
 		++tokvec;
 	} else {
-		error_unexpected_token(tokvec, "( or an identifier in the declarator");
+		error_unexpected_token(tokvec, "an identifier in the declarator");
 	}
 
 	while (1) {
