@@ -348,9 +348,9 @@ parse_multiplicative_expression(struct ParserState *ptr_ps,
 
 		struct Expression expr2 = parse_cast_expression(ptr_ps, &tokvec);
 		expect_type(expr.details, INT_TYPE,
-		            "left operand of an multiplicative operator");
+		            "left operand of a multiplicative operator");
 		expect_type(expr2.details, INT_TYPE,
-		            "right operand of an multiplicative operator");
+		            "right operand of a multiplicative operator");
 
 		expr = simple_binary_op(expr, expr2, kind, UNASSIGNABLE(INT_TYPE));
 	}
