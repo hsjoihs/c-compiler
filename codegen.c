@@ -842,6 +842,13 @@ static void parseprint_statement(struct ParserState *ptr_ps,
                                  struct Statement sta)
 {
 	const struct Token *tokvec = *ptr_tokvec;
+	if (sta.category == BREAK_STATEMENT ||
+	    sta.category == EXPRESSION_STATEMENT ||
+	    sta.category == CONTINUE_STATEMENT) {
+		parse_statement(ptr_ps, &tokvec);
+		*ptr_tokvec = tokvec;
+	}
+
 	if (sta.category == COMPOUND_STATEMENT) {
 		const struct Token *tokvec2 = tokvec;
 		struct Statement s = parse_compound_statement(ptr_ps, &tokvec2);
@@ -943,6 +950,12 @@ static void parseprint_statement(struct ParserState *ptr_ps,
 	if (sta.category == DO_WHILE_STATEMENT) {
 		++tokvec;
 
+		const struct Token *tokvec2 = tokvec;
+		struct Statement inner_s = parse_statement(ptr_ps, &tokvec);
+
+		expect_and_consume(&tokvec, RES_WHILE, "`while` of do-while");
+		expect_and_consume(&tokvec, LEFT_PAREN, "left parenthesis of do-while");
+
 		int stashed_break_label = ptr_prs->break_label_name;
 		int stashed_continue_label = ptr_prs->continue_label_name;
 
@@ -954,14 +967,9 @@ static void parseprint_statement(struct ParserState *ptr_ps,
 		ptr_prs->continue_label_name = cont_label;
 
 		gen_label(label1);
-		const struct Token *tokvec2 = tokvec;
-		struct Statement inner_s = parse_statement(ptr_ps, &tokvec2);
-		parseprint_statement(ptr_ps, ptr_prs, &tokvec, inner_s);
-		assert(tokvec2 == tokvec);
+		parseprint_statement(ptr_ps, ptr_prs, &tokvec2, inner_s);
+		assert(tokvec2 == tokvec - 2);
 		gen_label(cont_label);
-
-		expect_and_consume(&tokvec, RES_WHILE, "`while` of do-while");
-		expect_and_consume(&tokvec, LEFT_PAREN, "left parenthesis of do-while");
 
 		struct Expression expr = parse_expression(ptr_ps, &tokvec);
 
@@ -1035,9 +1043,6 @@ static void parseprint_statement(struct ParserState *ptr_ps,
 	}
 
 	if (sta.category == BREAK_STATEMENT) {
-		parse_statement(ptr_ps, &tokvec);
-		*ptr_tokvec = tokvec;
-
 		if (ptr_prs->break_label_name == GARBAGE_INT) {
 			fprintf(stderr, "invalid `break`; no loop, no switch\n");
 			exit(EXIT_FAILURE);
@@ -1048,9 +1053,6 @@ static void parseprint_statement(struct ParserState *ptr_ps,
 	}
 
 	if (sta.category == CONTINUE_STATEMENT) {
-		parse_statement(ptr_ps, &tokvec);
-		*ptr_tokvec = tokvec;
-
 		if (ptr_prs->continue_label_name == GARBAGE_INT) {
 			fprintf(stderr, "invalid `continue`; no loop\n");
 			exit(EXIT_FAILURE);
@@ -1128,18 +1130,9 @@ static void parseprint_statement(struct ParserState *ptr_ps,
 		return;
 	}
 
-	assert(sta.category == EXPRESSION_STATEMENT);
-	struct Expression expr = parse_expression(ptr_ps, &tokvec);
-
-	print_expression(ptr_prs, expr);
-	expect_and_consume(&tokvec, SEMICOLON, "semicolon after an expression");
-
+	print_expression(ptr_prs, sta.expr1);
 	gen_discard();
-	*ptr_tokvec = tokvec;
 
-	struct Statement s;
-	s.category = EXPRESSION_STATEMENT;
-	s.expr1 = expr;
 	return;
 }
 
