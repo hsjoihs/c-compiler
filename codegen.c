@@ -1177,6 +1177,9 @@ static void parseprint_compound_statement(struct ParserState *ptr_ps,
 
 				const char *str;
 				vartype = parse_declarator(&tokvec, &str);
+				expect_and_consume(
+				    &tokvec, SEMICOLON,
+				    "semicolon at the end of variable definition");
 
 				/* while function prototypes are also allowed here in C, I will
 				 * not implement it here */
@@ -1187,9 +1190,6 @@ static void parseprint_compound_statement(struct ParserState *ptr_ps,
 
 				ptr_ps->newest_offset -=
 				    size_of(vartype) < 4 ? 4 : size_of(vartype);
-				expect_and_consume(
-				    &tokvec, SEMICOLON,
-				    "semicolon at the end of variable definition");
 
 				struct Map map_ = ptr_ps->scope_chain.var_table;
 
