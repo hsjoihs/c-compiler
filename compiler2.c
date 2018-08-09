@@ -1,4 +1,5 @@
 #include "header.h"
+#include "vector.h"
 #if 1
 #include "compiler.h"
 #endif
@@ -15,7 +16,7 @@ struct PrinterState {
 	int break_label_name;    /* the label at the end of the current loop */
 	int continue_label_name; /* the label at the beginning of the current loop
 	                          */
-	struct Map string_constant_pool;
+	struct Vector string_constant_pool;
 	int pool_largest_id;
 };
 
@@ -441,20 +442,8 @@ void print_expression(struct PrinterState *ptr_prs, struct Expression expr)
 
 		case STRING_LITERAL: {
 			const char *str = expr.literal_string;
-
-			/* already in the pool */
-			if (isElem(ptr_prs->string_constant_pool, str)) {
-				int id =
-				    (int)(size_t)lookup(ptr_prs->string_constant_pool, str);
-				gen_push_address_of_str(id);
-				return;
-			} else {
-				ptr_prs->pool_largest_id++;
-				int id = ptr_prs->pool_largest_id;
-				insert(&ptr_prs->string_constant_pool, str, (void *)(size_t)id);
-				gen_push_address_of_str(id);
-				return;
-			}
+			push_vector(&ptr_prs->string_constant_pool, str);
+			gen_push_address_of_str(ptr_prs->string_constant_pool.length - 1);
 		}
 	}
 }
@@ -979,12 +968,11 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
 	*ptr_tokvec = tokvec2;
 }
 
-void print_string_pool(struct Map pool)
+void print_string_pool(struct Vector pool)
 {
-	for (int i = 0; i < pool._length; ++i) {
-		const char *str;
-		int id = (int)(size_t)getIth(pool, i, &str);
-		gen_str(id, str);
+	for (int i = 0; i < pool.length; ++i) {
+		const char *str = pool.vector[i];
+		gen_str(i, str);
 	}
 }
 
@@ -1009,7 +997,7 @@ int main(int argc, char const **argv)
 		struct PrinterState prs;
 		prs.final_label_name = 1;
 		prs.return_label_name = GARBAGE_INT;
-		prs.string_constant_pool = init_map();
+		prs.string_constant_pool = init_vector();
 		prs.pool_largest_id = 0;
 		ps.func_info_map = init_map();
 		ps.global_vars_type_map = init_map();
