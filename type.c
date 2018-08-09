@@ -206,22 +206,37 @@ void push_to_type3(struct Type3 *ptr, struct type3_elem tok)
 struct Type from_type3_to_type(const struct type3_elem *type3)
 {
 	switch (type3[0].type_category) {
-		case INT_:
-			return INT_TYPE;
-		case CHAR_:
-			return CHAR_TYPE;
+		case INT_: {
+			struct Type type;
+			type.type_category = INT_;
+			return type;
+		}
+		case CHAR_: {
+			struct Type type;
+			type.type_category = CHAR_;
+			return type;
+		}
 		case PTR_: {
 			++type3;
 			struct Type *ptr_to_current_type = calloc(1, sizeof(struct Type));
 			*ptr_to_current_type = from_type3_to_type(type3);
-			return ptr_of_type_to_ptr_to_type(ptr_to_current_type);
+
+			struct Type type;
+			type.type_category = PTR_;
+			type.derived_from = ptr_to_current_type;
+			type.array_length = GARBAGE_INT;
+			return type;
 		}
 		case ARRAY: {
 			++type3;
 			struct Type *ptr_to_current_type = calloc(1, sizeof(struct Type));
 			*ptr_to_current_type = from_type3_to_type(type3);
-			return ptr_of_type_to_arr_of_type(ptr_to_current_type,
-			                                  type3[-1].array_length);
+
+			struct Type type;
+			type.type_category = ARRAY;
+			type.derived_from = ptr_to_current_type;
+			type.array_length = type3[-1].array_length;
+			return type;
 		}
 		case FN: {
 			++type3;
