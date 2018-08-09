@@ -1152,7 +1152,7 @@ static void parseprint_compound_statement(struct ParserState *ptr_ps,
 	struct Statement statement;
 	statement.category = COMPOUND_STATEMENT;
 	statement.statement_vector = init_vector();
-	if (tokvec[0].kind == LEFT_BRACE) {
+	{
 
 		struct LocalVarTableList current_table = ptr_ps->scope_chain;
 
@@ -1223,7 +1223,6 @@ static void parseprint_compound_statement(struct ParserState *ptr_ps,
 			}
 		}
 	}
-	exit(EXIT_FAILURE);
 }
 
 static void print_parameter_declaration(struct ParserState *ptr_ps, int counter,
