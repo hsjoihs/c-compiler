@@ -9,7 +9,7 @@ int main(int argc, char const **argv)
 	int size = 1;
 	int capacity = 50000;
 	char *str = calloc(capacity, sizeof(char));
-	char *buffer = calloc(1024, sizeof(char));
+	char buffer[1024];
 
 	while (fgets(buffer, 1024, stdin)) {
 		size += strlen(buffer);
