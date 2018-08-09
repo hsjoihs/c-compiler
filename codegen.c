@@ -550,8 +550,6 @@ struct Statement {
 	} declaration;
 };
 
-struct Statement NOINFO = {UNKNOWN};
-
 static struct Statement
 parseprint_compound_statement(struct ParserState *ptr_ps,
                               struct PrinterState *ptr_prs,
@@ -945,7 +943,7 @@ parseprint_compound_statement(struct ParserState *ptr_ps,
 			}
 		}
 	}
-	return NOINFO;
+	exit(EXIT_FAILURE);
 }
 
 static void print_parameter_declaration(struct ParserState *ptr_ps,
