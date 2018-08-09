@@ -7,10 +7,6 @@ static int get_new_label_name(struct PrinterState *ptr_prs);
 static const char *get_reg_name_from_arg_pos_4byte(int counter);
 static const char *get_reg_name_from_arg_pos_8byte(int counter);
 
-static void parseprint_compound_statement(struct ParserState *ptr_ps,
-                                          struct PrinterState *ptr_prs,
-                                          const struct Token **ptr_tokvec);
-
 static void print_simple_binary_op(enum SimpleBinOp kind)
 {
 	switch (kind) {
@@ -549,9 +545,14 @@ struct Statement {
 
 struct Statement NOINFO = {UNKNOWN};
 
-static void parseprint_statement(struct ParserState *ptr_ps,
-                                 struct PrinterState *ptr_prs,
-                                 const struct Token **ptr_tokvec)
+static struct Statement
+parseprint_compound_statement(struct ParserState *ptr_ps,
+                              struct PrinterState *ptr_prs,
+                              const struct Token **ptr_tokvec);
+
+static struct Statement parseprint_statement(struct ParserState *ptr_ps,
+                                             struct PrinterState *ptr_prs,
+                                             const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 	if (tokvec[0].kind == LEFT_BRACE) {
@@ -608,7 +609,7 @@ static void parseprint_statement(struct ParserState *ptr_ps,
 				gen_jump(ptr_prs->return_label_name, "return");
 			}
 
-			return;
+			return NOINFO;
 		}
 	} else if (tokvec[0].kind == RES_DO) {
 		++tokvec;
@@ -690,7 +691,7 @@ static void parseprint_statement(struct ParserState *ptr_ps,
 			gen_jump(ptr_prs->break_label_name, "break");
 		}
 
-		return;
+		return NOINFO;
 	} else if (tokvec[0].kind == RES_CONTINUE) {
 		++tokvec;
 		expect_and_consume(&tokvec, SEMICOLON, "semicolon after `continue`");
@@ -703,7 +704,7 @@ static void parseprint_statement(struct ParserState *ptr_ps,
 			gen_jump(ptr_prs->continue_label_name, "continue");
 		}
 
-		return;
+		return NOINFO;
 
 	} else if (tokvec[0].kind == RES_FOR) {
 		int stashed_break_label = ptr_prs->break_label_name;
@@ -764,9 +765,10 @@ static void parseprint_statement(struct ParserState *ptr_ps,
 
 		gen_discard();
 		*ptr_tokvec = tokvec;
-		return;
+		return NOINFO;
 	}
 	*ptr_tokvec = tokvec;
+	return NOINFO;
 }
 
 void parse_final(const struct Token **ptr_tokvec)
@@ -776,9 +778,10 @@ void parse_final(const struct Token **ptr_tokvec)
 	return;
 }
 
-static void parseprint_compound_statement(struct ParserState *ptr_ps,
-                                          struct PrinterState *ptr_prs,
-                                          const struct Token **ptr_tokvec)
+static struct Statement
+parseprint_compound_statement(struct ParserState *ptr_ps,
+                              struct PrinterState *ptr_prs,
+                              const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 	if (tokvec[0].kind == LEFT_BRACE) {
@@ -804,7 +807,7 @@ static void parseprint_compound_statement(struct ParserState *ptr_ps,
 				*ptr_tokvec = tokvec;
 				ptr_ps->scope_chain = current_table;
 
-				return;
+				return NOINFO;
 			} else if (can_start_a_type(tokvec)) {
 				struct Type vartype;
 
@@ -838,6 +841,7 @@ static void parseprint_compound_statement(struct ParserState *ptr_ps,
 			}
 		}
 	}
+	return NOINFO;
 }
 
 static void print_parameter_declaration(struct ParserState *ptr_ps,
