@@ -752,6 +752,21 @@ static struct Statement parse_statement(struct ParserState *ptr_ps,
 	return s;
 }
 
+static void update_ptr_ps(struct ParserState *ptr_ps, const struct Type vartype,
+                          const char *str)
+{
+	ptr_ps->newest_offset -= size_of(vartype) < 4 ? 4 : size_of(vartype);
+
+	struct Map map_ = ptr_ps->scope_chain.var_table;
+
+	struct LocalVarInfo *ptr_varinfo = calloc(1, sizeof(struct LocalVarInfo));
+	ptr_varinfo->offset = ptr_ps->newest_offset;
+	ptr_varinfo->type = vartype;
+	insert(&map_, str, ptr_varinfo);
+
+	ptr_ps->scope_chain.var_table = map_;
+}
+
 static struct Statement
 parse_compound_statement(struct ParserState *ptr_ps,
                          const struct Token **ptr_tokvec)
@@ -796,22 +811,11 @@ parse_compound_statement(struct ParserState *ptr_ps,
 					fprintf(stderr, "cannot declare function here\n");
 					exit(EXIT_FAILURE);
 				}
-
-				ptr_ps->newest_offset -=
-				    size_of(vartype) < 4 ? 4 : size_of(vartype);
 				expect_and_consume(
 				    &tokvec, SEMICOLON,
 				    "semicolon at the end of variable definition");
 
-				struct Map map_ = ptr_ps->scope_chain.var_table;
-
-				struct LocalVarInfo *ptr_varinfo =
-				    calloc(1, sizeof(struct LocalVarInfo));
-				ptr_varinfo->offset = ptr_ps->newest_offset;
-				ptr_varinfo->type = vartype;
-				insert(&map_, str, ptr_varinfo);
-
-				ptr_ps->scope_chain.var_table = map_;
+				update_ptr_ps(ptr_ps, vartype, str);
 
 				struct Statement s;
 				s.category = DECLARATION_STATEMENT;
@@ -1183,18 +1187,7 @@ static void parseprint_compound_statement(struct ParserState *ptr_ps,
 				    &tokvec, SEMICOLON,
 				    "semicolon at the end of variable definition");
 
-				ptr_ps->newest_offset -=
-				    size_of(vartype) < 4 ? 4 : size_of(vartype);
-
-				struct Map map_ = ptr_ps->scope_chain.var_table;
-
-				struct LocalVarInfo *ptr_varinfo =
-				    calloc(1, sizeof(struct LocalVarInfo));
-				ptr_varinfo->offset = ptr_ps->newest_offset;
-				ptr_varinfo->type = vartype;
-				insert(&map_, str, ptr_varinfo);
-
-				ptr_ps->scope_chain.var_table = map_;
+				update_ptr_ps(ptr_ps, vartype, str);
 
 				struct Statement s;
 				s.declaration.type = vartype;
