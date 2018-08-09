@@ -450,8 +450,7 @@ parse_assignment_expression(struct ParserState *ptr_ps,
 
 			struct Expression expr2 =
 			    parse_assignment_expression(ptr_ps, &tokvec);
-			struct ExprInfo expr_info2 = expr2.details;
-			expect_type(expr.details, expr_info2.type,
+			expect_type(expr.details, expr2.details.type,
 			            "mismatch in assignment operator");
 
 			*ptr_tokvec = tokvec;
