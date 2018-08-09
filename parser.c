@@ -292,12 +292,10 @@ parse_primary_expression(struct ParserState *ptr_ps,
 			struct Type type = resolve_name_globally(
 			    ptr_ps->global_vars_type_map, tokvec[0].ident_str);
 
-			struct ExprInfo expr_info;
-			expr_info.type = if_array_convert_to_ptr(type);
-			expr_info.true_type = type;
-
 			struct Expression expr;
-			expr.details = expr_info;
+			expr.details.type = if_array_convert_to_ptr(type);
+			;
+			expr.details.true_type = type;
 			expr.category = GLOBAL_VAR_;
 			expr.global_var_name = tokvec[0].ident_str;
 			return expr;
@@ -305,12 +303,9 @@ parse_primary_expression(struct ParserState *ptr_ps,
 			struct LocalVarInfo info =
 			    resolve_name_locally(ptr_ps->scope_chain, tokvec[0].ident_str);
 
-			struct ExprInfo expr_info;
-			expr_info.type = if_array_convert_to_ptr(info.type);
-			expr_info.true_type = info.type;
-
 			struct Expression expr;
-			expr.details = expr_info;
+			expr.details.type = if_array_convert_to_ptr(info.type);
+			expr.details.true_type = info.type;
 			expr.category = LOCAL_VAR_;
 			expr.local_var_offset = info.offset;
 			return expr;
@@ -324,15 +319,13 @@ parse_primary_expression(struct ParserState *ptr_ps,
 		*ptr_tokvec = tokvec;
 		return expr;
 	} else if (tokvec[0].kind == LIT_STRING) {
-		struct ExprInfo expr_info;
 		struct Type *ptr_char = calloc(1, sizeof(struct Type));
 		*ptr_char = CHAR_TYPE;
-		expr_info.type = ptr_of_type_to_ptr_to_type(ptr_char);
-		expr_info.true_type = ptr_of_type_to_arr_of_type(
-		    ptr_char, strlen(tokvec[0].literal_str) + 1);
 
 		struct Expression expr;
-		expr.details = expr_info;
+		expr.details.type = ptr_of_type_to_ptr_to_type(ptr_char);
+		expr.details.true_type = ptr_of_type_to_arr_of_type(
+		    ptr_char, strlen(tokvec[0].literal_str) + 1);
 		expr.category = STRING_LITERAL;
 		expr.literal_string = tokvec[0].literal_str;
 		expr.local_var_offset = GARBAGE_INT;
