@@ -112,8 +112,6 @@ extern struct Type INT_TYPE;
 void expect_type(struct ExprInfo expr_info, struct Type expected_type,
                  const char *message);
 
-struct ExprInfo UNASSIGNABLE(struct Type type);
-
 struct Type deref_type(struct Type t);
 int is_compatible(struct Type t1, struct Type t2);
 int is_pointer(struct Type t);

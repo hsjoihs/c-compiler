@@ -81,16 +81,8 @@ static struct Expression unary_op_(struct Expression expr, enum TokenKind kind,
 	return new_expr;
 }
 
-struct ExprInfo UNASSIGNABLE(struct Type type) {
-	struct ExprInfo expr_info;
-	expr_info.type = type;
-
-	return expr_info;
-}
-
-struct Expression
-parse_unary_expression(struct ParserState *ptr_ps,
-                       const struct Token **ptr_tokvec)
+struct Expression parse_unary_expression(struct ParserState *ptr_ps,
+                                         const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 
