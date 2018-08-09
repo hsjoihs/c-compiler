@@ -524,6 +524,7 @@ enum StatementCategory {
 	UNKNOWN = 1,
 	COMPOUND_STATEMENT,
 	IF_STATEMENT,
+	IF_ELSE_STATEMENT,
 	FOR_STATEMENT,
 	WHILE_STATEMENT,
 	DO_WHILE_STATEMENT,
@@ -532,6 +533,7 @@ enum StatementCategory {
 	CONTINUE_STATEMENT,
 	TOPLEVEL_VAR_DEFINITION,
 	TOPLEVEL_FUNCTION_DEFINITION,
+	EXPRESSION_STATEMENT
 };
 
 struct Statement {
@@ -706,7 +708,9 @@ static struct Statement parseprint_statement(struct ParserState *ptr_ps,
 			gen_jump(ptr_prs->break_label_name, "break");
 		}
 
-		return NOINFO;
+		struct Statement s;
+		s.category = BREAK_STATEMENT;
+		return s;
 	}
 
 	if (tokvec[0].kind == RES_CONTINUE) {
@@ -721,7 +725,9 @@ static struct Statement parseprint_statement(struct ParserState *ptr_ps,
 			gen_jump(ptr_prs->continue_label_name, "continue");
 		}
 
-		return NOINFO;
+		struct Statement s;
+		s.category = CONTINUE_STATEMENT;
+		return s;
 	}
 
 	if (tokvec[0].kind == RES_FOR) {
@@ -787,7 +793,11 @@ static struct Statement parseprint_statement(struct ParserState *ptr_ps,
 
 	gen_discard();
 	*ptr_tokvec = tokvec;
-	return NOINFO;
+
+	struct Statement s;
+	s.category = EXPRESSION_STATEMENT;
+	s.expr1 = expr;
+	return s;
 }
 
 void parse_final(const struct Token **ptr_tokvec)
