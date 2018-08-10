@@ -718,7 +718,7 @@ static void parseprint_compound_statement(struct ParserState *ptr_ps,
                                           struct Statement sta)
 {
 	struct Vector vec = sta.statement_vector;
-	int counter = 0;
+
 	const struct Token *tokvec = *ptr_tokvec;
 	{
 		struct LocalVarTableList current_table = ptr_ps->scope_chain;
@@ -735,15 +735,9 @@ static void parseprint_compound_statement(struct ParserState *ptr_ps,
 		ptr_ps->scope_chain = new_table;
 
 		++tokvec;
-		for (;; ++counter) {
+		for (int counter = 0; counter != vec.length; ++counter) {
 			const struct Statement *ptr_ith = vec.vector[counter];
-			if (counter == vec.length) {
-				++tokvec;
-				*ptr_tokvec = tokvec;
-				ptr_ps->scope_chain = current_table;
-
-				return;
-			} else if (ptr_ith->category == DECLARATION_STATEMENT) {
+			if (ptr_ith->category == DECLARATION_STATEMENT) {
 				const char *dummy;
 				parse_declarator(&tokvec, &dummy);
 
@@ -764,6 +758,11 @@ static void parseprint_compound_statement(struct ParserState *ptr_ps,
 				*ptr_s = s;
 			}
 		}
+		++tokvec;
+		*ptr_tokvec = tokvec;
+		ptr_ps->scope_chain = current_table;
+
+		return;
 	}
 }
 
