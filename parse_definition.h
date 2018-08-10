@@ -22,3 +22,6 @@ struct Definition {
 
 struct Definition parse_toplevel_definition(struct ParserState *ptr_ps,
                                             const struct Token **ptr_tokvec);
+void print_toplevel_definition(struct ParserState *ptr_ps,
+                               struct PrinterState *ptr_prs,
+                               struct Definition def);

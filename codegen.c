@@ -245,18 +245,6 @@ void parse_final(const struct Token **ptr_tokvec)
 
 void print_toplevel_definition(struct ParserState *ptr_ps,
                                struct PrinterState *ptr_prs,
-                               struct Definition def);
-
-void parseprint_toplevel_definition(struct ParserState *ptr_ps,
-                                    struct PrinterState *ptr_prs,
-                                    const struct Token **ptr_tokvec)
-{
-	struct Definition def = parse_toplevel_definition(ptr_ps, ptr_tokvec);
-	print_toplevel_definition(ptr_ps, ptr_prs, def);
-}
-
-void print_toplevel_definition(struct ParserState *ptr_ps,
-                               struct PrinterState *ptr_prs,
                                struct Definition def)
 {
 	if (def.category == TOPLEVEL_VAR_DEFINITION) {

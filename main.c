@@ -1,7 +1,15 @@
-#include "codegen.h"
+#include "parse_definition.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+void parseprint_toplevel_definition(struct ParserState *ptr_ps,
+                                    struct PrinterState *ptr_prs,
+                                    const struct Token **ptr_tokvec)
+{
+	struct Definition def = parse_toplevel_definition(ptr_ps, ptr_tokvec);
+	print_toplevel_definition(ptr_ps, ptr_prs, def);
+}
 
 int main(int argc, char const **argv)
 {
