@@ -7,6 +7,15 @@
 #include <stdlib.h>
 #include <string.h>
 
+static int isAssign(enum TokenKind opkind)
+{
+	return (opkind == OP_EQ || opkind == OP_PLUS_EQ || opkind == OP_MINUS_EQ ||
+	        opkind == OP_ASTERISK_EQ || opkind == OP_SLASH_EQ ||
+	        opkind == OP_PERCENT_EQ || opkind == OP_LSHIFT_EQ ||
+	        opkind == OP_RSHIFT_EQ || opkind == OP_AND_EQ ||
+	        opkind == OP_HAT_EQ || opkind == OP_OR_EQ);
+}
+
 static struct Type resolve_name_globally(struct Map m, const char *str)
 {
 	if (isElem(m, str)) {

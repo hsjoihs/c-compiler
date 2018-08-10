@@ -22,7 +22,6 @@ struct ParserState {
 	int newest_offset;
 };
 
-int isAssign(enum TokenKind opkind);
 struct LocalVarInfo resolve_name_locally(struct LocalVarTableList t,
                                          const char *str);
 int is_local_var(struct LocalVarTableList t, const char *str);

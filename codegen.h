@@ -20,3 +20,8 @@ void parse_final(const struct Token **ptr_tokvec);
 void parseprint_toplevel_definition(struct ParserState *ptr_ps,
                                     struct PrinterState *ptr_prs,
                                     const struct Token **ptr_tokvec);
+
+int get_new_label_name(struct PrinterState *ptr_prs);
+void print_expression(struct PrinterState *ptr_prs, struct Expression expr);
+const char *get_reg_name_from_arg_pos_4byte(int counter);
+const char *get_reg_name_from_arg_pos_8byte(int counter);
