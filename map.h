@@ -1,8 +1,7 @@
+struct Map2;
 
 struct Map {
-	int _length;
-	int _alloc;
-	struct _mapchip *_vec;
+	struct Map2 *internal;
 };
 
 void insert(struct Map *map_ptr, const char *key, void *value);
