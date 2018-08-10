@@ -3,22 +3,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-struct ScopeChain clone_scopechain(struct ScopeChain chain)
-{
-	if (chain.outer == 0) {
-		return chain;
-	}
-	struct ScopeChain new_outer = clone_scopechain(*chain.outer);
-	struct ScopeChain *ptr_new_outer = calloc(1, sizeof(struct ScopeChain));
-	*ptr_new_outer = new_outer;
-	struct Map new_var_table = clone_map(chain.var_table);
-
-	struct ScopeChain new_chain;
-	new_chain.var_table = new_var_table;
-	new_chain.outer = ptr_new_outer;
-	return new_chain;
-}
-
 int is_local_var(struct ScopeChain t, const char *str)
 {
 	if (isElem(t.var_table, str)) {
@@ -127,7 +111,6 @@ struct Statement {
 		struct Type type;
 		const char *ident_str;
 	} declaration;
-	struct ScopeChain scope_chain_backup;
 };
 
 static struct Statement
@@ -378,13 +361,9 @@ parse_compound_statement(struct ParserState *ptr_ps,
 		*ptr_tokvec = tokvec;
 		while (1) {
 			if (tokvec[0].kind == RIGHT_BRACE) {
-				struct ScopeChain chain_backup =
-				    clone_scopechain(ptr_ps->scope_chain);
 				++tokvec;
 				*ptr_tokvec = tokvec;
 				ptr_ps->scope_chain = current_table;
-
-				statement.scope_chain_backup = chain_backup;
 
 				return statement;
 			} else if (can_start_a_type(tokvec)) {
