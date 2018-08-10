@@ -94,46 +94,6 @@ static struct Statement
 parse_compound_statement(struct ParserState *ptr_ps,
                          const struct Token **ptr_tokvec);
 
-static struct Statement partially_parse_FOR(struct ParserState *ptr_ps,
-                                            const struct Token **ptr_tokvec)
-{
-	const struct Token *tokvec = *ptr_tokvec;
-	++tokvec;
-	expect_and_consume(&tokvec, LEFT_PAREN, "left parenthesis of `for`");
-
-	struct Expression expr1;
-	struct Expression expr2;
-	struct Expression expr3;
-
-	if (tokvec[0].kind == SEMICOLON) { /* expression1 is missing */
-		expr1 = integer_1();
-	} else {
-		expr1 = parse_expression(ptr_ps, &tokvec);
-	}
-	expect_and_consume(&tokvec, SEMICOLON, "first semicolon of `for`");
-
-	if (tokvec[0].kind == SEMICOLON) { /* expression2 is missing */
-		expr2 = integer_1();
-	} else {
-		expr2 = parse_expression(ptr_ps, &tokvec);
-	}
-	expect_and_consume(&tokvec, SEMICOLON, "second semicolon of `for`");
-
-	if (tokvec[0].kind == RIGHT_PAREN) { /* expression3 is missing */
-		expr3 = integer_1();
-	} else {
-		expr3 = parse_expression(ptr_ps, &tokvec);
-	}
-	expect_and_consume(&tokvec, RIGHT_PAREN, "right parenthesis of `for`");
-	*ptr_tokvec = tokvec;
-	struct Statement s;
-	s.category = FOR_STATEMENT;
-	s.expr1 = expr1;
-	s.expr2 = expr2;
-	s.expr3 = expr3;
-	return s;
-}
-
 static struct Statement parse_statement(struct ParserState *ptr_ps,
                                         const struct Token **ptr_tokvec)
 {
@@ -275,7 +235,40 @@ static struct Statement parse_statement(struct ParserState *ptr_ps,
 	}
 
 	if (tokvec[0].kind == RES_FOR) {
-		struct Statement s = partially_parse_FOR(ptr_ps, &tokvec);
+
+		++tokvec;
+		expect_and_consume(&tokvec, LEFT_PAREN, "left parenthesis of `for`");
+
+		struct Expression expr1;
+		struct Expression expr2;
+		struct Expression expr3;
+
+		if (tokvec[0].kind == SEMICOLON) { /* expression1 is missing */
+			expr1 = integer_1();
+		} else {
+			expr1 = parse_expression(ptr_ps, &tokvec);
+		}
+		expect_and_consume(&tokvec, SEMICOLON, "first semicolon of `for`");
+
+		if (tokvec[0].kind == SEMICOLON) { /* expression2 is missing */
+			expr2 = integer_1();
+		} else {
+			expr2 = parse_expression(ptr_ps, &tokvec);
+		}
+		expect_and_consume(&tokvec, SEMICOLON, "second semicolon of `for`");
+
+		if (tokvec[0].kind == RIGHT_PAREN) { /* expression3 is missing */
+			expr3 = integer_1();
+		} else {
+			expr3 = parse_expression(ptr_ps, &tokvec);
+		}
+		expect_and_consume(&tokvec, RIGHT_PAREN, "right parenthesis of `for`");
+		struct Statement s;
+		s.category = FOR_STATEMENT;
+		s.expr1 = expr1;
+		s.expr2 = expr2;
+		s.expr3 = expr3;
+
 		struct Statement inner_s = parse_statement(ptr_ps, &tokvec);
 		*ptr_tokvec = tokvec;
 		struct Statement *ptr_inner_s = calloc(1, sizeof(struct Statement));
