@@ -658,11 +658,11 @@ static void parseprint_statement(struct ParserState *ptr_ps,
 		ptr_prs->break_label_name = break_label;
 		ptr_prs->continue_label_name = cont_label;
 
-		struct Statement s = partially_parse_FOR(ptr_ps, &tokvec);
+		partially_parse_FOR(ptr_ps, &tokvec);
 
-		struct Expression expr1 = s.expr1;
-		struct Expression expr2 = s.expr2;
-		struct Expression expr3 = s.expr3;
+		struct Expression expr1 = sta.expr1;
+		struct Expression expr2 = sta.expr2;
+		struct Expression expr3 = sta.expr3;
 
 		print_expression(ptr_prs, expr1); /* expression1 */
 		gen_discard();
