@@ -673,7 +673,8 @@ static void parseprint_statement(struct ParserState *ptr_ps,
 		print_expression(ptr_prs, expr2); /* expression2 */
 		gen_while_part2(label1, break_label);
 		const struct Token *tokvec2 = tokvec;
-		struct Statement inner_s = parse_statement(ptr_ps, &tokvec2);
+		parse_statement(ptr_ps, &tokvec2);
+		struct Statement inner_s = *sta.inner_statement;
 		parseprint_statement(ptr_ps, ptr_prs, &tokvec, inner_s);
 		assert(tokvec2 == tokvec);
 		gen_label(cont_label);
@@ -687,9 +688,6 @@ static void parseprint_statement(struct ParserState *ptr_ps,
 
 		*ptr_tokvec = tokvec;
 
-		struct Statement *ptr_inner_s = calloc(1, sizeof(struct Statement));
-		*ptr_inner_s = inner_s;
-		s.inner_statement = ptr_inner_s;
 		return;
 	}
 	exit(EXIT_FAILURE);
