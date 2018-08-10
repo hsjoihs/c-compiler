@@ -377,11 +377,7 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
 	struct Statement sta = parse_compound_statement(ptr_ps, &tokvec2);
 	*ptr_tokvec = tokvec2;
 
-	struct Vector vec = sta.statement_vector;
-	for (int counter = 0; counter != vec.length; ++counter) {
-		const struct Statement *ptr_ith = vec.vector[counter];
-		print_statement(ptr_ps, ptr_prs, *ptr_ith);
-	}
+	print_statement(ptr_ps, ptr_prs, sta);
 
 	gen_before_epilogue(label1, label2, -(ptr_ps->newest_offset));
 	gen_epilogue_nbyte(size_of(ret_type), ptr_prs->return_label_name);
