@@ -508,21 +508,21 @@ static void parseprint_statement(struct ParserState *ptr_ps,
 		expect_and_consume(&tokvec, LEFT_PAREN,
 		                   "left parenthesis immediately after `if`");
 		parse_expression(ptr_ps, &tokvec);
-		struct Expression expr = sta.expr1;
 		expect_and_consume(&tokvec, RIGHT_PAREN, "right parenthesis of `if`");
 
 		const struct Token *tokvec2 = tokvec;
 		parse_statement(ptr_ps, &tokvec);
-		struct Statement inner_s =
-		    *(struct Statement *)sta.statement_vector.vector[0];
 
 		++tokvec;
 		int label1 = get_new_label_name(ptr_prs);
 		int label2 = get_new_label_name(ptr_prs);
+		struct Expression expr = sta.expr1;
 		print_expression(ptr_prs, expr);
 
 		gen_if_else_part1(label1, label2);
 
+		struct Statement inner_s =
+		    *(struct Statement *)sta.statement_vector.vector[0];
 		parseprint_statement(ptr_ps, ptr_prs, &tokvec2, inner_s);
 		assert(tokvec2 == tokvec - 1);
 
