@@ -252,19 +252,24 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
                                     const struct Token **ptr_tokvec)
 {
 	struct Definition def = parse_toplevel_definition(ptr_ps, ptr_tokvec);
-	if (def.category == TOPLEVEL_VAR_DEFINITION) {
-		gen_global_declaration(def.declarator_name,
-		                       size_of(def.declarator_type));
-		return;
-	} else if (def.category == TOPLEVEL_FUNCTION_DEFINITION) {
-		print_toplevel_definition(ptr_ps, ptr_prs, def);
-	}
+	print_toplevel_definition(ptr_ps, ptr_prs, def);
 }
 
 void print_toplevel_definition(struct ParserState *ptr_ps,
                                struct PrinterState *ptr_prs,
                                struct Definition def)
 {
+	if (def.category == TOPLEVEL_VAR_DEFINITION) {
+		gen_global_declaration(def.declarator_name,
+		                       size_of(def.declarator_type));
+		return;
+	}
+	if (def.category == TOPLEVEL_FUNCTION_DECLARATION) {
+		return;
+	}
+
+	assert(def.category == TOPLEVEL_FUNCTION_DEFINITION);
+
 	struct Statement sta = def.func.sta;
 	struct Vector offsets_and_types = def.func.offsets_and_types;
 	struct Type ret_type = def.func.ret_type;
