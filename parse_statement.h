@@ -31,5 +31,5 @@ struct Statement parse_statement(struct ParserState *ptr_ps,
                                  const struct Token **ptr_tokvec);
 struct Statement parse_compound_statement(struct ParserState *ptr_ps,
                                           const struct Token **ptr_tokvec);
-void update_ptr_ps(struct ParserState *ptr_ps, const struct Type vartype,
-                   const char *str);
+void add_local_var_to_scope(struct ParserState *ptr_ps,
+                            const struct Type vartype, const char *str);

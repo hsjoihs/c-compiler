@@ -394,8 +394,8 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
 			expect_and_consume(&tokvec, SEMICOLON,
 			                   "semicolon at the end of variable definition");
 
-			update_ptr_ps(ptr_ps, ptr_ith->declaration.type,
-			              ptr_ith->declaration.ident_str);
+			add_local_var_to_scope(ptr_ps, ptr_ith->declaration.type,
+			                       ptr_ith->declaration.ident_str);
 
 		} else {
 			const struct Token *tokvec2 = tokvec;

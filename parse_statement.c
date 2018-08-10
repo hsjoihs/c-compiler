@@ -13,8 +13,8 @@ static struct Expression integer_1(void)
 	return expr;
 }
 
-void update_ptr_ps(struct ParserState *ptr_ps, const struct Type vartype,
-                   const char *str)
+void add_local_var_to_scope(struct ParserState *ptr_ps,
+                            const struct Type vartype, const char *str)
 {
 	ptr_ps->newest_offset -= size_of(vartype) < 4 ? 4 : size_of(vartype);
 
@@ -270,7 +270,7 @@ struct Statement parse_compound_statement(struct ParserState *ptr_ps,
 				    &tokvec, SEMICOLON,
 				    "semicolon at the end of variable definition");
 
-				update_ptr_ps(ptr_ps, vartype, str);
+				add_local_var_to_scope(ptr_ps, vartype, str);
 
 				struct Statement s;
 				s.category = DECLARATION_STATEMENT;
