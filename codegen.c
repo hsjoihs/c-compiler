@@ -128,6 +128,8 @@ struct Statement {
 		struct Type type;
 		const char *ident_str;
 	} declaration;
+	struct ScopeChain scope_chain_backup;
+	int newest_offset_backup;
 };
 
 static struct Statement
@@ -378,9 +380,14 @@ parse_compound_statement(struct ParserState *ptr_ps,
 		*ptr_tokvec = tokvec;
 		while (1) {
 			if (tokvec[0].kind == RIGHT_BRACE) {
+				struct ScopeChain chain_backup =
+				    clone_scopechain(ptr_ps->scope_chain);
 				++tokvec;
 				*ptr_tokvec = tokvec;
 				ptr_ps->scope_chain = current_table;
+
+				statement.scope_chain_backup = chain_backup;
+				statement.newest_offset_backup = ptr_ps->newest_offset;
 
 				return statement;
 			} else if (can_start_a_type(tokvec)) {
@@ -758,8 +765,14 @@ static void parseprint_compound_statement(struct ParserState *ptr_ps,
 			} else {
 				const struct Token *tokvec2 = tokvec;
 				struct Statement s = parse_statement(ptr_ps, &tokvec2);
+
+				int stashed1 = ptr_ps->newest_offset;
+				struct ScopeChain stashed2 = ptr_ps->scope_chain;
 				parseprint_statement(ptr_ps, ptr_prs, &tokvec, s);
 				assert(tokvec2 == tokvec);
+
+				// ptr_ps->newest_offset = stashed1;
+				// ptr_ps->scope_chain = stashed2;
 			}
 		}
 		++tokvec;
