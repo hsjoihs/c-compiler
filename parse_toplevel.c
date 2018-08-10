@@ -3,8 +3,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-struct Toplevel parse_toplevel_definition(struct ParserState *ptr_ps,
-                                          const struct Token **ptr_tokvec)
+static struct Toplevel
+parse_toplevel_definition(struct ParserState *ptr_ps,
+                          const struct Token **ptr_tokvec)
 {
 	const char *declarator_name;
 	const struct Token *tokvec2 = *ptr_tokvec;
@@ -93,4 +94,25 @@ struct Toplevel parse_toplevel_definition(struct ParserState *ptr_ps,
 	def.func.ret_type = ret_type;
 	def.func.capacity = -ptr_ps->newest_offset;
 	return def;
+}
+
+struct Vector parse(const struct Token *tokvec)
+{
+	struct ParserState ps;
+	ps.func_info_map = init_map();
+	ps.global_vars_type_map = init_map();
+
+	struct Vector vec = init_vector();
+	while (1) {
+		if (tokvec[0].kind == END) {
+			parse_final(&tokvec);
+			break;
+		} else {
+			struct Toplevel def = parse_toplevel_definition(&ps, &tokvec);
+			struct Toplevel *ptr = calloc(1, sizeof(struct Toplevel));
+			*ptr = def;
+			push_vector(&vec, ptr);
+		}
+	}
+	return vec;
 }

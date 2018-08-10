@@ -4,6 +4,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+static void print_toplevel_definition(struct PrinterState *ptr_prs,
+                                      struct Toplevel def);
+
 int get_new_label_name(struct PrinterState *ptr_prs)
 {
 	return ++(ptr_prs->final_label_name);
@@ -263,4 +266,21 @@ void print_string_pool(struct Vector pool)
 		const char *str = pool.vector[i];
 		gen_str(i, str);
 	}
+}
+
+void generate(const struct Vector vec)
+{
+	struct PrinterState prs;
+	prs.final_label_name = 1;
+	prs.return_label_name = GARBAGE_INT;
+	prs.string_constant_pool = init_vector();
+	prs.pool_largest_id = 0;
+
+	for (int i = 0; i < vec.length; i++) {
+		const struct Toplevel *ptr = vec.vector[i];
+
+		print_toplevel_definition(&prs, *ptr);
+	}
+
+	print_string_pool(prs.string_constant_pool);
 }

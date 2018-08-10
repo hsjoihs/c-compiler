@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-void generate(const struct Vector vec);
 struct Vector parse(const struct Token *tokvec);
 
 int main(int argc, char const **argv)
@@ -39,42 +38,4 @@ int main(int argc, char const **argv)
 	generate(vec);
 
 	return 0;
-}
-
-struct Vector parse(const struct Token *tokvec)
-{
-	struct ParserState ps;
-	ps.func_info_map = init_map();
-	ps.global_vars_type_map = init_map();
-
-	struct Vector vec = init_vector();
-	while (1) {
-		if (tokvec[0].kind == END) {
-			parse_final(&tokvec);
-			break;
-		} else {
-			struct Toplevel def = parse_toplevel_definition(&ps, &tokvec);
-			struct Toplevel *ptr = calloc(1, sizeof(struct Toplevel));
-			*ptr = def;
-			push_vector(&vec, ptr);
-		}
-	}
-	return vec;
-}
-
-void generate(const struct Vector vec)
-{
-	struct PrinterState prs;
-	prs.final_label_name = 1;
-	prs.return_label_name = GARBAGE_INT;
-	prs.string_constant_pool = init_vector();
-	prs.pool_largest_id = 0;
-
-	for (int i = 0; i < vec.length; i++) {
-		const struct Toplevel *ptr = vec.vector[i];
-
-		print_toplevel_definition(&prs, *ptr);
-	}
-
-	print_string_pool(prs.string_constant_pool);
 }

@@ -24,10 +24,7 @@ struct Toplevel {
 	} func;
 };
 
-struct Toplevel parse_toplevel_definition(struct ParserState *ptr_ps,
-                                          const struct Token **ptr_tokvec);
-void print_toplevel_definition(struct PrinterState *ptr_prs,
-                               struct Toplevel def);
-
 void print_string_pool(struct Vector pool);
 void parse_final(const struct Token **ptr_tokvec);
+void generate(const struct Vector vec);
+struct Vector parse(const struct Token *tokvec);
