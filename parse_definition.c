@@ -3,16 +3,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static struct Definition *
-try_parse_toplevel_var_definition(struct ParserState *ptr_ps,
-                                  const struct Token **ptr_tokvec)
+struct Definition parse_toplevel_definition(struct ParserState *ptr_ps,
+                                            const struct Token **ptr_tokvec)
 {
 	const char *declarator_name;
 	const struct Token *tokvec2 = *ptr_tokvec;
 	struct Type declarator_type = parse_declarator(&tokvec2, &declarator_name);
-	if (declarator_type.type_category == FN) {
-		return 0; /* does not consume token on failure */
-	} else {
+
+	if (declarator_type.type_category != FN) {
+
 		expect_and_consume(&tokvec2, SEMICOLON,
 		                   "semicolon at the end of variable definition");
 		struct Map globalmap = ptr_ps->global_vars_type_map;
@@ -28,24 +27,8 @@ try_parse_toplevel_var_definition(struct ParserState *ptr_ps,
 		d.category = TOPLEVEL_VAR_DEFINITION;
 		d.declarator_name = declarator_name;
 		d.declarator_type = declarator_type;
-
-		struct Definition *ptr = calloc(1, sizeof(struct Definition));
-		*ptr = d;
-		return ptr;
+		return d;
 	}
-}
-
-struct Definition parse_toplevel_definition(struct ParserState *ptr_ps,
-                                            const struct Token **ptr_tokvec)
-{
-	struct Definition *ptr_d =
-	    try_parse_toplevel_var_definition(ptr_ps, ptr_tokvec);
-	if (ptr_d) {
-		return *ptr_d;
-	}
-	const char *declarator_name;
-	const struct Token *tokvec2 = *ptr_tokvec;
-	struct Type declarator_type = parse_declarator(&tokvec2, &declarator_name);
 
 	struct ParamInfos param_infos = declarator_type.param_infos;
 	struct Type ret_type = *declarator_type.derived_from;
