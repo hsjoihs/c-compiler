@@ -363,19 +363,12 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
 
 	int label1;
 	int label2;
+	label1 = get_new_label_name(ptr_prs);
+	label2 = get_new_label_name(ptr_prs);
+	gen_prologue(0, declarator_name);
+	gen_after_prologue(label1, label2);
 
-	if (!param_infos.param_vec) { /* empty parameter */
-
-		label1 = get_new_label_name(ptr_prs);
-		label2 = get_new_label_name(ptr_prs);
-		gen_prologue(0, declarator_name);
-		gen_after_prologue(label1, label2);
-
-	} else {
-		label1 = get_new_label_name(ptr_prs);
-		label2 = get_new_label_name(ptr_prs);
-		gen_prologue(0, declarator_name);
-		gen_after_prologue(label1, label2);
+	if (param_infos.param_vec) { /* parameter is not empty */
 
 		int counter = 0;
 
