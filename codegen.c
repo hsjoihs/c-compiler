@@ -324,8 +324,7 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
 		return;
 	}
 
-	struct Vector offsets = init_vector();
-	struct Vector types = init_vector();
+	struct Vector offsets_and_types = init_vector();
 
 	if (param_infos.param_vec) { /* parameter is not empty */
 		for (int counter = 0; param_infos.param_vec[counter]; ++counter) {
@@ -341,13 +340,14 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
 			}
 
 			int offset = add_local_var_to_scope(ptr_ps, type, ident_str);
-			int *ptr1 = calloc(1, sizeof(int));
-			*ptr1 = offset;
-			push_vector(&offsets, ptr1);
 
-			struct Type *ptr2 = calloc(1, sizeof(struct Type));
-			*ptr2 = type;
-			push_vector(&types, ptr2);
+			struct LocalVarInfo info;
+			info.offset = offset;
+			info.type = type;
+
+			struct LocalVarInfo *ptr1 = calloc(1, sizeof(struct LocalVarInfo));
+			*ptr1 = info;
+			push_vector(&offsets_and_types, ptr1);
 		}
 	}
 
@@ -364,9 +364,12 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
 	label2 = get_new_label_name(ptr_prs);
 	gen_prologue(0, declarator_name);
 	gen_after_prologue(label1, label2);
-	for (int counter = 0; counter < offsets.length; ++counter) {
-		int offset = *(const int *)offsets.vector[counter];
-		struct Type type = *(const struct Type *)types.vector[counter];
+	for (int counter = 0; counter < offsets_and_types.length; ++counter) {
+		struct LocalVarInfo info =
+		    *(const struct LocalVarInfo *)offsets_and_types.vector[counter];
+
+		int offset = info.offset;
+		struct Type type = info.type;
 		switch (size_of(type)) {
 			case 1:
 				gen_write_register_to_local_1byte(
