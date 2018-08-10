@@ -57,6 +57,10 @@ static void print_statement(struct ParserState *ptr_ps,
                             struct PrinterState *ptr_prs, struct Statement sta)
 {
 	switch (sta.category) {
+		case DECLARATION_STATEMENT: {
+			/* do nothing */
+			return;
+		}
 		case BREAK_STATEMENT: {
 			if (ptr_prs->break_label_name == GARBAGE_INT) {
 				fprintf(stderr, "invalid `break`; no loop, no switch\n");
@@ -104,11 +108,7 @@ static void print_statement(struct ParserState *ptr_ps,
 
 			for (int counter = 0; counter != vec.length; ++counter) {
 				const struct Statement *ptr_ith = vec.vector[counter];
-				if (ptr_ith->category == DECLARATION_STATEMENT) {
-
-				} else {
-					print_statement(ptr_ps, ptr_prs, *ptr_ith);
-				}
+				print_statement(ptr_ps, ptr_prs, *ptr_ith);
 			}
 
 			return;
