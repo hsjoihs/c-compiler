@@ -396,16 +396,8 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
 	for (int counter = 0; counter != vec.length; ++counter) {
 		const struct Statement *ptr_ith = vec.vector[counter];
 		if (ptr_ith->category == DECLARATION_STATEMENT) {
-			const char *dummy;
-			parse_declarator(&tokvec, &dummy);
-			expect_and_consume(&tokvec, SEMICOLON,
-			                   "semicolon at the end of variable definition");
-
-			add_local_var_to_scope(ptr_ps, ptr_ith->declaration.type,
-			                       ptr_ith->declaration.ident_str);
 
 		} else {
-			parse_statement(ptr_ps, &tokvec);
 
 			print_statement(ptr_ps, ptr_prs, *ptr_ith);
 		}
