@@ -258,7 +258,7 @@ void print_toplevel_definition(struct ParserState *ptr_ps,
 	}
 	print_statement(ptr_ps, ptr_prs, sta);
 
-	gen_before_epilogue(label1, label2, -(ptr_ps->newest_offset));
+	gen_before_epilogue(label1, label2, def.func.capacity);
 	gen_epilogue_nbyte(size_of(ret_type), ptr_prs->return_label_name);
 }
 

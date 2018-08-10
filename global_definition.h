@@ -20,6 +20,7 @@ struct Toplevel {
 		struct Statement sta;
 		struct Vector offsets_and_types;
 		struct Type ret_type;
+		int capacity;
 	} func;
 };
 

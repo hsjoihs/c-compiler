@@ -91,5 +91,6 @@ struct Toplevel parse_toplevel_definition(struct ParserState *ptr_ps,
 	def.func.sta = sta;
 	def.func.offsets_and_types = offsets_and_types;
 	def.func.ret_type = ret_type;
+	def.func.capacity = -ptr_ps->newest_offset;
 	return def;
 }
