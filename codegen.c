@@ -544,28 +544,22 @@ static void parseprint_statement(struct ParserState *ptr_ps,
 		++tokvec;
 		expect_and_consume(&tokvec, LEFT_PAREN,
 		                   "left parenthesis immediately after `if`");
-		struct Expression expr = parse_expression(ptr_ps, &tokvec);
+		parse_expression(ptr_ps, &tokvec);
 		expect_and_consume(&tokvec, RIGHT_PAREN, "right parenthesis of `if`");
 
 		const struct Token *tokvec2 = tokvec;
-		struct Statement inner_s = parse_statement(ptr_ps, &tokvec);
-
-		struct Statement *ptr_inner_s = calloc(1, sizeof(struct Statement));
-		*ptr_inner_s = inner_s;
+		parse_statement(ptr_ps, &tokvec);
 
 		*ptr_tokvec = tokvec;
 
-		struct Statement s;
-		s.category = IF_STATEMENT;
-		s.expr1 = expr;
-
-		s.inner_statement = ptr_inner_s;
 		int label1 = get_new_label_name(ptr_prs);
 		int label2 = get_new_label_name(ptr_prs);
+		struct Expression expr = sta.expr1;
 		print_expression(ptr_prs, expr);
 
 		gen_if_else_part1(label1, label2);
 
+		struct Statement inner_s = *sta.inner_statement;
 		parseprint_statement(ptr_ps, ptr_prs, &tokvec2, inner_s);
 		assert(tokvec2 == tokvec);
 
@@ -579,7 +573,8 @@ static void parseprint_statement(struct ParserState *ptr_ps,
 		++tokvec;
 
 		const struct Token *tokvec2 = tokvec;
-		struct Statement inner_s = parse_statement(ptr_ps, &tokvec);
+		parse_statement(ptr_ps, &tokvec);
+		struct Statement inner_s = *sta.inner_statement;
 
 		expect_and_consume(&tokvec, RES_WHILE, "`while` of do-while");
 		expect_and_consume(&tokvec, LEFT_PAREN, "left parenthesis of do-while");
@@ -599,7 +594,8 @@ static void parseprint_statement(struct ParserState *ptr_ps,
 		assert(tokvec2 == tokvec - 2);
 		gen_label(cont_label);
 
-		struct Expression expr = parse_expression(ptr_ps, &tokvec);
+		parse_expression(ptr_ps, &tokvec);
+		struct Expression expr = sta.expr1;
 
 		print_expression(ptr_prs, expr);
 
@@ -614,13 +610,6 @@ static void parseprint_statement(struct ParserState *ptr_ps,
 		ptr_prs->continue_label_name = stashed_continue_label;
 		*ptr_tokvec = tokvec;
 
-		struct Statement s;
-		s.category = DO_WHILE_STATEMENT;
-		s.expr1 = expr;
-
-		struct Statement *ptr_inner_s = calloc(1, sizeof(struct Statement));
-		*ptr_inner_s = inner_s;
-		s.inner_statement = ptr_inner_s;
 		return;
 	}
 
