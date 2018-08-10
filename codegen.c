@@ -296,10 +296,11 @@ try_parse_toplevel_var_definition(struct ParserState *ptr_ps,
 	const char *declarator_name;
 	const struct Token *tokvec2 = *ptr_tokvec;
 	struct Type declarator_type = parse_declarator(&tokvec2, &declarator_name);
-	if (declarator_type.type_category == FN || tokvec2[0].kind != SEMICOLON) {
+	if (declarator_type.type_category == FN) {
 		return 0; /* does not consume token on failure */
 	} else {
-		++tokvec2; /* consume the semicolon */
+		expect_and_consume(&tokvec2, SEMICOLON,
+		                   "semicolon at the end of variable definition");
 		struct Map globalmap = ptr_ps->global_vars_type_map;
 
 		struct Type *ptr_type = calloc(1, sizeof(struct Type));
