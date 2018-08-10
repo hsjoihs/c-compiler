@@ -768,11 +768,13 @@ static void parseprint_compound_statement(struct ParserState *ptr_ps,
 
 				int stashed1 = ptr_ps->newest_offset;
 				struct ScopeChain stashed2 = ptr_ps->scope_chain;
-				parseprint_statement(ptr_ps, ptr_prs, &tokvec, s);
+
+				ptr_ps->scope_chain = sta.scope_chain_backup;
+				parseprint_statement(ptr_ps, ptr_prs, &tokvec, *ptr_ith);
+
 				assert(tokvec2 == tokvec);
 
-				// ptr_ps->newest_offset = stashed1;
-				// ptr_ps->scope_chain = stashed2;
+				ptr_ps->scope_chain = stashed2;
 			}
 		}
 		++tokvec;
