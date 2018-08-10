@@ -292,34 +292,36 @@ try_parse_toplevel_var_definition(struct ParserState *ptr_ps,
 	}
 }
 
-void print_function_definition(struct ParserState *ptr_ps,
+void print_toplevel_definition(struct ParserState *ptr_ps,
                                struct PrinterState *ptr_prs,
                                struct Definition def);
 
-struct Definition parse_function_definition(struct ParserState *ptr_ps,
+struct Definition parse_toplevel_definition(struct ParserState *ptr_ps,
                                             const struct Token **ptr_tokvec);
 
 void parseprint_toplevel_definition(struct ParserState *ptr_ps,
                                     struct PrinterState *ptr_prs,
                                     const struct Token **ptr_tokvec)
 {
-	struct Definition *ptr_d =
-	    try_parse_toplevel_var_definition(ptr_ps, ptr_tokvec);
-	if (ptr_d) { /* it was a var definition */
-		gen_global_declaration(ptr_d->declarator_name,
-		                       size_of(ptr_d->declarator_type));
+	struct Definition def = parse_toplevel_definition(ptr_ps, ptr_tokvec);
+	if (def.category == TOPLEVEL_VAR_DEFINITION) {
+		gen_global_declaration(def.declarator_name,
+		                       size_of(def.declarator_type));
 		return;
-	}
-	struct Definition def = parse_function_definition(ptr_ps, ptr_tokvec);
-	if (def.category == TOPLEVEL_FUNCTION_DEFINITION) {
-		print_function_definition(ptr_ps, ptr_prs, def);
+	} else if (def.category == TOPLEVEL_FUNCTION_DEFINITION) {
+		print_toplevel_definition(ptr_ps, ptr_prs, def);
 	}
 }
 
 /* implicitly assumes that it is a function */
-struct Definition parse_function_definition(struct ParserState *ptr_ps,
+struct Definition parse_toplevel_definition(struct ParserState *ptr_ps,
                                             const struct Token **ptr_tokvec)
 {
+	struct Definition *ptr_d =
+	    try_parse_toplevel_var_definition(ptr_ps, ptr_tokvec);
+	if (ptr_d) {
+		return *ptr_d;
+	}
 	const char *declarator_name;
 	const struct Token *tokvec2 = *ptr_tokvec;
 	struct Type declarator_type = parse_declarator(&tokvec2, &declarator_name);
@@ -388,7 +390,7 @@ struct Definition parse_function_definition(struct ParserState *ptr_ps,
 	return def;
 }
 
-void print_function_definition(struct ParserState *ptr_ps,
+void print_toplevel_definition(struct ParserState *ptr_ps,
                                struct PrinterState *ptr_prs,
                                struct Definition def)
 {
