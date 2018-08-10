@@ -324,24 +324,17 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
                                     struct PrinterState *ptr_prs,
                                     const struct Token **ptr_tokvec)
 {
+	struct Definition *ptr_d =
+	    try_parse_toplevel_var_definition(ptr_ps, ptr_tokvec);
+	if (ptr_d) { /* it was a var definition */
+		gen_global_declaration(ptr_d->declarator_name,
+		                       size_of(ptr_d->declarator_type));
+		return;
+	}
 
 	const char *declarator_name;
 	const struct Token *tokvec2 = *ptr_tokvec;
 	struct Type declarator_type = parse_declarator(&tokvec2, &declarator_name);
-	if (declarator_type.type_category != FN && tokvec2[0].kind == SEMICOLON) {
-		++tokvec2; /* consume the semicolon */
-		struct Map globalmap = ptr_ps->global_vars_type_map;
-
-		struct Type *ptr_type = calloc(1, sizeof(struct Type));
-		*ptr_type = declarator_type;
-		insert(&globalmap, declarator_name, ptr_type);
-		ptr_ps->global_vars_type_map = globalmap;
-
-		gen_global_declaration(declarator_name, size_of(declarator_type));
-
-		*ptr_tokvec = tokvec2;
-		return;
-	}
 
 	struct ParamInfos param_infos = declarator_type.param_infos;
 	struct Type ret_type = *declarator_type.derived_from;
