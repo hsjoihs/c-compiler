@@ -344,13 +344,9 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
 	ptr_ps->newest_offset = 0;
 	ptr_ps->func_ret_type = ret_type;
 
-	struct Map retmap = ptr_ps->func_info_map;
-
 	struct FuncInfo *ptr_func_info = calloc(1, sizeof(struct FuncInfo));
 	ptr_func_info->ret_type = ret_type;
-	insert(&retmap, declarator_name, ptr_func_info);
-
-	ptr_ps->func_info_map = retmap;
+	insert(&ptr_ps->func_info_map, declarator_name, ptr_func_info);
 
 	ptr_prs->return_label_name = -1;   /* -1 means invalid */
 	ptr_prs->break_label_name = -1;    /* -1 means invalid */
