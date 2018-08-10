@@ -253,6 +253,11 @@ struct Definition {
 	enum DefinitionCategory category;
 	const char *declarator_name;
 	struct Type declarator_type;
+	struct {
+		struct Statement sta;
+		struct Vector offsets_and_types;
+		struct Type ret_type;
+	} func;
 };
 
 static struct Definition *
@@ -289,10 +294,7 @@ try_parse_toplevel_var_definition(struct ParserState *ptr_ps,
 
 void print_function_definition(struct ParserState *ptr_ps,
                                struct PrinterState *ptr_prs,
-                               struct Statement sta,
-                               struct Vector offsets_and_types,
-                               struct Type ret_type,
-                               const char *declarator_name);
+                               struct Definition def);
 
 void parseprint_toplevel_definition(struct ParserState *ptr_ps,
                                     struct PrinterState *ptr_prs,
@@ -361,17 +363,24 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
 	struct Statement sta = parse_compound_statement(ptr_ps, &tokvec2);
 	*ptr_tokvec = tokvec2;
 	/* parse finished */
-	print_function_definition(ptr_ps, ptr_prs, sta, offsets_and_types, ret_type,
-	                          declarator_name);
+
+	struct Definition def;
+	def.declarator_name = declarator_name;
+	def.func.sta = sta;
+	def.func.offsets_and_types = offsets_and_types;
+	def.func.ret_type = ret_type;
+	print_function_definition(ptr_ps, ptr_prs, def);
 }
 
 void print_function_definition(struct ParserState *ptr_ps,
                                struct PrinterState *ptr_prs,
-                               struct Statement sta,
-                               struct Vector offsets_and_types,
-                               struct Type ret_type,
-                               const char *declarator_name)
+                               struct Definition def)
 {
+	struct Statement sta = def.func.sta;
+	struct Vector offsets_and_types = def.func.offsets_and_types;
+	struct Type ret_type = def.func.ret_type;
+	const char *declarator_name = def.declarator_name;
+
 	ptr_prs->return_label_name = -1;   /* -1 means invalid */
 	ptr_prs->break_label_name = -1;    /* -1 means invalid */
 	ptr_prs->continue_label_name = -1; /* -1 means invalid */
