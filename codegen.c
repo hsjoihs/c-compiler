@@ -233,11 +233,10 @@ void print_toplevel_definition(struct ParserState *ptr_ps,
 	label2 = get_new_label_name(ptr_prs);
 	gen_prologue(def.func.capacity, declarator_name);
 	for (int counter = 0; counter < offsets_and_types.length; ++counter) {
-		struct LocalVarInfo info =
-		    *(const struct LocalVarInfo *)offsets_and_types.vector[counter];
+		const struct LocalVarInfo *ptr_info = offsets_and_types.vector[counter];
 
-		int offset = info.offset;
-		struct Type type = info.type;
+		int offset = ptr_info->offset;
+		struct Type type = ptr_info->type;
 		switch (size_of(type)) {
 			case 1:
 				gen_write_register_to_local_1byte(
