@@ -243,40 +243,6 @@ void parse_final(const struct Token **ptr_tokvec)
 	return;
 }
 
-static void print_parameter_declaration(struct ParserState *ptr_ps, int counter,
-                                        struct ParamInfos param_infos)
-{
-
-	struct ParamInfo param_info = *(param_infos.param_vec[counter]);
-	const char *ident_str;
-
-	struct Type type = param_info.param_type;
-	ident_str = param_info.ident_str;
-
-	if (counter > 5) {
-		unsupported("6-or-more parameters");
-	}
-
-	int offset = add_local_var_to_scope(ptr_ps, type, ident_str);
-
-	switch (size_of(type)) {
-		case 1:
-			gen_write_register_to_local_1byte(
-			    /* yes, the register is 4byte */
-			    get_reg_name_from_arg_pos_4byte(counter), offset);
-		case 4:
-			gen_write_register_to_local_4byte(
-			    get_reg_name_from_arg_pos_4byte(counter), offset);
-			break;
-		case 8:
-			gen_write_register_to_local_8byte(
-			    get_reg_name_from_arg_pos_8byte(counter), offset);
-			break;
-		default:
-			unsupported("Unsupported width in function parameter");
-	}
-}
-
 enum DefinitionCategory {
 	TOPLEVEL_VAR_DEFINITION,
 	TOPLEVEL_FUNCTION_DEFINITION,
@@ -371,7 +337,35 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
 
 	if (param_infos.param_vec) { /* parameter is not empty */
 		for (int counter = 0; param_infos.param_vec[counter]; ++counter) {
-			print_parameter_declaration(ptr_ps, counter, param_infos);
+
+			struct ParamInfo param_info = *(param_infos.param_vec[counter]);
+			const char *ident_str;
+
+			struct Type type = param_info.param_type;
+			ident_str = param_info.ident_str;
+
+			if (counter > 5) {
+				unsupported("6-or-more parameters");
+			}
+
+			int offset = add_local_var_to_scope(ptr_ps, type, ident_str);
+
+			switch (size_of(type)) {
+				case 1:
+					gen_write_register_to_local_1byte(
+					    /* yes, the register is 4byte */
+					    get_reg_name_from_arg_pos_4byte(counter), offset);
+				case 4:
+					gen_write_register_to_local_4byte(
+					    get_reg_name_from_arg_pos_4byte(counter), offset);
+					break;
+				case 8:
+					gen_write_register_to_local_8byte(
+					    get_reg_name_from_arg_pos_8byte(counter), offset);
+					break;
+				default:
+					unsupported("Unsupported width in function parameter");
+			}
 		}
 	}
 
