@@ -44,7 +44,7 @@ int main(int argc, char const **argv)
 				print_string_pool(prs.string_constant_pool);
 				return 0;
 			} else {
-				struct Definition def = parse_toplevel_definition(&ps, &tokvec);
+				struct Toplevel def = parse_toplevel_definition(&ps, &tokvec);
 				print_toplevel_definition(&ps, &prs, def);
 			}
 		}

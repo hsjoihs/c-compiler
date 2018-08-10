@@ -3,8 +3,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-struct Definition parse_toplevel_definition(struct ParserState *ptr_ps,
-                                            const struct Token **ptr_tokvec)
+struct Toplevel parse_toplevel_definition(struct ParserState *ptr_ps,
+                                          const struct Token **ptr_tokvec)
 {
 	const char *declarator_name;
 	const struct Token *tokvec2 = *ptr_tokvec;
@@ -23,7 +23,7 @@ struct Definition parse_toplevel_definition(struct ParserState *ptr_ps,
 
 		*ptr_tokvec = tokvec2;
 
-		struct Definition d;
+		struct Toplevel d;
 		d.category = TOPLEVEL_VAR_DEFINITION;
 		d.declarator_name = declarator_name;
 		d.declarator_type = declarator_type;
@@ -49,7 +49,7 @@ struct Definition parse_toplevel_definition(struct ParserState *ptr_ps,
 		 */
 		*ptr_tokvec = tokvec2;
 
-		struct Definition def;
+		struct Toplevel def;
 		def.category = TOPLEVEL_FUNCTION_DECLARATION;
 		return def;
 	}
@@ -85,7 +85,7 @@ struct Definition parse_toplevel_definition(struct ParserState *ptr_ps,
 	*ptr_tokvec = tokvec2;
 	/* parse finished */
 
-	struct Definition def;
+	struct Toplevel def;
 	def.category = TOPLEVEL_FUNCTION_DEFINITION;
 	def.declarator_name = declarator_name;
 	def.func.sta = sta;

@@ -206,7 +206,7 @@ void parse_final(const struct Token **ptr_tokvec)
 
 void print_toplevel_definition(struct ParserState *ptr_ps,
                                struct PrinterState *ptr_prs,
-                               struct Definition def)
+                               struct Toplevel def)
 {
 	if (def.category == TOPLEVEL_VAR_DEFINITION) {
 		gen_global_declaration(def.declarator_name,
