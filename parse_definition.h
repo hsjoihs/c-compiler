@@ -1,4 +1,7 @@
 #include "parse_statement.h"
+#if 1
+#include "codegen.h"
+#endif
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,3 +30,4 @@ void print_toplevel_definition(struct ParserState *ptr_ps,
                                struct Definition def);
 
 void print_string_pool(struct Vector pool);
+void parse_final(const struct Token **ptr_tokvec);

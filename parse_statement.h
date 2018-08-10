@@ -1,4 +1,7 @@
-#include "codegen.h"
+#include "header.h"
+#if 1
+#include "parser.h"
+#endif
 
 enum StatementCategory {
 	COMPOUND_STATEMENT = 1,
