@@ -1,4 +1,5 @@
 #include "map.h"
+#include "vector.h"
 
 #define GARBAGE_INT ((int)0xCCCCCCCC)
 
