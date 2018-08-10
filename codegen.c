@@ -3,24 +3,23 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-struct LocalVarTableList clone_scopechain(struct LocalVarTableList chain)
+struct ScopeChain clone_scopechain(struct ScopeChain chain)
 {
 	if (chain.outer == 0) {
 		return chain;
 	}
-	struct LocalVarTableList new_outer = clone_scopechain(*chain.outer);
-	struct LocalVarTableList *ptr_new_outer =
-	    calloc(1, sizeof(struct LocalVarTableList));
+	struct ScopeChain new_outer = clone_scopechain(*chain.outer);
+	struct ScopeChain *ptr_new_outer = calloc(1, sizeof(struct ScopeChain));
 	*ptr_new_outer = new_outer;
 	struct Map new_var_table = clone_map(chain.var_table);
 
-	struct LocalVarTableList new_chain;
+	struct ScopeChain new_chain;
 	new_chain.var_table = new_var_table;
 	new_chain.outer = ptr_new_outer;
 	return new_chain;
 }
 
-int is_local_var(struct LocalVarTableList t, const char *str)
+int is_local_var(struct ScopeChain t, const char *str)
 {
 	if (isElem(t.var_table, str)) {
 		return 1;
@@ -32,8 +31,7 @@ int is_local_var(struct LocalVarTableList t, const char *str)
 	}
 }
 
-struct LocalVarInfo resolve_name_locally(struct LocalVarTableList t,
-                                         const char *str)
+struct LocalVarInfo resolve_name_locally(struct ScopeChain t, const char *str)
 {
 	if (isElem(t.var_table, str)) {
 		struct LocalVarInfo *ptr_varinfo = lookup(t.var_table, str);
@@ -363,9 +361,9 @@ parse_compound_statement(struct ParserState *ptr_ps,
 	statement.statement_vector = init_vector();
 	if (tokvec[0].kind == LEFT_BRACE) {
 
-		struct LocalVarTableList current_table = ptr_ps->scope_chain;
+		struct ScopeChain current_table = ptr_ps->scope_chain;
 
-		struct LocalVarTableList new_table;
+		struct ScopeChain new_table;
 		new_table.var_table = init_map();
 
 		/* current_table disappears at the end of this function,
@@ -731,9 +729,9 @@ static void parseprint_compound_statement(struct ParserState *ptr_ps,
 
 	const struct Token *tokvec = *ptr_tokvec;
 	{
-		struct LocalVarTableList current_table = ptr_ps->scope_chain;
+		struct ScopeChain current_table = ptr_ps->scope_chain;
 
-		struct LocalVarTableList new_table;
+		struct ScopeChain new_table;
 		new_table.var_table = init_map();
 
 		/* current_table disappears at the end of this function,

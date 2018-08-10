@@ -9,19 +9,18 @@ struct LocalVarInfo {
 	int offset;
 };
 
-struct LocalVarTableList {
+struct ScopeChain {
 	struct Map var_table;
-	struct LocalVarTableList *outer;
+	struct ScopeChain *outer;
 };
 
 struct ParserState {
-	struct LocalVarTableList scope_chain;
+	struct ScopeChain scope_chain;
 	struct Map global_vars_type_map;
 	struct Map func_info_map;
 	struct Type func_ret_type;
 	int newest_offset;
 };
 
-struct LocalVarInfo resolve_name_locally(struct LocalVarTableList t,
-                                         const char *str);
-int is_local_var(struct LocalVarTableList t, const char *str);
+struct LocalVarInfo resolve_name_locally(struct ScopeChain t, const char *str);
+int is_local_var(struct ScopeChain t, const char *str);
