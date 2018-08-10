@@ -38,16 +38,26 @@ int main(int argc, char const **argv)
 		ps.func_info_map = init_map();
 		ps.global_vars_type_map = init_map();
 
+		struct Vector vec = init_vector();
 		while (1) {
 			if (tokvec[0].kind == END) {
 				parse_final(&tokvec);
-				print_string_pool(prs.string_constant_pool);
-				return 0;
+				break;
 			} else {
 				struct Toplevel def = parse_toplevel_definition(&ps, &tokvec);
-				print_toplevel_definition(&prs, def);
+				struct Toplevel *ptr = calloc(1, sizeof(struct Toplevel));
+				*ptr = def;
+				push_vector(&vec, ptr);
 			}
 		}
+
+		for (int i = 0; i < vec.length; i++) {
+			const struct Toplevel *ptr = vec.vector[i];
+
+			print_toplevel_definition(&prs, *ptr);
+		}
+
+		print_string_pool(prs.string_constant_pool);
 	}
 	return 0;
 }
