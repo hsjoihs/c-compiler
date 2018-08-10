@@ -405,10 +405,6 @@ parse_compound_statement(struct ParserState *ptr_ps,
 	exit(EXIT_FAILURE);
 }
 
-static void print_compound_statement(struct ParserState *ptr_ps,
-                                     struct PrinterState *ptr_prs,
-                                     struct Statement sta);
-
 static void print_statement(struct ParserState *ptr_ps,
                             struct PrinterState *ptr_prs, struct Statement sta)
 {
@@ -455,7 +451,18 @@ static void print_statement(struct ParserState *ptr_ps,
 			return;
 		}
 		case COMPOUND_STATEMENT: {
-			print_compound_statement(ptr_ps, ptr_prs, sta);
+
+			struct Vector vec = sta.statement_vector;
+
+			for (int counter = 0; counter != vec.length; ++counter) {
+				const struct Statement *ptr_ith = vec.vector[counter];
+				if (ptr_ith->category == DECLARATION_STATEMENT) {
+
+				} else {
+					print_statement(ptr_ps, ptr_prs, *ptr_ith);
+				}
+			}
+
 			return;
 		}
 		case IF_ELSE_STATEMENT: {
@@ -590,24 +597,6 @@ void parse_final(const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 	expect_and_consume(&tokvec, END, "the end of file");
-	return;
-}
-
-static void print_compound_statement(struct ParserState *ptr_ps,
-                                     struct PrinterState *ptr_prs,
-                                     struct Statement sta)
-{
-	struct Vector vec = sta.statement_vector;
-
-	for (int counter = 0; counter != vec.length; ++counter) {
-		const struct Statement *ptr_ith = vec.vector[counter];
-		if (ptr_ith->category == DECLARATION_STATEMENT) {
-
-		} else {
-			print_statement(ptr_ps, ptr_prs, *ptr_ith);
-		}
-	}
-
 	return;
 }
 
