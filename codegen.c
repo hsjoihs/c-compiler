@@ -464,6 +464,8 @@ static void parseprint_statement(struct ParserState *ptr_ps,
 	    sta.category == CONTINUE_STATEMENT) {
 		parse_statement(ptr_ps, &tokvec);
 		*ptr_tokvec = tokvec;
+		print_statement(ptr_prs, sta);
+		return;
 	}
 
 	if (sta.category == COMPOUND_STATEMENT) {
@@ -542,11 +544,6 @@ static void parseprint_statement(struct ParserState *ptr_ps,
 
 			return;
 		}
-	}
-
-	if (sta.category == RETURN_STATEMENT) {
-		print_statement(ptr_prs, sta);
-		return;
 	}
 
 	if (sta.category == DO_WHILE_STATEMENT) {
@@ -644,16 +641,6 @@ static void parseprint_statement(struct ParserState *ptr_ps,
 		return;
 	}
 
-	if (sta.category == BREAK_STATEMENT) {
-		print_statement(ptr_prs, sta);
-		return;
-	}
-
-	if (sta.category == CONTINUE_STATEMENT) {
-		print_statement(ptr_prs, sta);
-		return;
-	}
-
 	if (sta.category == FOR_STATEMENT) {
 		int stashed_break_label = ptr_prs->break_label_name;
 		int stashed_continue_label = ptr_prs->continue_label_name;
@@ -721,9 +708,7 @@ static void parseprint_statement(struct ParserState *ptr_ps,
 		s.inner_statement = ptr_inner_s;
 		return;
 	}
-
-	print_statement(ptr_prs, sta);
-	return;
+	exit(EXIT_FAILURE);
 }
 
 void parse_final(const struct Token **ptr_tokvec)
