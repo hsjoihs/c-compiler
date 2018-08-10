@@ -369,13 +369,9 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
 	gen_after_prologue(label1, label2);
 
 	if (param_infos.param_vec) { /* parameter is not empty */
-
-		int counter = 0;
-
-		do {
+		for (int counter = 0; param_infos.param_vec[counter]; ++counter) {
 			print_parameter_declaration(ptr_ps, counter, param_infos);
-			++counter;
-		} while (param_infos.param_vec[counter]);
+		}
 	}
 
 	const struct Token *tokvec = tokvec2;
