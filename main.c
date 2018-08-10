@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+void generate(const struct Vector vec);
+
 int main(int argc, char const **argv)
 {
 
@@ -47,19 +49,24 @@ int main(int argc, char const **argv)
 			}
 		}
 
-		struct PrinterState prs;
-		prs.final_label_name = 1;
-		prs.return_label_name = GARBAGE_INT;
-		prs.string_constant_pool = init_vector();
-		prs.pool_largest_id = 0;
-
-		for (int i = 0; i < vec.length; i++) {
-			const struct Toplevel *ptr = vec.vector[i];
-
-			print_toplevel_definition(&prs, *ptr);
-		}
-
-		print_string_pool(prs.string_constant_pool);
+		generate(vec);
 	}
 	return 0;
+}
+
+void generate(const struct Vector vec)
+{
+	struct PrinterState prs;
+	prs.final_label_name = 1;
+	prs.return_label_name = GARBAGE_INT;
+	prs.string_constant_pool = init_vector();
+	prs.pool_largest_id = 0;
+
+	for (int i = 0; i < vec.length; i++) {
+		const struct Toplevel *ptr = vec.vector[i];
+
+		print_toplevel_definition(&prs, *ptr);
+	}
+
+	print_string_pool(prs.string_constant_pool);
 }
