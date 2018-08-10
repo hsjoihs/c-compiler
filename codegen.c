@@ -262,18 +262,7 @@ static void print_parameter_declaration(struct ParserState *ptr_ps, int counter,
 		unsupported("6-or-more parameters");
 	}
 
-	ptr_ps->newest_offset -= size_of(type) < 4 ? 4 : size_of(type);
-
-	struct Map map_ = ptr_ps->scope_chain.var_table;
-	struct LocalVarInfo *ptr_varinfo = calloc(1, sizeof(struct LocalVarInfo));
-	ptr_varinfo->offset = ptr_ps->newest_offset;
-	ptr_varinfo->type = type;
-
-	insert(&map_, ident_str, ptr_varinfo);
-
-	ptr_ps->scope_chain.var_table = map_;
-
-	int offset = ptr_varinfo->offset;
+	int offset = add_local_var_to_scope(ptr_ps, type, ident_str);
 
 	switch (size_of(type)) {
 		case 1:

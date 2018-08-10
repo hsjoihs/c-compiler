@@ -13,8 +13,12 @@ static struct Expression integer_1(void)
 	return expr;
 }
 
-void add_local_var_to_scope(struct ParserState *ptr_ps,
-                            const struct Type vartype, const char *str)
+/*
+ * Adjusts the newest_offset and add a local variable to the scope.
+ * Returns the offset of the newly added variable.
+ */
+int add_local_var_to_scope(struct ParserState *ptr_ps,
+                           const struct Type vartype, const char *str)
 {
 	ptr_ps->newest_offset -= size_of(vartype) < 4 ? 4 : size_of(vartype);
 
@@ -26,6 +30,7 @@ void add_local_var_to_scope(struct ParserState *ptr_ps,
 	insert(&map_, str, ptr_varinfo);
 
 	ptr_ps->scope_chain.var_table = map_;
+	return ptr_varinfo->offset;
 }
 
 struct Statement parse_statement(struct ParserState *ptr_ps,
