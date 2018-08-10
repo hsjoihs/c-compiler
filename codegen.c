@@ -62,7 +62,7 @@ static void print_statement(struct ParserState *ptr_ps,
 			return;
 		}
 		case BREAK_STATEMENT: {
-			if (ptr_prs->break_label_name == GARBAGE_INT) {
+			if (ptr_prs->break_label_name == -1) {
 				fprintf(stderr, "invalid `break`; no loop, no switch\n");
 				exit(EXIT_FAILURE);
 			} else {
@@ -80,7 +80,7 @@ static void print_statement(struct ParserState *ptr_ps,
 			struct Expression expr = sta.expr1;
 			print_expression(ptr_prs, expr);
 			/* the first occurrence of return within a function */
-			if (ptr_prs->return_label_name == GARBAGE_INT) {
+			if (ptr_prs->return_label_name == -1) {
 				int ret_label = get_new_label_name(ptr_prs);
 				ptr_prs->return_label_name = ret_label;
 				gen_jump(ret_label, "return");
@@ -94,7 +94,7 @@ static void print_statement(struct ParserState *ptr_ps,
 			return;
 		}
 		case CONTINUE_STATEMENT: {
-			if (ptr_prs->continue_label_name == GARBAGE_INT) {
+			if (ptr_prs->continue_label_name == -1) {
 				fprintf(stderr, "invalid `continue`; no loop\n");
 				exit(EXIT_FAILURE);
 			} else {
@@ -310,9 +310,9 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
 
 	ptr_ps->scope_chain.outer = 0; /* most outer scope */
 	ptr_ps->scope_chain.var_table = init_map();
-	ptr_prs->return_label_name = GARBAGE_INT;   /* INITIALIZE */
-	ptr_prs->break_label_name = GARBAGE_INT;    /* INITIALIZE */
-	ptr_prs->continue_label_name = GARBAGE_INT; /* INITIALIZE */
+	ptr_prs->return_label_name = -1;   /* -1 means invalid */
+	ptr_prs->break_label_name = -1;    /* -1 means invalid */
+	ptr_prs->continue_label_name = -1; /* -1 means invalid */
 	/* 8 is the space to store the address to handle deref */
 	ptr_ps->newest_offset = -8;
 	ptr_ps->func_ret_type = ret_type;
