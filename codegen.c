@@ -601,31 +601,15 @@ static void print_compound_statement(struct ParserState *ptr_ps,
 	struct Vector vec = sta.statement_vector;
 
 	{
-		struct ScopeChain current_table = ptr_ps->scope_chain;
-
-		struct ScopeChain new_table;
-		new_table.var_table = init_map();
-
-		/* current_table disappears at the end of this function,
-		   but there is no problem because new_table itself gets overwritten at
-		   the end of this function.
-		 */
-		new_table.outer = &current_table;
-
-		ptr_ps->scope_chain = new_table;
 
 		for (int counter = 0; counter != vec.length; ++counter) {
 			const struct Statement *ptr_ith = vec.vector[counter];
 			if (ptr_ith->category == DECLARATION_STATEMENT) {
 
-				update_ptr_ps(ptr_ps, ptr_ith->declaration.type,
-				              ptr_ith->declaration.ident_str);
-
 			} else {
 				print_statement(ptr_ps, ptr_prs, *ptr_ith);
 			}
 		}
-		ptr_ps->scope_chain = current_table;
 
 		return;
 	}
