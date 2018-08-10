@@ -3,18 +3,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int is_local_var(struct ScopeChain t, const char *str)
-{
-	if (isElem(t.var_table, str)) {
-		return 1;
-	} else if (t.outer == 0) {
-		/* most outer, but cannot be found */
-		return 0;
-	} else {
-		return is_local_var(*(t.outer), str);
-	}
-}
-
 const char *get_reg_name_from_arg_pos_4byte(int counter)
 {
 	switch (counter) {

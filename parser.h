@@ -21,5 +21,3 @@ struct ParserState {
 	struct Type func_ret_type;
 	int newest_offset;
 };
-
-int is_local_var(struct ScopeChain t, const char *str);
