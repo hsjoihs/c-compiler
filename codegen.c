@@ -754,8 +754,6 @@ static void parseprint_compound_statement(struct ParserState *ptr_ps,
 				struct Statement s = parse_statement(ptr_ps, &tokvec2);
 				parseprint_statement(ptr_ps, ptr_prs, &tokvec, s);
 				assert(tokvec2 == tokvec);
-				struct Statement *ptr_s = calloc(1, sizeof(struct Statement));
-				*ptr_s = s;
 			}
 		}
 		++tokvec;
