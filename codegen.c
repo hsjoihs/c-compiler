@@ -405,10 +405,7 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
 			                       ptr_ith->declaration.ident_str);
 
 		} else {
-			const struct Token *tokvec2 = tokvec;
-			parse_statement(ptr_ps, &tokvec2);
-
-			tokvec = tokvec2;
+			parse_statement(ptr_ps, &tokvec);
 
 			print_statement(ptr_ps, ptr_prs, *ptr_ith);
 		}
