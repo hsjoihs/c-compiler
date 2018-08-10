@@ -608,20 +608,6 @@ static void print_statement(struct ParserState *ptr_ps,
 	exit(EXIT_FAILURE);
 }
 
-static void parseprint_statement(struct ParserState *ptr_ps,
-                                 struct PrinterState *ptr_prs,
-                                 const struct Token **ptr_tokvec,
-                                 struct Statement sta)
-{
-	const struct Token *tokvec = *ptr_tokvec;
-	{
-		parse_statement(ptr_ps, &tokvec);
-		*ptr_tokvec = tokvec;
-		print_statement(ptr_ps, ptr_prs, sta);
-		return;
-	}
-}
-
 void parse_final(const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
@@ -714,7 +700,9 @@ static void parseprint_compound_statement(struct ParserState *ptr_ps,
 				struct ScopeChain stashed = ptr_ps->scope_chain;
 
 				ptr_ps->scope_chain = sta.scope_chain_backup;
-				parseprint_statement(ptr_ps, ptr_prs, &tokvec, *ptr_ith);
+
+				parse_statement(ptr_ps, &tokvec);
+				print_statement(ptr_ps, ptr_prs, *ptr_ith);
 
 				assert(tokvec2 == tokvec);
 
