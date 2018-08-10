@@ -4,6 +4,7 @@
 #include <string.h>
 
 void generate(const struct Vector vec);
+struct Vector parse(const struct Token *tokvec);
 
 int main(int argc, char const **argv)
 {
@@ -26,32 +27,39 @@ int main(int argc, char const **argv)
 		if (strcmp(argv[1], "--lexer-debug") == 0) {
 			read_all_tokens_debug(str);
 		}
-	} else {
-		const struct Token *tokvec = read_all_tokens(str);
-
-		++tokvec; /* skip the dummy token BEGINNING */
-
-		struct ParserState ps;
-
-		ps.func_info_map = init_map();
-		ps.global_vars_type_map = init_map();
-
-		struct Vector vec = init_vector();
-		while (1) {
-			if (tokvec[0].kind == END) {
-				parse_final(&tokvec);
-				break;
-			} else {
-				struct Toplevel def = parse_toplevel_definition(&ps, &tokvec);
-				struct Toplevel *ptr = calloc(1, sizeof(struct Toplevel));
-				*ptr = def;
-				push_vector(&vec, ptr);
-			}
-		}
-
-		generate(vec);
+		return 0;
 	}
+
+	const struct Token *tokvec = read_all_tokens(str);
+
+	++tokvec; /* skip the dummy token BEGINNING */
+
+	struct Vector vec = parse(tokvec);
+
+	generate(vec);
+
 	return 0;
+}
+
+struct Vector parse(const struct Token *tokvec)
+{
+	struct ParserState ps;
+	ps.func_info_map = init_map();
+	ps.global_vars_type_map = init_map();
+
+	struct Vector vec = init_vector();
+	while (1) {
+		if (tokvec[0].kind == END) {
+			parse_final(&tokvec);
+			break;
+		} else {
+			struct Toplevel def = parse_toplevel_definition(&ps, &tokvec);
+			struct Toplevel *ptr = calloc(1, sizeof(struct Toplevel));
+			*ptr = def;
+			push_vector(&vec, ptr);
+		}
+	}
+	return vec;
 }
 
 void generate(const struct Vector vec)
