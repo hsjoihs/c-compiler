@@ -616,10 +616,14 @@ static void parseprint_statement(struct ParserState *ptr_ps,
 	if (sta.category == WHILE_STATEMENT) {
 		++tokvec;
 		expect_and_consume(&tokvec, LEFT_PAREN, "left parenthesis of while");
-		struct Expression expr = parse_expression(ptr_ps, &tokvec);
+		parse_expression(ptr_ps, &tokvec);
+		struct Expression expr = sta.expr1;
 		expect_and_consume(&tokvec, RIGHT_PAREN, "left parenthesis of while");
 		const struct Token *tokvec2 = tokvec;
-		struct Statement inner_s = parse_statement(ptr_ps, &tokvec);
+		parse_statement(ptr_ps, &tokvec);
+		*ptr_tokvec = tokvec;
+
+		struct Statement inner_s = *sta.inner_statement;
 
 		int stashed_break_label = ptr_prs->break_label_name;
 		int stashed_continue_label = ptr_prs->continue_label_name;
@@ -642,20 +646,9 @@ static void parseprint_statement(struct ParserState *ptr_ps,
 		gen_label(cont_label);
 		gen_for_part4(label1, break_label);
 
-		*ptr_tokvec = tokvec;
-
 		ptr_prs->break_label_name = stashed_break_label;
 		ptr_prs->continue_label_name = stashed_continue_label;
 
-		*ptr_tokvec = tokvec;
-
-		struct Statement s;
-		s.category = WHILE_STATEMENT;
-		s.expr1 = expr;
-
-		struct Statement *ptr_inner_s = calloc(1, sizeof(struct Statement));
-		*ptr_inner_s = inner_s;
-		s.inner_statement = ptr_inner_s;
 		return;
 	}
 
