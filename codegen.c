@@ -378,25 +378,10 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
 	*ptr_tokvec = tokvec2;
 
 	struct Vector vec = sta.statement_vector;
-
-	struct ScopeChain current_table = ptr_ps->scope_chain;
-
-	struct ScopeChain new_table;
-	new_table.var_table = init_map();
-
-	/* current_table disappears at the end of this function,
-	   but there is no problem because new_table itself gets overwritten at
-	   the end of this function.
-	 */
-	new_table.outer = &current_table;
-
-	ptr_ps->scope_chain = new_table;
-
 	for (int counter = 0; counter != vec.length; ++counter) {
 		const struct Statement *ptr_ith = vec.vector[counter];
 		print_statement(ptr_ps, ptr_prs, *ptr_ith);
 	}
-	ptr_ps->scope_chain = current_table;
 
 	gen_before_epilogue(label1, label2, -(ptr_ps->newest_offset));
 	gen_epilogue_nbyte(size_of(ret_type), ptr_prs->return_label_name);
