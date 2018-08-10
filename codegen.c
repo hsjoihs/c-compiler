@@ -600,19 +600,16 @@ static void print_compound_statement(struct ParserState *ptr_ps,
 {
 	struct Vector vec = sta.statement_vector;
 
-	{
+	for (int counter = 0; counter != vec.length; ++counter) {
+		const struct Statement *ptr_ith = vec.vector[counter];
+		if (ptr_ith->category == DECLARATION_STATEMENT) {
 
-		for (int counter = 0; counter != vec.length; ++counter) {
-			const struct Statement *ptr_ith = vec.vector[counter];
-			if (ptr_ith->category == DECLARATION_STATEMENT) {
-
-			} else {
-				print_statement(ptr_ps, ptr_prs, *ptr_ith);
-			}
+		} else {
+			print_statement(ptr_ps, ptr_prs, *ptr_ith);
 		}
-
-		return;
 	}
+
+	return;
 }
 
 static void parseprint_compound_statement(struct ParserState *ptr_ps,
@@ -623,48 +620,46 @@ static void parseprint_compound_statement(struct ParserState *ptr_ps,
 	struct Vector vec = sta.statement_vector;
 
 	const struct Token *tokvec = *ptr_tokvec;
-	{
-		struct ScopeChain current_table = ptr_ps->scope_chain;
 
-		struct ScopeChain new_table;
-		new_table.var_table = init_map();
+	struct ScopeChain current_table = ptr_ps->scope_chain;
 
-		/* current_table disappears at the end of this function,
-		   but there is no problem because new_table itself gets overwritten at
-		   the end of this function.
-		 */
-		new_table.outer = &current_table;
+	struct ScopeChain new_table;
+	new_table.var_table = init_map();
 
-		ptr_ps->scope_chain = new_table;
+	/* current_table disappears at the end of this function,
+	   but there is no problem because new_table itself gets overwritten at
+	   the end of this function.
+	 */
+	new_table.outer = &current_table;
 
-		++tokvec;
-		for (int counter = 0; counter != vec.length; ++counter) {
-			const struct Statement *ptr_ith = vec.vector[counter];
-			if (ptr_ith->category == DECLARATION_STATEMENT) {
-				const char *dummy;
-				parse_declarator(&tokvec, &dummy);
-				expect_and_consume(
-				    &tokvec, SEMICOLON,
-				    "semicolon at the end of variable definition");
+	ptr_ps->scope_chain = new_table;
 
-				update_ptr_ps(ptr_ps, ptr_ith->declaration.type,
-				              ptr_ith->declaration.ident_str);
+	++tokvec;
+	for (int counter = 0; counter != vec.length; ++counter) {
+		const struct Statement *ptr_ith = vec.vector[counter];
+		if (ptr_ith->category == DECLARATION_STATEMENT) {
+			const char *dummy;
+			parse_declarator(&tokvec, &dummy);
+			expect_and_consume(&tokvec, SEMICOLON,
+			                   "semicolon at the end of variable definition");
 
-			} else {
-				const struct Token *tokvec2 = tokvec;
-				parse_statement(ptr_ps, &tokvec2);
+			update_ptr_ps(ptr_ps, ptr_ith->declaration.type,
+			              ptr_ith->declaration.ident_str);
 
-				tokvec = tokvec2;
+		} else {
+			const struct Token *tokvec2 = tokvec;
+			parse_statement(ptr_ps, &tokvec2);
 
-				print_statement(ptr_ps, ptr_prs, *ptr_ith);
-			}
+			tokvec = tokvec2;
+
+			print_statement(ptr_ps, ptr_prs, *ptr_ith);
 		}
-		++tokvec;
-		*ptr_tokvec = tokvec;
-		ptr_ps->scope_chain = current_table;
-
-		return;
 	}
+	++tokvec;
+	*ptr_tokvec = tokvec;
+	ptr_ps->scope_chain = current_table;
+
+	return;
 }
 
 static void print_parameter_declaration(struct ParserState *ptr_ps, int counter,
