@@ -341,10 +341,6 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
 
 	ptr_ps->scope_chain.outer = 0; /* most outer scope */
 	ptr_ps->scope_chain.var_table = init_map();
-	ptr_prs->return_label_name = -1;   /* -1 means invalid */
-	ptr_prs->break_label_name = -1;    /* -1 means invalid */
-	ptr_prs->continue_label_name = -1; /* -1 means invalid */
-
 	ptr_ps->newest_offset = 0;
 	ptr_ps->func_ret_type = ret_type;
 
@@ -355,6 +351,10 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
 	insert(&retmap, declarator_name, ptr_func_info);
 
 	ptr_ps->func_info_map = retmap;
+
+	ptr_prs->return_label_name = -1;   /* -1 means invalid */
+	ptr_prs->break_label_name = -1;    /* -1 means invalid */
+	ptr_prs->continue_label_name = -1; /* -1 means invalid */
 
 	int label1;
 	int label2;
