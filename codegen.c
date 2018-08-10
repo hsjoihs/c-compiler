@@ -702,11 +702,11 @@ static void parseprint_compound_statement(struct ParserState *ptr_ps,
 				ptr_ps->scope_chain = sta.scope_chain_backup;
 
 				parse_statement(ptr_ps, &tokvec);
-				print_statement(ptr_ps, ptr_prs, *ptr_ith);
 
 				assert(tokvec2 == tokvec);
 
 				ptr_ps->scope_chain = stashed;
+				print_statement(ptr_ps, ptr_prs, *ptr_ith);
 			}
 		}
 		++tokvec;
