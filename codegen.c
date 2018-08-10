@@ -48,11 +48,6 @@ int get_new_label_name(struct PrinterState *ptr_prs)
 	return ++(ptr_prs->final_label_name);
 }
 
-enum DefinitionCategory {
-	TOPLEVEL_VAR_DEFINITION,
-	TOPLEVEL_FUNCTION_DEFINITION,
-};
-
 static void print_statement(struct ParserState *ptr_ps,
                             struct PrinterState *ptr_prs, struct Statement sta)
 {
@@ -279,6 +274,49 @@ static void print_parameter_declaration(struct ParserState *ptr_ps, int counter,
 			break;
 		default:
 			unsupported("Unsupported width in function parameter");
+	}
+}
+
+enum DefinitionCategory {
+	TOPLEVEL_VAR_DEFINITION,
+	TOPLEVEL_FUNCTION_DEFINITION,
+	TOPLEVEL_FUNCTION_DECLARATION
+};
+
+struct Definition {
+	enum DefinitionCategory category;
+	const char *declarator_name;
+	struct Type declarator_type;
+};
+
+static struct Definition *
+try_parse_toplevel_var_definition(struct ParserState *ptr_ps,
+                                  const struct Token **ptr_tokvec)
+{
+	const char *declarator_name;
+	const struct Token *tokvec2 = *ptr_tokvec;
+	struct Type declarator_type = parse_declarator(&tokvec2, &declarator_name);
+	if (declarator_type.type_category != FN && tokvec2[0].kind == SEMICOLON) {
+		++tokvec2; /* consume the semicolon */
+		struct Map globalmap = ptr_ps->global_vars_type_map;
+
+		struct Type *ptr_type = calloc(1, sizeof(struct Type));
+		*ptr_type = declarator_type;
+		insert(&globalmap, declarator_name, ptr_type);
+		ptr_ps->global_vars_type_map = globalmap;
+
+		*ptr_tokvec = tokvec2;
+
+		struct Definition d;
+		d.category = TOPLEVEL_VAR_DEFINITION;
+		d.declarator_name = declarator_name;
+		d.declarator_type = declarator_type;
+
+		struct Definition *ptr = calloc(1, sizeof(struct Definition));
+		*ptr = d;
+		return ptr;
+	} else {
+		return 0; /* does not consume token on failure */
 	}
 }
 
