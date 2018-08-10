@@ -56,3 +56,16 @@ struct Map init_map(void)
 	res.internal->_vec = calloc(res.internal->_alloc, sizeof(struct _mapchip));
 	return res;
 }
+
+struct Map clone_map(const struct Map map)
+{
+	struct Map res;
+	res.internal = calloc(1, sizeof(struct Map2));
+	res.internal->_length = map.internal->_length;
+	res.internal->_alloc = map.internal->_alloc;
+	res.internal->_vec = calloc(res.internal->_alloc, sizeof(struct _mapchip));
+	for (int i = 0; i < res.internal->_length; i++) {
+		res.internal->_vec[i] = map.internal->_vec[i];
+	}
+	return res;
+}

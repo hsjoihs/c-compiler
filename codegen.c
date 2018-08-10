@@ -3,6 +3,23 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+struct LocalVarTableList clone_scopechain(struct LocalVarTableList chain)
+{
+	if (chain.outer == 0) {
+		return chain;
+	}
+	struct LocalVarTableList new_outer = clone_scopechain(*chain.outer);
+	struct LocalVarTableList *ptr_new_outer =
+	    calloc(1, sizeof(struct LocalVarTableList));
+	*ptr_new_outer = new_outer;
+	struct Map new_var_table = clone_map(chain.var_table);
+
+	struct LocalVarTableList new_chain;
+	new_chain.var_table = new_var_table;
+	new_chain.outer = ptr_new_outer;
+	return new_chain;
+}
+
 int is_local_var(struct LocalVarTableList t, const char *str)
 {
 	if (isElem(t.var_table, str)) {
