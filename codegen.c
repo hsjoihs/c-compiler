@@ -423,6 +423,9 @@ parse_compound_statement(struct ParserState *ptr_ps,
 	exit(EXIT_FAILURE);
 }
 
+static void print_compound_statement(struct ParserState *ptr_ps,
+                                     struct PrinterState *ptr_prs,
+                                     struct Statement sta);
 static void parseprint_compound_statement(struct ParserState *ptr_ps,
                                           struct PrinterState *ptr_prs,
                                           const struct Token **ptr_tokvec,
@@ -473,7 +476,136 @@ static void print_statement(struct ParserState *ptr_ps,
 			}
 			return;
 		}
+		case COMPOUND_STATEMENT: {
+			print_compound_statement(ptr_ps, ptr_prs, sta);
+			return;
+		}
+		case IF_ELSE_STATEMENT: {
+			int label1 = get_new_label_name(ptr_prs);
+			int label2 = get_new_label_name(ptr_prs);
+			struct Expression expr = sta.expr1;
+			print_expression(ptr_prs, expr);
+
+			gen_if_else_part1(label1, label2);
+
+			struct Statement inner_s =
+			    *(struct Statement *)sta.statement_vector.vector[0];
+			print_statement(ptr_ps, ptr_prs, inner_s);
+
+			gen_if_else_part2(label1, label2);
+
+			struct Statement inner_s2 =
+			    *(struct Statement *)sta.statement_vector.vector[1];
+			print_statement(ptr_ps, ptr_prs, inner_s2);
+			gen_if_else_part3(label1, label2);
+
+			return;
+		}
+		case IF_STATEMENT: {
+
+			int label1 = get_new_label_name(ptr_prs);
+			int label2 = get_new_label_name(ptr_prs);
+			struct Expression expr = sta.expr1;
+			print_expression(ptr_prs, expr);
+
+			gen_if_else_part1(label1, label2);
+
+			struct Statement inner_s = *sta.inner_statement;
+			print_statement(ptr_ps, ptr_prs, inner_s);
+
+			gen_if_else_part2(label1, label2);
+			gen_if_else_part3(label1, label2);
+
+			return;
+		}
+		case DO_WHILE_STATEMENT: {
+			int stashed_break_label = ptr_prs->break_label_name;
+			int stashed_continue_label = ptr_prs->continue_label_name;
+			int label1 = get_new_label_name(ptr_prs);
+			int break_label = get_new_label_name(ptr_prs);
+			int cont_label = get_new_label_name(ptr_prs);
+			ptr_prs->break_label_name = break_label;
+			ptr_prs->continue_label_name = cont_label;
+
+			gen_label(label1);
+			struct Statement inner_s = *sta.inner_statement;
+			print_statement(ptr_ps, ptr_prs, inner_s);
+
+			gen_label(cont_label);
+
+			struct Expression expr = sta.expr1;
+			print_expression(ptr_prs, expr);
+
+			gen_do_while_final(label1, break_label);
+
+			ptr_prs->break_label_name = stashed_break_label;
+			ptr_prs->continue_label_name = stashed_continue_label;
+
+			return;
+		}
+		case WHILE_STATEMENT: {
+			struct Expression expr = sta.expr1;
+
+			struct Statement inner_s = *sta.inner_statement;
+
+			int stashed_break_label = ptr_prs->break_label_name;
+			int stashed_continue_label = ptr_prs->continue_label_name;
+
+			int label1 = get_new_label_name(ptr_prs);
+			int break_label = get_new_label_name(ptr_prs);
+			int cont_label = get_new_label_name(ptr_prs);
+			ptr_prs->break_label_name = break_label;
+			ptr_prs->continue_label_name = cont_label;
+
+			gen_label(label1);
+
+			print_expression(ptr_prs, expr);
+
+			gen_while_part2(label1, break_label);
+
+			print_statement(ptr_ps, ptr_prs, inner_s);
+
+			gen_label(cont_label);
+			gen_for_part4(label1, break_label);
+
+			ptr_prs->break_label_name = stashed_break_label;
+			ptr_prs->continue_label_name = stashed_continue_label;
+
+			return;
+		}
+		case FOR_STATEMENT: {
+			int stashed_break_label = ptr_prs->break_label_name;
+			int stashed_continue_label = ptr_prs->continue_label_name;
+			int label1 = get_new_label_name(ptr_prs);
+			int break_label = get_new_label_name(ptr_prs);
+			int cont_label = get_new_label_name(ptr_prs);
+			ptr_prs->break_label_name = break_label;
+			ptr_prs->continue_label_name = cont_label;
+
+			struct Expression expr1 = sta.expr1;
+			struct Expression expr2 = sta.expr2;
+			struct Expression expr3 = sta.expr3;
+
+			print_expression(ptr_prs, expr1); /* expression1 */
+			gen_discard();
+			gen_label(label1);
+			print_expression(ptr_prs, expr2); /* expression2 */
+			gen_while_part2(label1, break_label);
+			struct Statement inner_s = *sta.inner_statement;
+			print_statement(ptr_ps, ptr_prs, inner_s);
+			gen_label(cont_label);
+			print_expression(ptr_prs, expr3);
+			gen_discard();
+			gen_for_part4(label1, break_label);
+
+			ptr_prs->break_label_name = stashed_break_label;
+			ptr_prs->continue_label_name = stashed_continue_label;
+
+			return;
+		}
 	}
+	fprintf(stderr, "fooooooooooo\n");
+	exit(EXIT_FAILURE);
 }
 
 static void parseprint_statement(struct ParserState *ptr_ps,
