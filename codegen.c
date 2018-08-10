@@ -231,8 +231,7 @@ void print_toplevel_definition(struct ParserState *ptr_ps,
 	int label2;
 	label1 = get_new_label_name(ptr_prs);
 	label2 = get_new_label_name(ptr_prs);
-	gen_prologue(0, declarator_name);
-	gen_after_prologue(label1, label2);
+	gen_prologue(def.func.capacity, declarator_name);
 	for (int counter = 0; counter < offsets_and_types.length; ++counter) {
 		struct LocalVarInfo info =
 		    *(const struct LocalVarInfo *)offsets_and_types.vector[counter];
@@ -258,7 +257,6 @@ void print_toplevel_definition(struct ParserState *ptr_ps,
 	}
 	print_statement(ptr_ps, ptr_prs, sta);
 
-	gen_before_epilogue(label1, label2, def.func.capacity);
 	gen_epilogue_nbyte(size_of(ret_type), ptr_prs->return_label_name);
 }
 
