@@ -405,6 +405,53 @@ static void parseprint_compound_statement(struct ParserState *ptr_ps,
                                           const struct Token **ptr_tokvec,
                                           struct Statement sta);
 
+static void print_statement(struct PrinterState *ptr_prs, struct Statement sta)
+{
+	switch (sta.category) {
+		case BREAK_STATEMENT: {
+			if (ptr_prs->break_label_name == GARBAGE_INT) {
+				fprintf(stderr, "invalid `break`; no loop, no switch\n");
+				exit(EXIT_FAILURE);
+			} else {
+				gen_jump(ptr_prs->break_label_name, "break");
+			}
+			return;
+		}
+		case EXPRESSION_STATEMENT: {
+			print_expression(ptr_prs, sta.expr1);
+			gen_discard();
+			return;
+		}
+		case RETURN_STATEMENT: {
+
+			struct Expression expr = sta.expr1;
+			print_expression(ptr_prs, expr);
+			/* the first occurrence of return within a function */
+			if (ptr_prs->return_label_name == GARBAGE_INT) {
+				int ret_label = get_new_label_name(ptr_prs);
+				ptr_prs->return_label_name = ret_label;
+				gen_jump(ret_label, "return");
+			} else {
+				gen_jump(ptr_prs->return_label_name, "return");
+			}
+
+			struct Statement s;
+			s.category = RETURN_STATEMENT;
+			s.expr1 = expr;
+			return;
+		}
+		case CONTINUE_STATEMENT: {
+			if (ptr_prs->continue_label_name == GARBAGE_INT) {
+				fprintf(stderr, "invalid `continue`; no loop\n");
+				exit(EXIT_FAILURE);
+			} else {
+				gen_jump(ptr_prs->continue_label_name, "continue");
+			}
+			return;
+		}
+	}
+}
+
 static void parseprint_statement(struct ParserState *ptr_ps,
                                  struct PrinterState *ptr_prs,
                                  const struct Token **ptr_tokvec,
@@ -498,21 +545,7 @@ static void parseprint_statement(struct ParserState *ptr_ps,
 	}
 
 	if (sta.category == RETURN_STATEMENT) {
-
-		struct Expression expr = sta.expr1;
-		print_expression(ptr_prs, expr);
-		/* the first occurrence of return within a function */
-		if (ptr_prs->return_label_name == GARBAGE_INT) {
-			int ret_label = get_new_label_name(ptr_prs);
-			ptr_prs->return_label_name = ret_label;
-			gen_jump(ret_label, "return");
-		} else {
-			gen_jump(ptr_prs->return_label_name, "return");
-		}
-
-		struct Statement s;
-		s.category = RETURN_STATEMENT;
-		s.expr1 = expr;
+		print_statement(ptr_prs, sta);
 		return;
 	}
 
@@ -612,22 +645,12 @@ static void parseprint_statement(struct ParserState *ptr_ps,
 	}
 
 	if (sta.category == BREAK_STATEMENT) {
-		if (ptr_prs->break_label_name == GARBAGE_INT) {
-			fprintf(stderr, "invalid `break`; no loop, no switch\n");
-			exit(EXIT_FAILURE);
-		} else {
-			gen_jump(ptr_prs->break_label_name, "break");
-		}
+		print_statement(ptr_prs, sta);
 		return;
 	}
 
 	if (sta.category == CONTINUE_STATEMENT) {
-		if (ptr_prs->continue_label_name == GARBAGE_INT) {
-			fprintf(stderr, "invalid `continue`; no loop\n");
-			exit(EXIT_FAILURE);
-		} else {
-			gen_jump(ptr_prs->continue_label_name, "continue");
-		}
+		print_statement(ptr_prs, sta);
 		return;
 	}
 
@@ -699,9 +722,7 @@ static void parseprint_statement(struct ParserState *ptr_ps,
 		return;
 	}
 
-	print_expression(ptr_prs, sta.expr1);
-	gen_discard();
-
+	print_statement(ptr_prs, sta);
 	return;
 }
 
