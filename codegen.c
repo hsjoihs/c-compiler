@@ -495,8 +495,8 @@ static void parseprint_statement(struct ParserState *ptr_ps,
 
 	if (sta.category == COMPOUND_STATEMENT) {
 		const struct Token *tokvec2 = tokvec;
-		struct Statement s = parse_compound_statement(ptr_ps, &tokvec2);
-		parseprint_compound_statement(ptr_ps, ptr_prs, &tokvec, s);
+		parse_compound_statement(ptr_ps, &tokvec2);
+		parseprint_compound_statement(ptr_ps, ptr_prs, &tokvec, sta);
 		assert(tokvec2 == tokvec);
 
 		*ptr_tokvec = tokvec;
