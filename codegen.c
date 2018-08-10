@@ -348,6 +348,15 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
 	ptr_func_info->ret_type = ret_type;
 	insert(&ptr_ps->func_info_map, declarator_name, ptr_func_info);
 
+	if (!param_infos.param_vec &&
+	    tokvec2[0].kind == SEMICOLON) { /* function prototype */
+		++tokvec2;
+		/* do nothing, since the return value is already in the retmap
+		 */
+		*ptr_tokvec = tokvec2;
+		return;
+	}
+
 	ptr_prs->return_label_name = -1;   /* -1 means invalid */
 	ptr_prs->break_label_name = -1;    /* -1 means invalid */
 	ptr_prs->continue_label_name = -1; /* -1 means invalid */
@@ -355,14 +364,7 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
 	int label1;
 	int label2;
 
-	if (!param_infos.param_vec) {           /* empty parameter */
-		if (tokvec2[0].kind == SEMICOLON) { /* function prototype */
-			++tokvec2;
-			/* do nothing, since the return value is already in the retmap
-			 */
-			*ptr_tokvec = tokvec2;
-			return;
-		}
+	if (!param_infos.param_vec) { /* empty parameter */
 
 		label1 = get_new_label_name(ptr_prs);
 		label2 = get_new_label_name(ptr_prs);
