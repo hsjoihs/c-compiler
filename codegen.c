@@ -324,17 +324,6 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
 		return;
 	}
 
-	ptr_prs->return_label_name = -1;   /* -1 means invalid */
-	ptr_prs->break_label_name = -1;    /* -1 means invalid */
-	ptr_prs->continue_label_name = -1; /* -1 means invalid */
-
-	int label1;
-	int label2;
-	label1 = get_new_label_name(ptr_prs);
-	label2 = get_new_label_name(ptr_prs);
-	gen_prologue(0, declarator_name);
-	gen_after_prologue(label1, label2);
-
 	struct Vector offsets = init_vector();
 	struct Vector types = init_vector();
 
@@ -361,6 +350,20 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
 			push_vector(&types, ptr2);
 		}
 	}
+
+	struct Statement sta = parse_compound_statement(ptr_ps, &tokvec2);
+	*ptr_tokvec = tokvec2;
+	/* parse finished */
+
+	ptr_prs->return_label_name = -1;   /* -1 means invalid */
+	ptr_prs->break_label_name = -1;    /* -1 means invalid */
+	ptr_prs->continue_label_name = -1; /* -1 means invalid */
+	int label1;
+	int label2;
+	label1 = get_new_label_name(ptr_prs);
+	label2 = get_new_label_name(ptr_prs);
+	gen_prologue(0, declarator_name);
+	gen_after_prologue(label1, label2);
 	for (int counter = 0; counter < offsets.length; ++counter) {
 		int offset = *(const int *)offsets.vector[counter];
 		struct Type type = *(const struct Type *)types.vector[counter];
@@ -381,10 +384,6 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
 				unsupported("Unsupported width in function parameter");
 		}
 	}
-
-	struct Statement sta = parse_compound_statement(ptr_ps, &tokvec2);
-	*ptr_tokvec = tokvec2;
-
 	print_statement(ptr_ps, ptr_prs, sta);
 
 	gen_before_epilogue(label1, label2, -(ptr_ps->newest_offset));
