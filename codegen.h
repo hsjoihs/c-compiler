@@ -2,7 +2,6 @@
 #if 1
 #include "parser.h"
 #endif
-#include "print_x86_64.h"
 
 struct PrinterState {
 	int final_label_name;
