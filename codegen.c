@@ -360,25 +360,25 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
 			*ptr2 = type;
 			push_vector(&types, ptr2);
 		}
-		for (int counter = 0; param_infos.param_vec[counter]; ++counter) {
-			int offset = *(const int *)offsets.vector[counter];
-			struct Type type = *(const struct Type *)types.vector[counter];
-			switch (size_of(type)) {
-				case 1:
-					gen_write_register_to_local_1byte(
-					    /* yes, the register is 4byte */
-					    get_reg_name_from_arg_pos_4byte(counter), offset);
-				case 4:
-					gen_write_register_to_local_4byte(
-					    get_reg_name_from_arg_pos_4byte(counter), offset);
-					break;
-				case 8:
-					gen_write_register_to_local_8byte(
-					    get_reg_name_from_arg_pos_8byte(counter), offset);
-					break;
-				default:
-					unsupported("Unsupported width in function parameter");
-			}
+	}
+	for (int counter = 0; counter < offsets.length; ++counter) {
+		int offset = *(const int *)offsets.vector[counter];
+		struct Type type = *(const struct Type *)types.vector[counter];
+		switch (size_of(type)) {
+			case 1:
+				gen_write_register_to_local_1byte(
+				    /* yes, the register is 4byte */
+				    get_reg_name_from_arg_pos_4byte(counter), offset);
+			case 4:
+				gen_write_register_to_local_4byte(
+				    get_reg_name_from_arg_pos_4byte(counter), offset);
+				break;
+			case 8:
+				gen_write_register_to_local_8byte(
+				    get_reg_name_from_arg_pos_8byte(counter), offset);
+				break;
+			default:
+				unsupported("Unsupported width in function parameter");
 		}
 	}
 
