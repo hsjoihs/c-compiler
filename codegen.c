@@ -429,7 +429,8 @@ static void parseprint_compound_statement(struct ParserState *ptr_ps,
                                           const struct Token **ptr_tokvec,
                                           struct Statement sta);
 
-static void print_statement(struct PrinterState *ptr_prs, struct Statement sta)
+static void print_statement(struct ParserState *ptr_ps,
+                            struct PrinterState *ptr_prs, struct Statement sta)
 {
 	switch (sta.category) {
 		case BREAK_STATEMENT: {
@@ -488,7 +489,7 @@ static void parseprint_statement(struct ParserState *ptr_ps,
 	    sta.category == CONTINUE_STATEMENT) {
 		parse_statement(ptr_ps, &tokvec);
 		*ptr_tokvec = tokvec;
-		print_statement(ptr_prs, sta);
+		print_statement(ptr_ps, ptr_prs, sta);
 		return;
 	}
 
@@ -723,6 +724,49 @@ void parse_final(const struct Token **ptr_tokvec)
 	const struct Token *tokvec = *ptr_tokvec;
 	expect_and_consume(&tokvec, END, "the end of file");
 	return;
+}
+
+static void print_compound_statement(struct ParserState *ptr_ps,
+                                     struct PrinterState *ptr_prs,
+                                     struct Statement sta)
+{
+	struct Vector vec = sta.statement_vector;
+
+	{
+		struct ScopeChain current_table = ptr_ps->scope_chain;
+
+		struct ScopeChain new_table;
+		new_table.var_table = init_map();
+
+		/* current_table disappears at the end of this function,
+		   but there is no problem because new_table itself gets overwritten at
+		   the end of this function.
+		 */
+		new_table.outer = &current_table;
+
+		ptr_ps->scope_chain = new_table;
+
+		for (int counter = 0; counter != vec.length; ++counter) {
+			const struct Statement *ptr_ith = vec.vector[counter];
+			if (ptr_ith->category == DECLARATION_STATEMENT) {
+
+				update_ptr_ps(ptr_ps, ptr_ith->declaration.type,
+				              ptr_ith->declaration.ident_str);
+
+			} else {
+
+				struct ScopeChain stashed = ptr_ps->scope_chain;
+
+				ptr_ps->scope_chain = sta.scope_chain_backup;
+				print_statement(ptr_ps, ptr_prs, *ptr_ith);
+
+				ptr_ps->scope_chain = stashed;
+			}
+		}
+		ptr_ps->scope_chain = current_table;
+
+		return;
+	}
 }
 
 static void parseprint_compound_statement(struct ParserState *ptr_ps,
