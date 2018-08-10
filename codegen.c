@@ -511,7 +511,9 @@ static void parseprint_statement(struct ParserState *ptr_ps,
 		expect_and_consume(&tokvec, RIGHT_PAREN, "right parenthesis of `if`");
 
 		const struct Token *tokvec2 = tokvec;
-		struct Statement inner_s = parse_statement(ptr_ps, &tokvec);
+		parse_statement(ptr_ps, &tokvec);
+		struct Statement inner_s =
+		    *(struct Statement *)sta.statement_vector.vector[0];
 
 		struct Statement *ptr_inner_s = calloc(1, sizeof(struct Statement));
 		*ptr_inner_s = inner_s;
