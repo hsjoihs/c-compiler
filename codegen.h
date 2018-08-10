@@ -16,9 +16,6 @@ struct PrinterState {
 
 void print_string_pool(struct Vector pool);
 void parse_final(const struct Token **ptr_tokvec);
-void parseprint_toplevel_definition(struct ParserState *ptr_ps,
-                                    struct PrinterState *ptr_prs,
-                                    const struct Token **ptr_tokvec);
 
 int get_new_label_name(struct PrinterState *ptr_prs);
 void print_expression(struct PrinterState *ptr_prs, struct Expression expr);
