@@ -7,6 +7,21 @@
 #include <stdlib.h>
 #include <string.h>
 
+static struct LocalVarInfo resolve_name_locally(struct ScopeChain t,
+                                                const char *str)
+{
+	if (isElem(t.var_table, str)) {
+		struct LocalVarInfo *ptr_varinfo = lookup(t.var_table, str);
+		return *ptr_varinfo;
+	} else if (t.outer == 0) {
+		/* most outer, but cannot be found */
+		fprintf(stderr, "%s is not declared locally\n", str);
+		exit(EXIT_FAILURE);
+	} else {
+		return resolve_name_locally(*(t.outer), str);
+	}
+}
+
 static int isAssign(enum TokenKind opkind)
 {
 	return (opkind == OP_EQ || opkind == OP_PLUS_EQ || opkind == OP_MINUS_EQ ||

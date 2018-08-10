@@ -15,20 +15,6 @@ int is_local_var(struct ScopeChain t, const char *str)
 	}
 }
 
-struct LocalVarInfo resolve_name_locally(struct ScopeChain t, const char *str)
-{
-	if (isElem(t.var_table, str)) {
-		struct LocalVarInfo *ptr_varinfo = lookup(t.var_table, str);
-		return *ptr_varinfo;
-	} else if (t.outer == 0) {
-		/* most outer, but cannot be found */
-		fprintf(stderr, "%s is not declared locally\n", str);
-		exit(EXIT_FAILURE);
-	} else {
-		return resolve_name_locally(*(t.outer), str);
-	}
-}
-
 const char *get_reg_name_from_arg_pos_4byte(int counter)
 {
 	switch (counter) {
@@ -625,7 +611,7 @@ static void print_parameter_declaration(struct ParserState *ptr_ps, int counter,
 
 	ptr_ps->scope_chain.var_table = map_;
 
-	int offset = resolve_name_locally(ptr_ps->scope_chain, ident_str).offset;
+	int offset = ptr_varinfo->offset;
 
 	switch (size_of(type)) {
 		case 1:

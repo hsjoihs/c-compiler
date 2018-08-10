@@ -22,5 +22,4 @@ struct ParserState {
 	int newest_offset;
 };
 
-struct LocalVarInfo resolve_name_locally(struct ScopeChain t, const char *str);
 int is_local_var(struct ScopeChain t, const char *str);
