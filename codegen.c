@@ -296,6 +296,9 @@ void print_function_definition(struct ParserState *ptr_ps,
                                struct PrinterState *ptr_prs,
                                struct Definition def);
 
+struct Definition parse_function_definition(struct ParserState *ptr_ps,
+                                            const struct Token **ptr_tokvec);
+
 void parseprint_toplevel_definition(struct ParserState *ptr_ps,
                                     struct PrinterState *ptr_prs,
                                     const struct Token **ptr_tokvec)
@@ -307,7 +310,16 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
 		                       size_of(ptr_d->declarator_type));
 		return;
 	}
+	struct Definition def = parse_function_definition(ptr_ps, ptr_tokvec);
+	if (def.category == TOPLEVEL_FUNCTION_DEFINITION) {
+		print_function_definition(ptr_ps, ptr_prs, def);
+	}
+}
 
+/* implicitly assumes that it is a function */
+struct Definition parse_function_definition(struct ParserState *ptr_ps,
+                                            const struct Token **ptr_tokvec)
+{
 	const char *declarator_name;
 	const struct Token *tokvec2 = *ptr_tokvec;
 	struct Type declarator_type = parse_declarator(&tokvec2, &declarator_name);
@@ -330,7 +342,10 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
 		/* do nothing, since the return value is already in the retmap
 		 */
 		*ptr_tokvec = tokvec2;
-		return;
+
+		struct Definition def;
+		def.category = TOPLEVEL_FUNCTION_DECLARATION;
+		return def;
 	}
 
 	struct Vector offsets_and_types = init_vector();
@@ -365,11 +380,12 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
 	/* parse finished */
 
 	struct Definition def;
+	def.category = TOPLEVEL_FUNCTION_DEFINITION;
 	def.declarator_name = declarator_name;
 	def.func.sta = sta;
 	def.func.offsets_and_types = offsets_and_types;
 	def.func.ret_type = ret_type;
-	print_function_definition(ptr_ps, ptr_prs, def);
+	return def;
 }
 
 void print_function_definition(struct ParserState *ptr_ps,
