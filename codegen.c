@@ -9,8 +9,7 @@ int get_new_label_name(struct PrinterState *ptr_prs)
 	return ++(ptr_prs->final_label_name);
 }
 
-static void print_statement(struct ParserState *ptr_ps,
-                            struct PrinterState *ptr_prs, struct Statement sta)
+static void print_statement(struct PrinterState *ptr_prs, struct Statement sta)
 {
 	switch (sta.category) {
 		case DECLARATION_STATEMENT: {
@@ -64,7 +63,7 @@ static void print_statement(struct ParserState *ptr_ps,
 
 			for (int counter = 0; counter != vec.length; ++counter) {
 				const struct Statement *ptr_ith = vec.vector[counter];
-				print_statement(ptr_ps, ptr_prs, *ptr_ith);
+				print_statement(ptr_prs, *ptr_ith);
 			}
 
 			return;
@@ -79,13 +78,13 @@ static void print_statement(struct ParserState *ptr_ps,
 
 			struct Statement inner_s =
 			    *(struct Statement *)sta.statement_vector.vector[0];
-			print_statement(ptr_ps, ptr_prs, inner_s);
+			print_statement(ptr_prs, inner_s);
 
 			gen_if_else_part2(label1, label2);
 
 			struct Statement inner_s2 =
 			    *(struct Statement *)sta.statement_vector.vector[1];
-			print_statement(ptr_ps, ptr_prs, inner_s2);
+			print_statement(ptr_prs, inner_s2);
 			gen_if_else_part3(label1, label2);
 
 			return;
@@ -100,7 +99,7 @@ static void print_statement(struct ParserState *ptr_ps,
 			gen_if_else_part1(label1, label2);
 
 			struct Statement inner_s = *sta.inner_statement;
-			print_statement(ptr_ps, ptr_prs, inner_s);
+			print_statement(ptr_prs, inner_s);
 
 			gen_if_else_part2(label1, label2);
 			gen_if_else_part3(label1, label2);
@@ -118,7 +117,7 @@ static void print_statement(struct ParserState *ptr_ps,
 
 			gen_label(label1);
 			struct Statement inner_s = *sta.inner_statement;
-			print_statement(ptr_ps, ptr_prs, inner_s);
+			print_statement(ptr_prs, inner_s);
 
 			gen_label(cont_label);
 
@@ -152,7 +151,7 @@ static void print_statement(struct ParserState *ptr_ps,
 
 			gen_while_part2(label1, break_label);
 
-			print_statement(ptr_ps, ptr_prs, inner_s);
+			print_statement(ptr_prs, inner_s);
 
 			gen_label(cont_label);
 			gen_for_part4(label1, break_label);
@@ -181,7 +180,7 @@ static void print_statement(struct ParserState *ptr_ps,
 			print_expression(ptr_prs, expr2); /* expression2 */
 			gen_while_part2(label1, break_label);
 			struct Statement inner_s = *sta.inner_statement;
-			print_statement(ptr_ps, ptr_prs, inner_s);
+			print_statement(ptr_prs, inner_s);
 			gen_label(cont_label);
 			print_expression(ptr_prs, expr3);
 			gen_discard();
@@ -204,8 +203,7 @@ void parse_final(const struct Token **ptr_tokvec)
 	return;
 }
 
-void print_toplevel_definition(struct ParserState *ptr_ps,
-                               struct PrinterState *ptr_prs,
+void print_toplevel_definition(struct PrinterState *ptr_prs,
                                struct Toplevel def)
 {
 	if (def.category == TOPLEVEL_VAR_DEFINITION) {
@@ -254,7 +252,7 @@ void print_toplevel_definition(struct ParserState *ptr_ps,
 				unsupported("Unsupported width in function parameter");
 		}
 	}
-	print_statement(ptr_ps, ptr_prs, sta);
+	print_statement(ptr_prs, sta);
 
 	gen_epilogue_nbyte(size_of(ret_type), ptr_prs->return_label_name);
 }

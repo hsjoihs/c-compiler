@@ -45,7 +45,7 @@ int main(int argc, char const **argv)
 				return 0;
 			} else {
 				struct Toplevel def = parse_toplevel_definition(&ps, &tokvec);
-				print_toplevel_definition(&ps, &prs, def);
+				print_toplevel_definition(&prs, def);
 			}
 		}
 	}
