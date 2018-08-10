@@ -374,8 +374,8 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
 		}
 	}
 
-	const struct Token *tokvec = tokvec2;
 	struct Statement sta = parse_compound_statement(ptr_ps, &tokvec2);
+	*ptr_tokvec = tokvec2;
 
 	struct Vector vec = sta.statement_vector;
 
@@ -392,23 +392,14 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
 
 	ptr_ps->scope_chain = new_table;
 
-	++tokvec;
 	for (int counter = 0; counter != vec.length; ++counter) {
 		const struct Statement *ptr_ith = vec.vector[counter];
-		if (ptr_ith->category == DECLARATION_STATEMENT) {
-
-		} else {
-
-			print_statement(ptr_ps, ptr_prs, *ptr_ith);
-		}
+		print_statement(ptr_ps, ptr_prs, *ptr_ith);
 	}
-	++tokvec;
 	ptr_ps->scope_chain = current_table;
 
 	gen_before_epilogue(label1, label2, -(ptr_ps->newest_offset));
 	gen_epilogue_nbyte(size_of(ret_type), ptr_prs->return_label_name);
-
-	*ptr_tokvec = tokvec2;
 }
 
 void print_string_pool(struct Vector pool)
