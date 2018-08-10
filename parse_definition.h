@@ -25,3 +25,5 @@ struct Definition parse_toplevel_definition(struct ParserState *ptr_ps,
 void print_toplevel_definition(struct ParserState *ptr_ps,
                                struct PrinterState *ptr_prs,
                                struct Definition def);
+
+void print_string_pool(struct Vector pool);

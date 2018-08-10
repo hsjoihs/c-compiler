@@ -4,46 +4,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-const char *get_reg_name_from_arg_pos_4byte(int counter)
-{
-	switch (counter) {
-		case 0:
-			return "edi";
-		case 1:
-			return "esi";
-		case 2:
-			return "edx";
-		case 3:
-			return "ecx";
-		case 4:
-			return "r8d";
-		case 5:
-			return "r9d";
-		default:
-			assert("cannot happen" && 0);
-	}
-}
-
-const char *get_reg_name_from_arg_pos_8byte(int counter)
-{
-	switch (counter) {
-		case 0:
-			return "rdi";
-		case 1:
-			return "rsi";
-		case 2:
-			return "rdx";
-		case 3:
-			return "rcx";
-		case 4:
-			return "r8";
-		case 5:
-			return "r9";
-		default:
-			assert("cannot happen" && 0);
-	}
-}
-
 int get_new_label_name(struct PrinterState *ptr_prs)
 {
 	return ++(ptr_prs->final_label_name);
