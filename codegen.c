@@ -643,13 +643,7 @@ static void print_compound_statement(struct ParserState *ptr_ps,
 				              ptr_ith->declaration.ident_str);
 
 			} else {
-
-				struct ScopeChain stashed = ptr_ps->scope_chain;
-
-				ptr_ps->scope_chain = sta.scope_chain_backup;
 				print_statement(ptr_ps, ptr_prs, *ptr_ith);
-
-				ptr_ps->scope_chain = stashed;
 			}
 		}
 		ptr_ps->scope_chain = current_table;
@@ -697,15 +691,8 @@ static void parseprint_compound_statement(struct ParserState *ptr_ps,
 				const struct Token *tokvec2 = tokvec;
 				parse_statement(ptr_ps, &tokvec2);
 
-				struct ScopeChain stashed = ptr_ps->scope_chain;
+				tokvec = tokvec2;
 
-				ptr_ps->scope_chain = sta.scope_chain_backup;
-
-				parse_statement(ptr_ps, &tokvec);
-
-				assert(tokvec2 == tokvec);
-
-				ptr_ps->scope_chain = stashed;
 				print_statement(ptr_ps, ptr_prs, *ptr_ith);
 			}
 		}
