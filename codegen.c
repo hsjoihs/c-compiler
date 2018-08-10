@@ -344,8 +344,8 @@ void parseprint_toplevel_definition(struct ParserState *ptr_ps,
 	ptr_prs->return_label_name = -1;   /* -1 means invalid */
 	ptr_prs->break_label_name = -1;    /* -1 means invalid */
 	ptr_prs->continue_label_name = -1; /* -1 means invalid */
-	/* 8 is the space to store the address to handle deref */
-	ptr_ps->newest_offset = -8;
+
+	ptr_ps->newest_offset = 0;
 	ptr_ps->func_ret_type = ret_type;
 
 	struct Map retmap = ptr_ps->func_info_map;
