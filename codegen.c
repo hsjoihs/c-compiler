@@ -101,8 +101,7 @@ struct Expression integer_1(void)
 }
 
 enum StatementCategory {
-	UNKNOWN = 1,
-	COMPOUND_STATEMENT,
+	COMPOUND_STATEMENT = 1,
 	IF_STATEMENT,
 	IF_ELSE_STATEMENT,
 	FOR_STATEMENT,
