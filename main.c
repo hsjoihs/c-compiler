@@ -1,4 +1,4 @@
-#include "parse_definition.h"
+#include "global_definition.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
