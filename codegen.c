@@ -507,16 +507,14 @@ static void parseprint_statement(struct ParserState *ptr_ps,
 		++tokvec;
 		expect_and_consume(&tokvec, LEFT_PAREN,
 		                   "left parenthesis immediately after `if`");
-		struct Expression expr = parse_expression(ptr_ps, &tokvec);
+		parse_expression(ptr_ps, &tokvec);
+		struct Expression expr = sta.expr1;
 		expect_and_consume(&tokvec, RIGHT_PAREN, "right parenthesis of `if`");
 
 		const struct Token *tokvec2 = tokvec;
 		parse_statement(ptr_ps, &tokvec);
 		struct Statement inner_s =
 		    *(struct Statement *)sta.statement_vector.vector[0];
-
-		struct Statement *ptr_inner_s = calloc(1, sizeof(struct Statement));
-		*ptr_inner_s = inner_s;
 
 		++tokvec;
 		int label1 = get_new_label_name(ptr_prs);
@@ -531,21 +529,15 @@ static void parseprint_statement(struct ParserState *ptr_ps,
 		gen_if_else_part2(label1, label2);
 
 		const struct Token *tokvec3 = tokvec;
-		struct Statement inner_s2 = parse_statement(ptr_ps, &tokvec3);
+		parse_statement(ptr_ps, &tokvec3);
+		struct Statement inner_s2 =
+		    *(struct Statement *)sta.statement_vector.vector[1];
 		parseprint_statement(ptr_ps, ptr_prs, &tokvec, inner_s2);
 		assert(tokvec3 == tokvec);
 		gen_if_else_part3(label1, label2);
-		struct Statement *ptr_inner_s2 = calloc(1, sizeof(struct Statement));
-		*ptr_inner_s2 = inner_s2;
 
 		*ptr_tokvec = tokvec;
 
-		struct Statement s;
-		s.category = IF_ELSE_STATEMENT;
-		s.expr1 = expr;
-		s.statement_vector = init_vector();
-		push_vector(&s.statement_vector, ptr_inner_s);
-		push_vector(&s.statement_vector, ptr_inner_s2);
 		return;
 	}
 	if (sta.category == IF_STATEMENT) {
