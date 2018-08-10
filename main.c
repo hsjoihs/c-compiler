@@ -30,11 +30,7 @@ int main(int argc, char const **argv)
 		++tokvec; /* skip the dummy token BEGINNING */
 
 		struct ParserState ps;
-		struct PrinterState prs;
-		prs.final_label_name = 1;
-		prs.return_label_name = GARBAGE_INT;
-		prs.string_constant_pool = init_vector();
-		prs.pool_largest_id = 0;
+
 		ps.func_info_map = init_map();
 		ps.global_vars_type_map = init_map();
 
@@ -50,6 +46,12 @@ int main(int argc, char const **argv)
 				push_vector(&vec, ptr);
 			}
 		}
+
+		struct PrinterState prs;
+		prs.final_label_name = 1;
+		prs.return_label_name = GARBAGE_INT;
+		prs.string_constant_pool = init_vector();
+		prs.pool_largest_id = 0;
 
 		for (int i = 0; i < vec.length; i++) {
 			const struct Toplevel *ptr = vec.vector[i];
