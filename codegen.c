@@ -733,14 +733,12 @@ static void parseprint_compound_statement(struct ParserState *ptr_ps,
 			if (ptr_ith->category == DECLARATION_STATEMENT) {
 				const char *dummy;
 				parse_declarator(&tokvec, &dummy);
-
-				struct Type vartype = ptr_ith->declaration.type;
-				const char *str = ptr_ith->declaration.ident_str;
 				expect_and_consume(
 				    &tokvec, SEMICOLON,
 				    "semicolon at the end of variable definition");
 
-				update_ptr_ps(ptr_ps, vartype, str);
+				update_ptr_ps(ptr_ps, ptr_ith->declaration.type,
+				              ptr_ith->declaration.ident_str);
 
 			} else {
 				const struct Token *tokvec2 = tokvec;
