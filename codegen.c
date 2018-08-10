@@ -574,41 +574,38 @@ static void parseprint_statement(struct ParserState *ptr_ps,
 
 		const struct Token *tokvec2 = tokvec;
 		parse_statement(ptr_ps, &tokvec);
-		struct Statement inner_s = *sta.inner_statement;
 
 		expect_and_consume(&tokvec, RES_WHILE, "`while` of do-while");
 		expect_and_consume(&tokvec, LEFT_PAREN, "left parenthesis of do-while");
 
 		int stashed_break_label = ptr_prs->break_label_name;
 		int stashed_continue_label = ptr_prs->continue_label_name;
-
 		int label1 = get_new_label_name(ptr_prs);
 		int break_label = get_new_label_name(ptr_prs);
 		int cont_label = get_new_label_name(ptr_prs);
-
 		ptr_prs->break_label_name = break_label;
 		ptr_prs->continue_label_name = cont_label;
 
 		gen_label(label1);
+		struct Statement inner_s = *sta.inner_statement;
 		parseprint_statement(ptr_ps, ptr_prs, &tokvec2, inner_s);
 		assert(tokvec2 == tokvec - 2);
-		gen_label(cont_label);
 
 		parse_expression(ptr_ps, &tokvec);
-		struct Expression expr = sta.expr1;
-
-		print_expression(ptr_prs, expr);
-
 		expect_and_consume(&tokvec, RIGHT_PAREN,
 		                   "right parenthesis of do-while");
 		expect_and_consume(&tokvec, SEMICOLON, "semicolon after do-while");
 		*ptr_tokvec = tokvec;
 
+		gen_label(cont_label);
+
+		struct Expression expr = sta.expr1;
+		print_expression(ptr_prs, expr);
+
 		gen_do_while_final(label1, break_label);
 
 		ptr_prs->break_label_name = stashed_break_label;
 		ptr_prs->continue_label_name = stashed_continue_label;
-		*ptr_tokvec = tokvec;
 
 		return;
 	}
@@ -622,6 +619,7 @@ static void parseprint_statement(struct ParserState *ptr_ps,
 		const struct Token *tokvec2 = tokvec;
 		parse_statement(ptr_ps, &tokvec);
 		*ptr_tokvec = tokvec;
+		/* parse is over*/
 
 		struct Statement inner_s = *sta.inner_statement;
 
