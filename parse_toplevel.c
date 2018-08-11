@@ -3,6 +3,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+static void parse_final(const struct Token **ptr_tokvec);
+
+static void parse_final(const struct Token **ptr_tokvec)
+{
+	const struct Token *tokvec = *ptr_tokvec;
+	expect_and_consume(&tokvec, END, "the end of file");
+	return;
+}
+
 static struct Toplevel
 parse_toplevel_definition(struct ParserState *ptr_ps,
                           const struct Token **ptr_tokvec)

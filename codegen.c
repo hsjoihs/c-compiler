@@ -198,15 +198,8 @@ static void print_statement(struct PrinterState *ptr_prs,
 	exit(EXIT_FAILURE);
 }
 
-void parse_final(const struct Token **ptr_tokvec)
-{
-	const struct Token *tokvec = *ptr_tokvec;
-	expect_and_consume(&tokvec, END, "the end of file");
-	return;
-}
-
-void print_toplevel_definition(struct PrinterState *ptr_prs,
-                               const struct Toplevel def)
+static void print_toplevel_definition(struct PrinterState *ptr_prs,
+                                      const struct Toplevel def)
 {
 	if (def.category == TOPLEVEL_VAR_DEFINITION) {
 		gen_global_declaration(def.declarator_name,
@@ -259,14 +252,6 @@ void print_toplevel_definition(struct PrinterState *ptr_prs,
 	gen_epilogue_nbyte(size_of(ret_type), ptr_prs->return_label_name);
 }
 
-void print_string_pool(const struct Vector pool)
-{
-	for (int i = 0; i < pool.length; ++i) {
-		const char *str = pool.vector[i];
-		gen_str(i, str);
-	}
-}
-
 void generate(const struct Vector vec)
 {
 	struct PrinterState prs;
@@ -281,5 +266,8 @@ void generate(const struct Vector vec)
 		print_toplevel_definition(&prs, *ptr);
 	}
 
-	print_string_pool(prs.string_constant_pool);
+	for (int i = 0; i < prs.string_constant_pool.length; ++i) {
+		const char *str = prs.string_constant_pool.vector[i];
+		gen_str(i, str);
+	}
 }
