@@ -257,3 +257,21 @@ struct Statement {
 		const char *ident_str;
 	} declaration;
 };
+
+enum ToplevelCategory {
+	TOPLEVEL_VAR_DEFINITION,
+	TOPLEVEL_FUNCTION_DEFINITION,
+	TOPLEVEL_FUNCTION_DECLARATION
+};
+
+struct Toplevel {
+	enum ToplevelCategory category;
+	const char *declarator_name;
+	struct Type declarator_type;
+	struct {
+		struct Statement sta;
+		struct Vector offsets_and_types;
+		struct Type ret_type;
+		int capacity;
+	} func;
+};
