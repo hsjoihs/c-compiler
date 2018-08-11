@@ -8,7 +8,6 @@ void read_all_tokens_debug(const char *str)
 {
 	struct Token tok;
 	tok.kind = BEGINNING;
-	tok.int_value = GARBAGE_INT;
 	tok.ident_str = 0;
 	tok.literal_str = 0;
 
@@ -209,7 +208,6 @@ struct Token get_token(const char **ptr_to_str)
 {
 	const char *str = *ptr_to_str;
 	struct Token t;
-	t.int_value = GARBAGE_INT;
 	t.ident_str = 0;
 	t.literal_str = 0;
 
@@ -533,35 +531,24 @@ struct Token get_token(const char **ptr_to_str)
 
 		if (strcmp(new_str, "return") == 0) {
 			t.kind = RES_RETURN;
-			t.int_value = GARBAGE_INT;
 		} else if (strcmp(new_str, "if") == 0) {
 			t.kind = RES_IF;
-			t.int_value = GARBAGE_INT;
 		} else if (strcmp(new_str, "else") == 0) {
 			t.kind = RES_ELSE;
-			t.int_value = GARBAGE_INT;
 		} else if (strcmp(new_str, "do") == 0) {
 			t.kind = RES_DO;
-			t.int_value = GARBAGE_INT;
 		} else if (strcmp(new_str, "while") == 0) {
 			t.kind = RES_WHILE;
-			t.int_value = GARBAGE_INT;
-
 		} else if (strcmp(new_str, "break") == 0) {
 			t.kind = RES_BREAK;
-			t.int_value = GARBAGE_INT;
 		} else if (strcmp(new_str, "continue") == 0) {
 			t.kind = RES_CONTINUE;
-			t.int_value = GARBAGE_INT;
 		} else if (strcmp(new_str, "for") == 0) {
 			t.kind = RES_FOR;
-			t.int_value = GARBAGE_INT;
 		} else if (strcmp(new_str, "int") == 0) {
 			t.kind = RES_INT;
-			t.int_value = GARBAGE_INT;
 		} else if (strcmp(new_str, "char") == 0) {
 			t.kind = RES_CHAR;
-			t.int_value = GARBAGE_INT;
 		} else {
 			t.ident_str = new_str;
 		}
@@ -587,7 +574,6 @@ struct Token *read_all_tokens(const char *str)
 	struct Token *tokvec = calloc(tok_num, sizeof(struct Token));
 
 	tok.kind = BEGINNING;
-	tok.int_value = GARBAGE_INT;
 	tok.ident_str = 0;
 
 	tokvec[0] = tok;

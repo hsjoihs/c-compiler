@@ -1,8 +1,6 @@
 #include "map.h"
 #include "vector.h"
 
-#define GARBAGE_INT ((int)0xCCCCCCCC)
-
 enum TokenKind {
 	OP_PLUS = 1,
 	OP_MINUS,

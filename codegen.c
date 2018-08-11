@@ -256,7 +256,7 @@ void generate(const struct Vector vec)
 {
 	struct PrinterState prs;
 	prs.final_label_name = 1;
-	prs.return_label_name = GARBAGE_INT;
+	prs.return_label_name = -1;
 	prs.string_constant_pool = init_vector();
 	prs.pool_largest_id = 0;
 

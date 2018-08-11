@@ -6,8 +6,8 @@
 
 int is_strictly_equal(struct Type t1, struct Type t2);
 
-struct Type INT_TYPE = {INT_, 0, GARBAGE_INT, {(struct ParamInfo **)0}};
-struct Type CHAR_TYPE = {CHAR_, 0, GARBAGE_INT, {(struct ParamInfo **)0}};
+struct Type INT_TYPE = {INT_, 0, 0, {(struct ParamInfo **)0}};
+struct Type CHAR_TYPE = {CHAR_, 0, 0, {(struct ParamInfo **)0}};
 
 int size_of(struct Type type)
 {
@@ -161,7 +161,6 @@ struct Type ptr_of_type_to_ptr_to_type(struct Type *ptr_type)
 	struct Type type;
 	type.type_category = PTR_;
 	type.derived_from = ptr_type;
-	type.array_length = GARBAGE_INT;
 	return type;
 }
 
@@ -228,7 +227,6 @@ struct ParamInfo *parse_param(const struct Token **ptr_tokvec)
 		/* convert to pointer */
 		if (type.type_category == ARRAY) {
 			type.type_category = PTR_;
-			type.array_length = GARBAGE_INT;
 		}
 		ptr_param_info->param_type = type;
 	}
