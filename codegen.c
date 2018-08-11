@@ -5,14 +5,15 @@
 #include <stdlib.h>
 
 static void print_toplevel_definition(struct PrinterState *ptr_prs,
-                                      struct Toplevel def);
+                                      const struct Toplevel def);
 
 int get_new_label_name(struct PrinterState *ptr_prs)
 {
 	return ++(ptr_prs->final_label_name);
 }
 
-static void print_statement(struct PrinterState *ptr_prs, struct Statement sta)
+static void print_statement(struct PrinterState *ptr_prs,
+                            const struct Statement sta)
 {
 	switch (sta.category) {
 		case DECLARATION_STATEMENT: {
@@ -174,19 +175,15 @@ static void print_statement(struct PrinterState *ptr_prs, struct Statement sta)
 			ptr_prs->break_label_name = break_label;
 			ptr_prs->continue_label_name = cont_label;
 
-			struct Expression expr1 = sta.expr1;
-			struct Expression expr2 = sta.expr2;
-			struct Expression expr3 = sta.expr3;
-
-			print_expression(ptr_prs, expr1); /* expression1 */
+			print_expression(ptr_prs, sta.expr1); /* expression1 */
 			gen_discard();
 			gen_label(label1);
-			print_expression(ptr_prs, expr2); /* expression2 */
+			print_expression(ptr_prs, sta.expr2); /* expression2 */
 			gen_while_part2(label1, break_label);
 			struct Statement inner_s = *sta.inner_statement;
 			print_statement(ptr_prs, inner_s);
 			gen_label(cont_label);
-			print_expression(ptr_prs, expr3);
+			print_expression(ptr_prs, sta.expr3);
 			gen_discard();
 			gen_jump(label1, "for(part4)");
 			gen_label(break_label);
@@ -209,7 +206,7 @@ void parse_final(const struct Token **ptr_tokvec)
 }
 
 void print_toplevel_definition(struct PrinterState *ptr_prs,
-                               struct Toplevel def)
+                               const struct Toplevel def)
 {
 	if (def.category == TOPLEVEL_VAR_DEFINITION) {
 		gen_global_declaration(def.declarator_name,
@@ -262,7 +259,7 @@ void print_toplevel_definition(struct PrinterState *ptr_prs,
 	gen_epilogue_nbyte(size_of(ret_type), ptr_prs->return_label_name);
 }
 
-void print_string_pool(struct Vector pool)
+void print_string_pool(const struct Vector pool)
 {
 	for (int i = 0; i < pool.length; ++i) {
 		const char *str = pool.vector[i];
