@@ -1,6 +1,5 @@
 #include "header.h"
 #include "parser.h"
-#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 
