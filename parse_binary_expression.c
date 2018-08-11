@@ -77,7 +77,7 @@ parse_logical_AND_expression(struct ParserState *ptr_ps,
 
 static struct Expression binary_op(struct Expression expr,
                                    struct Expression expr2,
-                                   enum expr_category cat, struct Type type)
+                                   enum ExprCategory cat, struct Type type)
 {
 	struct Expression *ptr_expr1 = calloc(1, sizeof(struct Expression));
 	struct Expression *ptr_expr2 = calloc(1, sizeof(struct Expression));

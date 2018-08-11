@@ -179,7 +179,7 @@ struct Type ptr_of_type_to_arr_of_type(struct Type *ptr_type, int length)
  ***************************************/
 
 struct Elem {
-	enum typ_ type_category;
+	enum TypeCategory type_category;
 	int array_length;
 	struct ParamInfos param_infos;
 };

@@ -87,10 +87,10 @@ struct ParamInfos {
 	 */
 };
 
-enum typ_ { INT_ = 1, PTR_, ARRAY, FN, CHAR_ };
+enum TypeCategory { INT_ = 1, PTR_, ARRAY, FN, CHAR_ };
 
 struct Type {
-	enum typ_ type_category;
+	enum TypeCategory type_category;
 	struct Type *derived_from;
 	int array_length;
 	struct ParamInfos param_infos;
@@ -134,7 +134,7 @@ struct Type parse_declarator(const struct Token **ptr_tokvec,
 
 _Noreturn void unsupported(const char *str);
 
-enum expr_category {
+enum ExprCategory {
 	SIMPLE_BINARY_EXPR = 1,
 	POINTER_PLUS_INT,
 	POINTER_MINUS_INT,
@@ -192,7 +192,7 @@ struct Expression {
 		struct Type type;
 		struct Type true_type;
 	} details;
-	enum expr_category category;
+	enum ExprCategory category;
 	enum SimpleBinOp simple_binary_operator;
 	enum UnaryOp unary_operator;
 	struct Expression *ptr1;
