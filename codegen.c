@@ -157,7 +157,8 @@ static void print_statement(struct PrinterState *ptr_prs, struct Statement sta)
 			print_statement(ptr_prs, inner_s);
 
 			gen_label(cont_label);
-			gen_for_part4(label1, break_label);
+			gen_jump(label1, "for(part4)");
+			gen_label(break_label);
 
 			ptr_prs->break_label_name = stashed_break_label;
 			ptr_prs->continue_label_name = stashed_continue_label;
@@ -187,7 +188,8 @@ static void print_statement(struct PrinterState *ptr_prs, struct Statement sta)
 			gen_label(cont_label);
 			print_expression(ptr_prs, expr3);
 			gen_discard();
-			gen_for_part4(label1, break_label);
+			gen_jump(label1, "for(part4)");
+			gen_label(break_label);
 
 			ptr_prs->break_label_name = stashed_break_label;
 			ptr_prs->continue_label_name = stashed_continue_label;

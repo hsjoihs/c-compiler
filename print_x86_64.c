@@ -95,13 +95,6 @@ void gen_while_part2(int label1, int label2)
 	printf("  je .L%d\n", label2);
 }
 
-void gen_for_part4(int label1, int label2)
-{
-	printf("//gen_for_part4(%d, %d)\n", label1, label2);
-	printf("  jmp .L%d\n", label1);
-	printf(".L%d:\n", label2);
-}
-
 /* push what's on local mem */
 void gen_push_from_local_4byte(int offset)
 {
