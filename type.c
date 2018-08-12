@@ -311,7 +311,6 @@ struct Type parse_declarator(const struct Token **ptr_tokvec,
 				i++;
 			}
 
-			f.param_infos.param_vec[i] = (struct ParamInfo *)0; /* crucial */
 			f.param_infos.length = i;
 
 			struct Elem *ptr = calloc(1, sizeof(struct Elem));

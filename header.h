@@ -79,7 +79,6 @@ struct ParamInfos {
 	struct ParamInfo **param_vec;
 	/*
 	 points to the array of (ParamInfo*).
-	 terminated by NULL.
 	 if the param_vec itself is NULL, that means there is no info.
 	 */
 };
