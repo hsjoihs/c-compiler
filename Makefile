@@ -12,8 +12,8 @@ test_all_:
 	make format
 	make supplement
 	make assembly_sandbox
-	make full_compile
-	make compile_file
+	make test_valid
+	make compile_files
 	make check_error
 
 format:
@@ -25,7 +25,6 @@ clean:
 supplement:
 	gcc supplement.c -S -o s/supplement.s
 
-
 assembly_sandbox:
 	make format
 	clang -Wall -Wextra -Wimplicit-fallthrough assembly_sandbox.c print_x86_64.c $(CCFLAGS) -o out/assembly_sandbox.out
@@ -33,9 +32,7 @@ assembly_sandbox:
 	gcc s/assembly_sandbox.s s/supplement.s -o out/sandbox.out
 	./out/sandbox.out || if [ $$? -ne 174 ]; then { echo "\n\033[31mFAIL\033[m"; exit 1; }; else echo "\n\033[32mPASS\033[m"; fi
 
-
-
-compile_file:
+compile_files:
 	clang-format -i misc/*.c -style=file
 	make supplement
 	make notest
@@ -55,9 +52,9 @@ warn:
 
 notest:
 	make format
-	clang -Wall -Wextra -Wimplicit-fallthrough codegen.c parse_toplevel.c parse_statement.c codegen_expression.c main.c vector.c parser.c error.c type.c parse_binary_expression.c map.c print_x86_64.c $(CCFLAGS) lexer.c -o out/compiler.out
+	gcc -Wall -Wextra codegen.c parse_toplevel.c parse_statement.c codegen_expression.c main.c vector.c parser.c error.c type.c parse_binary_expression.c map.c print_x86_64.c $(CCFLAGS) lexer.c -o out/compiler.out
 
-full_compile:
+test_valid:
 	rm out/*.out
 	make supplement
 	make notest
