@@ -93,12 +93,12 @@ void debug_print_type(struct Type type)
 			return;
 		case FN:
 			fprintf(stderr, "function (");
-			if (!type.param_infos.param_vec) {
+			if (!type.param_infos.vector) {
 				fprintf(stderr, "param: no info");
 			} else {
 				if (type.param_infos.length < 2) {
 					const struct ParamInfo *vec_0 =
-					    (const struct ParamInfo *)type.param_infos.param_vec[0];
+					    (const struct ParamInfo *)type.param_infos.vector[0];
 					fprintf(stderr, "%s: ", vec_0->ident_str);
 					debug_print_type(vec_0->param_type);
 				} else {
@@ -106,7 +106,7 @@ void debug_print_type(struct Type type)
 					for (int i = 0; i < type.param_infos.length; i++) {
 						const struct ParamInfo *ptr_paraminfo =
 						    (const struct ParamInfo *)
-						        type.param_infos.param_vec[i];
+						        type.param_infos.vector[i];
 						fprintf(stderr, "  %s: ", ptr_paraminfo->ident_str);
 						debug_print_type(ptr_paraminfo->param_type);
 						fprintf(stderr, "\n");
@@ -290,16 +290,16 @@ struct Type parse_declarator(const struct Token **ptr_tokvec,
 			++tokvec;
 			struct Elem f;
 			f.type_category = FN;
-			f.param_infos.param_vec = (const void **)0; /* crucial */
+			f.param_infos.vector = (const void **)0; /* crucial */
 			struct Elem *ptr = calloc(1, sizeof(struct Elem));
 			*ptr = f;
 			push_vector(&vec, ptr);
 		} else if (can_start_a_type(tokvec)) {
 			struct Elem f;
 			f.type_category = FN;
-			f.param_infos.param_vec = calloc(100, sizeof(struct ParamInfo *));
+			f.param_infos.vector = calloc(100, sizeof(struct ParamInfo *));
 
-			f.param_infos.param_vec[0] = parse_param(&tokvec);
+			f.param_infos.vector[0] = parse_param(&tokvec);
 
 			int i = 1;
 
@@ -310,7 +310,7 @@ struct Type parse_declarator(const struct Token **ptr_tokvec,
 				}
 				++tokvec;
 
-				f.param_infos.param_vec[i] = parse_param(&tokvec);
+				f.param_infos.vector[i] = parse_param(&tokvec);
 				i++;
 			}
 

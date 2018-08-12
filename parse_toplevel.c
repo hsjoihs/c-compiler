@@ -52,7 +52,7 @@ parse_toplevel_definition(struct ParserState *ptr_ps,
 	ptr_func_info->ret_type = ret_type;
 	insert(&ptr_ps->func_info_map, declarator_name, ptr_func_info);
 
-	if (!param_infos.param_vec &&
+	if (!param_infos.vector &&
 	    tokvec2[0].kind == SEMICOLON) { /* function prototype */
 		++tokvec2;
 		/* do nothing, since the return value is already in the retmap
@@ -66,11 +66,11 @@ parse_toplevel_definition(struct ParserState *ptr_ps,
 
 	struct Vector offsets_and_types = init_vector();
 
-	if (param_infos.param_vec) { /* parameter is not empty */
+	if (param_infos.vector) { /* parameter is not empty */
 		for (int counter = 0; counter < param_infos.length; ++counter) {
 
 			struct ParamInfo param_info =
-			    *(const struct ParamInfo *)(param_infos.param_vec[counter]);
+			    *(const struct ParamInfo *)(param_infos.vector[counter]);
 			const char *ident_str;
 
 			struct Type type = param_info.param_type;
