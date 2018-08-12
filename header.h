@@ -69,8 +69,6 @@ struct Token {
 	const char *literal_str;
 };
 
-struct ParserState;
-
 void print_token(struct Token tok);
 struct Token get_token(const char **ptr_to_str);
 
@@ -203,11 +201,6 @@ struct Expression {
 	int arg_length;
 	int local_var_offset;
 };
-
-struct Expression parse_cast_expression(struct ParserState *ptr_ps,
-                                        const struct Token **ptr_tokvec);
-struct Expression parse_logical_OR_expression(struct ParserState *ptr_ps,
-                                              const struct Token **ptr_tokvec);
 
 enum SimpleBinOp to_simplebinop(enum TokenKind t);
 struct Expression simple_binary_op(struct Expression expr,

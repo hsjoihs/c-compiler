@@ -1,11 +1,5 @@
 #include "header.h"
 
-struct Expression parse_expression(struct ParserState *ptr_ps,
-                                   const struct Token **ptr_tokvec);
-struct Expression parse_unary_expression(struct ParserState *ptr_ps,
-                                         const struct Token **ptr_tokvec);
-struct Expression ident_as_lvalue(struct ParserState ps, const char *name);
-
 struct LocalVarInfo {
 	struct Type type;
 	int offset;
@@ -23,6 +17,16 @@ struct ParserState {
 	struct Type func_ret_type;
 	int newest_offset;
 };
+
+struct Expression parse_cast_expression(struct ParserState *ptr_ps,
+                                        const struct Token **ptr_tokvec);
+struct Expression parse_logical_OR_expression(struct ParserState *ptr_ps,
+                                              const struct Token **ptr_tokvec);
+struct Expression parse_expression(struct ParserState *ptr_ps,
+                                   const struct Token **ptr_tokvec);
+struct Expression parse_unary_expression(struct ParserState *ptr_ps,
+                                         const struct Token **ptr_tokvec);
+struct Expression ident_as_lvalue(struct ParserState ps, const char *name);
 
 struct Statement parse_statement(struct ParserState *ptr_ps,
                                  const struct Token **ptr_tokvec);
