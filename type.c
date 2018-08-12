@@ -96,14 +96,14 @@ void debug_print_type(struct Type type)
 			if (!type.param_infos.param_vec) {
 				fprintf(stderr, "param: no info");
 			} else {
-				struct ParamInfo **vec = type.param_infos.param_vec;
+				const struct ParamInfo **vec = type.param_infos.param_vec;
 				if (vec[0] && !vec[1]) {
 					fprintf(stderr, "%s: ", vec[0]->ident_str);
 					debug_print_type(vec[0]->param_type);
 				} else {
 					fprintf(stderr, "params: \n");
 					for (int i = 0; i < type.param_infos.length; i++) {
-						struct ParamInfo *ptr_paraminfo = vec[i];
+						const struct ParamInfo *ptr_paraminfo = vec[i];
 						fprintf(stderr, "  %s: ", ptr_paraminfo->ident_str);
 						debug_print_type(ptr_paraminfo->param_type);
 						fprintf(stderr, "\n");
@@ -287,7 +287,8 @@ struct Type parse_declarator(const struct Token **ptr_tokvec,
 			++tokvec;
 			struct Elem f;
 			f.type_category = FN;
-			f.param_infos.param_vec = (struct ParamInfo **)0; /* crucial */
+			f.param_infos.param_vec =
+			    (const struct ParamInfo **)0; /* crucial */
 			struct Elem *ptr = calloc(1, sizeof(struct Elem));
 			*ptr = f;
 			push_vector(&vec, ptr);
