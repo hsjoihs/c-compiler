@@ -29,7 +29,11 @@ supplement:
 assembly_sandbox:
 	make format
 	clang -Wall -Wextra -Wimplicit-fallthrough assembly_sandbox.c print_x86_64.c $(CCFLAGS) -o out/assembly_sandbox.out
-	./test_ret3.sh '' s/assembly_sandbox.s out/assembly_sandbox.out 174 out/assembly_sandbox.out
+	echo -e '' | ./out/assembly_sandbox.out > s/assembly_sandbox.s
+	gcc s/assembly_sandbox.s s/supplement.s -o out/assembly_sandbox.out
+	./out/assembly_sandbox.out || if [ $$? -ne 174 ]; then { echo "\n\033[31mFAIL\033[m"; exit 1; }; else echo "\n\033[32mPASS\033[m"; fi
+
+
 
 compile_file:
 	clang-format -i misc/*.c -style=file
