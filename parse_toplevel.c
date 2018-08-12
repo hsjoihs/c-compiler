@@ -40,7 +40,7 @@ parse_toplevel_definition(struct ParserState *ptr_ps,
 		return d;
 	}
 
-	struct ParamInfos param_infos = declarator_type.param_infos;
+	struct Vector param_infos = declarator_type.param_infos;
 	struct Type ret_type = *declarator_type.derived_from;
 
 	ptr_ps->scope_chain.outer = 0; /* most outer scope */

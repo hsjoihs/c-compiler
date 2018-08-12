@@ -183,7 +183,11 @@ struct Type ptr_of_type_to_arr_of_type(struct Type *ptr_type, int length)
 struct Elem {
 	enum TypeCategory type_category;
 	int array_length;
-	struct ParamInfos param_infos;
+	struct Vector param_infos;
+	/*
+	 .vector points to the array of (ParamInfo*).
+	 if .vector itself is NULL, that means there is no info.
+	 */
 };
 
 static struct Type from_type3_to_type(const void **type3)

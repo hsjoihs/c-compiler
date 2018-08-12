@@ -74,22 +74,17 @@ struct Token get_token(const char **ptr_to_str);
 
 struct ParamInfo;
 
-struct ParamInfos {
-	int length;
-	const void **vector;
-	/*
-	 points to the array of (ParamInfo*).
-	 if the param_vec itself is NULL, that means there is no info.
-	 */
-};
-
 enum TypeCategory { INT_ = 1, PTR_, ARRAY, FN, CHAR_ };
 
 struct Type {
 	enum TypeCategory type_category;
 	struct Type *derived_from;
 	int array_length;
-	struct ParamInfos param_infos;
+	struct Vector param_infos;
+	/*
+	 .vector points to the array of (ParamInfo*).
+	 if .vector itself is NULL, that means there is no info.
+	 */
 };
 
 struct ParamInfo {
@@ -120,7 +115,11 @@ void debug_print_type(struct Type type);
 
 struct FuncInfo {
 	struct Type ret_type;
-	struct ParamInfos param_infos;
+	struct Vector param_infos;
+	/*
+	 .vector points to the array of (ParamInfo*).
+	 if .vector itself is NULL, that means there is no info.
+	 */
 };
 
 int can_start_a_type(const struct Token *tokvec);
