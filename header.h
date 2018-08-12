@@ -75,6 +75,7 @@ struct Token get_token(const char **ptr_to_str);
 struct ParamInfo;
 
 struct ParamInfos {
+	int length;
 	struct ParamInfo **param_vec;
 	/*
 	 points to the array of (ParamInfo*).

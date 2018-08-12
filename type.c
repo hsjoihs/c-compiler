@@ -6,8 +6,8 @@
 
 int is_strictly_equal(struct Type t1, struct Type t2);
 
-struct Type INT_TYPE = {INT_, 0, 0, {(struct ParamInfo **)0}};
-struct Type CHAR_TYPE = {CHAR_, 0, 0, {(struct ParamInfo **)0}};
+struct Type INT_TYPE = {INT_};
+struct Type CHAR_TYPE = {CHAR_};
 
 int size_of(struct Type type)
 {
@@ -102,7 +102,7 @@ void debug_print_type(struct Type type)
 					debug_print_type(vec[0]->param_type);
 				} else {
 					fprintf(stderr, "params: \n");
-					for (int i = 0; vec[i]; i++) {
+					for (int i = 0; i < type.param_infos.length; i++) {
 						struct ParamInfo *ptr_paraminfo = vec[i];
 						fprintf(stderr, "  %s: ", ptr_paraminfo->ident_str);
 						debug_print_type(ptr_paraminfo->param_type);
@@ -312,6 +312,7 @@ struct Type parse_declarator(const struct Token **ptr_tokvec,
 			}
 
 			f.param_infos.param_vec[i] = (struct ParamInfo *)0; /* crucial */
+			f.param_infos.length = i;
 
 			struct Elem *ptr = calloc(1, sizeof(struct Elem));
 			*ptr = f;

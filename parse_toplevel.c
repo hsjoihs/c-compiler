@@ -67,7 +67,7 @@ parse_toplevel_definition(struct ParserState *ptr_ps,
 	struct Vector offsets_and_types = init_vector();
 
 	if (param_infos.param_vec) { /* parameter is not empty */
-		for (int counter = 0; param_infos.param_vec[counter]; ++counter) {
+		for (int counter = 0; counter < param_infos.length; ++counter) {
 
 			struct ParamInfo param_info = *(param_infos.param_vec[counter]);
 			const char *ident_str;
