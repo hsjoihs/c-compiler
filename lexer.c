@@ -204,7 +204,7 @@ void print_token(struct Token tok)
 	}
 }
 
-struct Token get_token(const char **ptr_to_str)
+static struct Token get_token_raw(const char **ptr_to_str)
 {
 	const char *str = *ptr_to_str;
 	struct Token t;
@@ -529,35 +529,45 @@ struct Token get_token(const char **ptr_to_str)
 		}
 		new_str[i] = '\0';
 
-		if (strcmp(new_str, "return") == 0) {
-			t.kind = RES_RETURN;
-		} else if (strcmp(new_str, "if") == 0) {
-			t.kind = RES_IF;
-		} else if (strcmp(new_str, "else") == 0) {
-			t.kind = RES_ELSE;
-		} else if (strcmp(new_str, "do") == 0) {
-			t.kind = RES_DO;
-		} else if (strcmp(new_str, "while") == 0) {
-			t.kind = RES_WHILE;
-		} else if (strcmp(new_str, "break") == 0) {
-			t.kind = RES_BREAK;
-		} else if (strcmp(new_str, "continue") == 0) {
-			t.kind = RES_CONTINUE;
-		} else if (strcmp(new_str, "for") == 0) {
-			t.kind = RES_FOR;
-		} else if (strcmp(new_str, "int") == 0) {
-			t.kind = RES_INT;
-		} else if (strcmp(new_str, "char") == 0) {
-			t.kind = RES_CHAR;
-		} else {
-			t.ident_str = new_str;
-		}
+		t.ident_str = new_str;
+
 		*ptr_to_str = str + i;
 		return t;
 	}
 
 	fprintf(stderr, "Found unexpected character: '%c' (%d)\n", *str, (int)*str);
 	exit(EXIT_FAILURE);
+}
+
+struct Token get_token(const char **ptr_to_str)
+{
+	struct Token t = get_token_raw(ptr_to_str);
+	if (t.kind != IDENT_OR_RESERVED) {
+		return t;
+	}
+	const char *new_str = t.ident_str;
+	if (strcmp(new_str, "return") == 0) {
+		t.kind = RES_RETURN;
+	} else if (strcmp(new_str, "if") == 0) {
+		t.kind = RES_IF;
+	} else if (strcmp(new_str, "else") == 0) {
+		t.kind = RES_ELSE;
+	} else if (strcmp(new_str, "do") == 0) {
+		t.kind = RES_DO;
+	} else if (strcmp(new_str, "while") == 0) {
+		t.kind = RES_WHILE;
+	} else if (strcmp(new_str, "break") == 0) {
+		t.kind = RES_BREAK;
+	} else if (strcmp(new_str, "continue") == 0) {
+		t.kind = RES_CONTINUE;
+	} else if (strcmp(new_str, "for") == 0) {
+		t.kind = RES_FOR;
+	} else if (strcmp(new_str, "int") == 0) {
+		t.kind = RES_INT;
+	} else if (strcmp(new_str, "char") == 0) {
+		t.kind = RES_CHAR;
+	}
+	return t;
 }
 
 static int count_all_tokens(const char *str);
