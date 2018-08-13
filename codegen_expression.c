@@ -72,21 +72,9 @@ static void print_expression_as_lvalue(struct PrinterState *ptr_prs,
 	switch (expr.category) {
 		case LOCAL_VAR_: {
 			gen_push_address_of_local(expr.local_var_offset);
+			gen_push_from_local_nbyte(size_of(expr.details.type),
+			                          expr.local_var_offset);
 
-			switch (size_of(expr.details.type)) {
-				case 1:
-					gen_push_from_local_1byte(expr.local_var_offset);
-					break;
-				case 4:
-					gen_push_from_local_4byte(expr.local_var_offset);
-					break;
-				case 8:
-					gen_push_from_local_8byte(expr.local_var_offset);
-					break;
-				default:
-					unsupported("Unsupported width in the "
-					            "assignment operation");
-			}
 			return;
 		}
 		case GLOBAL_VAR_: {
