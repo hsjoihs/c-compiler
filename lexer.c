@@ -23,7 +23,7 @@ void read_all_tokens_debug(const char *str)
 	} while (1);
 }
 
-void print_token(struct Token tok)
+void print_token(struct Token tok, const char *next_token_begins)
 {
 	switch (tok.kind) {
 		case OP_PLUS:

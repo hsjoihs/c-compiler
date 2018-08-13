@@ -70,7 +70,7 @@ struct Token {
 	const char *token_begins_here;
 };
 
-void print_token(struct Token tok);
+void print_token(struct Token tok, const char *next_token_begins);
 struct Token get_token(const char **ptr_to_str);
 
 struct ParamInfo;
