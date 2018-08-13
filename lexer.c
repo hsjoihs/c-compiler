@@ -83,7 +83,7 @@ static struct Token get_token_raw(const char **ptr_to_str)
 			}
 		}
 		int length = i;
-		char *new_str = malloc(length + 1);
+		char *new_str = calloc(length + 1, sizeof(char));
 		for (int j = 0; j < length; j++) {
 			new_str[j] = str[j];
 		}
