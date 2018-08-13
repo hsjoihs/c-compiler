@@ -84,12 +84,14 @@ static void print_statement(struct PrinterState *ptr_prs,
 			    *(struct Statement *)sta.statement_vector.vector[0];
 			print_statement(ptr_prs, inner_s);
 
-			gen_if_else_part2(label1, label2);
+			gen_jump(label2, "if statement");
+			gen_label(label1);
+			gen_discard();
 
 			struct Statement inner_s2 =
 			    *(struct Statement *)sta.statement_vector.vector[1];
 			print_statement(ptr_prs, inner_s2);
-			gen_if_else_part3(label1, label2);
+			gen_label(label2);
 
 			return;
 		}
@@ -105,8 +107,11 @@ static void print_statement(struct PrinterState *ptr_prs,
 			struct Statement inner_s = *sta.inner_statement;
 			print_statement(ptr_prs, inner_s);
 
-			gen_if_else_part2(label1, label2);
-			gen_if_else_part3(label1, label2);
+			gen_jump(label2, "if statement");
+			gen_label(label1);
+			gen_discard();
+
+			gen_label(label2);
 
 			return;
 		}

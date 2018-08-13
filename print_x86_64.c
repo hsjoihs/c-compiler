@@ -431,21 +431,6 @@ void gen_if_else_part1(int label1, int label2)
 	       label1);
 }
 
-void gen_if_else_part2(int label1, int label2)
-{
-	printf("//gen_if_else_part2(%d, %d);\n", label1, label2);
-	printf("  jmp .L%d\n"
-	       ".L%d:\n"
-	       "  addq $8, %%rsp\n",
-	       label2, label1);
-}
-
-void gen_if_else_part3(int label1, int label2)
-{
-	printf("//gen_if_else_part3(%d, %d);\n", label1, label2);
-	printf(".L%d:\n", label2);
-}
-
 void gen_push_address_of_local(int offset)
 {
 	assert(offset < 0);
