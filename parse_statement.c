@@ -54,6 +54,8 @@ struct Statement parse_statement(struct ParserState *ptr_ps,
 		struct Statement *ptr_inner_s = calloc(1, sizeof(struct Statement));
 		*ptr_inner_s = inner_s;
 
+		struct Statement s;
+		s.expr1 = expr;
 		if (tokvec[0].kind == RES_ELSE) { /* must bind to the most inner one */
 			++tokvec;
 			struct Statement inner_s2 = parse_statement(ptr_ps, &tokvec);
@@ -63,9 +65,7 @@ struct Statement parse_statement(struct ParserState *ptr_ps,
 
 			*ptr_tokvec = tokvec;
 
-			struct Statement s;
 			s.category = IF_ELSE_STATEMENT;
-			s.expr1 = expr;
 			s.statement_vector = init_vector();
 			push_vector(&s.statement_vector, ptr_inner_s);
 			push_vector(&s.statement_vector, ptr_inner_s2);
@@ -73,11 +73,7 @@ struct Statement parse_statement(struct ParserState *ptr_ps,
 		} else {
 
 			*ptr_tokvec = tokvec;
-
-			struct Statement s;
 			s.category = IF_STATEMENT;
-			s.expr1 = expr;
-
 			s.inner_statement = ptr_inner_s;
 			return s;
 		}
