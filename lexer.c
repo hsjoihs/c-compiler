@@ -16,190 +16,28 @@ void read_all_tokens_debug(const char *str)
 		if (tok.kind == END) {
 			break;
 		}
-		for (int i = 0; i < str - tok.token_begins_here; i++) {
-			fprintf(stderr, "%c", tok.token_begins_here[i]);
-		}
+		print_token(tok, str);
 		fprintf(stderr, "\n");
 	} while (1);
 }
 
 void print_token(struct Token tok, const char *next_token_begins)
 {
-	switch (tok.kind) {
-		case OP_PLUS:
-			fprintf(stderr, "+");
+	if (tok.kind == END) {
+		fprintf(stderr, "DUMMY: END");
+		return;
+	}
+	if (tok.kind == BEGINNING) {
+		fprintf(stderr, "DUMMY: BEGINNING");
+		return;
+	}
+	for (int i = 0; i < next_token_begins - tok.token_begins_here; i++) {
+		char c = tok.token_begins_here[i];
+		if (c == ' ' || c == '\t' || c == '\n' || c == '\v' || c == '\f' ||
+		    c == '\r') {
 			break;
-		case OP_MINUS:
-			fprintf(stderr, "-");
-			break;
-		case OP_ASTERISK:
-			fprintf(stderr, "*");
-			break;
-		case LEFT_PAREN:
-			fprintf(stderr, "(");
-			break;
-		case RIGHT_PAREN:
-			fprintf(stderr, ")");
-			break;
-		case END:
-			fprintf(stderr, "DUMMY: END");
-			break;
-		case BEGINNING:
-			fprintf(stderr, "DUMMY: BEGINNING");
-			break;
-		case OP_SLASH:
-			fprintf(stderr, "/");
-			break;
-		case OP_PERCENT:
-			fprintf(stderr, "%%");
-			break;
-		case OP_COMMA:
-			fprintf(stderr, ",");
-			break;
-		case OP_LT:
-			fprintf(stderr, "<");
-			break;
-		case OP_HAT:
-			fprintf(stderr, "^");
-			break;
-		case OP_LT_EQ:
-			fprintf(stderr, "<=");
-			break;
-		case OP_LSHIFT:
-			fprintf(stderr, "<<");
-			break;
-		case OP_GT:
-			fprintf(stderr, ">");
-			break;
-		case OP_GT_EQ:
-			fprintf(stderr, ">=");
-			break;
-		case OP_RSHIFT:
-			fprintf(stderr, ">>");
-			break;
-		case OP_AND:
-			fprintf(stderr, "&");
-			break;
-		case OP_OR:
-			fprintf(stderr, "|");
-			break;
-		case OP_EQ_EQ:
-			fprintf(stderr, "==");
-			break;
-		case OP_NOT_EQ:
-			fprintf(stderr, "!=");
-			break;
-		case OP_EQ:
-			fprintf(stderr, "=");
-			break;
-		case OP_NOT:
-			fprintf(stderr, "!");
-			break;
-		case OP_TILDA:
-			fprintf(stderr, "~");
-			break;
-		case SEMICOLON:
-			fprintf(stderr, ";");
-			break;
-		case COLON:
-			fprintf(stderr, ":");
-			break;
-		case LEFT_BRACE:
-			fprintf(stderr, "{");
-			break;
-		case RIGHT_BRACE:
-			fprintf(stderr, "}");
-			break;
-		case QUESTION:
-			fprintf(stderr, "?");
-			break;
-		case OP_AND_AND:
-			fprintf(stderr, "&&");
-			break;
-		case OP_OR_OR:
-			fprintf(stderr, "||");
-			break;
-		case OP_PLUS_EQ:
-			fprintf(stderr, "+=");
-			break;
-		case OP_MINUS_EQ:
-			fprintf(stderr, "-=");
-			break;
-		case OP_ASTERISK_EQ:
-			fprintf(stderr, "*=");
-			break;
-		case OP_SLASH_EQ:
-			fprintf(stderr, "/=");
-			break;
-		case OP_PERCENT_EQ:
-			fprintf(stderr, "%%=");
-			break;
-		case OP_LSHIFT_EQ:
-			fprintf(stderr, "<<=");
-			break;
-		case OP_RSHIFT_EQ:
-			fprintf(stderr, ">>=");
-			break;
-		case OP_AND_EQ:
-			fprintf(stderr, "&=");
-			break;
-		case OP_HAT_EQ:
-			fprintf(stderr, "^=");
-			break;
-		case OP_OR_EQ:
-			fprintf(stderr, "|=");
-			break;
-		case OP_PLUS_PLUS:
-			fprintf(stderr, "++");
-			break;
-		case OP_MINUS_MINUS:
-			fprintf(stderr, "--");
-			break;
-		case IDENT_OR_RESERVED:
-			fprintf(stderr, "%s", tok.ident_str);
-			break;
-		case LIT_DEC_INTEGER:
-			fprintf(stderr, "%d", tok.int_value);
-			break;
-		case RES_RETURN:
-			fprintf(stderr, "return");
-			break;
-		case RES_IF:
-			fprintf(stderr, "if");
-			break;
-		case RES_ELSE:
-			fprintf(stderr, "else");
-			break;
-		case RES_DO:
-			fprintf(stderr, "do");
-			break;
-		case RES_WHILE:
-			fprintf(stderr, "while");
-			break;
-		case RES_BREAK:
-			fprintf(stderr, "break");
-			break;
-		case RES_CONTINUE:
-			fprintf(stderr, "continue");
-			break;
-		case RES_FOR:
-			fprintf(stderr, "for");
-			break;
-		case RES_INT:
-			fprintf(stderr, "int");
-			break;
-		case LEFT_BRACKET:
-			fprintf(stderr, "[");
-			break;
-		case RIGHT_BRACKET:
-			fprintf(stderr, "]");
-			break;
-		case RES_CHAR:
-			fprintf(stderr, "char");
-			break;
-		case LIT_STRING:
-			fprintf(stderr, "\"%s\"", tok.literal_str);
-			break;
+		}
+		fprintf(stderr, "%c", c);
 	}
 }
 
