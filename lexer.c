@@ -518,8 +518,7 @@ static struct Token get_token_raw(const char **ptr_to_str)
 		/*
 		    identifier: str[0] ~ str[i-1]
 		*/
-		char *new_str =
-		    malloc(i + 1); /* memory leak is much better than use after free */
+		char *new_str = calloc(i + 1, sizeof(char));
 		if (!new_str) {
 			fprintf(stderr, "memory ran out\n");
 			exit(EXIT_FAILURE);
