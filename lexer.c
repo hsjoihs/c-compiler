@@ -7,10 +7,6 @@
 void read_all_tokens_debug(const char *str)
 {
 	struct Token tok;
-	tok.kind = BEGINNING;
-	tok.ident_str = 0;
-	tok.literal_str = 0;
-	tok.token_begins_here = str;
 
 	do {
 		tok = get_token(&str);
