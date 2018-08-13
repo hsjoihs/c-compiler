@@ -210,6 +210,7 @@ static struct Token get_token_raw(const char **ptr_to_str)
 	struct Token t;
 	t.ident_str = 0;
 	t.literal_str = 0;
+	t.token_begins_here = str;
 
 	if (*str == 0) { /* '\0' is 0 in C */
 		t.kind = END;

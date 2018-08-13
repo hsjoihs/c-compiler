@@ -67,6 +67,7 @@ struct Token {
 	int int_value;
 	const char *ident_str;
 	const char *literal_str;
+	const char *token_begins_here;
 };
 
 void print_token(struct Token tok);
