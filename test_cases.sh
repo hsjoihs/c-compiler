@@ -35,6 +35,7 @@ run_test 156 'int main(){/**/return 123;}' 123
 run_test 157 'int main(){/*u89g3wihu-@w3erolk*/ return (123);}' 123
 run_test 158 'int/*/* 0^[o;:._/-*/main(){return ((((123))));}' 123
 run_test 159 'int a; int main(){int *p; p = &a; int i; for(i=0;i<174;i++){++*p;} return a;}' 174
+run_test 160 'int a; int main(){int *p; p = &a; int i; for(i=0;i<174;((i))++){++*p;} return a;}' 174
 
 run_test 118 'int main(){int a[1]; int *p; p = a; *p=2; return 174;}' 174
 run_test 119 'int main(){int a[1]; *(a+0)=2;return 174;}' 174

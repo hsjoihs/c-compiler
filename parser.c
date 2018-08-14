@@ -255,9 +255,8 @@ parse_postfix_expression(struct ParserState *ptr_ps,
 		return expr;
 	}
 
-	if (tokvec[0].kind == IDENT_OR_RESERVED &&
-	    (tokvec[1].kind == OP_PLUS_PLUS || tokvec[1].kind == OP_MINUS_MINUS)) {
-		struct Expression expr = parse_primary_expression(ptr_ps, &tokvec);
+	struct Expression expr = parse_primary_expression(ptr_ps, &tokvec);
+	if ((tokvec[0].kind == OP_PLUS_PLUS || tokvec[0].kind == OP_MINUS_MINUS)) {
 		enum TokenKind opkind = tokvec[0].kind;
 		tokvec++;
 
@@ -275,8 +274,6 @@ parse_postfix_expression(struct ParserState *ptr_ps,
 		*ptr_tokvec = tokvec;
 		return new_expr;
 	} else {
-		struct Expression expr = parse_primary_expression(ptr_ps, &tokvec);
-
 		while (1) {
 			if (tokvec[0].kind == LEFT_BRACKET) {
 				++tokvec;
