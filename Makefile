@@ -45,6 +45,9 @@ compile_files:
 	cat misc/nqueen4.c | ./out/compiler.out > s/nqueen4.s
 	gcc s/nqueen4.s s/supplement.s -o out/nqueen4.out
 	./out/nqueen4.out
+	cat misc/nqueen5.c | ./out/compiler.out > s/nqueen5.s
+	gcc s/nqueen5.s s/supplement.s -o out/nqueen5.out
+	./out/nqueen5.out
 
 warn:
 	make format

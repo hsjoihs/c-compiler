@@ -135,17 +135,11 @@ struct Expression parse_unary_expression(struct ParserState *ptr_ps,
 	           tokvec[0].kind == OP_MINUS_MINUS) {
 		enum TokenKind opkind = tokvec[0].kind;
 		++tokvec;
-		const char *name;
-		if (tokvec[0].kind == IDENT_OR_RESERVED) {
-			name = tokvec[0].ident_str;
-			++tokvec;
-			*ptr_tokvec = tokvec;
 
-		} else {
-			unsupported("++ followed by non-identifier");
-		}
+		struct Expression expr = parse_unary_expression(ptr_ps, &tokvec);
+		expect_type(expr.details.type, INT_TYPE,
+		            "operand of unary increment/decrement");
 
-		struct Expression expr = ident_as_lvalue(*ptr_ps, name);
 		struct Expression new_expr = unary_op_(expr, opkind, INT_TYPE);
 		*ptr_tokvec = tokvec;
 		return new_expr;

@@ -243,18 +243,17 @@ void print_expression(struct PrinterState *ptr_prs, struct Expression expr)
 
 				case UNARY_OP_PLUS_PLUS:
 				case UNARY_OP_MINUS_MINUS: {
-					if (expr.ptr1->category != LOCAL_VAR_) {
-						unsupported("increment of non-(local variable)");
-					}
+					print_expression_as_lvalue(ptr_prs, *expr.ptr1);
 
-					gen_push_from_local_4byte(expr.ptr1->local_var_offset);
 					gen_push_int(1);
 					print_simple_binary_op(expr.unary_operator ==
 					                               UNARY_OP_PLUS_PLUS
 					                           ? SIMPLE_BIN_OP_PLUS
 					                           : SIMPLE_BIN_OP_MINUS);
 
-					gen_write_to_local(expr.ptr1->local_var_offset);
+					struct Type type = expr.ptr1->details.type;
+
+					gen_assign_nbyte(size_of(type));
 					return;
 				}
 
