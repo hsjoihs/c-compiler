@@ -140,16 +140,14 @@ void print_expression(struct PrinterState *ptr_prs, struct Expression expr)
 			                               ? SIMPLE_BIN_OP_PLUS
 			                               : SIMPLE_BIN_OP_MINUS;
 
-			if (expr.ptr1->category != LOCAL_VAR_) {
-				unsupported("increment of non-(local variable)");
-			}
-
-			gen_push_from_local_4byte(expr.ptr1->local_var_offset);
+			print_expression_as_lvalue(ptr_prs, *expr.ptr1);
 			gen_push_int(1);
 
 			print_simple_binary_op(opkind2);
 
-			gen_write_to_local(expr.ptr1->local_var_offset);
+			struct Type type = expr.ptr1->details.type;
+
+			gen_assign_nbyte(size_of(type));
 
 			gen_push_int(-1);
 			print_simple_binary_op(opkind2);
