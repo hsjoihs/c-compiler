@@ -253,10 +253,10 @@ parse_postfix_expression(struct ParserState *ptr_ps,
 		expr.details.type = ret_type;
 		expr.global_var_name = ident_str;
 		return expr;
+	}
 
-	} else if (tokvec[0].kind == IDENT_OR_RESERVED &&
-	           (tokvec[1].kind == OP_PLUS_PLUS ||
-	            tokvec[1].kind == OP_MINUS_MINUS)) {
+	if (tokvec[0].kind == IDENT_OR_RESERVED &&
+	    (tokvec[1].kind == OP_PLUS_PLUS || tokvec[1].kind == OP_MINUS_MINUS)) {
 		const char *name = tokvec[0].ident_str;
 		enum TokenKind opkind = tokvec[1].kind;
 		tokvec += 2;
