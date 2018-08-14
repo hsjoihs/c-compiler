@@ -257,12 +257,10 @@ parse_postfix_expression(struct ParserState *ptr_ps,
 
 	if (tokvec[0].kind == IDENT_OR_RESERVED &&
 	    (tokvec[1].kind == OP_PLUS_PLUS || tokvec[1].kind == OP_MINUS_MINUS)) {
-		const char *name = tokvec[0].ident_str;
-		enum TokenKind opkind = tokvec[1].kind;
-		tokvec += 2;
-		*ptr_tokvec = tokvec;
+		struct Expression expr = parse_primary_expression(ptr_ps, &tokvec);
+		enum TokenKind opkind = tokvec[0].kind;
+		tokvec++;
 
-		struct Expression expr = ident_as_lvalue(*ptr_ps, name);
 		struct Expression *ptr_expr1 = calloc(1, sizeof(struct Expression));
 		*ptr_expr1 = expr;
 
