@@ -975,6 +975,7 @@ void compare(struct Expression expr, struct UntypedExpression uexpr)
 
 		case CONDITIONAL_EXPR:
 			assert(uexpr.category == CONDITIONAL);
+			compare(*expr.ptr1, *uexpr.ptr1);
 			return;
 
 		case UNARY_OP_EXPR:
