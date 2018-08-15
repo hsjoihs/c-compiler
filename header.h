@@ -183,6 +183,18 @@ enum UnaryOp {
 	UNARY_OP_ASTERISK
 };
 
+struct UntypedExpression {
+	enum TokenKind operator;
+	struct UntypedExpression *ptr1;
+	struct UntypedExpression *ptr2;
+	struct UntypedExpression *ptr3;
+	int int_value;
+	const char *var_name;
+	const char *literal_string;
+	struct UntypedExpression *arg_expr_vec;
+	int arg_length;
+};
+
 struct Expression {
 	struct {
 		struct Type type;
