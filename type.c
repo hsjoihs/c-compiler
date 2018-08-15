@@ -237,19 +237,19 @@ struct Type *parse_type_specifier(const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 
-	enum TokenKind base_type = tokvec[0].kind;
+	enum TokenKind tok = tokvec[0].kind;
+	TypeNode *ptr = calloc(1, sizeof(TypeNode));
 
-	if (base_type != RES_INT && base_type != RES_CHAR) {
+	if (tok == RES_CHAR) {
+		ptr->type_category = CHAR_;
+		++tokvec;
+	} else if (tok == RES_INT) {
+		ptr->type_category = INT_;
+		++tokvec;
+	} else {
 		error_unexpected_token(tokvec, "type name `int` or `char`");
 	}
-	++tokvec;
 
-	TypeNode *ptr = calloc(1, sizeof(TypeNode));
-	if (base_type == RES_CHAR) {
-		ptr->type_category = CHAR_;
-	} else {
-		ptr->type_category = INT_;
-	}
 	*ptr_tokvec = tokvec;
 	return ptr;
 }
