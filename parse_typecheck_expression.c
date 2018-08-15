@@ -1038,3 +1038,108 @@ struct Expression parse_typecheck_expression(const struct ParserState *ptr_ps,
 	compare(expr, expr___);
 	return expr;
 }
+
+struct Expression typecheck_expression(const struct ParserState *ptr_ps,
+                                       struct UntypedExpression uexpr)
+{
+	switch (uexpr.category) {
+		case INT_LITERAL_: {
+			struct Expression expr;
+			expr.details.type = INT_TYPE;
+			expr.int_value = uexpr.int_value;
+			expr.category = INT_VALUE;
+			return expr;
+		}
+		case VAR: {
+			const char *name = uexpr.var_name;
+
+			if (!is_local_var(ptr_ps->scope_chain, name)) {
+				struct Type type =
+				    resolve_name_globally(ptr_ps->global_vars_type_map, name);
+
+				struct Expression expr;
+				expr.details.type = if_array_convert_to_ptr(type);
+				;
+				expr.details.true_type = type;
+				expr.category = GLOBAL_VAR_;
+				expr.global_var_name = name;
+				return expr;
+			} else {
+				struct LocalVarInfo info =
+				    resolve_name_locally(ptr_ps->scope_chain, name);
+
+				struct Expression expr;
+				expr.details.type = if_array_convert_to_ptr(info.type);
+				expr.details.true_type = info.type;
+				expr.category = LOCAL_VAR_;
+				expr.local_var_offset = info.offset;
+				return expr;
+			}
+		}
+		case STRING_LITERAL_: {
+			struct Type *ptr_char = calloc(1, sizeof(struct Type));
+			*ptr_char = CHAR_TYPE;
+
+			struct Expression expr;
+			expr.details.type = ptr_of_type_to_ptr_to_type(ptr_char);
+			expr.details.true_type = ptr_of_type_to_arr_of_type(
+			    ptr_char, strlen(uexpr.literal_string) + 1);
+			expr.category = STRING_LITERAL;
+			expr.literal_string = uexpr.literal_string;
+
+			return expr;
+		}
+		case CONDITIONAL: {
+			struct Expression expr = typecheck_expression(ptr_ps, *uexpr.ptr1);
+			struct Expression true_branch =
+			    typecheck_expression(ptr_ps, *uexpr.ptr2);
+			struct Expression false_branch =
+			    typecheck_expression(ptr_ps, *uexpr.ptr3);
+			expect_type(
+			    false_branch.details.type, true_branch.details.type,
+			    "mismatch of type in the false branch and the true branch");
+			struct Expression *ptr_expr1 = calloc(1, sizeof(struct Expression));
+			struct Expression *ptr_expr2 = calloc(1, sizeof(struct Expression));
+			struct Expression *ptr_expr3 = calloc(1, sizeof(struct Expression));
+			*ptr_expr1 = expr;
+			*ptr_expr2 = true_branch;
+			*ptr_expr3 = false_branch;
+
+			struct Expression new_expr;
+			new_expr.details = true_branch.details;
+			new_expr.category = CONDITIONAL_EXPR;
+			new_expr.ptr1 = ptr_expr1;
+			new_expr.ptr2 = ptr_expr2;
+			new_expr.ptr3 = ptr_expr3;
+			return new_expr;
+		}
+		case BINARY_EXPR: {
+			if (isAssign(uexpr.operator)) {
+				struct Expression expr =
+				    typecheck_expression(ptr_ps, *uexpr.ptr1);
+				struct Expression expr2 =
+				    typecheck_expression(ptr_ps, *uexpr.ptr2);
+				if (is_array(expr.details.type) ||
+				    is_array(expr.details.true_type)) {
+					fprintf(stderr, "array is not an lvalue\n");
+					exit(EXIT_FAILURE);
+				}
+
+				expect_type(expr.details.type, expr2.details.type,
+				            "mismatch in assignment operator");
+
+				return assignment_expr(expr, expr2, uexpr.operator);
+			}
+			switch (uexpr.operator) {
+				case OP_COMMA: {
+					struct Expression expr =
+					    typecheck_expression(ptr_ps, *uexpr.ptr1);
+					struct Expression expr2 =
+					    typecheck_expression(ptr_ps, *uexpr.ptr2);
+					return simple_binary_op(expr, expr2, uexpr.operator,
+					                        expr2.details.type);
+				}
+			}
+		}
+	}
+}
