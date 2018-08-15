@@ -18,8 +18,8 @@ struct ParserState {
 	int newest_offset;
 };
 
-struct Expression parse_expression(struct ParserState *ptr_ps,
-                                   const struct Token **ptr_tokvec);
+struct Expression parse_typecheck_expression(struct ParserState *ptr_ps,
+                                             const struct Token **ptr_tokvec);
 
 struct Statement parse_statement(struct ParserState *ptr_ps,
                                  const struct Token **ptr_tokvec);
