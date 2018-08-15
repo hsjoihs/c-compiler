@@ -1164,7 +1164,7 @@ struct Expression typecheck_expression(const struct ParserState *ptr_ps,
 			new_expr.ptr1 = ptr_expr1;
 			new_expr.ptr2 = 0;
 			new_expr.ptr3 = 0;
-			return expr;
+			return new_expr;
 		}
 		case INT_LITERAL_: {
 			struct Expression expr;
