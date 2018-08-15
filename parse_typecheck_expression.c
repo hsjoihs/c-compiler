@@ -957,14 +957,20 @@ parse_typecheck_conditional_expression(const struct ParserState *ptr_ps,
 void compare(struct Expression expr, struct UntypedExpression uexpr)
 {
 	switch (expr.category) {
-		case SIMPLE_BINARY_EXPR:
 		case POINTER_PLUS_INT:
+			/* possibly swapped */
+			assert(uexpr.category == BINARY_EXPR);
+			return;
+
 		case POINTER_MINUS_INT:
+		case SIMPLE_BINARY_EXPR:
 		case POINTER_MINUS_POINTER:
 		case ASSIGNMENT_EXPR:
 		case LOGICAL_OR_EXPR:
 		case LOGICAL_AND_EXPR:
 			assert(uexpr.category == BINARY_EXPR);
+			compare(*expr.ptr1, *uexpr.ptr1);
+			compare(*expr.ptr2, *uexpr.ptr2);
 			return;
 
 		case CONDITIONAL_EXPR:
