@@ -16,8 +16,6 @@ parse_exclusive_OR_expression(const struct Token **ptr_tokvec);
 static struct UntypedExpression
 parse_equality_expression(const struct Token **ptr_tokvec);
 static struct UntypedExpression
-deref_expr_untyped(struct UntypedExpression expr);
-static struct UntypedExpression
 parse_postfix_expression(const struct Token **ptr_tokvec);
 static struct UntypedExpression
 parse_assignment_expression(const struct Token **ptr_tokvec);
@@ -293,9 +291,9 @@ parse_unary_expression(const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 
-	/* unary-operator cast-expression */
 	if (tokvec[0].kind == OP_NOT || tokvec[0].kind == OP_TILDA ||
-	    tokvec[0].kind == OP_PLUS || tokvec[0].kind == OP_MINUS) {
+	    tokvec[0].kind == OP_PLUS || tokvec[0].kind == OP_MINUS ||
+	    tokvec[0].kind == OP_ASTERISK || tokvec[0].kind == OP_AND) {
 		enum TokenKind kind = tokvec[0].kind;
 		++tokvec;
 
@@ -315,35 +313,12 @@ parse_unary_expression(const struct Token **ptr_tokvec)
 		struct UntypedExpression new_expr = unary_op_untyped(expr, opkind);
 		*ptr_tokvec = tokvec;
 		return new_expr;
-	} else if (tokvec[0].kind == OP_AND) {
-		tokvec++;
-
-		struct UntypedExpression expr = parse_cast_expression(&tokvec);
-
-		struct UntypedExpression new_expr = unary_op_untyped(expr, OP_AND);
-
-		*ptr_tokvec = tokvec;
-		return new_expr;
-	} else if (tokvec[0].kind == OP_ASTERISK) {
-		++tokvec;
-		struct UntypedExpression expr = parse_cast_expression(&tokvec);
-		*ptr_tokvec = tokvec;
-		return deref_expr_untyped(expr);
 	} else {
 
 		struct UntypedExpression expr = parse_postfix_expression(&tokvec);
 		*ptr_tokvec = tokvec;
 		return expr;
 	}
-}
-
-static struct UntypedExpression
-deref_expr_untyped(struct UntypedExpression expr)
-{
-
-	struct UntypedExpression new_expr = unary_op_untyped(expr, OP_ASTERISK);
-
-	return new_expr;
 }
 
 static struct UntypedExpression
@@ -404,7 +379,8 @@ parse_postfix_expression(const struct Token **ptr_tokvec)
 			struct UntypedExpression expr2 = parse_expression(&tokvec);
 			expect_and_consume(&tokvec, RIGHT_BRACKET, "right bracket ]");
 
-			expr = deref_expr_untyped(binary_op_untyped(expr, expr2, OP_PLUS));
+			expr = unary_op_untyped(binary_op_untyped(expr, expr2, OP_PLUS),
+			                        OP_ASTERISK);
 		} else if (tokvec[0].kind == OP_PLUS_PLUS ||
 		           tokvec[0].kind == OP_MINUS_MINUS) {
 			enum TokenKind opkind = tokvec[0].kind;
