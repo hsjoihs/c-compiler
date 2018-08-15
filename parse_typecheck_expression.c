@@ -30,6 +30,9 @@ static struct UntypedExpression
 parse_assignment_expression(const struct ParserState *ptr_ps,
                             const struct Token **ptr_tokvec);
 static struct UntypedExpression
+parse_primary_expression(const struct ParserState *ptr_ps,
+                         const struct Token **ptr_tokvec);
+static struct UntypedExpression
 binary_op_untyped(struct UntypedExpression expr, struct UntypedExpression expr2,
                   enum TokenKind kind)
 {
@@ -1222,6 +1225,73 @@ parse_typecheck_postfix_expression(const struct ParserState *ptr_ps,
 	}
 	*ptr_tokvec = tokvec;
 	return expr;
+}
+
+static struct UntypedExpression
+parse_primary_expression(const struct ParserState *ptr_ps,
+                         const struct Token **ptr_tokvec)
+{
+	const struct Token *tokvec = *ptr_tokvec;
+	if (tokvec[0].kind == LIT_DEC_INTEGER) {
+		++*ptr_tokvec;
+
+		struct Expression expr;
+		expr.details.type = INT_TYPE;
+		expr.int_value = tokvec[0].int_value;
+		expr.category = INT_VALUE;
+
+		return NOTHING; // expr;
+
+	} else if (tokvec[0].kind == IDENT_OR_RESERVED) {
+		++*ptr_tokvec;
+
+		if (!is_local_var(ptr_ps->scope_chain, tokvec[0].ident_str)) {
+			struct Type type = resolve_name_globally(
+			    ptr_ps->global_vars_type_map, tokvec[0].ident_str);
+
+			struct Expression expr;
+			expr.details.type = if_array_convert_to_ptr(type);
+			;
+			expr.details.true_type = type;
+			expr.category = GLOBAL_VAR_;
+			expr.global_var_name = tokvec[0].ident_str;
+			return NOTHING; // expr;
+		} else {
+			struct LocalVarInfo info =
+			    resolve_name_locally(ptr_ps->scope_chain, tokvec[0].ident_str);
+
+			struct Expression expr;
+			expr.details.type = if_array_convert_to_ptr(info.type);
+			expr.details.true_type = info.type;
+			expr.category = LOCAL_VAR_;
+			expr.local_var_offset = info.offset;
+			return NOTHING; // expr;
+		}
+	} else if (tokvec[0].kind == LEFT_PAREN) {
+		++tokvec;
+		*ptr_tokvec = tokvec;
+		struct Expression expr = parse_typecheck_expression(ptr_ps, &tokvec);
+		expect_and_consume(&tokvec, RIGHT_PAREN, "right paren");
+
+		*ptr_tokvec = tokvec;
+		return NOTHING; // expr;
+	} else if (tokvec[0].kind == LIT_STRING) {
+		struct Type *ptr_char = calloc(1, sizeof(struct Type));
+		*ptr_char = CHAR_TYPE;
+
+		struct Expression expr;
+		expr.details.type = ptr_of_type_to_ptr_to_type(ptr_char);
+		expr.details.true_type = ptr_of_type_to_arr_of_type(
+		    ptr_char, strlen(tokvec[0].literal_str) + 1);
+		expr.category = STRING_LITERAL;
+		expr.literal_string = tokvec[0].literal_str;
+
+		++*ptr_tokvec;
+		return NOTHING; // expr;
+	}
+
+	error_unexpected_token(
+	    tokvec, "the beginning of parse_typecheck_primary_expression");
 }
 
 static struct Expression
