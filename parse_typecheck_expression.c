@@ -599,28 +599,26 @@ parse_typecheck_unary_expression(const struct ParserState *ptr_ps,
 		*ptr_tokvec = tokvec;
 		return new_expr;
 	} else if (tokvec[0].kind == OP_AND) {
-		{
-			tokvec++;
+		tokvec++;
 
-			struct Expression expr;
+		struct Expression expr;
 
-			expr = parse_typecheck_cast_expression(ptr_ps, &tokvec);
+		expr = parse_typecheck_cast_expression(ptr_ps, &tokvec);
 
-			struct Type type = expr.details.type;
-			if (is_array(type)) {
-				fprintf(stderr, "array is not an lvalue\n");
-				exit(EXIT_FAILURE);
-			}
-
-			struct Type *ptr_type = calloc(1, sizeof(struct Type));
-			*ptr_type = expr.details.type;
-
-			struct Expression new_expr =
-			    unary_op_(expr, OP_AND, ptr_of_type_to_ptr_to_type(ptr_type));
-
-			*ptr_tokvec = tokvec;
-			return new_expr;
+		struct Type type = expr.details.type;
+		if (is_array(type)) {
+			fprintf(stderr, "array is not an lvalue\n");
+			exit(EXIT_FAILURE);
 		}
+
+		struct Type *ptr_type = calloc(1, sizeof(struct Type));
+		*ptr_type = expr.details.type;
+
+		struct Expression new_expr =
+		    unary_op_(expr, OP_AND, ptr_of_type_to_ptr_to_type(ptr_type));
+
+		*ptr_tokvec = tokvec;
+		return new_expr;
 	} else if (tokvec[0].kind == OP_ASTERISK) {
 		++tokvec;
 		struct Expression expr =
@@ -720,40 +718,37 @@ parse_typecheck_postfix_expression(const struct ParserState *ptr_ps,
 
 	struct Expression expr =
 	    parse_typecheck_primary_expression(ptr_ps, &tokvec);
-	{
-		while (1) {
-			if (tokvec[0].kind == LEFT_BRACKET) {
-				++tokvec;
-				struct Expression expr2 =
-				    parse_typecheck_expression(ptr_ps, &tokvec);
-				expect_and_consume(&tokvec, RIGHT_BRACKET, "right bracket ]");
+	while (1) {
+		if (tokvec[0].kind == LEFT_BRACKET) {
+			++tokvec;
+			struct Expression expr2 =
+			    parse_typecheck_expression(ptr_ps, &tokvec);
+			expect_and_consume(&tokvec, RIGHT_BRACKET, "right bracket ]");
 
-				expr = deref_expr(combine_by_add(expr, expr2));
-			} else if (tokvec[0].kind == OP_PLUS_PLUS ||
-			           tokvec[0].kind == OP_MINUS_MINUS) {
-				enum TokenKind opkind = tokvec[0].kind;
-				tokvec++;
+			expr = deref_expr(combine_by_add(expr, expr2));
+		} else if (tokvec[0].kind == OP_PLUS_PLUS ||
+		           tokvec[0].kind == OP_MINUS_MINUS) {
+			enum TokenKind opkind = tokvec[0].kind;
+			tokvec++;
 
-				struct Expression *ptr_expr1 =
-				    calloc(1, sizeof(struct Expression));
-				*ptr_expr1 = expr;
+			struct Expression *ptr_expr1 = calloc(1, sizeof(struct Expression));
+			*ptr_expr1 = expr;
 
-				struct Expression new_expr;
-				new_expr.details.type = INT_TYPE;
-				new_expr.category = opkind == OP_PLUS_PLUS ? POSTFIX_INCREMENT
-				                                           : POSTFIX_DECREMENT;
-				new_expr.ptr1 = ptr_expr1;
-				new_expr.ptr2 = 0;
-				new_expr.ptr3 = 0;
+			struct Expression new_expr;
+			new_expr.details.type = INT_TYPE;
+			new_expr.category =
+			    opkind == OP_PLUS_PLUS ? POSTFIX_INCREMENT : POSTFIX_DECREMENT;
+			new_expr.ptr1 = ptr_expr1;
+			new_expr.ptr2 = 0;
+			new_expr.ptr3 = 0;
 
-				expr = new_expr;
-			} else {
-				break;
-			}
+			expr = new_expr;
+		} else {
+			break;
 		}
-		*ptr_tokvec = tokvec;
-		return expr;
 	}
+	*ptr_tokvec = tokvec;
+	return expr;
 }
 
 static struct Expression
@@ -901,20 +896,16 @@ parse_typecheck_assignment_expression(const struct ParserState *ptr_ps,
 	}
 
 	assert(isAssign(tokvec[0].kind));
-	{
-		{
-			enum TokenKind opkind = tokvec[0].kind;
-			++tokvec;
+	enum TokenKind opkind = tokvec[0].kind;
+	++tokvec;
 
-			struct Expression expr2 =
-			    parse_typecheck_assignment_expression(ptr_ps, &tokvec);
-			expect_type(expr.details.type, expr2.details.type,
-			            "mismatch in assignment operator");
+	struct Expression expr2 =
+	    parse_typecheck_assignment_expression(ptr_ps, &tokvec);
+	expect_type(expr.details.type, expr2.details.type,
+	            "mismatch in assignment operator");
 
-			*ptr_tokvec = tokvec;
-			return assignment_expr(expr, expr2, opkind);
-		};
-	}
+	*ptr_tokvec = tokvec;
+	return assignment_expr(expr, expr2, opkind);
 }
 
 static struct Expression
