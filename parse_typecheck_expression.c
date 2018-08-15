@@ -1011,12 +1011,16 @@ void compare(struct Expression expr, struct UntypedExpression uexpr)
 	}
 }
 
+struct Expression typecheck_expression(const struct ParserState *ptr_ps,
+                                       struct UntypedExpression uexpr);
+
 struct Expression parse_typecheck_expression(const struct ParserState *ptr_ps,
                                              const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 	const struct Token *tokvec2 = tokvec;
 	struct UntypedExpression expr___ = parse_expression(&tokvec2);
+	struct Expression expr_new = typecheck_expression(ptr_ps, expr___);
 
 	struct Expression expr =
 	    parse_typecheck_assignment_expression(ptr_ps, &tokvec);
@@ -1103,7 +1107,8 @@ struct Expression typecheck_expression(const struct ParserState *ptr_ps,
 					return deref_expr(expr);
 				}
 				default: {
-					fprintf(stderr, "FAILURE::::::: INVALID TOKEN %d\n",
+					fprintf(stderr,
+					        "FAILURE::::::: INVALID TOKEN %d in unary\n",
 					        uexpr.operator);
 					exit(EXIT_FAILURE);
 				}
@@ -1249,6 +1254,20 @@ struct Expression typecheck_expression(const struct ParserState *ptr_ps,
 				return assignment_expr(expr, expr2, uexpr.operator);
 			}
 			switch (uexpr.operator) {
+				case OP_PLUS: {
+					struct Expression expr =
+					    typecheck_expression(ptr_ps, *uexpr.ptr1);
+					struct Expression expr2 =
+					    typecheck_expression(ptr_ps, *uexpr.ptr2);
+					return combine_by_add(expr, expr2);
+				}
+				case OP_MINUS: {
+					struct Expression expr =
+					    typecheck_expression(ptr_ps, *uexpr.ptr1);
+					struct Expression expr2 =
+					    typecheck_expression(ptr_ps, *uexpr.ptr2);
+					return combine_by_sub(expr, expr2);
+				}
 				case OP_AND_AND: {
 					struct Expression first_expr =
 					    typecheck_expression(ptr_ps, *uexpr.ptr1);
@@ -1299,7 +1318,8 @@ struct Expression typecheck_expression(const struct ParserState *ptr_ps,
 					                        expr2.details.type);
 				}
 				default: {
-					fprintf(stderr, "FAILURE::::::: INVALID TOKEN %d\n",
+					fprintf(stderr,
+					        "FAILURE::::::: INVALID TOKEN %d in binary expr\n",
 					        uexpr.operator);
 					exit(EXIT_FAILURE);
 				}
