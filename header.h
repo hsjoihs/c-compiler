@@ -245,7 +245,7 @@ enum StatementCategory {
 	BREAK_STATEMENT,
 	CONTINUE_STATEMENT,
 	EXPRESSION_STATEMENT,
-	DECLARATION_STATEMENT,
+	DECLARATION_STATEMENT
 };
 
 struct Statement {
@@ -262,9 +262,10 @@ struct Statement {
 };
 
 enum ToplevelCategory {
-	TOPLEVEL_VAR_DEFINITION,
+	TOPLEVEL_VAR_DEFINITION = 1,
 	TOPLEVEL_FUNCTION_DEFINITION,
-	TOPLEVEL_FUNCTION_DECLARATION
+	TOPLEVEL_FUNCTION_DECLARATION,
+	TOPLEVEL_TYPE_DECLARATION
 };
 
 struct Toplevel {
@@ -281,3 +282,4 @@ struct Toplevel {
 
 struct UntypedExpression parse_expression(const struct Token **ptr_tokvec);
 int isAssign(enum TokenKind opkind);
+struct Type *parse_type_specifier(const struct Token **ptr_tokvec);

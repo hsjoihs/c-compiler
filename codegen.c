@@ -214,6 +214,9 @@ static void print_toplevel_definition(struct PrinterState *ptr_prs,
 	if (def.category == TOPLEVEL_FUNCTION_DECLARATION) {
 		return;
 	}
+	if (def.category == TOPLEVEL_TYPE_DECLARATION) {
+		return;
+	}
 
 	assert(def.category == TOPLEVEL_FUNCTION_DEFINITION);
 

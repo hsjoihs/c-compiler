@@ -18,6 +18,17 @@ parse_toplevel_definition(struct ParserState *ptr_ps,
 {
 	const char *declarator_name;
 	const struct Token *tokvec2 = *ptr_tokvec;
+	{
+		const struct Token *tokvec3 = tokvec2;
+		struct Type *ptr_type = parse_type_specifier(&tokvec3);
+		if (tokvec3[0].kind == SEMICOLON) {
+			++tokvec3;
+			struct Toplevel d;
+			d.category = TOPLEVEL_TYPE_DECLARATION;
+			*ptr_tokvec = tokvec3;
+			return d;
+		}
+	}
 	struct Type declarator_type = parse_declarator(&tokvec2, &declarator_name);
 
 	if (declarator_type.type_category != FN) {
