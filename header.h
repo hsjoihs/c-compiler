@@ -59,7 +59,8 @@ enum TokenKind {
 	LEFT_BRACKET,
 	RIGHT_BRACKET,
 	RES_CHAR,
-	LIT_STRING
+	LIT_STRING,
+	RES_STRUCT
 };
 
 struct Token {

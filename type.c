@@ -352,5 +352,6 @@ struct Type parse_declarator(const struct Token **ptr_tokvec,
 
 int can_start_a_type(const struct Token *tokvec)
 {
-	return tokvec[0].kind == RES_INT || tokvec[0].kind == RES_CHAR;
+	return tokvec[0].kind == RES_INT || tokvec[0].kind == RES_CHAR ||
+	       tokvec[0].kind == RES_STRUCT;
 }
