@@ -3,8 +3,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-static struct Expression ident_as_lvalue(struct ParserState ps,
-                                         const char *name);
 static struct Expression
 parse_typecheck_cast_expression(struct ParserState *ptr_ps,
                                 const struct Token **ptr_tokvec);
@@ -606,7 +604,40 @@ parse_typecheck_unary_expression(struct ParserState *ptr_ps,
 
 			tokvec += 2;
 
-			struct Expression expr = ident_as_lvalue(*ptr_ps, name);
+			struct Expression expr_;
+
+			{
+				struct ParserState ps = *ptr_ps;
+				if (!is_local_var(ps.scope_chain, name)) {
+					struct Type type =
+					    resolve_name_globally(ps.global_vars_type_map, name);
+					if (is_array(type)) {
+						fprintf(stderr, "array is not an lvalue\n");
+						exit(EXIT_FAILURE);
+					}
+
+					struct Expression expr;
+					expr.details.type = type;
+					expr.category = GLOBAL_VAR_;
+					expr.global_var_name = name;
+					expr_ = expr;
+				} else {
+					struct LocalVarInfo info =
+					    resolve_name_locally(ps.scope_chain, name);
+					if (is_array(info.type)) {
+						fprintf(stderr, "array is not an lvalue\n");
+						exit(EXIT_FAILURE);
+					}
+
+					struct Expression expr;
+					expr.details.type = info.type;
+					expr.local_var_offset = info.offset;
+					expr.category = LOCAL_VAR_;
+					expr_ = expr;
+				}
+			}
+
+			struct Expression expr = expr_;
 
 			struct Type *ptr_type = calloc(1, sizeof(struct Type));
 			*ptr_type = expr.details.type;
@@ -820,36 +851,6 @@ parse_typecheck_primary_expression(struct ParserState *ptr_ps,
 
 	error_unexpected_token(
 	    tokvec, "the beginning of parse_typecheck_primary_expression");
-}
-
-static struct Expression ident_as_lvalue(struct ParserState ps,
-                                         const char *name)
-{
-	if (!is_local_var(ps.scope_chain, name)) {
-		struct Type type = resolve_name_globally(ps.global_vars_type_map, name);
-		if (is_array(type)) {
-			fprintf(stderr, "array is not an lvalue\n");
-			exit(EXIT_FAILURE);
-		}
-
-		struct Expression expr;
-		expr.details.type = type;
-		expr.category = GLOBAL_VAR_;
-		expr.global_var_name = name;
-		return expr;
-	} else {
-		struct LocalVarInfo info = resolve_name_locally(ps.scope_chain, name);
-		if (is_array(info.type)) {
-			fprintf(stderr, "array is not an lvalue\n");
-			exit(EXIT_FAILURE);
-		}
-
-		struct Expression expr;
-		expr.details.type = info.type;
-		expr.local_var_offset = info.offset;
-		expr.category = LOCAL_VAR_;
-		return expr;
-	}
 }
 
 static enum SimpleBinOp op_before_assign(enum TokenKind kind)
