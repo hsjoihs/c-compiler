@@ -13,6 +13,18 @@ static struct Expression integer_1(void)
 	return expr;
 }
 
+static struct Expression
+parse_typecheck_expression(const struct ParserState *ptr_ps,
+                           const struct Token **ptr_tokvec)
+{
+	const struct Token *tokvec2 = *ptr_tokvec;
+	struct UntypedExpression expr___ = parse_expression(&tokvec2);
+	struct Expression expr_new = typecheck_expression(ptr_ps, expr___);
+
+	*ptr_tokvec = tokvec2;
+	return expr_new;
+}
+
 /*
  * Adjusts the newest_offset and add a local variable to the scope.
  * Returns the offset of the newly added variable.

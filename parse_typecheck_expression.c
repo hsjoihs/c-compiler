@@ -314,20 +314,6 @@ static struct Expression assignment_expr(struct Expression expr,
 }
 
 struct Expression typecheck_expression(const struct ParserState *ptr_ps,
-                                       struct UntypedExpression uexpr);
-
-struct Expression parse_typecheck_expression(const struct ParserState *ptr_ps,
-                                             const struct Token **ptr_tokvec)
-{
-	const struct Token *tokvec2 = *ptr_tokvec;
-	struct UntypedExpression expr___ = parse_expression(&tokvec2);
-	struct Expression expr_new = typecheck_expression(ptr_ps, expr___);
-
-	*ptr_tokvec = tokvec2;
-	return expr_new;
-}
-
-struct Expression typecheck_expression(const struct ParserState *ptr_ps,
                                        struct UntypedExpression uexpr)
 {
 	switch (uexpr.category) {

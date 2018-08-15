@@ -19,8 +19,8 @@ struct ParserState {
 };
 
 struct UntypedExpression parse_expression(const struct Token **ptr_tokvec);
-struct Expression parse_typecheck_expression(const struct ParserState *ptr_ps,
-                                             const struct Token **ptr_tokvec);
+struct Expression typecheck_expression(const struct ParserState *ptr_ps,
+                                       struct UntypedExpression uexpr);
 
 struct Statement parse_statement(struct ParserState *ptr_ps,
                                  const struct Token **ptr_tokvec);
