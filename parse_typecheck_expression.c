@@ -600,36 +600,16 @@ parse_typecheck_unary_expression(struct ParserState *ptr_ps,
 		return new_expr;
 	} else if (tokvec[0].kind == OP_AND) {
 		if (tokvec[1].kind == IDENT_OR_RESERVED) {
-			const char *name = tokvec[1].ident_str;
-
-			tokvec += 2;
+			tokvec++;
 
 			struct Expression expr;
 
-			{
-				if (!is_local_var(ptr_ps->scope_chain, name)) {
-					struct Type type = resolve_name_globally(
-					    ptr_ps->global_vars_type_map, name);
-					if (is_array(type)) {
-						fprintf(stderr, "array is not an lvalue\n");
-						exit(EXIT_FAILURE);
-					}
+			expr = parse_typecheck_cast_expression(ptr_ps, &tokvec);
 
-					expr.details.type = type;
-					expr.category = GLOBAL_VAR_;
-					expr.global_var_name = name;
-				} else {
-					struct LocalVarInfo info =
-					    resolve_name_locally(ptr_ps->scope_chain, name);
-					if (is_array(info.type)) {
-						fprintf(stderr, "array is not an lvalue\n");
-						exit(EXIT_FAILURE);
-					}
-
-					expr.details.type = info.type;
-					expr.local_var_offset = info.offset;
-					expr.category = LOCAL_VAR_;
-				}
+			struct Type type = expr.details.type;
+			if (is_array(type)) {
+				fprintf(stderr, "array is not an lvalue\n");
+				exit(EXIT_FAILURE);
 			}
 
 			struct Type *ptr_type = calloc(1, sizeof(struct Type));
