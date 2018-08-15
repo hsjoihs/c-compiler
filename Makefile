@@ -51,11 +51,11 @@ compile_files:
 
 warn:
 	make format
-	clang -Wall -Wextra -Wimplicit-fallthrough -Weverything -Wno-padded -Wno-missing-prototypes -Wno-switch-enum codegen.c parse_toplevel.c parse_statement.c codegen_expression.c main.c vector.c parser.c error.c type.c parse_binary_expression.c map.c print_x86_64.c $(CCFLAGS) lexer.c -o out/compiler.out
+	clang -Wall -Wextra -Wimplicit-fallthrough -Weverything -Wno-padded -Wno-missing-prototypes -Wno-switch-enum codegen.c parse_toplevel.c parse_statement.c codegen_expression.c main.c vector.c parse_expression.c error.c type.c parse_binary_expression.c map.c print_x86_64.c $(CCFLAGS) lexer.c -o out/compiler.out
 
 notest:
 	make format
-	gcc -Wall -Wextra codegen.c parse_toplevel.c parse_statement.c codegen_expression.c main.c vector.c parser.c error.c type.c parse_binary_expression.c map.c print_x86_64.c $(CCFLAGS) lexer.c -o out/compiler.out
+	gcc -Wall -Wextra codegen.c parse_toplevel.c parse_statement.c codegen_expression.c main.c vector.c parse_expression.c error.c type.c parse_binary_expression.c map.c print_x86_64.c $(CCFLAGS) lexer.c -o out/compiler.out
 
 test_valid:
 	rm out/*.out
