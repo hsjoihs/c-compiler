@@ -1089,13 +1089,11 @@ parse_postfix_expression(const struct ParserState *ptr_ps,
 		}
 		*ptr_tokvec = tokvec;
 
-		struct Expression expr;
-		expr.category = FUNCCALL_EXPR;
-		expr.arg_expr_vec = args;
-		expr.arg_length = counter;
-		expr.details.type = ret_type;
-		expr.global_var_name = ident_str;
-		return NOTHING; // expr;
+		struct UntypedExpression expr;
+		expr.category = FUNCCALL;
+		expr.arg_exprs_vec = arguments;
+		expr.var_name = ident_str;
+		return expr;
 	}
 
 	struct Expression expr__ =
