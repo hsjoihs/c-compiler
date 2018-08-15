@@ -950,17 +950,14 @@ parse_unary_expression(const struct ParserState *ptr_ps,
 	    tokvec[0].kind == OP_PLUS || tokvec[0].kind == OP_MINUS) {
 		enum TokenKind kind = tokvec[0].kind;
 		++tokvec;
-		struct Expression expr =
+		struct Expression expr__ =
 		    parse_typecheck_cast_expression(ptr_ps, &tokvec);
-		expect_type(
-		    expr.details.type, INT_TYPE,
-		    "operand of logical not, bitnot, unary plus or unary minus");
+		struct UntypedExpression expr = NOTHING;
 
-		struct Expression new_expr = unary_op_(expr, kind, expr.details.type);
-		new_expr.details.true_type = expr.details.true_type;
+		struct UntypedExpression new_expr = unary_op_untyped(expr, kind);
 
 		*ptr_tokvec = tokvec;
-		return NOTHING; // new_expr;
+		return new_expr;
 	} else if (tokvec[0].kind == OP_PLUS_PLUS ||
 	           tokvec[0].kind == OP_MINUS_MINUS) {
 		enum TokenKind opkind = tokvec[0].kind;
