@@ -404,21 +404,17 @@ void gen_ternary_part1(int label1, int label2)
 void gen_ternary_part2(int label1, int label2)
 {
 	printf("//gen_ternary_part2(%d, %d)\n", label1, label2);
-	printf("  movl (%%rsp), %%eax\n"
-	       "  addq $8, %%rsp\n"
-	       "  jmp .L%d\n"
-	       ".L%d:\n",
-	       label2, label1);
+	gen_pop_to_reg_4byte("eax");
+	printf("  jmp .L%d\n", label2);
+	printf(".L%d:\n", label1);
 }
 
 void gen_ternary_part3(int label1, int label2)
 {
 	printf("//gen_ternary_part3(%d, %d)\n", label1, label2);
-	printf("  movl (%%rsp), %%eax\n"
-	       "  addq $8, %%rsp\n"
-	       ".L%d:\n"
-	       "  movl %%eax, (%%rsp)\n",
-	       label2);
+	gen_pop_to_reg_4byte("eax");
+	printf(".L%d:\n", label2);
+	printf("  movl %%eax, (%%rsp)\n");
 }
 
 /* consumes the top of the stack and branch */
