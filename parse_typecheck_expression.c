@@ -900,8 +900,9 @@ parse_assignment_expression(const struct ParserState *ptr_ps,
 
 	const struct Token *tokvec2 = tokvec;
 	const struct ParserState *ptr_ps2 = ptr_ps;
-	struct Expression expr =
+	struct Expression expr__ =
 	    parse_typecheck_unary_expression(ptr_ps2, &tokvec2);
+	struct UntypedExpression expr = NOTHING;
 
 	/* parse failed */
 	if (!isAssign(tokvec2[0].kind)) {
@@ -913,22 +914,15 @@ parse_assignment_expression(const struct ParserState *ptr_ps,
 
 	tokvec = tokvec2;
 
-	if (is_array(expr.details.type) || is_array(expr.details.true_type)) {
-		fprintf(stderr, "array is not an lvalue\n");
-		exit(EXIT_FAILURE);
-	}
-
 	assert(isAssign(tokvec[0].kind));
 	enum TokenKind opkind = tokvec[0].kind;
 	++tokvec;
 
-	struct Expression expr2 =
-	    parse_typecheck_assignment_expression(ptr_ps, &tokvec);
-	expect_type(expr.details.type, expr2.details.type,
-	            "mismatch in assignment operator");
+	struct UntypedExpression expr2 =
+	    parse_assignment_expression(ptr_ps, &tokvec);
 
 	*ptr_tokvec = tokvec;
-	return NOTHING; // assignment_expr(expr, expr2, opkind);
+	return binary_op_untyped(expr, expr2, opkind);
 }
 
 static struct Expression
