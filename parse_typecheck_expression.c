@@ -215,6 +215,33 @@ parse_typecheck_inclusive_OR_expression(const struct ParserState *ptr_ps,
 	return expr;
 }
 
+static struct UntypedExpression
+parse_exclusive_OR_expression(const struct ParserState *ptr_ps,
+                              const struct Token **ptr_tokvec)
+{
+	const struct Token *tokvec = *ptr_tokvec;
+
+	struct Expression expr__ = parse_typecheck_AND_expression(ptr_ps, &tokvec);
+	struct UntypedExpression expr = NOTHING;
+
+	while (1) {
+		enum TokenKind kind = tokvec[0].kind;
+		if (kind != OP_HAT) {
+			break;
+		}
+		++tokvec;
+
+		struct Expression expr2__ =
+		    parse_typecheck_AND_expression(ptr_ps, &tokvec);
+
+		struct UntypedExpression expr2 = NOTHING;
+		expr = binary_op_untyped(expr, expr2, kind);
+	}
+	*ptr_tokvec = tokvec;
+
+	return expr;
+}
+
 static struct Expression
 parse_typecheck_exclusive_OR_expression(const struct ParserState *ptr_ps,
                                         const struct Token **ptr_tokvec)
