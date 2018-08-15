@@ -303,13 +303,14 @@ void print_expression(struct PrinterState *ptr_prs, struct Expression expr)
 			const char *ident_str = expr.global_var_name;
 			struct Type ret_type = expr.details.type;
 
-			for (int counter = 0; counter < expr.arg_length; counter++) {
+			for (int counter = expr.arg_length - 1; counter >= 0; counter--) {
 				struct Expression expr_ = expr.arg_expr_vec[counter];
 
 				print_expression(ptr_prs, expr_);
-				if (counter > 5) {
-					unsupported("calling with 7 or more arguments");
-				}
+			}
+
+			for (int counter = 0; counter < expr.arg_length; counter++) {
+				struct Expression expr_ = expr.arg_expr_vec[counter];
 
 				switch (size_of(expr_.details.type)) {
 					case 1:

@@ -8,6 +8,12 @@ run_test() {
 	if [ $res -ne $3 ]; then { echo "got:" $res; echo "expected:" $3; echo -e "\033[31mFAIL\033[m, at test case" $1: $2; exit 1; }; else echo -e "\033[32mPASS\033[m"; fi
 }
 
+run_test 162 'int printf();int a() {return 3;}int main() {int i; printf("%d %d", i, a()); return 0;}' 0
+run_test 163 'int foo(char *a, int b, int c){return 0;} int a(int N) {return 3;}int main() {int i; foo("%d %d", i, a(i)); return 0;}' 0
+run_test 164 'int foobar();int a(int N) {return 3;}int main() {int i; foobar("%d %d", i, a(i)); return 0;}' 0
+run_test 165 'int printf();int a(int N) {return 3;}int main() {int i; printf("%d %d", i, a(i)); return 0;}' 0
+run_test 166 'int printf();int puts();int a(int N) {return 3;}int main() {int i; for (i = 1; i <= 12; i++) { printf("%d %d", i, a(i)); puts("");} return 0;}' 0
+
 run_test 133 'char foo(){char a; return a;} int main(){foo(); return 174;}' 174
 run_test 134 'char foo(char *p){char a; return a;} int main(){char q; foo(&q); return 174;}' 174
 run_test 135 'char foo(char *p){char a; a = 5; return a;} int main(){char q; foo(&q); return 174;}' 174

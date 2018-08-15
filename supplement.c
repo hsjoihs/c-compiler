@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdlib.h>
 int always87() { return 87; }
 int always8() { return 8; }
@@ -27,4 +28,9 @@ int qwer(char a, char b)
 	char c;
 	c = a + d;
 	return c * b;
+}
+int foobar(const char *str, int i, int j)
+{
+	printf(str, i, j);
+	return 0;
 }
