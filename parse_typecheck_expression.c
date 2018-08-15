@@ -1086,28 +1086,30 @@ parse_postfix_expression(const struct ParserState *ptr_ps,
 		return NOTHING; // expr;
 	}
 
-	struct Expression expr =
+	struct Expression expr__ =
 	    parse_typecheck_primary_expression(ptr_ps, &tokvec);
+	struct UntypedExpression expr = NOTHING;
 	while (1) {
 		if (tokvec[0].kind == LEFT_BRACKET) {
 			++tokvec;
-			struct Expression expr2 =
+			struct Expression expr2__ =
 			    parse_typecheck_expression(ptr_ps, &tokvec);
+			struct UntypedExpression expr2 = NOTHING;
 			expect_and_consume(&tokvec, RIGHT_BRACKET, "right bracket ]");
 
-			expr = deref_expr(combine_by_add(expr, expr2));
+			expr = deref_expr_untyped(binary_op_untyped(expr, expr2, OP_PLUS));
 		} else if (tokvec[0].kind == OP_PLUS_PLUS ||
 		           tokvec[0].kind == OP_MINUS_MINUS) {
 			enum TokenKind opkind = tokvec[0].kind;
 			tokvec++;
 
-			struct Expression *ptr_expr1 = calloc(1, sizeof(struct Expression));
+			struct UntypedExpression *ptr_expr1 =
+			    calloc(1, sizeof(struct UntypedExpression));
 			*ptr_expr1 = expr;
 
-			struct Expression new_expr;
-			new_expr.details.type = INT_TYPE;
-			new_expr.category =
-			    opkind == OP_PLUS_PLUS ? POSTFIX_INCREMENT : POSTFIX_DECREMENT;
+			struct UntypedExpression new_expr;
+			new_expr.operator= opkind;
+			new_expr.category = POSTFIX_EXPR;
 			new_expr.ptr1 = ptr_expr1;
 			new_expr.ptr2 = 0;
 			new_expr.ptr3 = 0;
@@ -1118,7 +1120,7 @@ parse_postfix_expression(const struct ParserState *ptr_ps,
 		}
 	}
 	*ptr_tokvec = tokvec;
-	return NOTHING; // expr;
+	return expr;
 }
 
 static struct Expression
