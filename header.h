@@ -149,6 +149,17 @@ enum ExprCategory {
 	STRING_LITERAL
 };
 
+enum UntypedExprCategory {
+	BINARY_EXPR = 1,
+	UNARY_EXPR,
+	CONDITIONAL,
+	VAR,
+	INT_LITERAL_,
+	POSTFIX_EXPR,
+	FUNCCALL,
+	STRING_LITERAL_
+};
+
 enum SimpleBinOp {
 	SIMPLE_BIN_OP_PLUS = 1,
 	SIMPLE_BIN_OP_MINUS,
@@ -185,6 +196,7 @@ enum UnaryOp {
 
 struct UntypedExpression {
 	enum TokenKind operator;
+	enum UntypedExprCategory category;
 	struct UntypedExpression *ptr1;
 	struct UntypedExpression *ptr2;
 	struct UntypedExpression *ptr3;
