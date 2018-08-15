@@ -323,13 +323,39 @@ parse_typecheck_AND_expression(const struct ParserState *ptr_ps,
 }
 
 static struct UntypedExpression
+parse_relational_expression(const struct ParserState *ptr_ps,
+                            const struct Token **ptr_tokvec)
+{
+	const struct Token *tokvec = *ptr_tokvec;
+	struct Expression expr = parse_typecheck_shift_expression(ptr_ps, &tokvec);
+
+	while (1) {
+		enum TokenKind kind = tokvec[0].kind;
+		if (kind != OP_GT && kind != OP_GT_EQ && kind != OP_LT &&
+		    kind != OP_LT_EQ) {
+			break;
+		}
+		++tokvec;
+
+		struct Expression expr2 =
+		    parse_typecheck_shift_expression(ptr_ps, &tokvec);
+		expect_type(expr.details.type, INT_TYPE,
+		            "left operand of a relational operator");
+		expect_type(expr2.details.type, INT_TYPE,
+		            "right operand of a relational operator");
+		expr = simple_binary_op(expr, expr2, kind, INT_TYPE);
+	}
+	*ptr_tokvec = tokvec;
+	return NOTHING; // expr;
+}
+
+static struct UntypedExpression
 parse_equality_expression(const struct ParserState *ptr_ps,
                           const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
-	struct Expression expr__ =
-	    parse_typecheck_relational_expression(ptr_ps, &tokvec);
-	struct UntypedExpression expr = NOTHING;
+	struct UntypedExpression expr =
+	    parse_relational_expression(ptr_ps, &tokvec);
 
 	while (1) {
 		enum TokenKind kind = tokvec[0].kind;
@@ -338,9 +364,8 @@ parse_equality_expression(const struct ParserState *ptr_ps,
 		}
 		++tokvec;
 
-		struct Expression expr2__ =
-		    parse_typecheck_relational_expression(ptr_ps, &tokvec);
-		struct UntypedExpression expr2 = NOTHING;
+		struct UntypedExpression expr2 =
+		    parse_relational_expression(ptr_ps, &tokvec);
 		expr = binary_op_untyped(expr, expr2, kind);
 	}
 	*ptr_tokvec = tokvec;
