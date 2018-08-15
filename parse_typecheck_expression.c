@@ -3,6 +3,27 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+static struct UntypedExpression
+binary_op_untyped(struct UntypedExpression expr, struct UntypedExpression expr2,
+                  enum TokenKind kind)
+{
+	struct UntypedExpression *ptr_expr1 =
+	    calloc(1, sizeof(struct UntypedExpression));
+	struct UntypedExpression *ptr_expr2 =
+	    calloc(1, sizeof(struct UntypedExpression));
+	*ptr_expr1 = expr;
+	*ptr_expr2 = expr2;
+
+	struct UntypedExpression new_expr;
+	new_expr.operator= kind;
+	new_expr.ptr1 = ptr_expr1;
+	new_expr.ptr2 = ptr_expr2;
+	new_expr.ptr3 = 0;
+
+	return new_expr;
+}
+
 static struct Expression
 parse_typecheck_cast_expression(const struct ParserState *ptr_ps,
                                 const struct Token **ptr_tokvec);
