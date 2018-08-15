@@ -971,8 +971,9 @@ parse_conditional_expression(const struct ParserState *ptr_ps,
                              const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
-	struct Expression expr =
+	struct Expression expr__ =
 	    parse_typecheck_logical_OR_expression(ptr_ps, &tokvec);
+	struct UntypedExpression expr = NOTHING;
 	if (tokvec[0].kind == QUESTION) {
 
 		++tokvec;
@@ -991,16 +992,18 @@ parse_conditional_expression(const struct ParserState *ptr_ps,
 		expect_type(false_branch.details.type, true_branch.details.type,
 		            "mismatch of type in the false branch and the true branch");
 
-		struct Expression *ptr_expr1 = calloc(1, sizeof(struct Expression));
-		struct Expression *ptr_expr2 = calloc(1, sizeof(struct Expression));
-		struct Expression *ptr_expr3 = calloc(1, sizeof(struct Expression));
+		struct UntypedExpression *ptr_expr1 =
+		    calloc(1, sizeof(struct UntypedExpression));
+		struct UntypedExpression *ptr_expr2 =
+		    calloc(1, sizeof(struct UntypedExpression));
+		struct UntypedExpression *ptr_expr3 =
+		    calloc(1, sizeof(struct UntypedExpression));
 		*ptr_expr1 = expr;
-		*ptr_expr2 = true_branch;
-		*ptr_expr3 = false_branch;
+		*ptr_expr2 = NOTHING; // true_branch;
+		*ptr_expr3 = NOTHING; // false_branch;
 
-		struct Expression new_expr;
-		new_expr.details = true_branch.details;
-		new_expr.category = CONDITIONAL_EXPR;
+		struct UntypedExpression new_expr;
+		new_expr.category = CONDITIONAL;
 		new_expr.ptr1 = ptr_expr1;
 		new_expr.ptr2 = ptr_expr2;
 		new_expr.ptr3 = ptr_expr3;
@@ -1008,7 +1011,7 @@ parse_conditional_expression(const struct ParserState *ptr_ps,
 		return NOTHING; // new_expr;
 	}
 	*ptr_tokvec = tokvec;
-	return NOTHING; // expr;
+	return expr;
 }
 
 static struct Expression
