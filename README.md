@@ -22,5 +22,5 @@ to compile.
 Run
 
 ```
-$ make test_all_
+$ make
 ```
