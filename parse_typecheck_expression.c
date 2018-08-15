@@ -437,8 +437,9 @@ parse_logical_AND_expression(const struct ParserState *ptr_ps,
 	const struct Token *tokvec = *ptr_tokvec;
 
 	int counter = 0;
-	struct Expression first_expr =
+	struct Expression first_expr__ =
 	    parse_typecheck_inclusive_OR_expression(ptr_ps, &tokvec);
+	struct UntypedExpression first_expr = NOTHING;
 
 	while (1) {
 		enum TokenKind kind = tokvec[0].kind;
@@ -447,15 +448,16 @@ parse_logical_AND_expression(const struct ParserState *ptr_ps,
 		}
 
 		++tokvec;
-		struct Expression expr2 =
+		struct Expression expr2__ =
 		    parse_typecheck_inclusive_OR_expression(ptr_ps, &tokvec);
+		struct UntypedExpression expr2 = NOTHING;
 		++counter;
 
-		first_expr = binary_op(first_expr, expr2, LOGICAL_AND_EXPR, INT_TYPE);
+		first_expr = binary_op_untyped(first_expr, expr2, OP_AND_AND);
 	}
 
 	*ptr_tokvec = tokvec;
-	return NOTHING; // first_expr;
+	return first_expr;
 }
 
 static struct Expression
@@ -505,7 +507,7 @@ parse_logical_OR_expression(const struct ParserState *ptr_ps,
 		struct UntypedExpression expr2 =
 		    parse_logical_AND_expression(ptr_ps, &tokvec);
 
-		expr = binary_op_untyped(expr, expr2, LOGICAL_OR_EXPR);
+		expr = binary_op_untyped(expr, expr2, OP_OR_OR);
 	}
 
 	*ptr_tokvec = tokvec;
