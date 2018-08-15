@@ -958,6 +958,9 @@ struct Expression parse_typecheck_expression(const struct ParserState *ptr_ps,
                                              const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
+	const struct Token *tokvec2 = tokvec;
+	struct UntypedExpression expr___ = parse_expression(ptr_ps, &tokvec2);
+
 	struct Expression expr =
 	    parse_typecheck_assignment_expression(ptr_ps, &tokvec);
 	while (1) {
@@ -973,5 +976,7 @@ struct Expression parse_typecheck_expression(const struct ParserState *ptr_ps,
 		expr = simple_binary_op(expr, expr2, kind, expr2.details.type);
 	}
 	*ptr_tokvec = tokvec;
+
+	assert(tokvec == tokvec2);
 	return expr;
 }
