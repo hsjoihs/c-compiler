@@ -999,6 +999,10 @@ void compare(struct Expression expr, struct UntypedExpression uexpr)
 
 		case FUNCCALL_EXPR:
 			assert(uexpr.category == FUNCCALL);
+			for (int i = 0; i < expr.arg_length; i++) {
+				struct UntypedExpression *ptr = uexpr.arg_exprs_vec.vector[i];
+				compare(expr.arg_expr_vec[i], *ptr);
+			}
 			return;
 
 		case STRING_LITERAL:
