@@ -1024,32 +1024,15 @@ struct Expression parse_typecheck_expression(const struct ParserState *ptr_ps,
 	struct UntypedExpression expr___ = parse_expression(&tokvec2);
 	struct Expression expr_new = typecheck_expression(ptr_ps, expr___);
 
-	struct Expression expr =
-	    parse_typecheck_assignment_expression(ptr_ps, &tokvec);
-	while (1) {
-		enum TokenKind kind = tokvec[0].kind;
-		if (kind != OP_COMMA) {
-			break;
-		}
-		++tokvec;
-
-		struct Expression expr2 =
-		    parse_typecheck_assignment_expression(ptr_ps, &tokvec);
-
-		expr = simple_binary_op(expr, expr2, kind, expr2.details.type);
-	}
-	*ptr_tokvec = tokvec;
-
-	assert(tokvec == tokvec2);
 	/*fprintf(stderr, "\n\n\ntokens consumed are:\n");
 	for (int i = 0; i < tokvec - initial_tokvec; i++) {
 	    print_token(initial_tokvec[i], initial_tokvec[i + 1].token_begins_here);
 	    fprintf(stderr, " ");
 	}
 	fprintf(stderr, "\n");*/
-	compare(expr, expr___);
+	*ptr_tokvec = tokvec2;
 	compare(expr_new, expr___);
-	return expr;
+	return expr_new;
 }
 
 struct Expression typecheck_expression(const struct ParserState *ptr_ps,
