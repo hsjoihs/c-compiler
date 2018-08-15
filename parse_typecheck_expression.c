@@ -27,6 +27,9 @@ static struct UntypedExpression
 parse_postfix_expression(const struct ParserState *ptr_ps,
                          const struct Token **ptr_tokvec);
 static struct UntypedExpression
+parse_assignment_expression(const struct ParserState *ptr_ps,
+                            const struct Token **ptr_tokvec);
+static struct UntypedExpression
 binary_op_untyped(struct UntypedExpression expr, struct UntypedExpression expr2,
                   enum TokenKind kind)
 {
@@ -1046,19 +1049,15 @@ parse_postfix_expression(const struct ParserState *ptr_ps,
 
 		struct Vector arguments = init_vector();
 
-		struct Expression *args = calloc(10, sizeof(struct Expression));
-		int counter = 0;
 		if (tokvec[0].kind == RIGHT_PAREN) {
 			tokvec++;
 		} else {
-			args[counter] =
-			    parse_typecheck_assignment_expression(ptr_ps, &tokvec);
-			struct UntypedExpression e = NOTHING;
+			struct UntypedExpression e =
+			    parse_assignment_expression(ptr_ps, &tokvec);
 			struct UntypedExpression *ptr_e =
 			    calloc(1, sizeof(struct UntypedExpression));
 			*ptr_e = e;
 			push_vector(&arguments, ptr_e);
-			++counter;
 
 			while (1) {
 				enum TokenKind kind = tokvec[0].kind;
@@ -1066,18 +1065,13 @@ parse_postfix_expression(const struct ParserState *ptr_ps,
 					break;
 				}
 				++tokvec;
-				if (counter > 5) {
-					unsupported("calling with 7 or more arguments");
-				}
 
-				args[counter] =
-				    parse_typecheck_assignment_expression(ptr_ps, &tokvec);
-				struct UntypedExpression e = NOTHING;
+				struct UntypedExpression e =
+				    parse_assignment_expression(ptr_ps, &tokvec);
 				struct UntypedExpression *ptr_e =
 				    calloc(1, sizeof(struct UntypedExpression));
 				*ptr_e = e;
 				push_vector(&arguments, ptr_e);
-				++counter;
 			}
 
 			*ptr_tokvec = tokvec;
