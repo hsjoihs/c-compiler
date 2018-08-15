@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 static struct Expression
-parse_typecheck_cast_expression(struct ParserState *ptr_ps,
+parse_typecheck_cast_expression(const struct ParserState *ptr_ps,
                                 const struct Token **ptr_tokvec);
 
 static enum SimpleBinOp to_simplebinop(enum TokenKind t)
@@ -50,33 +50,33 @@ static enum SimpleBinOp to_simplebinop(enum TokenKind t)
 }
 
 static struct Expression
-parse_typecheck_inclusive_OR_expression(struct ParserState *ptr_ps,
+parse_typecheck_inclusive_OR_expression(const struct ParserState *ptr_ps,
                                         const struct Token **ptr_tokvec);
 static struct Expression
-parse_typecheck_additive_expression(struct ParserState *ptr_ps,
+parse_typecheck_additive_expression(const struct ParserState *ptr_ps,
                                     const struct Token **ptr_tokvec);
 static struct Expression
-parse_typecheck_multiplicative_expression(struct ParserState *ptr_ps,
+parse_typecheck_multiplicative_expression(const struct ParserState *ptr_ps,
                                           const struct Token **ptr_tokvec);
 
 static struct Expression
-parse_typecheck_exclusive_OR_expression(struct ParserState *ptr_ps,
+parse_typecheck_exclusive_OR_expression(const struct ParserState *ptr_ps,
                                         const struct Token **ptr_tokvec);
 static struct Expression
-parse_typecheck_AND_expression(struct ParserState *ptr_ps,
+parse_typecheck_AND_expression(const struct ParserState *ptr_ps,
                                const struct Token **ptr_tokvec);
 static struct Expression
-parse_typecheck_equality_expression(struct ParserState *ptr_ps,
+parse_typecheck_equality_expression(const struct ParserState *ptr_ps,
                                     const struct Token **ptr_tokvec);
 static struct Expression
-parse_typecheck_relational_expression(struct ParserState *ptr_ps,
+parse_typecheck_relational_expression(const struct ParserState *ptr_ps,
                                       const struct Token **ptr_tokvec);
 static struct Expression
-parse_typecheck_shift_expression(struct ParserState *ptr_ps,
+parse_typecheck_shift_expression(const struct ParserState *ptr_ps,
                                  const struct Token **ptr_tokvec);
 
 static struct Expression
-parse_typecheck_logical_AND_expression(struct ParserState *ptr_ps,
+parse_typecheck_logical_AND_expression(const struct ParserState *ptr_ps,
                                        const struct Token **ptr_tokvec);
 
 static struct Expression binary_op(struct Expression expr,
@@ -138,7 +138,7 @@ static struct Expression pointer_plusorminus_int(struct Expression expr,
 }
 
 static struct Expression
-parse_typecheck_inclusive_OR_expression(struct ParserState *ptr_ps,
+parse_typecheck_inclusive_OR_expression(const struct ParserState *ptr_ps,
                                         const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
@@ -163,7 +163,7 @@ parse_typecheck_inclusive_OR_expression(struct ParserState *ptr_ps,
 }
 
 static struct Expression
-parse_typecheck_exclusive_OR_expression(struct ParserState *ptr_ps,
+parse_typecheck_exclusive_OR_expression(const struct ParserState *ptr_ps,
                                         const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
@@ -189,7 +189,7 @@ parse_typecheck_exclusive_OR_expression(struct ParserState *ptr_ps,
 }
 
 static struct Expression
-parse_typecheck_AND_expression(struct ParserState *ptr_ps,
+parse_typecheck_AND_expression(const struct ParserState *ptr_ps,
                                const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
@@ -215,7 +215,7 @@ parse_typecheck_AND_expression(struct ParserState *ptr_ps,
 }
 
 static struct Expression
-parse_typecheck_equality_expression(struct ParserState *ptr_ps,
+parse_typecheck_equality_expression(const struct ParserState *ptr_ps,
                                     const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
@@ -242,7 +242,7 @@ parse_typecheck_equality_expression(struct ParserState *ptr_ps,
 }
 
 static struct Expression
-parse_typecheck_relational_expression(struct ParserState *ptr_ps,
+parse_typecheck_relational_expression(const struct ParserState *ptr_ps,
                                       const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
@@ -269,7 +269,7 @@ parse_typecheck_relational_expression(struct ParserState *ptr_ps,
 }
 
 static struct Expression
-parse_typecheck_shift_expression(struct ParserState *ptr_ps,
+parse_typecheck_shift_expression(const struct ParserState *ptr_ps,
                                  const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
@@ -349,7 +349,7 @@ static struct Expression combine_by_sub(struct Expression expr,
 }
 
 static struct Expression
-parse_typecheck_additive_expression(struct ParserState *ptr_ps,
+parse_typecheck_additive_expression(const struct ParserState *ptr_ps,
                                     const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
@@ -376,7 +376,7 @@ parse_typecheck_additive_expression(struct ParserState *ptr_ps,
 }
 
 static struct Expression
-parse_typecheck_multiplicative_expression(struct ParserState *ptr_ps,
+parse_typecheck_multiplicative_expression(const struct ParserState *ptr_ps,
                                           const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
@@ -403,7 +403,7 @@ parse_typecheck_multiplicative_expression(struct ParserState *ptr_ps,
 }
 
 static struct Expression
-parse_typecheck_logical_AND_expression(struct ParserState *ptr_ps,
+parse_typecheck_logical_AND_expression(const struct ParserState *ptr_ps,
                                        const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
@@ -431,7 +431,7 @@ parse_typecheck_logical_AND_expression(struct ParserState *ptr_ps,
 }
 
 static struct Expression
-parse_typecheck_logical_OR_expression(struct ParserState *ptr_ps,
+parse_typecheck_logical_OR_expression(const struct ParserState *ptr_ps,
                                       const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
@@ -532,16 +532,16 @@ static enum UnaryOp to_unaryop(enum TokenKind t)
 }
 
 static struct Expression
-parse_typecheck_postfix_expression(struct ParserState *ptr_ps,
+parse_typecheck_postfix_expression(const struct ParserState *ptr_ps,
                                    const struct Token **ptr_tokvec);
 static struct Expression
-parse_typecheck_conditional_expression(struct ParserState *ptr_ps,
+parse_typecheck_conditional_expression(const struct ParserState *ptr_ps,
                                        const struct Token **ptr_tokvec);
 static struct Expression
-parse_typecheck_primary_expression(struct ParserState *ptr_ps,
+parse_typecheck_primary_expression(const struct ParserState *ptr_ps,
                                    const struct Token **ptr_tokvec);
 static struct Expression
-parse_typecheck_assignment_expression(struct ParserState *ptr_ps,
+parse_typecheck_assignment_expression(const struct ParserState *ptr_ps,
                                       const struct Token **ptr_tokvec);
 
 static struct Expression deref_expr(struct Expression expr);
@@ -564,7 +564,7 @@ static struct Expression unary_op_(struct Expression expr, enum TokenKind kind,
 }
 
 static struct Expression
-parse_typecheck_unary_expression(struct ParserState *ptr_ps,
+parse_typecheck_unary_expression(const struct ParserState *ptr_ps,
                                  const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
@@ -648,14 +648,14 @@ static struct Expression deref_expr(struct Expression expr)
 }
 
 static struct Expression
-parse_typecheck_cast_expression(struct ParserState *ptr_ps,
+parse_typecheck_cast_expression(const struct ParserState *ptr_ps,
                                 const struct Token **ptr_tokvec)
 {
 	return parse_typecheck_unary_expression(ptr_ps, ptr_tokvec);
 }
 
 static struct Expression
-parse_typecheck_postfix_expression(struct ParserState *ptr_ps,
+parse_typecheck_postfix_expression(const struct ParserState *ptr_ps,
                                    const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
@@ -757,7 +757,7 @@ parse_typecheck_postfix_expression(struct ParserState *ptr_ps,
 }
 
 static struct Expression
-parse_typecheck_primary_expression(struct ParserState *ptr_ps,
+parse_typecheck_primary_expression(const struct ParserState *ptr_ps,
                                    const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
@@ -875,13 +875,13 @@ static struct Expression assignment_expr(struct Expression expr,
 }
 
 static struct Expression
-parse_typecheck_assignment_expression(struct ParserState *ptr_ps,
+parse_typecheck_assignment_expression(const struct ParserState *ptr_ps,
                                       const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 
 	const struct Token *tokvec2 = tokvec;
-	struct ParserState *ptr_ps2 = ptr_ps;
+	const struct ParserState *ptr_ps2 = ptr_ps;
 	struct Expression expr =
 	    parse_typecheck_unary_expression(ptr_ps2, &tokvec2);
 
@@ -918,7 +918,7 @@ parse_typecheck_assignment_expression(struct ParserState *ptr_ps,
 }
 
 static struct Expression
-parse_typecheck_conditional_expression(struct ParserState *ptr_ps,
+parse_typecheck_conditional_expression(const struct ParserState *ptr_ps,
                                        const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
@@ -962,7 +962,7 @@ parse_typecheck_conditional_expression(struct ParserState *ptr_ps,
 	return expr;
 }
 
-struct Expression parse_typecheck_expression(struct ParserState *ptr_ps,
+struct Expression parse_typecheck_expression(const struct ParserState *ptr_ps,
                                              const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
