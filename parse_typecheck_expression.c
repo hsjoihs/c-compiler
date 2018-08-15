@@ -22,6 +22,8 @@ static struct UntypedExpression
 parse_equality_expression(const struct ParserState *ptr_ps,
                           const struct Token **ptr_tokvec);
 static struct UntypedExpression
+deref_expr_untyped(struct UntypedExpression expr);
+static struct UntypedExpression
 binary_op_untyped(struct UntypedExpression expr, struct UntypedExpression expr2,
                   enum TokenKind kind)
 {
@@ -984,10 +986,11 @@ parse_unary_expression(const struct ParserState *ptr_ps,
 		return new_expr;
 	} else if (tokvec[0].kind == OP_ASTERISK) {
 		++tokvec;
-		struct Expression expr =
+		struct Expression expr__ =
 		    parse_typecheck_cast_expression(ptr_ps, &tokvec);
+		struct UntypedExpression expr = NOTHING;
 		*ptr_tokvec = tokvec;
-		return NOTHING; // deref_expr(expr);
+		return deref_expr_untyped(expr);
 	} else {
 		struct Expression expr__ =
 		    parse_typecheck_postfix_expression(ptr_ps, &tokvec);
@@ -995,6 +998,15 @@ parse_unary_expression(const struct ParserState *ptr_ps,
 		*ptr_tokvec = tokvec;
 		return expr;
 	}
+}
+
+static struct UntypedExpression
+deref_expr_untyped(struct UntypedExpression expr)
+{
+
+	struct UntypedExpression new_expr = unary_op_untyped(expr, OP_ASTERISK);
+
+	return new_expr;
 }
 
 static struct Expression deref_expr(struct Expression expr)
