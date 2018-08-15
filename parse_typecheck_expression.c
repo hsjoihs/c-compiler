@@ -851,6 +851,23 @@ static struct Expression unary_op_(struct Expression expr, enum TokenKind kind,
 	return new_expr;
 }
 
+static struct UntypedExpression unary_op_untyped(struct UntypedExpression expr,
+                                                 enum TokenKind kind)
+{
+	struct UntypedExpression *ptr_expr1 =
+	    calloc(1, sizeof(struct UntypedExpression));
+	*ptr_expr1 = expr;
+
+	struct UntypedExpression new_expr;
+	new_expr.category = UNARY_EXPR;
+	new_expr.operator= kind;
+	new_expr.ptr1 = ptr_expr1;
+	new_expr.ptr2 = 0;
+	new_expr.ptr3 = 0;
+
+	return new_expr;
+}
+
 static struct Expression
 parse_typecheck_unary_expression(const struct ParserState *ptr_ps,
                                  const struct Token **ptr_tokvec)
