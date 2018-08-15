@@ -36,6 +36,7 @@ binary_op_untyped(struct UntypedExpression expr, struct UntypedExpression expr2,
 	*ptr_expr2 = expr2;
 
 	struct UntypedExpression new_expr;
+	new_expr.category = BINARY_EXPR;
 	new_expr.operator= kind;
 	new_expr.ptr1 = ptr_expr1;
 	new_expr.ptr2 = ptr_expr2;
