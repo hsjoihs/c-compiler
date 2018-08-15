@@ -1092,9 +1092,7 @@ parse_postfix_expression(const struct ParserState *ptr_ps,
 	while (1) {
 		if (tokvec[0].kind == LEFT_BRACKET) {
 			++tokvec;
-			struct Expression expr2__ =
-			    parse_typecheck_expression(ptr_ps, &tokvec);
-			struct UntypedExpression expr2 = NOTHING;
+			struct UntypedExpression expr2 = parse_expression(ptr_ps, &tokvec);
 			expect_and_consume(&tokvec, RIGHT_BRACKET, "right bracket ]");
 
 			expr = deref_expr_untyped(binary_op_untyped(expr, expr2, OP_PLUS));
@@ -1348,9 +1346,7 @@ parse_assignment_expression(const struct ParserState *ptr_ps,
 
 	const struct Token *tokvec2 = tokvec;
 	const struct ParserState *ptr_ps2 = ptr_ps;
-	struct Expression expr__ =
-	    parse_typecheck_unary_expression(ptr_ps2, &tokvec2);
-	struct UntypedExpression expr = NOTHING;
+	struct UntypedExpression expr = parse_unary_expression(ptr_ps2, &tokvec2);
 
 	/* parse failed */
 	if (!isAssign(tokvec2[0].kind)) {
