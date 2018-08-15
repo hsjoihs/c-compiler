@@ -24,6 +24,9 @@ parse_equality_expression(const struct ParserState *ptr_ps,
 static struct UntypedExpression
 deref_expr_untyped(struct UntypedExpression expr);
 static struct UntypedExpression
+parse_postfix_expression(const struct ParserState *ptr_ps,
+                         const struct Token **ptr_tokvec);
+static struct UntypedExpression
 binary_op_untyped(struct UntypedExpression expr, struct UntypedExpression expr2,
                   enum TokenKind kind)
 {
@@ -984,9 +987,9 @@ parse_unary_expression(const struct ParserState *ptr_ps,
 		*ptr_tokvec = tokvec;
 		return deref_expr_untyped(expr);
 	} else {
-		struct Expression expr__ =
-		    parse_typecheck_postfix_expression(ptr_ps, &tokvec);
-		struct UntypedExpression expr = NOTHING;
+
+		struct UntypedExpression expr =
+		    parse_postfix_expression(ptr_ps, &tokvec);
 		*ptr_tokvec = tokvec;
 		return expr;
 	}
@@ -1017,6 +1020,105 @@ parse_typecheck_cast_expression(const struct ParserState *ptr_ps,
                                 const struct Token **ptr_tokvec)
 {
 	return parse_typecheck_unary_expression(ptr_ps, ptr_tokvec);
+}
+
+static struct UntypedExpression
+parse_postfix_expression(const struct ParserState *ptr_ps,
+                         const struct Token **ptr_tokvec)
+{
+	const struct Token *tokvec = *ptr_tokvec;
+	if (tokvec[0].kind == IDENT_OR_RESERVED && tokvec[1].kind == LEFT_PAREN) {
+		const char *ident_str = tokvec[0].ident_str;
+
+		struct Type ret_type;
+		if (!isElem(ptr_ps->func_info_map, ident_str)) {
+			fprintf(stderr, "Undeclared function `%s()` detected.\n",
+			        ident_str);
+			fprintf(stderr, "Assumes that `%s()` returns `int`\n", ident_str);
+			ret_type = INT_TYPE;
+		} else {
+			struct FuncInfo *ptr_func_info =
+			    lookup(ptr_ps->func_info_map, ident_str);
+			ret_type = ptr_func_info->ret_type;
+		}
+
+		tokvec += 2;
+
+		struct Expression *args = calloc(10, sizeof(struct Expression));
+		int counter = 0;
+		if (tokvec[0].kind == RIGHT_PAREN) {
+			tokvec++;
+		} else {
+			args[counter] =
+			    parse_typecheck_assignment_expression(ptr_ps, &tokvec);
+			++counter;
+
+			while (1) {
+				enum TokenKind kind = tokvec[0].kind;
+				if (kind != OP_COMMA) {
+					break;
+				}
+				++tokvec;
+				if (counter > 5) {
+					unsupported("calling with 7 or more arguments");
+				}
+
+				args[counter] =
+				    parse_typecheck_assignment_expression(ptr_ps, &tokvec);
+				++counter;
+			}
+
+			*ptr_tokvec = tokvec;
+
+			expect_and_consume(&tokvec, RIGHT_PAREN,
+			                   "closing parenthesis of function call");
+
+			*ptr_tokvec = tokvec;
+		}
+		*ptr_tokvec = tokvec;
+
+		struct Expression expr;
+		expr.category = FUNCCALL_EXPR;
+		expr.arg_expr_vec = args;
+		expr.arg_length = counter;
+		expr.details.type = ret_type;
+		expr.global_var_name = ident_str;
+		return NOTHING; // expr;
+	}
+
+	struct Expression expr =
+	    parse_typecheck_primary_expression(ptr_ps, &tokvec);
+	while (1) {
+		if (tokvec[0].kind == LEFT_BRACKET) {
+			++tokvec;
+			struct Expression expr2 =
+			    parse_typecheck_expression(ptr_ps, &tokvec);
+			expect_and_consume(&tokvec, RIGHT_BRACKET, "right bracket ]");
+
+			expr = deref_expr(combine_by_add(expr, expr2));
+		} else if (tokvec[0].kind == OP_PLUS_PLUS ||
+		           tokvec[0].kind == OP_MINUS_MINUS) {
+			enum TokenKind opkind = tokvec[0].kind;
+			tokvec++;
+
+			struct Expression *ptr_expr1 = calloc(1, sizeof(struct Expression));
+			*ptr_expr1 = expr;
+
+			struct Expression new_expr;
+			new_expr.details.type = INT_TYPE;
+			new_expr.category =
+			    opkind == OP_PLUS_PLUS ? POSTFIX_INCREMENT : POSTFIX_DECREMENT;
+			new_expr.ptr1 = ptr_expr1;
+			new_expr.ptr2 = 0;
+			new_expr.ptr3 = 0;
+
+			expr = new_expr;
+		} else {
+			break;
+		}
+	}
+	*ptr_tokvec = tokvec;
+	return NOTHING; // expr;
 }
 
 static struct Expression
