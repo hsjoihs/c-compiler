@@ -323,12 +323,61 @@ parse_typecheck_AND_expression(const struct ParserState *ptr_ps,
 }
 
 static struct UntypedExpression
+parse_multiplicative_expression(const struct ParserState *ptr_ps,
+                                const struct Token **ptr_tokvec)
+{
+	const struct Token *tokvec = *ptr_tokvec;
+	struct Expression expr = parse_typecheck_cast_expression(ptr_ps, &tokvec);
+
+	while (1) {
+		enum TokenKind kind = tokvec[0].kind;
+		if (kind != OP_ASTERISK && kind != OP_SLASH && kind != OP_PERCENT) {
+			break;
+		}
+		++tokvec;
+
+		struct Expression expr2 =
+		    parse_typecheck_cast_expression(ptr_ps, &tokvec);
+		expect_type(expr.details.type, INT_TYPE,
+		            "left operand of a multiplicative operator");
+		expect_type(expr2.details.type, INT_TYPE,
+		            "right operand of a multiplicative operator");
+
+		expr = simple_binary_op(expr, expr2, kind, INT_TYPE);
+	}
+	*ptr_tokvec = tokvec;
+	return NOTHING; // expr;
+}
+
+static struct UntypedExpression
+parse_additive_expression(const struct ParserState *ptr_ps,
+                          const struct Token **ptr_tokvec)
+{
+	const struct Token *tokvec = *ptr_tokvec;
+	struct UntypedExpression expr =
+	    parse_multiplicative_expression(ptr_ps, &tokvec);
+
+	while (1) {
+		enum TokenKind kind = tokvec[0].kind;
+		if (kind != OP_PLUS && kind != OP_MINUS) {
+			break;
+		}
+		++tokvec;
+
+		struct UntypedExpression expr2 =
+		    parse_multiplicative_expression(ptr_ps, &tokvec);
+		expr = binary_op_untyped(expr, expr2, kind);
+	}
+	*ptr_tokvec = tokvec;
+	return NOTHING; // expr;
+}
+
+static struct UntypedExpression
 parse_shift_expression(const struct ParserState *ptr_ps,
                        const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
-	struct Expression expr =
-	    parse_typecheck_additive_expression(ptr_ps, &tokvec);
+	struct UntypedExpression expr = parse_additive_expression(ptr_ps, &tokvec);
 
 	while (1) {
 		enum TokenKind kind = tokvec[0].kind;
@@ -337,16 +386,12 @@ parse_shift_expression(const struct ParserState *ptr_ps,
 		}
 		++tokvec;
 
-		struct Expression expr2 =
-		    parse_typecheck_additive_expression(ptr_ps, &tokvec);
-		expect_type(expr.details.type, INT_TYPE,
-		            "left operand of a shift operator");
-		expect_type(expr2.details.type, INT_TYPE,
-		            "left operand of a shift operator");
-		expr = simple_binary_op(expr, expr2, kind, INT_TYPE);
+		struct UntypedExpression expr2 =
+		    parse_additive_expression(ptr_ps, &tokvec);
+		expr = binary_op_untyped(expr, expr2, kind);
 	}
 	*ptr_tokvec = tokvec;
-	return NOTHING; // expr;
+	return expr;
 }
 
 static struct UntypedExpression
