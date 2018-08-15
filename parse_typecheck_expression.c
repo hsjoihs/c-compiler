@@ -599,7 +599,7 @@ parse_typecheck_unary_expression(struct ParserState *ptr_ps,
 		*ptr_tokvec = tokvec;
 		return new_expr;
 	} else if (tokvec[0].kind == OP_AND) {
-		if (tokvec[1].kind == IDENT_OR_RESERVED) {
+		{
 			tokvec++;
 
 			struct Expression expr;
@@ -620,10 +620,7 @@ parse_typecheck_unary_expression(struct ParserState *ptr_ps,
 
 			*ptr_tokvec = tokvec;
 			return new_expr;
-		} else {
-			unsupported("& followed by non-identifier");
 		}
-
 	} else if (tokvec[0].kind == OP_ASTERISK) {
 		++tokvec;
 		struct Expression expr =

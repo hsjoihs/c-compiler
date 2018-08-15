@@ -262,13 +262,10 @@ void print_expression(struct PrinterState *ptr_prs, struct Expression expr)
 				}
 
 				case UNARY_OP_AND: {
-					if (expr.ptr1->category == LOCAL_VAR_) {
-						gen_push_address_of_local(expr.ptr1->local_var_offset);
-						return;
-					} else if (expr.ptr1->category == GLOBAL_VAR_) {
-						gen_push_address_of_global(expr.ptr1->global_var_name);
-						return;
-					}
+					/* pushes address, then pushes value */
+					print_expression_as_lvalue(ptr_prs, *expr.ptr1);
+					gen_discard();
+					return;
 				}
 
 				case UNARY_OP_ASTERISK: {
