@@ -214,25 +214,14 @@ struct Expression {
 	int local_var_offset;
 };
 
-enum SimpleBinOp to_simplebinop(enum TokenKind t);
-struct Expression simple_binary_op(struct Expression expr,
-                                   struct Expression expr2, enum TokenKind kind,
-                                   struct Type type);
-
-enum UnaryOp to_unaryop(enum TokenKind t);
-
 int is_array(struct Type t);
 struct Type if_array_convert_to_ptr(struct Type t);
-enum SimpleBinOp op_before_assign(enum TokenKind kind);
 
 void read_all_tokens_debug(const char *str);
 
 struct Type ptr_of_type_to_arr_of_type(struct Type *ptr_type, int length);
 
 extern struct Type CHAR_TYPE;
-
-struct Expression combine_by_add(struct Expression expr,
-                                 struct Expression expr2);
 
 enum StatementCategory {
 	COMPOUND_STATEMENT = 1,

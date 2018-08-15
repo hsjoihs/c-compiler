@@ -3,8 +3,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+static struct Expression ident_as_lvalue(struct ParserState ps,
+                                         const char *name);
+static struct Expression parse_cast_expression(struct ParserState *ptr_ps,
+                                               const struct Token **ptr_tokvec);
 
-enum SimpleBinOp to_simplebinop(enum TokenKind t)
+static enum SimpleBinOp to_simplebinop(enum TokenKind t)
 {
 	switch (t) {
 		case OP_PLUS:
@@ -94,9 +98,9 @@ static struct Expression binary_op(struct Expression expr,
 	return new_expr;
 }
 
-struct Expression simple_binary_op(struct Expression expr,
-                                   struct Expression expr2, enum TokenKind kind,
-                                   struct Type type)
+static struct Expression simple_binary_op(struct Expression expr,
+                                          struct Expression expr2,
+                                          enum TokenKind kind, struct Type type)
 {
 	struct Expression *ptr_expr1 = calloc(1, sizeof(struct Expression));
 	struct Expression *ptr_expr2 = calloc(1, sizeof(struct Expression));
@@ -114,9 +118,9 @@ struct Expression simple_binary_op(struct Expression expr,
 	return new_expr;
 }
 
-struct Expression pointer_plusorminus_int(struct Expression expr,
-                                          struct Expression expr2,
-                                          enum TokenKind kind)
+static struct Expression pointer_plusorminus_int(struct Expression expr,
+                                                 struct Expression expr2,
+                                                 enum TokenKind kind)
 {
 	struct Expression *ptr_expr1 = calloc(1, sizeof(struct Expression));
 	struct Expression *ptr_expr2 = calloc(1, sizeof(struct Expression));
@@ -280,8 +284,8 @@ static struct Expression parse_shift_expression(struct ParserState *ptr_ps,
 	return expr;
 }
 
-struct Expression combine_by_add(struct Expression expr,
-                                 struct Expression expr2)
+static struct Expression combine_by_add(struct Expression expr,
+                                        struct Expression expr2)
 {
 	struct Type type1 = expr.details.type;
 	struct Type type2 = expr2.details.type;
@@ -413,8 +417,9 @@ parse_logical_AND_expression(struct ParserState *ptr_ps,
 	return first_expr;
 }
 
-struct Expression parse_logical_OR_expression(struct ParserState *ptr_ps,
-                                              const struct Token **ptr_tokvec)
+static struct Expression
+parse_logical_OR_expression(struct ParserState *ptr_ps,
+                            const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 
@@ -483,7 +488,7 @@ static struct Type resolve_name_globally(struct Map m, const char *str)
 	}
 }
 
-enum UnaryOp to_unaryop(enum TokenKind t)
+static enum UnaryOp to_unaryop(enum TokenKind t)
 {
 	switch (t) {
 		case OP_NOT:
@@ -543,8 +548,8 @@ static struct Expression unary_op_(struct Expression expr, enum TokenKind kind,
 	return new_expr;
 }
 
-struct Expression parse_unary_expression(struct ParserState *ptr_ps,
-                                         const struct Token **ptr_tokvec)
+static struct Expression parse_unary_expression(struct ParserState *ptr_ps,
+                                                const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 
@@ -619,8 +624,8 @@ static struct Expression deref_expr(struct Expression expr)
 	return new_expr;
 }
 
-struct Expression parse_cast_expression(struct ParserState *ptr_ps,
-                                        const struct Token **ptr_tokvec)
+static struct Expression parse_cast_expression(struct ParserState *ptr_ps,
+                                               const struct Token **ptr_tokvec)
 {
 	return parse_unary_expression(ptr_ps, ptr_tokvec);
 }
@@ -789,7 +794,8 @@ parse_primary_expression(struct ParserState *ptr_ps,
 	error_unexpected_token(tokvec, "the beginning of parse_primary_expression");
 }
 
-struct Expression ident_as_lvalue(struct ParserState ps, const char *name)
+static struct Expression ident_as_lvalue(struct ParserState ps,
+                                         const char *name)
 {
 	if (!is_local_var(ps.scope_chain, name)) {
 		struct Type type = resolve_name_globally(ps.global_vars_type_map, name);
@@ -818,7 +824,7 @@ struct Expression ident_as_lvalue(struct ParserState ps, const char *name)
 	}
 }
 
-enum SimpleBinOp op_before_assign(enum TokenKind kind)
+static enum SimpleBinOp op_before_assign(enum TokenKind kind)
 {
 	switch (kind) {
 		case OP_EQ:
@@ -849,9 +855,9 @@ enum SimpleBinOp op_before_assign(enum TokenKind kind)
 	}
 }
 
-struct Expression assignment_expr(struct Expression expr,
-                                  struct Expression expr2,
-                                  enum TokenKind opkind)
+static struct Expression assignment_expr(struct Expression expr,
+                                         struct Expression expr2,
+                                         enum TokenKind opkind)
 {
 	struct Expression *ptr_expr1 = calloc(1, sizeof(struct Expression));
 	struct Expression *ptr_expr2 = calloc(1, sizeof(struct Expression));
