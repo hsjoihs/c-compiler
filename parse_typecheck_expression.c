@@ -10,6 +10,12 @@ static struct UntypedExpression
 parse_logical_OR_expression(const struct ParserState *ptr_ps,
                             const struct Token **ptr_tokvec);
 static struct UntypedExpression
+parse_AND_expression(const struct ParserState *ptr_ps,
+                     const struct Token **ptr_tokvec);
+static struct UntypedExpression
+parse_exclusive_OR_expression(const struct ParserState *ptr_ps,
+                              const struct Token **ptr_tokvec);
+static struct UntypedExpression
 binary_op_untyped(struct UntypedExpression expr, struct UntypedExpression expr2,
                   enum TokenKind kind)
 {
@@ -170,9 +176,9 @@ parse_inclusive_OR_expression(const struct ParserState *ptr_ps,
                               const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
-	struct Expression expr__ =
-	    parse_typecheck_exclusive_OR_expression(ptr_ps, &tokvec);
-	struct UntypedExpression expr = NOTHING;
+
+	struct UntypedExpression expr =
+	    parse_exclusive_OR_expression(ptr_ps, &tokvec);
 
 	while (1) {
 		enum TokenKind kind = tokvec[0].kind;
@@ -181,9 +187,8 @@ parse_inclusive_OR_expression(const struct ParserState *ptr_ps,
 		}
 		++tokvec;
 
-		struct Expression expr2__ =
-		    parse_typecheck_exclusive_OR_expression(ptr_ps, &tokvec);
-		struct UntypedExpression expr2 = NOTHING;
+		struct UntypedExpression expr2 =
+		    parse_exclusive_OR_expression(ptr_ps, &tokvec);
 		expr = binary_op_untyped(expr, expr2, kind);
 	}
 	*ptr_tokvec = tokvec;
@@ -221,8 +226,7 @@ parse_exclusive_OR_expression(const struct ParserState *ptr_ps,
 {
 	const struct Token *tokvec = *ptr_tokvec;
 
-	struct Expression expr__ = parse_typecheck_AND_expression(ptr_ps, &tokvec);
-	struct UntypedExpression expr = NOTHING;
+	struct UntypedExpression expr = parse_AND_expression(ptr_ps, &tokvec);
 
 	while (1) {
 		enum TokenKind kind = tokvec[0].kind;
@@ -231,10 +235,7 @@ parse_exclusive_OR_expression(const struct ParserState *ptr_ps,
 		}
 		++tokvec;
 
-		struct Expression expr2__ =
-		    parse_typecheck_AND_expression(ptr_ps, &tokvec);
-
-		struct UntypedExpression expr2 = NOTHING;
+		struct UntypedExpression expr2 = parse_AND_expression(ptr_ps, &tokvec);
 		expr = binary_op_untyped(expr, expr2, kind);
 	}
 	*ptr_tokvec = tokvec;
@@ -262,6 +263,32 @@ parse_typecheck_exclusive_OR_expression(const struct ParserState *ptr_ps,
 		expect_type(expr.details.type, INT_TYPE, "left operand of XOR");
 		expect_type(expr2.details.type, INT_TYPE, "right operand of XOR");
 		expr = simple_binary_op(expr, expr2, kind, INT_TYPE);
+	}
+	*ptr_tokvec = tokvec;
+
+	return expr;
+}
+
+static struct UntypedExpression
+parse_AND_expression(const struct ParserState *ptr_ps,
+                     const struct Token **ptr_tokvec)
+{
+	const struct Token *tokvec = *ptr_tokvec;
+	struct Expression expr__ =
+	    parse_typecheck_equality_expression(ptr_ps, &tokvec);
+	struct UntypedExpression expr = NOTHING;
+
+	while (1) {
+		enum TokenKind kind = tokvec[0].kind;
+		if (kind != OP_AND) {
+			break;
+		}
+		++tokvec;
+
+		struct Expression expr2__ =
+		    parse_typecheck_equality_expression(ptr_ps, &tokvec);
+		struct UntypedExpression expr2 = NOTHING;
+		expr = binary_op_untyped(expr, expr2, kind);
 	}
 	*ptr_tokvec = tokvec;
 
