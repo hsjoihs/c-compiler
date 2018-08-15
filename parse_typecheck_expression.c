@@ -1044,6 +1044,8 @@ parse_postfix_expression(const struct ParserState *ptr_ps,
 
 		tokvec += 2;
 
+		struct Vector arguments = init_vector();
+
 		struct Expression *args = calloc(10, sizeof(struct Expression));
 		int counter = 0;
 		if (tokvec[0].kind == RIGHT_PAREN) {
@@ -1051,6 +1053,11 @@ parse_postfix_expression(const struct ParserState *ptr_ps,
 		} else {
 			args[counter] =
 			    parse_typecheck_assignment_expression(ptr_ps, &tokvec);
+			struct UntypedExpression e = NOTHING;
+			struct UntypedExpression *ptr_e =
+			    calloc(1, sizeof(struct UntypedExpression));
+			*ptr_e = e;
+			push_vector(&arguments, ptr_e);
 			++counter;
 
 			while (1) {
@@ -1065,6 +1072,11 @@ parse_postfix_expression(const struct ParserState *ptr_ps,
 
 				args[counter] =
 				    parse_typecheck_assignment_expression(ptr_ps, &tokvec);
+				struct UntypedExpression e = NOTHING;
+				struct UntypedExpression *ptr_e =
+				    calloc(1, sizeof(struct UntypedExpression));
+				*ptr_e = e;
+				push_vector(&arguments, ptr_e);
 				++counter;
 			}
 
