@@ -959,7 +959,7 @@ struct Expression parse_typecheck_expression(const struct ParserState *ptr_ps,
 {
 	const struct Token *tokvec = *ptr_tokvec;
 	const struct Token *tokvec2 = tokvec;
-	struct UntypedExpression expr___ = parse_expression(ptr_ps, &tokvec2);
+	struct UntypedExpression expr___ = parse_expression(&tokvec2);
 
 	struct Expression expr =
 	    parse_typecheck_assignment_expression(ptr_ps, &tokvec);
