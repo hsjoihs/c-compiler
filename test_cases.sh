@@ -8,6 +8,10 @@ run_test() {
 	if [ $res -ne $3 ]; then { echo "got:" $res; echo "expected:" $3; echo -e "\033[31mFAIL\033[m, at test case" $1: $2; exit 1; }; else echo -e "\033[32mPASS\033[m"; fi
 }
 
+run_test 265 'int a(int b){ return b; }int main(){int i; i=1; a(i == 1? 1 : 2); return 0;}' 0
+run_test 266 'int a(int b){ return b; }int main(){int i; for (i = 1; i < 11; i++) { a(i == 1? 1 : 2); } return 0;}' 0
+run_test 267 'int a(int b){ return b; }int main(){int i; i=1; return a(i == 1? 174 : 2);}' 174
+
 run_test 162 'int printf();int a() {return 3;}int main() {int i; printf("%d %d", i, a()); return 0;}' 0
 run_test 163 'int foo(char *a, int b, int c){return 0;} int a(int N) {return 3;}int main() {int i; foo("%d %d", i, a(i)); return 0;}' 0
 run_test 164 'int foobar();int a(int N) {return 3;}int main() {int i; foobar("%d %d", i, a(i)); return 0;}' 0
