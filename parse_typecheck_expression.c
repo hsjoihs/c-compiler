@@ -892,6 +892,45 @@ static struct Expression assignment_expr(struct Expression expr,
 	return new_expr;
 }
 
+static struct UntypedExpression
+parse_assignment_expression(const struct ParserState *ptr_ps,
+                            const struct Token **ptr_tokvec)
+{
+	const struct Token *tokvec = *ptr_tokvec;
+
+	const struct Token *tokvec2 = tokvec;
+	const struct ParserState *ptr_ps2 = ptr_ps;
+	struct Expression expr =
+	    parse_typecheck_unary_expression(ptr_ps2, &tokvec2);
+
+	/* parse failed */
+	if (!isAssign(tokvec2[0].kind)) {
+		struct Expression expr_ =
+		    parse_typecheck_conditional_expression(ptr_ps, &tokvec);
+		*ptr_tokvec = tokvec;
+		return NOTHING; // expr_;
+	}
+
+	tokvec = tokvec2;
+
+	if (is_array(expr.details.type) || is_array(expr.details.true_type)) {
+		fprintf(stderr, "array is not an lvalue\n");
+		exit(EXIT_FAILURE);
+	}
+
+	assert(isAssign(tokvec[0].kind));
+	enum TokenKind opkind = tokvec[0].kind;
+	++tokvec;
+
+	struct Expression expr2 =
+	    parse_typecheck_assignment_expression(ptr_ps, &tokvec);
+	expect_type(expr.details.type, expr2.details.type,
+	            "mismatch in assignment operator");
+
+	*ptr_tokvec = tokvec;
+	return NOTHING; // assignment_expr(expr, expr2, opkind);
+}
+
 static struct Expression
 parse_typecheck_assignment_expression(const struct ParserState *ptr_ps,
                                       const struct Token **ptr_tokvec)
@@ -980,9 +1019,8 @@ struct UntypedExpression parse_expression(const struct ParserState *ptr_ps,
                                           const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
-	struct Expression expr_ =
-	    parse_typecheck_assignment_expression(ptr_ps, &tokvec);
-	struct UntypedExpression expr = NOTHING;
+	struct UntypedExpression expr =
+	    parse_assignment_expression(ptr_ps, &tokvec);
 	while (1) {
 		enum TokenKind kind = tokvec[0].kind;
 		if (kind != OP_COMMA) {
@@ -990,9 +1028,8 @@ struct UntypedExpression parse_expression(const struct ParserState *ptr_ps,
 		}
 		++tokvec;
 
-		struct Expression expr2_ =
-		    parse_typecheck_assignment_expression(ptr_ps, &tokvec);
-		struct UntypedExpression expr2 = NOTHING;
+		struct UntypedExpression expr2 =
+		    parse_assignment_expression(ptr_ps, &tokvec);
 
 		expr = binary_op_untyped(expr, expr2, kind);
 	}
