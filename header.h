@@ -204,8 +204,7 @@ struct UntypedExpression {
 	int int_value;
 	const char *var_name;
 	const char *literal_string;
-	struct UntypedExpression *arg_expr_vec;
-	int arg_length;
+	struct Vector /* <UntypedExpression> */ arg_exprs_vec;
 };
 
 struct Expression {
