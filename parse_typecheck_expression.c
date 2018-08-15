@@ -954,6 +954,48 @@ parse_typecheck_conditional_expression(const struct ParserState *ptr_ps,
 	return expr;
 }
 
+void compare(struct Expression expr, struct UntypedExpression uexpr)
+{
+	switch (expr.category) {
+		case SIMPLE_BINARY_EXPR:
+		case POINTER_PLUS_INT:
+		case POINTER_MINUS_INT:
+		case POINTER_MINUS_POINTER:
+		case ASSIGNMENT_EXPR:
+		case LOGICAL_OR_EXPR:
+		case LOGICAL_AND_EXPR:
+			assert(uexpr.category == BINARY_EXPR);
+			return;
+
+		case CONDITIONAL_EXPR:
+			assert(uexpr.category == CONDITIONAL);
+			return;
+
+		case UNARY_OP_EXPR:
+			assert(uexpr.category == UNARY_EXPR);
+			return;
+		case LOCAL_VAR_:
+		case GLOBAL_VAR_:
+			assert(uexpr.category == VAR);
+			return;
+		case INT_VALUE:
+			assert(uexpr.category == INT_LITERAL_);
+			return;
+		case POSTFIX_INCREMENT:
+		case POSTFIX_DECREMENT:
+			assert(uexpr.category == POSTFIX_EXPR);
+			return;
+
+		case FUNCCALL_EXPR:
+			assert(uexpr.category == FUNCCALL);
+			return;
+
+		case STRING_LITERAL:
+			assert(uexpr.category == STRING_LITERAL_);
+			return;
+	}
+}
+
 struct Expression parse_typecheck_expression(const struct ParserState *ptr_ps,
                                              const struct Token **ptr_tokvec)
 {
@@ -978,5 +1020,6 @@ struct Expression parse_typecheck_expression(const struct ParserState *ptr_ps,
 	*ptr_tokvec = tokvec;
 
 	assert(tokvec == tokvec2);
+	compare(expr, expr___);
 	return expr;
 }
