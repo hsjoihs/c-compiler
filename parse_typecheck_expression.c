@@ -313,84 +313,17 @@ static struct Expression assignment_expr(struct Expression expr,
 	return new_expr;
 }
 
-void compare(struct Expression expr, struct UntypedExpression uexpr)
-{
-	switch (expr.category) {
-		case POINTER_PLUS_INT:
-			/* possibly swapped */
-			assert(uexpr.category == BINARY_EXPR);
-			return;
-
-		case POINTER_MINUS_INT:
-		case SIMPLE_BINARY_EXPR:
-		case POINTER_MINUS_POINTER:
-		case ASSIGNMENT_EXPR:
-		case LOGICAL_OR_EXPR:
-		case LOGICAL_AND_EXPR:
-			assert(uexpr.category == BINARY_EXPR);
-			compare(*expr.ptr1, *uexpr.ptr1);
-			compare(*expr.ptr2, *uexpr.ptr2);
-			return;
-
-		case CONDITIONAL_EXPR:
-			assert(uexpr.category == CONDITIONAL);
-			compare(*expr.ptr1, *uexpr.ptr1);
-			compare(*expr.ptr2, *uexpr.ptr2);
-			compare(*expr.ptr3, *uexpr.ptr3);
-			return;
-
-		case UNARY_OP_EXPR:
-			assert(uexpr.category == UNARY_EXPR);
-			compare(*expr.ptr1, *uexpr.ptr1);
-			return;
-		case LOCAL_VAR_:
-		case GLOBAL_VAR_:
-			assert(uexpr.category == VAR);
-			return;
-		case INT_VALUE:
-			assert(uexpr.category == INT_LITERAL_);
-			return;
-		case POSTFIX_INCREMENT:
-		case POSTFIX_DECREMENT:
-			assert(uexpr.category == POSTFIX_EXPR);
-			compare(*expr.ptr1, *uexpr.ptr1);
-			return;
-
-		case FUNCCALL_EXPR:
-			assert(uexpr.category == FUNCCALL);
-			for (int i = 0; i < expr.arg_length; i++) {
-				const struct UntypedExpression *ptr =
-				    uexpr.arg_exprs_vec.vector[i];
-				compare(expr.arg_expr_vec[i], *ptr);
-			}
-			return;
-
-		case STRING_LITERAL:
-			assert(uexpr.category == STRING_LITERAL_);
-			return;
-	}
-}
-
 struct Expression typecheck_expression(const struct ParserState *ptr_ps,
                                        struct UntypedExpression uexpr);
 
 struct Expression parse_typecheck_expression(const struct ParserState *ptr_ps,
                                              const struct Token **ptr_tokvec)
 {
-	const struct Token *tokvec = *ptr_tokvec;
-	const struct Token *tokvec2 = tokvec;
-	/*const struct Token *initial_tokvec = tokvec;*/
+	const struct Token *tokvec2 = *ptr_tokvec;
 	struct UntypedExpression expr___ = parse_expression(&tokvec2);
 	struct Expression expr_new = typecheck_expression(ptr_ps, expr___);
 
-	/*fprintf(stderr, "\n\n\ntokens consumed are:\n");
-	for (int i = 0; i < tokvec - initial_tokvec; i++) {
-	    print_token(initial_tokvec[i], initial_tokvec[i + 1].token_begins_here);
-	    fprintf(stderr, " ");
-	}
-	fprintf(stderr, "\n");*/
 	*ptr_tokvec = tokvec2;
-	compare(expr_new, expr___);
 	return expr_new;
 }
 
