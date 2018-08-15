@@ -179,21 +179,13 @@ struct Type ptr_of_type_to_arr_of_type(struct Type *ptr_type, int length)
 /***************************************
  * pure parsers with respect to types. *
  ***************************************/
-
-struct Elem {
-	enum TypeCategory type_category;
-	int array_length;
-	struct Vector param_infos;
-	/*
-	 .vector points to the array of (ParamInfo*).
-	 if .vector itself is NULL, that means there is no info.
-	 */
-};
+typedef struct Type TypeNode; /* the link list is incomplete and should not be
+                                 brought outside */
 
 static struct Type from_type3_to_type(const void **type3)
 {
 	struct Type type;
-	struct Elem elem = *(const struct Elem *)type3[0];
+	TypeNode elem = *(const TypeNode *)type3[0];
 	type.type_category = elem.type_category;
 	switch (elem.type_category) {
 		case INT_:
@@ -277,10 +269,10 @@ struct Type parse_declarator(const struct Token **ptr_tokvec,
 			expect_and_consume(&tokvec, RIGHT_BRACKET,
 			                   "closing ] while parsing a declaration");
 
-			struct Elem a;
+			TypeNode a;
 			a.type_category = ARRAY;
 			a.array_length = length;
-			struct Elem *ptr = calloc(1, sizeof(struct Elem));
+			TypeNode *ptr = calloc(1, sizeof(TypeNode));
 			*ptr = a;
 			push_vector(&vec, ptr);
 			continue;
@@ -292,14 +284,14 @@ struct Type parse_declarator(const struct Token **ptr_tokvec,
 		++tokvec;
 		if (tokvec[0].kind == RIGHT_PAREN) {
 			++tokvec;
-			struct Elem f;
+			TypeNode f;
 			f.type_category = FN;
 			f.param_infos.vector = (const void **)0; /* crucial */
-			struct Elem *ptr = calloc(1, sizeof(struct Elem));
+			TypeNode *ptr = calloc(1, sizeof(TypeNode));
 			*ptr = f;
 			push_vector(&vec, ptr);
 		} else if (can_start_a_type(tokvec)) {
-			struct Elem f;
+			TypeNode f;
 			f.type_category = FN;
 			f.param_infos.vector = calloc(100, sizeof(struct ParamInfo *));
 
@@ -320,7 +312,7 @@ struct Type parse_declarator(const struct Token **ptr_tokvec,
 
 			f.param_infos.length = i;
 
-			struct Elem *ptr = calloc(1, sizeof(struct Elem));
+			TypeNode *ptr = calloc(1, sizeof(TypeNode));
 			*ptr = f;
 			push_vector(&vec, ptr);
 
@@ -330,14 +322,14 @@ struct Type parse_declarator(const struct Token **ptr_tokvec,
 	}
 
 	while (asterisk_num-- > 0) {
-		struct Elem *ptr = calloc(1, sizeof(struct Elem));
+		TypeNode *ptr = calloc(1, sizeof(TypeNode));
 		ptr->type_category = PTR_;
 		push_vector(&vec, ptr);
 	}
 
 	*ptr_tokvec = tokvec;
 
-	struct Elem *ptr = calloc(1, sizeof(struct Elem));
+	TypeNode *ptr = calloc(1, sizeof(TypeNode));
 	if (base_type == RES_CHAR) {
 		ptr->type_category = CHAR_;
 	} else {
