@@ -278,3 +278,6 @@ struct Toplevel {
 		int capacity;
 	} func;
 };
+
+struct UntypedExpression parse_expression(const struct Token **ptr_tokvec);
+int isAssign(enum TokenKind opkind);

@@ -18,7 +18,6 @@ struct ParserState {
 	int newest_offset;
 };
 
-struct UntypedExpression parse_expression(const struct Token **ptr_tokvec);
 struct Expression typecheck_expression(const struct ParserState *ptr_ps,
                                        struct UntypedExpression uexpr);
 
@@ -33,5 +32,3 @@ struct Statement parse_compound_statement(struct ParserState *ptr_ps,
  */
 int add_local_var_to_scope(struct ParserState *ptr_ps,
                            const struct Type vartype, const char *str);
-
-int isAssign(enum TokenKind opkind);
