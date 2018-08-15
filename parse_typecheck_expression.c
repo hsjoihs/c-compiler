@@ -3,7 +3,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+static struct UntypedExpression
+parse_conditional_expression(const struct ParserState *ptr_ps,
+                             const struct Token **ptr_tokvec);
 static struct UntypedExpression
 binary_op_untyped(struct UntypedExpression expr, struct UntypedExpression expr2,
                   enum TokenKind kind)
@@ -906,10 +908,10 @@ parse_assignment_expression(const struct ParserState *ptr_ps,
 
 	/* parse failed */
 	if (!isAssign(tokvec2[0].kind)) {
-		struct Expression expr_ =
-		    parse_typecheck_conditional_expression(ptr_ps, &tokvec);
+		struct UntypedExpression expr_ =
+		    parse_conditional_expression(ptr_ps, &tokvec);
 		*ptr_tokvec = tokvec;
-		return NOTHING; // expr_;
+		return expr_;
 	}
 
 	tokvec = tokvec2;
@@ -962,6 +964,51 @@ parse_typecheck_assignment_expression(const struct ParserState *ptr_ps,
 
 	*ptr_tokvec = tokvec;
 	return assignment_expr(expr, expr2, opkind);
+}
+
+static struct UntypedExpression
+parse_conditional_expression(const struct ParserState *ptr_ps,
+                             const struct Token **ptr_tokvec)
+{
+	const struct Token *tokvec = *ptr_tokvec;
+	struct Expression expr =
+	    parse_typecheck_logical_OR_expression(ptr_ps, &tokvec);
+	if (tokvec[0].kind == QUESTION) {
+
+		++tokvec;
+		*ptr_tokvec = tokvec;
+		struct Expression true_branch =
+		    parse_typecheck_expression(ptr_ps, &tokvec);
+
+		expect_and_consume(&tokvec, COLON, "colon of the conditional operator");
+
+		*ptr_tokvec = tokvec;
+		struct Expression false_branch =
+		    parse_typecheck_conditional_expression(ptr_ps, &tokvec);
+
+		*ptr_tokvec = tokvec;
+
+		expect_type(false_branch.details.type, true_branch.details.type,
+		            "mismatch of type in the false branch and the true branch");
+
+		struct Expression *ptr_expr1 = calloc(1, sizeof(struct Expression));
+		struct Expression *ptr_expr2 = calloc(1, sizeof(struct Expression));
+		struct Expression *ptr_expr3 = calloc(1, sizeof(struct Expression));
+		*ptr_expr1 = expr;
+		*ptr_expr2 = true_branch;
+		*ptr_expr3 = false_branch;
+
+		struct Expression new_expr;
+		new_expr.details = true_branch.details;
+		new_expr.category = CONDITIONAL_EXPR;
+		new_expr.ptr1 = ptr_expr1;
+		new_expr.ptr2 = ptr_expr2;
+		new_expr.ptr3 = ptr_expr3;
+
+		return NOTHING; // new_expr;
+	}
+	*ptr_tokvec = tokvec;
+	return NOTHING; // expr;
 }
 
 static struct Expression
