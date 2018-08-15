@@ -1,4 +1,5 @@
 #include "parser.h"
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -211,8 +212,10 @@ struct Statement parse_statement(struct ParserState *ptr_ps,
 		s.inner_statement = ptr_inner_s;
 		return s;
 	}
-
+	const struct Token *tokvec2 = tokvec;
 	struct Expression expr = parse_typecheck_expression(ptr_ps, &tokvec);
+	parse_expression(ptr_ps, &tokvec2);
+	assert(tokvec == tokvec2);
 
 	expect_and_consume(&tokvec, SEMICOLON, "semicolon after an expression");
 

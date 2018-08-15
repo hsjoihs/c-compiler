@@ -7,6 +7,8 @@ static struct Expression
 parse_typecheck_cast_expression(const struct ParserState *ptr_ps,
                                 const struct Token **ptr_tokvec);
 
+struct UntypedExpression NOTHING = {0, NOINFO};
+
 static enum SimpleBinOp to_simplebinop(enum TokenKind t)
 {
 	switch (t) {
@@ -951,6 +953,28 @@ parse_typecheck_conditional_expression(const struct ParserState *ptr_ps,
 	}
 	*ptr_tokvec = tokvec;
 	return expr;
+}
+
+struct UntypedExpression parse_expression(const struct ParserState *ptr_ps,
+                                          const struct Token **ptr_tokvec)
+{
+	const struct Token *tokvec = *ptr_tokvec;
+	struct Expression expr =
+	    parse_typecheck_assignment_expression(ptr_ps, &tokvec);
+	while (1) {
+		enum TokenKind kind = tokvec[0].kind;
+		if (kind != OP_COMMA) {
+			break;
+		}
+		++tokvec;
+
+		struct Expression expr2 =
+		    parse_typecheck_assignment_expression(ptr_ps, &tokvec);
+
+		expr = simple_binary_op(expr, expr2, kind, expr2.details.type);
+	}
+	*ptr_tokvec = tokvec;
+	return NOTHING;
 }
 
 struct Expression parse_typecheck_expression(const struct ParserState *ptr_ps,
