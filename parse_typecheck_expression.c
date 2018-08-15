@@ -966,47 +966,37 @@ parse_unary_expression(const struct ParserState *ptr_ps,
 		enum TokenKind opkind = tokvec[0].kind;
 		++tokvec;
 
-		struct Expression expr =
+		struct Expression expr__ =
 		    parse_typecheck_unary_expression(ptr_ps, &tokvec);
-		expect_type(expr.details.type, INT_TYPE,
-		            "operand of unary increment/decrement");
+		struct UntypedExpression expr = NOTHING;
 
-		struct Expression new_expr = unary_op_(expr, opkind, INT_TYPE);
+		struct UntypedExpression new_expr = unary_op_untyped(expr, opkind);
 		*ptr_tokvec = tokvec;
-		return NOTHING; // new_expr;
+		return new_expr;
 	} else if (tokvec[0].kind == OP_AND) {
 		tokvec++;
 
-		struct Expression expr;
+		struct Expression expr__;
+		struct UntypedExpression expr = NOTHING;
 
-		expr = parse_typecheck_cast_expression(ptr_ps, &tokvec);
+		expr__ = parse_typecheck_cast_expression(ptr_ps, &tokvec);
 
-		struct Type type = expr.details.type;
-		if (is_array(type)) {
-			fprintf(stderr, "array is not an lvalue\n");
-			exit(EXIT_FAILURE);
-		}
-
-		struct Type *ptr_type = calloc(1, sizeof(struct Type));
-		*ptr_type = expr.details.type;
-
-		struct Expression new_expr =
-		    unary_op_(expr, OP_AND, ptr_of_type_to_ptr_to_type(ptr_type));
+		struct UntypedExpression new_expr = unary_op_untyped(expr, OP_AND);
 
 		*ptr_tokvec = tokvec;
-		return NOTHING; // new_expr;
+		return new_expr;
 	} else if (tokvec[0].kind == OP_ASTERISK) {
 		++tokvec;
 		struct Expression expr =
 		    parse_typecheck_cast_expression(ptr_ps, &tokvec);
-
 		*ptr_tokvec = tokvec;
 		return NOTHING; // deref_expr(expr);
 	} else {
-		struct Expression expr =
+		struct Expression expr__ =
 		    parse_typecheck_postfix_expression(ptr_ps, &tokvec);
+		struct UntypedExpression expr = NOTHING;
 		*ptr_tokvec = tokvec;
-		return NOTHING; // expr;
+		return expr;
 	}
 }
 
