@@ -1093,9 +1093,7 @@ parse_postfix_expression(const struct ParserState *ptr_ps,
 		return expr;
 	}
 
-	struct Expression expr__ =
-	    parse_typecheck_primary_expression(ptr_ps, &tokvec);
-	struct UntypedExpression expr = NOTHING;
+	struct UntypedExpression expr = parse_primary_expression(ptr_ps, &tokvec);
 	while (1) {
 		if (tokvec[0].kind == LEFT_BRACKET) {
 			++tokvec;
@@ -1235,38 +1233,20 @@ parse_primary_expression(const struct ParserState *ptr_ps,
 	if (tokvec[0].kind == LIT_DEC_INTEGER) {
 		++*ptr_tokvec;
 
-		struct Expression expr;
-		expr.details.type = INT_TYPE;
+		struct UntypedExpression expr;
 		expr.int_value = tokvec[0].int_value;
-		expr.category = INT_VALUE;
+		expr.category = INT_LITERAL_;
 
-		return NOTHING; // expr;
+		return expr;
 
 	} else if (tokvec[0].kind == IDENT_OR_RESERVED) {
 		++*ptr_tokvec;
 
-		if (!is_local_var(ptr_ps->scope_chain, tokvec[0].ident_str)) {
-			struct Type type = resolve_name_globally(
-			    ptr_ps->global_vars_type_map, tokvec[0].ident_str);
+		struct UntypedExpression expr;
+		expr.category = VAR;
+		expr.var_name = tokvec[0].ident_str;
+		return expr;
 
-			struct Expression expr;
-			expr.details.type = if_array_convert_to_ptr(type);
-			;
-			expr.details.true_type = type;
-			expr.category = GLOBAL_VAR_;
-			expr.global_var_name = tokvec[0].ident_str;
-			return NOTHING; // expr;
-		} else {
-			struct LocalVarInfo info =
-			    resolve_name_locally(ptr_ps->scope_chain, tokvec[0].ident_str);
-
-			struct Expression expr;
-			expr.details.type = if_array_convert_to_ptr(info.type);
-			expr.details.true_type = info.type;
-			expr.category = LOCAL_VAR_;
-			expr.local_var_offset = info.offset;
-			return NOTHING; // expr;
-		}
 	} else if (tokvec[0].kind == LEFT_PAREN) {
 		++tokvec;
 		*ptr_tokvec = tokvec;
