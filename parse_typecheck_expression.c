@@ -978,19 +978,16 @@ parse_conditional_expression(const struct ParserState *ptr_ps,
 
 		++tokvec;
 		*ptr_tokvec = tokvec;
-		struct Expression true_branch =
-		    parse_typecheck_expression(ptr_ps, &tokvec);
+		struct UntypedExpression true_branch =
+		    parse_expression(ptr_ps, &tokvec);
 
 		expect_and_consume(&tokvec, COLON, "colon of the conditional operator");
 
 		*ptr_tokvec = tokvec;
-		struct Expression false_branch =
-		    parse_typecheck_conditional_expression(ptr_ps, &tokvec);
+		struct UntypedExpression false_branch =
+		    parse_conditional_expression(ptr_ps, &tokvec);
 
 		*ptr_tokvec = tokvec;
-
-		expect_type(false_branch.details.type, true_branch.details.type,
-		            "mismatch of type in the false branch and the true branch");
 
 		struct UntypedExpression *ptr_expr1 =
 		    calloc(1, sizeof(struct UntypedExpression));
@@ -999,8 +996,8 @@ parse_conditional_expression(const struct ParserState *ptr_ps,
 		struct UntypedExpression *ptr_expr3 =
 		    calloc(1, sizeof(struct UntypedExpression));
 		*ptr_expr1 = expr;
-		*ptr_expr2 = NOTHING; // true_branch;
-		*ptr_expr3 = NOTHING; // false_branch;
+		*ptr_expr2 = true_branch;
+		*ptr_expr3 = false_branch;
 
 		struct UntypedExpression new_expr;
 		new_expr.category = CONDITIONAL;
@@ -1008,7 +1005,7 @@ parse_conditional_expression(const struct ParserState *ptr_ps,
 		new_expr.ptr2 = ptr_expr2;
 		new_expr.ptr3 = ptr_expr3;
 
-		return NOTHING; // new_expr;
+		return new_expr;
 	}
 	*ptr_tokvec = tokvec;
 	return expr;
