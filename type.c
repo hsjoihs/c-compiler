@@ -233,9 +233,7 @@ struct ParamInfo *parse_param(const struct Token **ptr_tokvec)
 	return ptr_param_info;
 }
 
-/* `int a`, `int *a` */
-struct Type parse_declarator(const struct Token **ptr_tokvec,
-                             const char **ptr_to_ident_str)
+struct Type *parse_type_specifier(const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 
@@ -245,6 +243,24 @@ struct Type parse_declarator(const struct Token **ptr_tokvec,
 		error_unexpected_token(tokvec, "type name `int` or `char`");
 	}
 	++tokvec;
+
+	TypeNode *ptr = calloc(1, sizeof(TypeNode));
+	if (base_type == RES_CHAR) {
+		ptr->type_category = CHAR_;
+	} else {
+		ptr->type_category = INT_;
+	}
+	*ptr_tokvec = tokvec;
+	return ptr;
+}
+
+/* `int a`, `int *a` */
+struct Type parse_declarator(const struct Token **ptr_tokvec,
+                             const char **ptr_to_ident_str)
+{
+	const struct Token *tokvec = *ptr_tokvec;
+
+	struct Type *ptr_base_type = parse_type_specifier(&tokvec);
 
 	struct Vector vec = init_vector();
 
@@ -329,13 +345,7 @@ struct Type parse_declarator(const struct Token **ptr_tokvec,
 
 	*ptr_tokvec = tokvec;
 
-	TypeNode *ptr = calloc(1, sizeof(TypeNode));
-	if (base_type == RES_CHAR) {
-		ptr->type_category = CHAR_;
-	} else {
-		ptr->type_category = INT_;
-	}
-	push_vector(&vec, ptr);
+	push_vector(&vec, ptr_base_type);
 
 	return from_type3_to_type(vec.vector);
 }
