@@ -979,6 +979,7 @@ void compare(struct Expression expr, struct UntypedExpression uexpr)
 
 		case UNARY_OP_EXPR:
 			assert(uexpr.category == UNARY_EXPR);
+			compare(*expr.ptr1, *uexpr.ptr1);
 			return;
 		case LOCAL_VAR_:
 		case GLOBAL_VAR_:
@@ -990,6 +991,7 @@ void compare(struct Expression expr, struct UntypedExpression uexpr)
 		case POSTFIX_INCREMENT:
 		case POSTFIX_DECREMENT:
 			assert(uexpr.category == POSTFIX_EXPR);
+			compare(*expr.ptr1, *uexpr.ptr1);
 			return;
 
 		case FUNCCALL_EXPR:
