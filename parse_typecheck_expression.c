@@ -1000,7 +1000,8 @@ void compare(struct Expression expr, struct UntypedExpression uexpr)
 		case FUNCCALL_EXPR:
 			assert(uexpr.category == FUNCCALL);
 			for (int i = 0; i < expr.arg_length; i++) {
-				struct UntypedExpression *ptr = uexpr.arg_exprs_vec.vector[i];
+				const struct UntypedExpression *ptr =
+				    uexpr.arg_exprs_vec.vector[i];
 				compare(expr.arg_expr_vec[i], *ptr);
 			}
 			return;
@@ -1019,6 +1020,7 @@ struct Expression parse_typecheck_expression(const struct ParserState *ptr_ps,
 {
 	const struct Token *tokvec = *ptr_tokvec;
 	const struct Token *tokvec2 = tokvec;
+	/*const struct Token *initial_tokvec = tokvec;*/
 	struct UntypedExpression expr___ = parse_expression(&tokvec2);
 	struct Expression expr_new = typecheck_expression(ptr_ps, expr___);
 
@@ -1039,7 +1041,14 @@ struct Expression parse_typecheck_expression(const struct ParserState *ptr_ps,
 	*ptr_tokvec = tokvec;
 
 	assert(tokvec == tokvec2);
+	/*fprintf(stderr, "\n\n\ntokens consumed are:\n");
+	for (int i = 0; i < tokvec - initial_tokvec; i++) {
+	    print_token(initial_tokvec[i], initial_tokvec[i + 1].token_begins_here);
+	    fprintf(stderr, " ");
+	}
+	fprintf(stderr, "\n");*/
 	compare(expr, expr___);
+	compare(expr_new, expr___);
 	return expr;
 }
 
@@ -1062,7 +1071,8 @@ struct Expression typecheck_expression(const struct ParserState *ptr_ps,
 
 					struct Expression new_expr =
 					    unary_op_(expr, kind, expr.details.type);
-					new_expr.details.true_type = expr.details.true_type;
+					/* new_expr.details.true_type = expr.details.true_type; */
+					/* should not propagate */
 
 					return new_expr;
 				}
@@ -1326,4 +1336,5 @@ struct Expression typecheck_expression(const struct ParserState *ptr_ps,
 			}
 		}
 	}
+	assert("should not pass here" && 0);
 }
