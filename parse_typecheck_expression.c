@@ -1043,6 +1043,124 @@ struct Expression typecheck_expression(const struct ParserState *ptr_ps,
                                        struct UntypedExpression uexpr)
 {
 	switch (uexpr.category) {
+		case UNARY_EXPR: {
+			switch (uexpr.operator) {
+				case OP_NOT:
+				case OP_TILDA:
+				case OP_PLUS:
+				case OP_MINUS: {
+					enum TokenKind kind = uexpr.operator;
+					struct Expression expr =
+					    typecheck_expression(ptr_ps, *uexpr.ptr1);
+					expect_type(expr.details.type, INT_TYPE,
+					            "operand of logical not, bitnot, unary plus or "
+					            "unary minus");
+
+					struct Expression new_expr =
+					    unary_op_(expr, kind, expr.details.type);
+					new_expr.details.true_type = expr.details.true_type;
+
+					return new_expr;
+				}
+
+				case OP_PLUS_PLUS:
+				case OP_MINUS_MINUS: {
+					enum TokenKind opkind = uexpr.operator;
+
+					struct Expression expr =
+					    typecheck_expression(ptr_ps, *uexpr.ptr1);
+					expect_type(expr.details.type, INT_TYPE,
+					            "operand of unary increment/decrement");
+
+					struct Expression new_expr =
+					    unary_op_(expr, opkind, INT_TYPE);
+					return new_expr;
+				}
+
+				case OP_AND: {
+					struct Expression expr;
+
+					expr = typecheck_expression(ptr_ps, *uexpr.ptr1);
+
+					struct Type type = expr.details.type;
+					if (is_array(type)) {
+						fprintf(stderr, "array is not an lvalue\n");
+						exit(EXIT_FAILURE);
+					}
+
+					struct Type *ptr_type = calloc(1, sizeof(struct Type));
+					*ptr_type = expr.details.type;
+
+					struct Expression new_expr = unary_op_(
+					    expr, OP_AND, ptr_of_type_to_ptr_to_type(ptr_type));
+
+					return new_expr;
+				}
+				case OP_ASTERISK: {
+					struct Expression expr =
+					    typecheck_expression(ptr_ps, *uexpr.ptr1);
+
+					return deref_expr(expr);
+				}
+				default: {
+					fprintf(stderr, "FAILURE::::::: INVALID TOKEN %d\n",
+					        uexpr.operator);
+					exit(EXIT_FAILURE);
+				}
+			}
+		}
+		case FUNCCALL: {
+			const char *ident_str = uexpr.var_name;
+
+			struct Type ret_type;
+			if (!isElem(ptr_ps->func_info_map, ident_str)) {
+				fprintf(stderr, "Undeclared function `%s()` detected.\n",
+				        ident_str);
+				fprintf(stderr, "Assumes that `%s()` returns `int`\n",
+				        ident_str);
+				ret_type = INT_TYPE;
+			} else {
+				struct FuncInfo *ptr_func_info =
+				    lookup(ptr_ps->func_info_map, ident_str);
+				ret_type = ptr_func_info->ret_type;
+			}
+
+			struct Expression *args = calloc(10, sizeof(struct Expression));
+
+			int counter = 0;
+			for (; counter < uexpr.arg_exprs_vec.length; counter++) {
+				const struct UntypedExpression *ptr =
+				    uexpr.arg_exprs_vec.vector[counter];
+				args[counter] = typecheck_expression(ptr_ps, *ptr);
+				if (counter > 5) {
+					unsupported("calling with 7 or more arguments");
+				}
+			}
+
+			struct Expression expr;
+			expr.category = FUNCCALL_EXPR;
+			expr.arg_expr_vec = args;
+			expr.arg_length = counter;
+			expr.details.type = ret_type;
+			expr.global_var_name = ident_str;
+			return expr;
+		}
+		case POSTFIX_EXPR: {
+			struct Expression expr = typecheck_expression(ptr_ps, *uexpr.ptr1);
+			struct Expression *ptr_expr1 = calloc(1, sizeof(struct Expression));
+			*ptr_expr1 = expr;
+
+			enum TokenKind opkind = uexpr.operator;
+
+			struct Expression new_expr;
+			new_expr.details.type = INT_TYPE;
+			new_expr.category =
+			    opkind == OP_PLUS_PLUS ? POSTFIX_INCREMENT : POSTFIX_DECREMENT;
+			new_expr.ptr1 = ptr_expr1;
+			new_expr.ptr2 = 0;
+			new_expr.ptr3 = 0;
+			return expr;
+		}
 		case INT_LITERAL_: {
 			struct Expression expr;
 			expr.details.type = INT_TYPE;
@@ -1131,6 +1249,47 @@ struct Expression typecheck_expression(const struct ParserState *ptr_ps,
 				return assignment_expr(expr, expr2, uexpr.operator);
 			}
 			switch (uexpr.operator) {
+				case OP_AND_AND: {
+					struct Expression first_expr =
+					    typecheck_expression(ptr_ps, *uexpr.ptr1);
+					struct Expression expr2 =
+					    typecheck_expression(ptr_ps, *uexpr.ptr2);
+
+					return binary_op(first_expr, expr2, LOGICAL_AND_EXPR,
+					                 INT_TYPE);
+				}
+				case OP_OR_OR: {
+					struct Expression expr =
+					    typecheck_expression(ptr_ps, *uexpr.ptr1);
+					struct Expression expr2 =
+					    typecheck_expression(ptr_ps, *uexpr.ptr2);
+					return binary_op(expr, expr2, LOGICAL_OR_EXPR, INT_TYPE);
+				}
+				case OP_OR:
+				case OP_AND:
+				case OP_EQ_EQ:
+				case OP_NOT_EQ:
+				case OP_GT:
+				case OP_GT_EQ:
+				case OP_LT:
+				case OP_LT_EQ:
+				case OP_LSHIFT:
+				case OP_RSHIFT:
+				case OP_HAT:
+				case OP_ASTERISK:
+				case OP_SLASH:
+				case OP_PERCENT: {
+					struct Expression expr =
+					    typecheck_expression(ptr_ps, *uexpr.ptr1);
+					struct Expression expr2 =
+					    typecheck_expression(ptr_ps, *uexpr.ptr2);
+					expect_type(expr.details.type, INT_TYPE,
+					            "left operand of an operator");
+					expect_type(expr2.details.type, INT_TYPE,
+					            "right operand of an operator");
+					return simple_binary_op(expr, expr2, uexpr.operator,
+					                        expr2.details.type);
+				}
 				case OP_COMMA: {
 					struct Expression expr =
 					    typecheck_expression(ptr_ps, *uexpr.ptr1);
@@ -1138,6 +1297,11 @@ struct Expression typecheck_expression(const struct ParserState *ptr_ps,
 					    typecheck_expression(ptr_ps, *uexpr.ptr2);
 					return simple_binary_op(expr, expr2, uexpr.operator,
 					                        expr2.details.type);
+				}
+				default: {
+					fprintf(stderr, "FAILURE::::::: INVALID TOKEN %d\n",
+					        uexpr.operator);
+					exit(EXIT_FAILURE);
 				}
 			}
 		}
