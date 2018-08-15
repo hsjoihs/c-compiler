@@ -8,9 +8,14 @@ run_test() {
 	if [ $res -ne $3 ]; then { echo "got:" $res; echo "expected:" $3; echo -e "\033[31mFAIL\033[m, at test case" $1: $2; exit 1; }; else echo -e "\033[32mPASS\033[m"; fi
 }
 
-run_test 265 'int a(int b){ return b; }int main(){int i; i=1; a(i == 1? 1 : 2); return 0;}' 0
-run_test 266 'int a(int b){ return b; }int main(){int i; for (i = 1; i < 11; i++) { a(i == 1? 1 : 2); } return 0;}' 0
-run_test 267 'int a(int b){ return b; }int main(){int i; i=1; return a(i == 1? 174 : 2);}' 174
+run_test 169 'int a(int b){ return b; }int main(){int i; i=1; a(i == 1? 1 : 2); return 0;}' 0
+run_test 170 'int a(int b){ return b; }int main(){int i; for (i = 1; i < 11; i++) { a(i == 1? 1 : 2); } return 0;}' 0
+run_test 171 'int a(int b){ return b; }int main(){int i; i=1; return a(i == 1? 174 : 2);}' 174
+
+run_test 172 'int printf();int puts();int count;int main(){int i; int hist[20]; for (i = 1; i < 11; i++) { printf(i == 1? "a" : "b"); puts("");} return 0;}' 0
+run_test 173 'int printf();int puts();int count;int main(){int i; int hist[20]; for (i = 1; i < 11; i++) { printf("%s", (i == 1? "a" : "b")); puts("");} return 0;}' 0
+run_test 174 'int printf();int puts();int count;int main(){int i; int hist[20]; for (i = 1; i < 11; i++) { printf("%d %s: %d", i, (i == 1? " " : "s "), i); puts("");} return 0;}' 0
+run_test 175 'int printf();int puts();int count;int solve(int n, int col, int *hist){if (col == n) {count+=1;return 0;}int i;int j;for (i = 0, j = 0; i < n; i++) {for (j = 0; j < col && hist [j] != i && (hist [j] - i) != col - j && (hist[j] - i) != j - col; j++){}if (j < col)continue;hist[col] = i;solve(n, col + 1, hist);}return 0;}int main(){int i; int hist[20]; for (i = 1; i < 11; i++) { count=0; solve(i, 0, hist); printf("%d queen%s: %d", i, (i == 1? " " : "s "), count); puts("");} return 0;}' 0
 
 run_test 162 'int printf();int a() {return 3;}int main() {int i; printf("%d %d", i, a()); return 0;}' 0
 run_test 163 'int foo(char *a, int b, int c){return 0;} int a(int N) {return 3;}int main() {int i; foo("%d %d", i, a(i)); return 0;}' 0

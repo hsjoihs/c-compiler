@@ -412,8 +412,7 @@ void gen_ternary_part3(int label1, int label2)
 {
 	printf("//gen_ternary_part3(%d, %d)\n", label1, label2);
 	printf(".L%d:\n", label2);
-	gen_pop_to_reg_4byte("eax");
-	printf("  movl %%eax, (%%rsp)\n");
+	gen_discard2nd_8byte();
 }
 
 /* consumes the top of the stack and branch */
