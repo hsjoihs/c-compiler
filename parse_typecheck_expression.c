@@ -980,8 +980,9 @@ struct UntypedExpression parse_expression(const struct ParserState *ptr_ps,
                                           const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
-	struct Expression expr =
+	struct Expression expr_ =
 	    parse_typecheck_assignment_expression(ptr_ps, &tokvec);
+	struct UntypedExpression expr = NOTHING;
 	while (1) {
 		enum TokenKind kind = tokvec[0].kind;
 		if (kind != OP_COMMA) {
@@ -989,13 +990,14 @@ struct UntypedExpression parse_expression(const struct ParserState *ptr_ps,
 		}
 		++tokvec;
 
-		struct Expression expr2 =
+		struct Expression expr2_ =
 		    parse_typecheck_assignment_expression(ptr_ps, &tokvec);
+		struct UntypedExpression expr2 = NOTHING;
 
-		expr = simple_binary_op(expr, expr2, kind, expr2.details.type);
+		expr = binary_op_untyped(expr, expr2, kind);
 	}
 	*ptr_tokvec = tokvec;
-	return NOTHING;
+	return expr;
 }
 
 struct Expression parse_typecheck_expression(const struct ParserState *ptr_ps,
