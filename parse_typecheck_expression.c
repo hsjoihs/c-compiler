@@ -4,6 +4,9 @@
 #include <stdlib.h>
 #include <string.h>
 static struct UntypedExpression
+parse_unary_expression(const struct ParserState *ptr_ps,
+                       const struct Token **ptr_tokvec);
+static struct UntypedExpression
 parse_conditional_expression(const struct ParserState *ptr_ps,
                              const struct Token **ptr_tokvec);
 static struct UntypedExpression
@@ -323,11 +326,18 @@ parse_typecheck_AND_expression(const struct ParserState *ptr_ps,
 }
 
 static struct UntypedExpression
+parse_cast_expression(const struct ParserState *ptr_ps,
+                      const struct Token **ptr_tokvec)
+{
+	return parse_unary_expression(ptr_ps, ptr_tokvec);
+}
+
+static struct UntypedExpression
 parse_multiplicative_expression(const struct ParserState *ptr_ps,
                                 const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
-	struct Expression expr = parse_typecheck_cast_expression(ptr_ps, &tokvec);
+	struct UntypedExpression expr = parse_cast_expression(ptr_ps, &tokvec);
 
 	while (1) {
 		enum TokenKind kind = tokvec[0].kind;
@@ -336,17 +346,12 @@ parse_multiplicative_expression(const struct ParserState *ptr_ps,
 		}
 		++tokvec;
 
-		struct Expression expr2 =
-		    parse_typecheck_cast_expression(ptr_ps, &tokvec);
-		expect_type(expr.details.type, INT_TYPE,
-		            "left operand of a multiplicative operator");
-		expect_type(expr2.details.type, INT_TYPE,
-		            "right operand of a multiplicative operator");
+		struct UntypedExpression expr2 = parse_cast_expression(ptr_ps, &tokvec);
 
-		expr = simple_binary_op(expr, expr2, kind, INT_TYPE);
+		expr = binary_op_untyped(expr, expr2, kind);
 	}
 	*ptr_tokvec = tokvec;
-	return NOTHING; // expr;
+	return expr;
 }
 
 static struct UntypedExpression
@@ -914,6 +919,77 @@ parse_typecheck_unary_expression(const struct ParserState *ptr_ps,
 		    parse_typecheck_postfix_expression(ptr_ps, &tokvec);
 		*ptr_tokvec = tokvec;
 		return expr;
+	}
+}
+
+static struct UntypedExpression
+parse_unary_expression(const struct ParserState *ptr_ps,
+                       const struct Token **ptr_tokvec)
+{
+	const struct Token *tokvec = *ptr_tokvec;
+
+	/* unary-operator cast-expression */
+	if (tokvec[0].kind == OP_NOT || tokvec[0].kind == OP_TILDA ||
+	    tokvec[0].kind == OP_PLUS || tokvec[0].kind == OP_MINUS) {
+		enum TokenKind kind = tokvec[0].kind;
+		++tokvec;
+		struct Expression expr =
+		    parse_typecheck_cast_expression(ptr_ps, &tokvec);
+		expect_type(
+		    expr.details.type, INT_TYPE,
+		    "operand of logical not, bitnot, unary plus or unary minus");
+
+		struct Expression new_expr = unary_op_(expr, kind, expr.details.type);
+		new_expr.details.true_type = expr.details.true_type;
+
+		*ptr_tokvec = tokvec;
+		return NOTHING; // new_expr;
+	} else if (tokvec[0].kind == OP_PLUS_PLUS ||
+	           tokvec[0].kind == OP_MINUS_MINUS) {
+		enum TokenKind opkind = tokvec[0].kind;
+		++tokvec;
+
+		struct Expression expr =
+		    parse_typecheck_unary_expression(ptr_ps, &tokvec);
+		expect_type(expr.details.type, INT_TYPE,
+		            "operand of unary increment/decrement");
+
+		struct Expression new_expr = unary_op_(expr, opkind, INT_TYPE);
+		*ptr_tokvec = tokvec;
+		return NOTHING; // new_expr;
+	} else if (tokvec[0].kind == OP_AND) {
+		tokvec++;
+
+		struct Expression expr;
+
+		expr = parse_typecheck_cast_expression(ptr_ps, &tokvec);
+
+		struct Type type = expr.details.type;
+		if (is_array(type)) {
+			fprintf(stderr, "array is not an lvalue\n");
+			exit(EXIT_FAILURE);
+		}
+
+		struct Type *ptr_type = calloc(1, sizeof(struct Type));
+		*ptr_type = expr.details.type;
+
+		struct Expression new_expr =
+		    unary_op_(expr, OP_AND, ptr_of_type_to_ptr_to_type(ptr_type));
+
+		*ptr_tokvec = tokvec;
+		return NOTHING; // new_expr;
+	} else if (tokvec[0].kind == OP_ASTERISK) {
+		++tokvec;
+		struct Expression expr =
+		    parse_typecheck_cast_expression(ptr_ps, &tokvec);
+
+		*ptr_tokvec = tokvec;
+		return NOTHING; // deref_expr(expr);
+	} else {
+		struct Expression expr =
+		    parse_typecheck_postfix_expression(ptr_ps, &tokvec);
+		*ptr_tokvec = tokvec;
+		return NOTHING; // expr;
 	}
 }
 
