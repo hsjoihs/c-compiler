@@ -157,8 +157,7 @@ enum UntypedExprCategory {
 	INT_LITERAL_,
 	POSTFIX_EXPR,
 	FUNCCALL,
-	STRING_LITERAL_,
-	NOINFO
+	STRING_LITERAL_
 };
 
 enum SimpleBinOp {

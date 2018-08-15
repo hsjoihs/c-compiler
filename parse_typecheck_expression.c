@@ -56,8 +56,6 @@ static struct Expression
 parse_typecheck_cast_expression(const struct ParserState *ptr_ps,
                                 const struct Token **ptr_tokvec);
 
-struct UntypedExpression NOTHING = {0, NOINFO};
-
 static enum SimpleBinOp to_simplebinop(enum TokenKind t)
 {
 	switch (t) {
@@ -1250,24 +1248,21 @@ parse_primary_expression(const struct ParserState *ptr_ps,
 	} else if (tokvec[0].kind == LEFT_PAREN) {
 		++tokvec;
 		*ptr_tokvec = tokvec;
-		struct Expression expr = parse_typecheck_expression(ptr_ps, &tokvec);
+		struct UntypedExpression expr = parse_expression(ptr_ps, &tokvec);
 		expect_and_consume(&tokvec, RIGHT_PAREN, "right paren");
 
 		*ptr_tokvec = tokvec;
-		return NOTHING; // expr;
+		return expr;
 	} else if (tokvec[0].kind == LIT_STRING) {
 		struct Type *ptr_char = calloc(1, sizeof(struct Type));
 		*ptr_char = CHAR_TYPE;
 
-		struct Expression expr;
-		expr.details.type = ptr_of_type_to_ptr_to_type(ptr_char);
-		expr.details.true_type = ptr_of_type_to_arr_of_type(
-		    ptr_char, strlen(tokvec[0].literal_str) + 1);
-		expr.category = STRING_LITERAL;
+		struct UntypedExpression expr;
+		expr.category = STRING_LITERAL_;
 		expr.literal_string = tokvec[0].literal_str;
 
 		++*ptr_tokvec;
-		return NOTHING; // expr;
+		return expr;
 	}
 
 	error_unexpected_token(
