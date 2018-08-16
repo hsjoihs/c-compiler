@@ -18,7 +18,7 @@ static struct Type from_type3_to_type(const void **type3)
 		case INT_:
 		case CHAR_:
 		case STRUCT_:
-			return type;
+			return elem;
 
 		case PTR_:
 		case ARRAY:

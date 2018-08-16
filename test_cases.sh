@@ -23,6 +23,10 @@ run_test 179 'char; char     ; char; int; int ; int; int;int;char foo(char *p){c
 run_test 180 ' struct A; char; char     ; char; int; int ; int; struct B;  int;int;  struct C; int main(){return 174;}' 174
 run_test 181 ' struct A{int a; int b;}; char; char     ; char; int; int ; int; struct B{int c; int b;};  int;int;  struct C; int main(){return 174;}' 174
 run_test 182 'int main(){ int; return 174;}' 174
+run_test 183 'struct A{int a; int b;}; int main(){ struct A; return 174;}' 174
+run_test 184 'struct A{int a; int b;}; int main(){ struct A a; return 174;}' 174
+run_test 185 'struct A{int a; int b;}; int main(){ struct A a[10]; return 174;}' 174
+run_test 186 'struct A{int a; int b;};  struct A a[10]; int main(){return 174;}' 174
 
 
 run_test 162 'int printf();int a() {return 3;}int main() {int i; printf("%d %d", i, a()); return 0;}' 0

@@ -73,6 +73,9 @@ static void record_global_struct_declaration(struct ParserState *ptr_ps,
 	assert(struct_type.type_category == STRUCT_);
 	struct StructInternalInfo info = struct_type.struct_info;
 	struct Vector /* <TypeAndIdent> */ types_and_idents = info.types_and_idents;
+	if (!types_and_idents.vector) { /* null; cannot record */
+		return;
+	}
 
 	struct SizeAndAlignment *inner_type_vec =
 	    calloc(types_and_idents.length, sizeof(struct SizeAndAlignment));
