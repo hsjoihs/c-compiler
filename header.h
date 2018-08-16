@@ -61,7 +61,8 @@ enum TokenKind {
 	RES_CHAR,
 	LIT_STRING,
 	RES_STRUCT,
-	RES_SIZEOF
+	RES_SIZEOF,
+	DOT
 };
 
 struct Token {
@@ -180,7 +181,8 @@ enum UntypedExprCategory {
 	POSTFIX_EXPR,
 	FUNCCALL,
 	STRING_LITERAL_,
-	SIZEOF_TYPE
+	SIZEOF_TYPE,
+	DOT_EXPR
 };
 
 enum SimpleBinOp {
@@ -228,6 +230,7 @@ struct UntypedExpression {
 	const char *literal_string;
 	struct Vector /* <UntypedExpression> */ arg_exprs_vec;
 	struct Type operand_of_sizeof;
+	const char *ident_after_dot;
 };
 
 struct Expression {

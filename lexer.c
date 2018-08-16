@@ -308,6 +308,10 @@ static struct Token get_token_raw(const char **ptr_to_str)
 		t.kind = RIGHT_BRACKET;
 		++*ptr_to_str;
 		return t;
+	} else if (*str == '.') {
+		t.kind = DOT;
+		++*ptr_to_str;
+		return t;
 	}
 
 	if (*str == '0') {

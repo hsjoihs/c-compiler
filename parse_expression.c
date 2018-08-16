@@ -411,6 +411,25 @@ parse_postfix_expression(const struct Token **ptr_tokvec)
 			new_expr.ptr3 = 0;
 
 			expr = new_expr;
+		} else if (tokvec[0].kind == DOT) {
+			++tokvec;
+
+			struct UntypedExpression *ptr_expr1 =
+			    calloc(1, sizeof(struct UntypedExpression));
+			*ptr_expr1 = expr;
+
+			expect_and_consume(&tokvec, IDENT_OR_RESERVED,
+			                   "identifier after a dot operator");
+			const char *name = tokvec[-1].ident_str;
+
+			struct UntypedExpression new_expr;
+			new_expr.category = DOT_EXPR;
+			new_expr.ptr1 = ptr_expr1;
+			new_expr.ptr2 = 0;
+			new_expr.ptr3 = 0;
+			new_expr.ident_after_dot = name;
+
+			expr = new_expr;
 		} else {
 			break;
 		}
