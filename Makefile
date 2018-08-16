@@ -1,5 +1,3 @@
-.PHONY: test_all_
-
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
     CCFLAGS += -D LINUX
@@ -7,6 +5,9 @@ endif
 ifeq ($(UNAME_S),Darwin)
     CCFLAGS += -D OSX
 endif
+
+notest2:
+	gcc -Wall -Wextra codegen.c parse_toplevel.c parse_statement.c codegen_expression.c main.c vector.c typecheck_expression.c parse_expression.c error.c type.c map.c print_x86_64.c $(CCFLAGS) lexer.c -o out/compiler.out
 
 test_all_:
 	make supplement
@@ -43,9 +44,6 @@ compile_files:
 	cat misc/nqueen5.c | ./out/compiler.out > s/nqueen5.s
 	gcc s/nqueen5.s s/supplement.s -o out/nqueen5.out
 	./out/nqueen5.out
-
-notest2:
-	gcc -Wall -Wextra codegen.c parse_toplevel.c parse_statement.c codegen_expression.c main.c vector.c typecheck_expression.c parse_expression.c error.c type.c map.c print_x86_64.c $(CCFLAGS) lexer.c -o out/compiler.out
 
 test_valid:
 	rm out/*.out
