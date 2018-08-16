@@ -24,6 +24,23 @@ static void record_global_struct_declaration(struct Type struct_type)
 	    get_size_alignment_offsets(inner_type_vec, &offset_vec, i);
 }
 
+static void record_if_global_struct_declaration(struct Type type)
+{
+	switch (type.type_category) {
+		case ARRAY:
+		case FN:
+		case PTR_:
+			record_if_global_struct_declaration(*type.derived_from);
+			return;
+		case INT_:
+		case CHAR_:
+			return;
+		case STRUCT_:
+			record_global_struct_declaration(type);
+			return;
+	}
+}
+
 static struct Toplevel
 parse_toplevel_definition(struct ParserState *ptr_ps,
                           const struct Token **ptr_tokvec)
