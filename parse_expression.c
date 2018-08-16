@@ -333,6 +333,9 @@ parse_unary_expression(const struct Token **ptr_tokvec)
 	}
 }
 
+static struct UntypedExpression dot(struct UntypedExpression expr,
+                                    const char *name);
+
 static struct UntypedExpression
 parse_postfix_expression(const struct Token **ptr_tokvec)
 {
@@ -414,28 +417,33 @@ parse_postfix_expression(const struct Token **ptr_tokvec)
 		} else if (tokvec[0].kind == DOT) {
 			++tokvec;
 
-			struct UntypedExpression *ptr_expr1 =
-			    calloc(1, sizeof(struct UntypedExpression));
-			*ptr_expr1 = expr;
-
 			expect_and_consume(&tokvec, IDENT_OR_RESERVED,
 			                   "identifier after a dot operator");
 			const char *name = tokvec[-1].ident_str;
 
-			struct UntypedExpression new_expr;
-			new_expr.category = DOT_EXPR;
-			new_expr.ptr1 = ptr_expr1;
-			new_expr.ptr2 = 0;
-			new_expr.ptr3 = 0;
-			new_expr.ident_after_dot = name;
-
-			expr = new_expr;
+			expr = dot(expr, name);
 		} else {
 			break;
 		}
 	}
 	*ptr_tokvec = tokvec;
 	return expr;
+}
+
+static struct UntypedExpression dot(struct UntypedExpression expr,
+                                    const char *name)
+{
+	struct UntypedExpression *ptr_expr1 =
+	    calloc(1, sizeof(struct UntypedExpression));
+	*ptr_expr1 = expr;
+
+	struct UntypedExpression new_expr;
+	new_expr.category = DOT_EXPR;
+	new_expr.ptr1 = ptr_expr1;
+	new_expr.ptr2 = 0;
+	new_expr.ptr3 = 0;
+	new_expr.ident_after_dot = name;
+	return new_expr;
 }
 
 static struct UntypedExpression
