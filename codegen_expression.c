@@ -62,6 +62,38 @@ static void print_simple_binary_op(enum SimpleBinOp kind)
 	}
 }
 
+static void print_address_of_lvalue(struct PrinterState *ptr_prs,
+                                    struct Expression expr)
+{
+	switch (expr.category) {
+		case LOCAL_VAR_: {
+			gen_push_address_of_local(expr.local_var_offset);
+
+			return;
+		}
+		case GLOBAL_VAR_: {
+			const char *name = expr.global_var_name;
+			gen_push_address_of_global(name);
+
+			return;
+		}
+		case UNARY_OP_EXPR:
+			switch (expr.unary_operator) {
+				case UNARY_OP_ASTERISK: {
+					print_expression(ptr_prs, *expr.ptr1);
+					return;
+				}
+				default:
+					fprintf(stderr, "the only unary operator that can create "
+					                "lvalue is `*`\n");
+					exit(EXIT_FAILURE);
+			}
+		default:
+			fprintf(stderr, "doesn't seem like an lvalue\n");
+			exit(EXIT_FAILURE);
+	}
+}
+
 void print_expression(struct PrinterState *ptr_prs, struct Expression expr);
 static void print_expression_as_lvalue(struct PrinterState *ptr_prs,
                                        struct Expression expr);
@@ -69,9 +101,9 @@ static void print_expression_as_lvalue(struct PrinterState *ptr_prs,
 static void print_expression_as_lvalue(struct PrinterState *ptr_prs,
                                        struct Expression expr)
 {
+	print_address_of_lvalue(ptr_prs, expr);
 	switch (expr.category) {
 		case LOCAL_VAR_: {
-			gen_push_address_of_local(expr.local_var_offset);
 			gen_push_from_local_nbyte(size_of_basic(expr.details.type),
 			                          expr.local_var_offset);
 
@@ -79,7 +111,6 @@ static void print_expression_as_lvalue(struct PrinterState *ptr_prs,
 		}
 		case GLOBAL_VAR_: {
 			const char *name = expr.global_var_name;
-			gen_push_address_of_global(name);
 			struct Type type = expr.details.type;
 
 			printf("//load from global `%s`\n", name);
@@ -90,7 +121,6 @@ static void print_expression_as_lvalue(struct PrinterState *ptr_prs,
 		case UNARY_OP_EXPR:
 			switch (expr.unary_operator) {
 				case UNARY_OP_ASTERISK: {
-					print_expression(ptr_prs, *expr.ptr1);
 					struct Type type = expr.details.type;
 					gen_peek_deref_push_nbyte(size_of_basic(type));
 					return;
