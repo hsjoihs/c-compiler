@@ -78,6 +78,10 @@ struct TypeAndIdent;
 
 enum TypeCategory { INT_ = 1, PTR_, ARRAY, FN, CHAR_, STRUCT_ };
 
+struct StructInternalInfo {
+	struct Vector /* <TypeAndIdent> */ types_and_idents;
+};
+
 struct Type {
 	enum TypeCategory type_category;
 	struct Type *derived_from;
@@ -87,7 +91,10 @@ struct Type {
 	 .vector points to the array of (TypeAndIdent*).
 	 if .vector itself is NULL, that means there is no info.
 	 */
-	const char *struct_tag;
+	struct {
+		const char *struct_tag;
+		struct StructInternalInfo struct_info;
+	};
 };
 
 struct TypeAndIdent {

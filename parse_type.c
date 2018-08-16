@@ -78,11 +78,32 @@ struct Type *parse_type_specifier(const struct Token **ptr_tokvec)
 		expect_and_consume(&tokvec, IDENT_OR_RESERVED,
 		                   "identifier after `struct`");
 		const char *ident = tokvec[-1].ident_str;
-		if (tokvec[0].kind == LEFT_BRACE) {
-			unsupported("left brace after struct");
-		}
+
 		ptr->type_category = STRUCT_;
 		ptr->struct_tag = ident;
+		if (tokvec[0].kind != LEFT_BRACE) {
+			*ptr_tokvec = tokvec;
+			return ptr;
+		}
+		++tokvec;
+		ptr->struct_info.types_and_idents = init_vector();
+
+		while (1) {
+			if (tokvec[0].kind == RIGHT_BRACE) {
+				++tokvec;
+				break;
+			}
+			const char *ident_str;
+			struct Type t = parse_declarator(&tokvec, &ident_str);
+			expect_and_consume(&tokvec, SEMICOLON,
+			                   "semicolon after the declarator inside struct");
+			struct TypeAndIdent *ptr_t_and_i =
+			    calloc(1, sizeof(struct TypeAndIdent *));
+			ptr_t_and_i->type = t;
+			ptr_t_and_i->ident_str = ident_str;
+
+			push_vector(&ptr->struct_info.types_and_idents, ptr_t_and_i);
+		}
 	} else {
 		error_unexpected_token(tokvec, "type name `int` or `char`");
 	}
