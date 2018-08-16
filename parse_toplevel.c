@@ -3,12 +3,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-struct StructInternalCompleteInfo {
-	struct StructInternalInfo info;
-	int *offset_vec;
-	struct SizeAndAlignment s_and_a;
-};
-
 static void record_global_struct_declaration(struct ParserState *ptr_ps,
                                              struct Type struct_type)
 {
