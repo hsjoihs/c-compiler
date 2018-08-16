@@ -95,6 +95,7 @@ struct ParamInfo {
 };
 
 int size_of(struct Type type);
+int align_of(struct Type type);
 
 extern struct Type INT_TYPE;
 

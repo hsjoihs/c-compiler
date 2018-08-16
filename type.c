@@ -26,6 +26,23 @@ int size_of(struct Type type)
 	}
 }
 
+int align_of(struct Type type)
+{
+	switch (type.type_category) {
+		case INT_:
+			return 4;
+		case PTR_:
+			return 8;
+		case CHAR_:
+			return 1;
+		case ARRAY:
+			return align_of(*type.derived_from);
+		case FN:
+			fprintf(stderr, "function type does not have size or alignment\n");
+			exit(EXIT_FAILURE);
+	}
+}
+
 int is_strictly_equal(struct Type t1, struct Type t2)
 {
 	if (t1.type_category == INT_ && t2.type_category == INT_) {
