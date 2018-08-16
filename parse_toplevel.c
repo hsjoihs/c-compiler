@@ -3,6 +3,44 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+int size_of(struct Type type)
+{
+	switch (type.type_category) {
+		case INT_:
+			return 4;
+		case PTR_:
+			return 8;
+		case CHAR_:
+			return 1;
+		case ARRAY:
+			return type.array_length * size_of(*type.derived_from);
+		case FN:
+			fprintf(stderr, "function type does not have size\n");
+			exit(EXIT_FAILURE);
+		case STRUCT_:
+			unsupported("size of struct");
+	}
+}
+
+int align_of(struct Type type)
+{
+	switch (type.type_category) {
+		case INT_:
+			return 4;
+		case PTR_:
+			return 8;
+		case CHAR_:
+			return 1;
+		case ARRAY:
+			return align_of(*type.derived_from);
+		case FN:
+			fprintf(stderr, "function type does not have size or alignment\n");
+			exit(EXIT_FAILURE);
+		case STRUCT_:
+			unsupported("width of struct");
+	}
+}
+
 static void record_global_struct_declaration(struct ParserState *ptr_ps,
                                              struct Type struct_type)
 {

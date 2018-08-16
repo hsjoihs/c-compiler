@@ -113,9 +113,7 @@ struct TypeAndIdent {
 	const char *ident_str;
 };
 
-int size_of(struct Type type);
 int size_of_basic(struct Type type);
-int align_of(struct Type type);
 
 struct Type INT_TYPE(void);
 
