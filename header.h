@@ -116,7 +116,7 @@ struct TypeAndIdent {
 int size_of(struct Type type);
 int align_of(struct Type type);
 
-extern struct Type INT_TYPE;
+struct Type INT_TYPE(void);
 
 void expect_type(struct Type actual_type, struct Type expected_type,
                  const char *message);
@@ -253,7 +253,7 @@ void read_all_tokens_debug(const char *str);
 
 struct Type ptr_of_type_to_arr_of_type(struct Type *ptr_type, int length);
 
-extern struct Type CHAR_TYPE;
+struct Type CHAR_TYPE(void);
 
 enum StatementCategory {
 	COMPOUND_STATEMENT = 1,

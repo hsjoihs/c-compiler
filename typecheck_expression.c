@@ -110,9 +110,9 @@ static struct Expression combine_by_add(struct Expression expr,
 	struct Type type1 = expr.details.type;
 	struct Type type2 = expr2.details.type;
 
-	if (is_compatible(type1, INT_TYPE)) {
-		if (is_compatible(type2, INT_TYPE)) {
-			return simple_binary_op(expr, expr2, OP_PLUS, INT_TYPE);
+	if (is_compatible(type1, INT_TYPE())) {
+		if (is_compatible(type2, INT_TYPE())) {
+			return simple_binary_op(expr, expr2, OP_PLUS, INT_TYPE());
 		} else if (is_pointer(type2)) {
 			/* swapped */
 			return pointer_plusorminus_int(expr2, expr, OP_PLUS);
@@ -120,7 +120,7 @@ static struct Expression combine_by_add(struct Expression expr,
 
 	} else if (is_pointer(type1)) {
 
-		expect_type(expr2.details.type, INT_TYPE,
+		expect_type(expr2.details.type, INT_TYPE(),
 		            "cannot add a pointer to a pointer");
 		return pointer_plusorminus_int(expr, expr2, OP_PLUS);
 	}
@@ -134,9 +134,9 @@ static struct Expression combine_by_sub(struct Expression expr,
 	struct Type type1 = expr.details.type;
 	struct Type type2 = expr2.details.type;
 
-	if (is_compatible(type1, INT_TYPE)) {
-		if (is_compatible(type2, INT_TYPE)) {
-			return simple_binary_op(expr, expr2, OP_MINUS, INT_TYPE);
+	if (is_compatible(type1, INT_TYPE())) {
+		if (is_compatible(type2, INT_TYPE())) {
+			return simple_binary_op(expr, expr2, OP_MINUS, INT_TYPE());
 		} else if (is_pointer(type2)) {
 
 			fprintf(stderr, "cannot subtract a pointer from an integer.\n");
@@ -144,13 +144,13 @@ static struct Expression combine_by_sub(struct Expression expr,
 		}
 
 	} else if (is_pointer(type1)) {
-		if (is_compatible(type2, INT_TYPE)) {
+		if (is_compatible(type2, INT_TYPE())) {
 
 			/* pointer minus int */
 			return pointer_plusorminus_int(expr, expr2, OP_MINUS);
 		} else {
 			/* pointer minus pointer */
-			return binary_op(expr, expr2, POINTER_MINUS_POINTER, INT_TYPE);
+			return binary_op(expr, expr2, POINTER_MINUS_POINTER, INT_TYPE());
 		}
 	}
 	fprintf(stderr, "fail\n");
@@ -326,7 +326,7 @@ struct Expression typecheck_expression(const struct ParserState *ptr_ps,
 					enum TokenKind kind = uexpr.operator;
 					struct Expression expr =
 					    typecheck_expression(ptr_ps, *uexpr.ptr1);
-					expect_type(expr.details.type, INT_TYPE,
+					expect_type(expr.details.type, INT_TYPE(),
 					            "operand of logical not, bitnot, unary plus or "
 					            "unary minus");
 
@@ -344,11 +344,11 @@ struct Expression typecheck_expression(const struct ParserState *ptr_ps,
 
 					struct Expression expr =
 					    typecheck_expression(ptr_ps, *uexpr.ptr1);
-					expect_type(expr.details.type, INT_TYPE,
+					expect_type(expr.details.type, INT_TYPE(),
 					            "operand of unary increment/decrement");
 
 					struct Expression new_expr =
-					    unary_op_(expr, opkind, INT_TYPE);
+					    unary_op_(expr, opkind, INT_TYPE());
 					return new_expr;
 				}
 
@@ -394,7 +394,7 @@ struct Expression typecheck_expression(const struct ParserState *ptr_ps,
 				        ident_str);
 				fprintf(stderr, "Assumes that `%s()` returns `int`\n",
 				        ident_str);
-				ret_type = INT_TYPE;
+				ret_type = INT_TYPE();
 			} else {
 				struct FuncInfo *ptr_func_info =
 				    lookup(ptr_ps->func_info_map, ident_str);
@@ -429,7 +429,7 @@ struct Expression typecheck_expression(const struct ParserState *ptr_ps,
 			enum TokenKind opkind = uexpr.operator;
 
 			struct Expression new_expr;
-			new_expr.details.type = INT_TYPE;
+			new_expr.details.type = INT_TYPE();
 			new_expr.category =
 			    opkind == OP_PLUS_PLUS ? POSTFIX_INCREMENT : POSTFIX_DECREMENT;
 			new_expr.ptr1 = ptr_expr1;
@@ -439,7 +439,7 @@ struct Expression typecheck_expression(const struct ParserState *ptr_ps,
 		}
 		case INT_LITERAL_: {
 			struct Expression expr;
-			expr.details.type = INT_TYPE;
+			expr.details.type = INT_TYPE();
 			expr.int_value = uexpr.int_value;
 			expr.category = INT_VALUE;
 			return expr;
@@ -472,7 +472,7 @@ struct Expression typecheck_expression(const struct ParserState *ptr_ps,
 		}
 		case STRING_LITERAL_: {
 			struct Type *ptr_char = calloc(1, sizeof(struct Type));
-			*ptr_char = CHAR_TYPE;
+			*ptr_char = CHAR_TYPE();
 
 			struct Expression expr;
 			expr.details.type = ptr_of_type_to_ptr_to_type(ptr_char);
@@ -546,14 +546,14 @@ struct Expression typecheck_expression(const struct ParserState *ptr_ps,
 					    typecheck_expression(ptr_ps, *uexpr.ptr2);
 
 					return binary_op(first_expr, expr2, LOGICAL_AND_EXPR,
-					                 INT_TYPE);
+					                 INT_TYPE());
 				}
 				case OP_OR_OR: {
 					struct Expression expr =
 					    typecheck_expression(ptr_ps, *uexpr.ptr1);
 					struct Expression expr2 =
 					    typecheck_expression(ptr_ps, *uexpr.ptr2);
-					return binary_op(expr, expr2, LOGICAL_OR_EXPR, INT_TYPE);
+					return binary_op(expr, expr2, LOGICAL_OR_EXPR, INT_TYPE());
 				}
 				case OP_OR:
 				case OP_AND:
@@ -573,9 +573,9 @@ struct Expression typecheck_expression(const struct ParserState *ptr_ps,
 					    typecheck_expression(ptr_ps, *uexpr.ptr1);
 					struct Expression expr2 =
 					    typecheck_expression(ptr_ps, *uexpr.ptr2);
-					expect_type(expr.details.type, INT_TYPE,
+					expect_type(expr.details.type, INT_TYPE(),
 					            "left operand of an operator");
-					expect_type(expr2.details.type, INT_TYPE,
+					expect_type(expr2.details.type, INT_TYPE(),
 					            "right operand of an operator");
 					return simple_binary_op(expr, expr2, uexpr.operator,
 					                        expr2.details.type);

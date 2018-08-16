@@ -6,8 +6,18 @@
 
 int is_strictly_equal(struct Type t1, struct Type t2);
 
-struct Type INT_TYPE = {INT_};
-struct Type CHAR_TYPE = {CHAR_};
+struct Type INT_TYPE() {
+	struct Type t;
+	t.type_category = INT_;
+	return t;
+}
+
+struct Type
+CHAR_TYPE() {
+	struct Type t;
+	t.type_category = CHAR_;
+	return t;
+}
 
 int size_of(struct Type type)
 {

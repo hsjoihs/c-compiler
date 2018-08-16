@@ -6,7 +6,7 @@
 static struct Expression integer_1(void)
 {
 	struct Expression expr;
-	expr.details.type = INT_TYPE;
+	expr.details.type = INT_TYPE();
 	expr.int_value = 1;
 	expr.category = INT_VALUE;
 

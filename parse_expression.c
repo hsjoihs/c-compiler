@@ -437,7 +437,7 @@ parse_primary_expression(const struct Token **ptr_tokvec)
 		return expr;
 	} else if (tokvec[0].kind == LIT_STRING) {
 		struct Type *ptr_char = calloc(1, sizeof(struct Type));
-		*ptr_char = CHAR_TYPE;
+		*ptr_char = CHAR_TYPE();
 
 		struct UntypedExpression expr;
 		expr.category = STRING_LITERAL_;
