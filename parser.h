@@ -16,6 +16,7 @@ struct ParserState {
 	struct Map func_info_map;
 	struct Type func_ret_type;
 	int newest_offset;
+	struct Map global_struct_tag_map;
 };
 
 struct Expression typecheck_expression(const struct ParserState *ptr_ps,

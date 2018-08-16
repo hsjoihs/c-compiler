@@ -3,7 +3,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static void record_global_struct_declaration(struct Type struct_type)
+struct StructInternalCompleteInfo {
+	struct StructInternalInfo info;
+	int *offset_vec;
+	struct SizeAndAlignment s_and_a;
+};
+
+static void record_global_struct_declaration(struct ParserState *ptr_ps,
+                                             struct Type struct_type)
 {
 	assert(struct_type.type_category == STRUCT_);
 	struct StructInternalInfo info = struct_type.struct_info;
@@ -22,21 +29,31 @@ static void record_global_struct_declaration(struct Type struct_type)
 	int *offset_vec;
 	struct SizeAndAlignment outer_s_and_a =
 	    get_size_alignment_offsets(inner_type_vec, &offset_vec, i);
+
+	struct StructInternalCompleteInfo *ptr_complete =
+	    calloc(1, sizeof(struct StructInternalCompleteInfo));
+	ptr_complete->info = info;
+	ptr_complete->offset_vec = offset_vec;
+	ptr_complete->s_and_a = outer_s_and_a;
+
+	insert(&ptr_ps->global_struct_tag_map, struct_type.struct_tag,
+	       ptr_complete);
 }
 
-static void record_if_global_struct_declaration(struct Type type)
+static void record_if_global_struct_declaration(struct ParserState *ptr_ps,
+                                                struct Type type)
 {
 	switch (type.type_category) {
 		case ARRAY:
 		case FN:
 		case PTR_:
-			record_if_global_struct_declaration(*type.derived_from);
+			record_if_global_struct_declaration(ptr_ps, *type.derived_from);
 			return;
 		case INT_:
 		case CHAR_:
 			return;
 		case STRUCT_:
-			record_global_struct_declaration(type);
+			record_global_struct_declaration(ptr_ps, type);
 			return;
 	}
 }
@@ -52,6 +69,7 @@ parse_toplevel_definition(struct ParserState *ptr_ps,
 		struct Toplevel d;
 		d.category = TOPLEVEL_VAR_DEFINITION;
 		d.declarator_type = *optional_ptr_type;
+		record_if_global_struct_declaration(ptr_ps, d.declarator_type);
 		d.declarator_name = 0;
 		return d;
 	}
@@ -60,6 +78,7 @@ parse_toplevel_definition(struct ParserState *ptr_ps,
 
 	const char *declarator_name;
 	struct Type declarator_type = parse_declarator(&tokvec2, &declarator_name);
+	record_if_global_struct_declaration(ptr_ps, declarator_type);
 
 	if (declarator_type.type_category != FN) {
 
@@ -152,6 +171,7 @@ struct Vector parse(const struct Token *tokvec)
 	struct ParserState ps;
 	ps.func_info_map = init_map();
 	ps.global_vars_type_map = init_map();
+	ps.global_struct_tag_map = init_map();
 
 	struct Vector vec = init_vector();
 	while (1) {
