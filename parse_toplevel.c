@@ -18,7 +18,20 @@ int size_of(const struct ParserState *ptr_ps, struct Type type)
 			fprintf(stderr, "function type does not have size\n");
 			exit(EXIT_FAILURE);
 		case STRUCT_:
-			unsupported("size of struct");
+			if (0 /* is local struct */) {
+				unsupported("local struct");
+			}
+			const char *tag = type.struct_tag;
+			const struct StructInternalCompleteInfo *ptr_info =
+			    lookup(ptr_ps->global_struct_tag_map, tag);
+			if (!ptr_info) {
+				fprintf(
+				    stderr,
+				    "tried to take the size of incomplete type `struct %s`\n",
+				    type.struct_tag);
+				exit(EXIT_FAILURE);
+			}
+			return ptr_info->s_and_a.size;
 	}
 }
 
@@ -37,7 +50,20 @@ int align_of(const struct ParserState *ptr_ps, struct Type type)
 			fprintf(stderr, "function type does not have size or alignment\n");
 			exit(EXIT_FAILURE);
 		case STRUCT_:
-			unsupported("width of struct");
+			if (0 /* is local struct */) {
+				unsupported("local struct");
+			}
+			const char *tag = type.struct_tag;
+			const struct StructInternalCompleteInfo *ptr_info =
+			    lookup(ptr_ps->global_struct_tag_map, tag);
+			if (!ptr_info) {
+				fprintf(stderr,
+				        "tried to find the alignment of incomplete type "
+				        "`struct %s`\n",
+				        type.struct_tag);
+				exit(EXIT_FAILURE);
+			}
+			return ptr_info->s_and_a.alignment;
 	}
 }
 
