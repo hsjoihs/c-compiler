@@ -48,13 +48,13 @@ struct TypeAndIdent *parse_param(const struct Token **ptr_tokvec)
 		/* shall be adjusted to `pointer to func`, according to the spec */
 		struct Type *ptr_type = calloc(1, sizeof(struct Type));
 		*ptr_type = type;
-		ptr_param_info->param_type = ptr_of_type_to_ptr_to_type(ptr_type);
+		ptr_param_info->type = ptr_of_type_to_ptr_to_type(ptr_type);
 	} else {
 		/* convert to pointer */
 		if (type.type_category == ARRAY) {
 			type.type_category = PTR_;
 		}
-		ptr_param_info->param_type = type;
+		ptr_param_info->type = type;
 	}
 	ptr_param_info->ident_str = ident_str;
 	return ptr_param_info;

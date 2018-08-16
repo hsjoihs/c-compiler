@@ -91,7 +91,7 @@ struct Type {
 };
 
 struct TypeAndIdent {
-	struct Type param_type;
+	struct Type type;
 	const char *ident_str;
 };
 

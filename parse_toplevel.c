@@ -76,7 +76,7 @@ parse_toplevel_definition(struct ParserState *ptr_ps,
 			    *(const struct TypeAndIdent *)(param_infos.vector[counter]);
 			const char *ident_str;
 
-			struct Type type = param_info.param_type;
+			struct Type type = param_info.type;
 			ident_str = param_info.ident_str;
 
 			if (counter > 5) {
