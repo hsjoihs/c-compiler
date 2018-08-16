@@ -275,12 +275,12 @@ enum ToplevelCategory {
 	TOPLEVEL_VAR_DEFINITION = 1,
 	TOPLEVEL_FUNCTION_DEFINITION,
 	TOPLEVEL_FUNCTION_DECLARATION,
-	TOPLEVEL_TYPE_DECLARATION
 };
 
 struct Toplevel {
 	enum ToplevelCategory category;
 	const char *declarator_name;
+	/* NULL when TOPLEVEL_VAR_DEFINITION does not have an identifier */
 
 	struct Type declarator_type;
 	/* used when it is TOPLEVEL_VAR_DEFINITION or TOPLEVEL_TYPE_DECLARATION */

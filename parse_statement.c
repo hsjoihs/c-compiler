@@ -264,12 +264,15 @@ struct Statement parse_compound_statement(struct ParserState *ptr_ps,
 				struct Type *optional_ptr_type =
 				    try_parse_type_specifier_and_semicolon(&tokvec);
 				if (optional_ptr_type) {
-					struct Type type = *optional_ptr_type;
-					if (type.type_category == STRUCT_) {
-						unsupported("struct {} inside compound statement");
-					} else {
-						continue;
-					}
+					struct Statement s;
+					s.category = DECLARATION_STATEMENT;
+					s.declaration.type = *optional_ptr_type;
+					s.declaration.ident_str = 0;
+					struct Statement *ptr_s =
+					    calloc(1, sizeof(struct Statement));
+					*ptr_s = s;
+					push_vector(&statement.statement_vector, ptr_s);
+					continue;
 				}
 
 				struct Type vartype;

@@ -12,8 +12,9 @@ parse_toplevel_definition(struct ParserState *ptr_ps,
 
 	if (optional_ptr_type) {
 		struct Toplevel d;
-		d.category = TOPLEVEL_TYPE_DECLARATION;
+		d.category = TOPLEVEL_VAR_DEFINITION;
 		d.declarator_type = *optional_ptr_type;
+		d.declarator_name = 0;
 		return d;
 	}
 

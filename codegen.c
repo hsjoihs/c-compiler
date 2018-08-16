@@ -207,14 +207,13 @@ static void print_toplevel_definition(struct PrinterState *ptr_prs,
                                       const struct Toplevel def)
 {
 	if (def.category == TOPLEVEL_VAR_DEFINITION) {
-		gen_global_declaration(def.declarator_name,
-		                       size_of(def.declarator_type));
+		if (def.declarator_name) {
+			gen_global_declaration(def.declarator_name,
+			                       size_of(def.declarator_type));
+		}
 		return;
 	}
 	if (def.category == TOPLEVEL_FUNCTION_DECLARATION) {
-		return;
-	}
-	if (def.category == TOPLEVEL_TYPE_DECLARATION) {
 		return;
 	}
 
