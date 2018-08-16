@@ -72,7 +72,7 @@ static void print_expression_as_lvalue(struct PrinterState *ptr_prs,
 	switch (expr.category) {
 		case LOCAL_VAR_: {
 			gen_push_address_of_local(expr.local_var_offset);
-			gen_push_from_local_nbyte(size_of(expr.details.type),
+			gen_push_from_local_nbyte(size_of_basic(expr.details.type),
 			                          expr.local_var_offset);
 
 			return;
@@ -83,7 +83,7 @@ static void print_expression_as_lvalue(struct PrinterState *ptr_prs,
 			struct Type type = expr.details.type;
 
 			printf("//load from global `%s`\n", name);
-			gen_push_from_global_nbyte(size_of(type), name);
+			gen_push_from_global_nbyte(size_of_basic(type), name);
 
 			return;
 		}
@@ -92,7 +92,7 @@ static void print_expression_as_lvalue(struct PrinterState *ptr_prs,
 				case UNARY_OP_ASTERISK: {
 					print_expression(ptr_prs, *expr.ptr1);
 					struct Type type = expr.details.type;
-					gen_peek_deref_push_nbyte(size_of(type));
+					gen_peek_deref_push_nbyte(size_of_basic(type));
 					return;
 				}
 				default:
@@ -147,7 +147,7 @@ void print_expression(struct PrinterState *ptr_prs, struct Expression expr)
 
 			struct Type type = expr.ptr1->details.type;
 
-			gen_assign_nbyte(size_of(type));
+			gen_assign_nbyte(size_of_basic(type));
 
 			gen_push_int(-1);
 			print_simple_binary_op(opkind2);
@@ -160,7 +160,7 @@ void print_expression(struct PrinterState *ptr_prs, struct Expression expr)
 				gen_push_address_of_local(expr.local_var_offset);
 				return;
 			}
-			gen_push_from_local_nbyte(size_of(expr.details.type),
+			gen_push_from_local_nbyte(size_of_basic(expr.details.type),
 			                          expr.local_var_offset);
 
 			return;
@@ -174,7 +174,7 @@ void print_expression(struct PrinterState *ptr_prs, struct Expression expr)
 				return;
 			}
 
-			gen_push_from_global_nbyte(size_of(expr.details.type),
+			gen_push_from_global_nbyte(size_of_basic(expr.details.type),
 			                           expr.global_var_name);
 
 			return;
@@ -219,7 +219,7 @@ void print_expression(struct PrinterState *ptr_prs, struct Expression expr)
 
 			struct Type type = expr.ptr1->details.type;
 
-			gen_assign_nbyte(size_of(type));
+			gen_assign_nbyte(size_of_basic(type));
 
 			return;
 		}
@@ -257,7 +257,7 @@ void print_expression(struct PrinterState *ptr_prs, struct Expression expr)
 
 					struct Type type = expr.ptr1->details.type;
 
-					gen_assign_nbyte(size_of(type));
+					gen_assign_nbyte(size_of_basic(type));
 					return;
 				}
 
@@ -277,7 +277,7 @@ void print_expression(struct PrinterState *ptr_prs, struct Expression expr)
 						/* do not dereference, if it is an array */
 						return;
 					}
-					gen_peek_and_dereference_nbyte(size_of(type));
+					gen_peek_and_dereference_nbyte(size_of_basic(type));
 
 					return;
 				}
@@ -309,7 +309,7 @@ void print_expression(struct PrinterState *ptr_prs, struct Expression expr)
 			for (int counter = 0; counter < expr.arg_length; counter++) {
 				struct Expression expr_ = expr.arg_expr_vec[counter];
 
-				switch (size_of(expr_.details.type)) {
+				switch (size_of_basic(expr_.details.type)) {
 					case 1:
 					case 4:
 						gen_pop_to_reg_4byte(
@@ -323,7 +323,7 @@ void print_expression(struct PrinterState *ptr_prs, struct Expression expr)
 						unsupported("Unsupported width");
 				}
 			}
-			gen_push_ret_of_nbyte(size_of(ret_type), ident_str);
+			gen_push_ret_of_nbyte(size_of_basic(ret_type), ident_str);
 
 			return;
 		}

@@ -237,7 +237,7 @@ static void print_toplevel_definition(struct PrinterState *ptr_prs,
 
 		int offset = ptr_info->offset;
 		struct Type type = ptr_info->type;
-		switch (size_of(type)) {
+		switch (size_of_basic(type)) {
 			case 1:
 				gen_write_register_to_local_1byte(
 				    /* yes, the register is 4byte */
@@ -256,7 +256,7 @@ static void print_toplevel_definition(struct PrinterState *ptr_prs,
 	}
 	print_statement(ptr_prs, sta);
 
-	gen_epilogue_nbyte(size_of(ret_type), ptr_prs->return_label_name);
+	gen_epilogue_nbyte(size_of_basic(ret_type), ptr_prs->return_label_name);
 }
 
 void generate(const struct Vector vec)

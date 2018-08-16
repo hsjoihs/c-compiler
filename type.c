@@ -19,6 +19,24 @@ CHAR_TYPE() {
 	return t;
 }
 
+int size_of_basic(struct Type type)
+{
+	switch (type.type_category) {
+		case INT_:
+			return 4;
+		case PTR_:
+			return 8;
+		case CHAR_:
+			return 1;
+		case ARRAY:
+		case FN:
+		case STRUCT_:
+			fprintf(stderr,
+			        "array, function or struct type is not a basic type\n");
+			exit(EXIT_FAILURE);
+	}
+}
+
 int size_of(struct Type type)
 {
 	switch (type.type_category) {
