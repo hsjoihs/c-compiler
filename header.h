@@ -170,7 +170,8 @@ enum ExprCategory {
 	ASSIGNMENT_EXPR,
 	LOGICAL_OR_EXPR,
 	LOGICAL_AND_EXPR,
-	STRING_LITERAL
+	STRING_LITERAL,
+	STRUCT_AND_OFFSET
 };
 
 enum UntypedExprCategory {
@@ -254,6 +255,8 @@ struct Expression {
 
 	/* used in POINTER_PLUS_INT, POINTER_MINUS_INT and POINTER_MINUS_POINTER */
 	int size_info_for_pointer_arith;
+
+	int struct_offset;
 };
 
 int is_array(struct Type t);
