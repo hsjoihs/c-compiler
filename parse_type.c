@@ -37,10 +37,11 @@ static struct Type from_type3_to_type(const void **type3)
 	}
 }
 
-struct ParamInfo *parse_param(const struct Token **ptr_tokvec)
+struct TypeAndIdent *parse_param(const struct Token **ptr_tokvec)
 {
 	const char *ident_str;
-	struct ParamInfo *ptr_param_info = calloc(1, sizeof(struct ParamInfo));
+	struct TypeAndIdent *ptr_param_info =
+	    calloc(1, sizeof(struct TypeAndIdent));
 
 	struct Type type = parse_declarator(ptr_tokvec, &ident_str);
 	if (type.type_category == FN) {
@@ -145,7 +146,7 @@ struct Type parse_declarator(const struct Token **ptr_tokvec,
 		} else if (can_start_a_type(tokvec)) {
 			TypeNode f;
 			f.type_category = FN;
-			f.param_infos.vector = calloc(100, sizeof(struct ParamInfo *));
+			f.param_infos.vector = calloc(100, sizeof(struct TypeAndIdent *));
 
 			f.param_infos.vector[0] = parse_param(&tokvec);
 

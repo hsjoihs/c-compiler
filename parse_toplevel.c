@@ -72,8 +72,8 @@ parse_toplevel_definition(struct ParserState *ptr_ps,
 	if (param_infos.vector) { /* parameter is not empty */
 		for (int counter = 0; counter < param_infos.length; ++counter) {
 
-			struct ParamInfo param_info =
-			    *(const struct ParamInfo *)(param_infos.vector[counter]);
+			struct TypeAndIdent param_info =
+			    *(const struct TypeAndIdent *)(param_infos.vector[counter]);
 			const char *ident_str;
 
 			struct Type type = param_info.param_type;

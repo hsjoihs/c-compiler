@@ -74,7 +74,7 @@ struct Token {
 void print_token(struct Token tok, const char *next_token_begins);
 struct Token get_token(const char **ptr_to_str);
 
-struct ParamInfo;
+struct TypeAndIdent;
 
 enum TypeCategory { INT_ = 1, PTR_, ARRAY, FN, CHAR_, STRUCT_ };
 
@@ -84,13 +84,13 @@ struct Type {
 	int array_length;
 	struct Vector param_infos;
 	/*
-	 .vector points to the array of (ParamInfo*).
+	 .vector points to the array of (TypeAndIdent*).
 	 if .vector itself is NULL, that means there is no info.
 	 */
 	const char *struct_tag;
 };
 
-struct ParamInfo {
+struct TypeAndIdent {
 	struct Type param_type;
 	const char *ident_str;
 };
@@ -121,7 +121,7 @@ struct FuncInfo {
 	struct Type ret_type;
 	struct Vector param_infos;
 	/*
-	 .vector points to the array of (ParamInfo*).
+	 .vector points to the array of (TypeAndIdent*).
 	 if .vector itself is NULL, that means there is no info.
 	 */
 };

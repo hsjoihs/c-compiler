@@ -121,15 +121,15 @@ void debug_print_type(struct Type type)
 				fprintf(stderr, "param: no info");
 			} else {
 				if (type.param_infos.length < 2) {
-					const struct ParamInfo *vec_0 =
-					    (const struct ParamInfo *)type.param_infos.vector[0];
+					const struct TypeAndIdent *vec_0 =
+					    (const struct TypeAndIdent *)type.param_infos.vector[0];
 					fprintf(stderr, "%s: ", vec_0->ident_str);
 					debug_print_type(vec_0->param_type);
 				} else {
 					fprintf(stderr, "params: \n");
 					for (int i = 0; i < type.param_infos.length; i++) {
-						const struct ParamInfo *ptr_paraminfo =
-						    (const struct ParamInfo *)
+						const struct TypeAndIdent *ptr_paraminfo =
+						    (const struct TypeAndIdent *)
 						        type.param_infos.vector[i];
 						fprintf(stderr, "  %s: ", ptr_paraminfo->ident_str);
 						debug_print_type(ptr_paraminfo->param_type);
