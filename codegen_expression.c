@@ -106,10 +106,8 @@ static void print_expression_as_lvalue(struct PrinterState *ptr_prs,
 	}
 }
 
-static void print_op_pointer_plusminus_int(struct Type type_of_pointer,
-                                           int is_plus)
+static void print_op_pointer_plusminus_int(int is_plus, int size)
 {
-	int size = size_of(deref_type(type_of_pointer));
 	gen_cltq();
 	gen_mul_by_const(size);
 	gen_op_8byte(is_plus ? "addq" : "subq");
@@ -121,17 +119,18 @@ void print_expression(struct PrinterState *ptr_prs, struct Expression expr)
 		case POINTER_MINUS_POINTER: {
 			print_expression(ptr_prs, *expr.ptr1);
 			print_expression(ptr_prs, *expr.ptr2);
-			int size = size_of(deref_type(expr.ptr1->details.type));
+			int size = expr.size_info_for_pointer_arith;
 			gen_op_8byte("subq");
 			gen_div_by_const(size);
 			return;
 		}
 		case POINTER_PLUS_INT:
 		case POINTER_MINUS_INT: {
+			int size = expr.size_info_for_pointer_arith;
 			print_expression(ptr_prs, *expr.ptr1);
 			print_expression(ptr_prs, *expr.ptr2);
-			print_op_pointer_plusminus_int(expr.ptr1->details.type,
-			                               expr.category == POINTER_PLUS_INT);
+			print_op_pointer_plusminus_int(expr.category == POINTER_PLUS_INT,
+			                               size);
 			return;
 		}
 		case POSTFIX_INCREMENT:

@@ -100,6 +100,8 @@ static struct Expression pointer_plusorminus_int(struct Expression expr,
 	new_expr.ptr1 = ptr_expr1;
 	new_expr.ptr2 = ptr_expr2;
 	new_expr.ptr3 = 0;
+	new_expr.size_info_for_pointer_arith =
+	    size_of(deref_type(expr.details.type));
 
 	return new_expr;
 }
@@ -150,7 +152,22 @@ static struct Expression combine_by_sub(struct Expression expr,
 			return pointer_plusorminus_int(expr, expr2, OP_MINUS);
 		} else {
 			/* pointer minus pointer */
-			return binary_op(expr, expr2, POINTER_MINUS_POINTER, INT_TYPE());
+
+			struct Expression *ptr_expr1 = calloc(1, sizeof(struct Expression));
+			struct Expression *ptr_expr2 = calloc(1, sizeof(struct Expression));
+			*ptr_expr1 = expr;
+			*ptr_expr2 = expr2;
+
+			struct Expression new_expr;
+			new_expr.details.type = INT_TYPE();
+			new_expr.category = POINTER_MINUS_POINTER;
+			new_expr.ptr1 = ptr_expr1;
+			new_expr.ptr2 = ptr_expr2;
+			new_expr.ptr3 = 0;
+			new_expr.size_info_for_pointer_arith =
+			    size_of(deref_type(expr.details.type));
+
+			return new_expr;
 		}
 	}
 	fprintf(stderr, "fail\n");

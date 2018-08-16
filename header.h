@@ -245,6 +245,9 @@ struct Expression {
 	struct Expression *arg_expr_vec;
 	int arg_length;
 	int local_var_offset;
+
+	/* used in POINTER_PLUS_INT, POINTER_MINUS_INT and POINTER_MINUS_POINTER */
+	int size_info_for_pointer_arith;
 };
 
 int is_array(struct Type t);
