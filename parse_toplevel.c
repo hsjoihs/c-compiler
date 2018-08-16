@@ -3,6 +3,27 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+static void record_global_struct_declaration(struct Type struct_type)
+{
+	assert(struct_type.type_category == STRUCT_);
+	struct StructInternalInfo info = struct_type.struct_info;
+	struct Vector /* <TypeAndIdent> */ types_and_idents = info.types_and_idents;
+
+	struct SizeAndAlignment *inner_type_vec =
+	    calloc(types_and_idents.length, sizeof(struct SizeAndAlignment));
+
+	int i = 0;
+	for (; i < types_and_idents.length; i++) {
+		const struct TypeAndIdent *ptr_vec_i = types_and_idents.vector[i];
+		inner_type_vec[i].size = size_of(ptr_vec_i->type);
+		inner_type_vec[i].alignment = align_of(ptr_vec_i->type);
+	}
+
+	int *offset_vec;
+	struct SizeAndAlignment outer_s_and_a =
+	    get_size_alignment_offsets(inner_type_vec, &offset_vec, i);
+}
+
 static struct Toplevel
 parse_toplevel_definition(struct ParserState *ptr_ps,
                           const struct Token **ptr_tokvec)
