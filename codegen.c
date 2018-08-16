@@ -81,7 +81,7 @@ static void print_statement(struct PrinterState *ptr_prs,
 			gen_if_else_part1(label1, label2);
 
 			struct Statement inner_s =
-			    *(struct Statement *)sta.statement_vector.vector[0];
+			    *(const struct Statement *)sta.statement_vector.vector[0];
 			print_statement(ptr_prs, inner_s);
 
 			gen_jump(label2, "if statement");
@@ -89,7 +89,7 @@ static void print_statement(struct PrinterState *ptr_prs,
 			gen_discard();
 
 			struct Statement inner_s2 =
-			    *(struct Statement *)sta.statement_vector.vector[1];
+			    *(const struct Statement *)sta.statement_vector.vector[1];
 			print_statement(ptr_prs, inner_s2);
 			gen_label(label2);
 

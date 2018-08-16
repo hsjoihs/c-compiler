@@ -18,7 +18,7 @@ int size_of(const struct ParserState *ptr_ps, struct Type type)
 			fprintf(stderr, "function type does not have size\n");
 			exit(EXIT_FAILURE);
 		case STRUCT_:
-			if (0 /* is local struct */) {
+			if ((0)) { /* is local struct */
 				unsupported("local struct");
 			}
 			const char *tag = type.struct_tag;
@@ -50,7 +50,7 @@ int align_of(const struct ParserState *ptr_ps, struct Type type)
 			fprintf(stderr, "function type does not have size or alignment\n");
 			exit(EXIT_FAILURE);
 		case STRUCT_:
-			if (0 /* is local struct */) {
+			if ((0)) { /* is local struct */
 				unsupported("local struct");
 			}
 			const char *tag = type.struct_tag;
