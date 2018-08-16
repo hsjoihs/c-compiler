@@ -285,3 +285,12 @@ struct Toplevel {
 struct UntypedExpression parse_expression(const struct Token **ptr_tokvec);
 int isAssign(enum TokenKind opkind);
 struct Type *parse_type_specifier(const struct Token **ptr_tokvec);
+
+struct SizeAndAlignment {
+	int size;
+	int alignment;
+};
+
+struct SizeAndAlignment
+get_size_alignment_offsets(const struct SizeAndAlignment *inner_type_vec,
+                           int **ptr_offset_vec, int length);

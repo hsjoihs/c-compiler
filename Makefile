@@ -7,7 +7,7 @@ ifeq ($(UNAME_S),Darwin)
 endif
 
 notest2:
-	gcc -Wall -Wextra codegen.c parse_toplevel.c parse_statement.c codegen_expression.c main.c vector.c typecheck_expression.c parse_expression.c error.c type.c map.c print_x86_64.c $(CCFLAGS) lexer.c -o out/compiler.out
+	gcc -Wall -Wextra codegen.c alignment.c parse_toplevel.c parse_statement.c codegen_expression.c main.c vector.c typecheck_expression.c parse_expression.c error.c type.c map.c print_x86_64.c $(CCFLAGS) lexer.c -o out/compiler.out
 
 test_all_:
 	make supplement
@@ -80,7 +80,7 @@ notest:
 
 warn:
 	make format
-	clang -Wall -Wextra -Wimplicit-fallthrough -Weverything -Wno-padded -Wno-missing-prototypes -Wno-switch-enum codegen.c parse_toplevel.c parse_statement.c codegen_expression.c main.c vector.c typecheck_expression.c parse_expression.c error.c type.c map.c print_x86_64.c $(CCFLAGS) lexer.c -o out/compiler.out
+	clang -Wall -Wextra -Wimplicit-fallthrough -Weverything -Wno-padded -Wno-missing-prototypes -Wno-switch-enum codegen.c alignment.c parse_toplevel.c parse_statement.c codegen_expression.c main.c vector.c typecheck_expression.c parse_expression.c error.c type.c map.c print_x86_64.c $(CCFLAGS) lexer.c -o out/compiler.out
 	clang -Wall -Wextra -Wimplicit-fallthrough -Weverything -Wno-padded -Wno-missing-prototypes -Wno-switch-enum assembly_sandbox.c print_x86_64.c $(CCFLAGS) -o out/assembly_sandbox.out
 	
 
