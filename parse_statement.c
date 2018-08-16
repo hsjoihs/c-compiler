@@ -261,6 +261,17 @@ struct Statement parse_compound_statement(struct ParserState *ptr_ps,
 
 				return statement;
 			} else if (can_start_a_type(tokvec)) {
+				struct Type *optional_ptr_type =
+				    try_parse_type_specifier_and_semicolon(&tokvec);
+				if (optional_ptr_type) {
+					struct Type type = *optional_ptr_type;
+					if (type.type_category == STRUCT_) {
+						unsupported("struct {} inside compound statement");
+					} else {
+						continue;
+					}
+				}
+
 				struct Type vartype;
 
 				const char *str;
