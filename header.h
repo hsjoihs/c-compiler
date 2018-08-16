@@ -76,7 +76,7 @@ struct Token get_token(const char **ptr_to_str);
 
 struct ParamInfo;
 
-enum TypeCategory { INT_ = 1, PTR_, ARRAY, FN, CHAR_ };
+enum TypeCategory { INT_ = 1, PTR_, ARRAY, FN, CHAR_, STRUCT_ };
 
 struct Type {
 	enum TypeCategory type_category;
@@ -87,6 +87,7 @@ struct Type {
 	 .vector points to the array of (ParamInfo*).
 	 if .vector itself is NULL, that means there is no info.
 	 */
+	const char *struct_tag;
 };
 
 struct ParamInfo {
@@ -273,7 +274,10 @@ enum ToplevelCategory {
 struct Toplevel {
 	enum ToplevelCategory category;
 	const char *declarator_name;
+
 	struct Type declarator_type;
+	/* used when it is TOPLEVEL_VAR_DEFINITION or TOPLEVEL_TYPE_DECLARATION */
+
 	struct {
 		struct Statement sta;
 		struct Vector offsets_and_types;

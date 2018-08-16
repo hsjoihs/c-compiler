@@ -23,6 +23,8 @@ int size_of(struct Type type)
 		case FN:
 			fprintf(stderr, "function type does not have size\n");
 			exit(EXIT_FAILURE);
+		case STRUCT_:
+			unsupported("size of struct");
 	}
 }
 
@@ -40,6 +42,8 @@ int align_of(struct Type type)
 		case FN:
 			fprintf(stderr, "function type does not have size or alignment\n");
 			exit(EXIT_FAILURE);
+		case STRUCT_:
+			unsupported("width of struct");
 	}
 }
 
@@ -103,6 +107,9 @@ void debug_print_type(struct Type type)
 			return;
 		case CHAR_:
 			fprintf(stderr, "char");
+			return;
+		case STRUCT_:
+			fprintf(stderr, "struct %s", type.struct_tag);
 			return;
 		case ARRAY:
 			fprintf(stderr, "array (length %d) of ", type.array_length);

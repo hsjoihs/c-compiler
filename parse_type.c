@@ -16,9 +16,8 @@ static struct Type from_type3_to_type(const void **type3)
 	type.type_category = elem.type_category;
 	switch (elem.type_category) {
 		case INT_:
-			return type;
-
 		case CHAR_:
+		case STRUCT_:
 			return type;
 
 		case PTR_:
@@ -73,6 +72,16 @@ struct Type *parse_type_specifier(const struct Token **ptr_tokvec)
 	} else if (tok == RES_INT) {
 		ptr->type_category = INT_;
 		++tokvec;
+	} else if (tok == RES_STRUCT) {
+		++tokvec;
+		expect_and_consume(&tokvec, IDENT_OR_RESERVED,
+		                   "identifier after `struct`");
+		const char *ident = tokvec[-1].ident_str;
+		if (tokvec[0].kind == LEFT_BRACE) {
+			unsupported("left brace after struct");
+		}
+		ptr->type_category = STRUCT_;
+		ptr->struct_tag = ident;
 	} else {
 		error_unexpected_token(tokvec, "type name `int` or `char`");
 	}

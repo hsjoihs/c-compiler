@@ -16,6 +16,7 @@ parse_toplevel_definition(struct ParserState *ptr_ps,
 			++tokvec3;
 			struct Toplevel d;
 			d.category = TOPLEVEL_TYPE_DECLARATION;
+			d.declarator_type = *ptr_type;
 			*ptr_tokvec = tokvec3;
 			return d;
 		}
