@@ -34,3 +34,5 @@ int foobar(const char *str, int i, int j)
 	printf(str, i, j);
 	return 0;
 }
+
+int ptrdiff(void *p1, void *p2) { return (char *)p1 - (char *)p2; }
