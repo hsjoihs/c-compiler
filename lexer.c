@@ -117,6 +117,10 @@ static struct Token get_token_raw(const char **ptr_to_str)
 				t.kind = OP_MINUS_MINUS;
 				*ptr_to_str += 2;
 				return t;
+			case '>':
+				t.kind = ARROW;
+				*ptr_to_str += 2;
+				return t;
 			default:
 				t.kind = OP_MINUS;
 				++*ptr_to_str;

@@ -62,7 +62,8 @@ enum TokenKind {
 	LIT_STRING,
 	RES_STRUCT,
 	RES_SIZEOF,
-	DOT
+	DOT,
+	ARROW
 };
 
 struct Token {

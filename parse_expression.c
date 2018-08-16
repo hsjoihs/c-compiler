@@ -422,6 +422,14 @@ parse_postfix_expression(const struct Token **ptr_tokvec)
 			const char *name = tokvec[-1].ident_str;
 
 			expr = dot(expr, name);
+		} else if (tokvec[0].kind == ARROW) {
+			++tokvec;
+
+			expect_and_consume(&tokvec, IDENT_OR_RESERVED,
+			                   "identifier after an arrow operator");
+			const char *name = tokvec[-1].ident_str;
+
+			expr = dot(unary_op_untyped(expr, OP_ASTERISK), name);
 		} else {
 			break;
 		}
