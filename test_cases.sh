@@ -8,6 +8,13 @@ run_test() {
 	if [ $res -ne $3 ]; then { echo "got:" $res; echo "expected:" $3; echo -e "\033[31mFAIL\033[m, at test case" $1: $2; exit 1; }; else echo -e "\033[32mPASS\033[m"; fi
 }
 
+run_test 190 'int main(){return sizeof(int);}' 4
+run_test 191 'int main(){return sizeof(int*);}' 8
+run_test 192 'struct A{int a; int b;}; int main(){ return sizeof(struct A);}' 8
+run_test 193 'struct A{int a; char c; char d; int b;}; int main(){ return sizeof(struct A);}' 12
+run_test 194 'struct A{int a; int *b; int c;}; int main(){return sizeof(struct A [5]);}' 120
+
+
 run_test 169 'int a(int b){ return b; }int main(){int i; i=1; a(i == 1? 1 : 2); return 0;}' 0
 run_test 170 'int a(int b){ return b; }int main(){int i; for (i = 1; i < 11; i++) { a(i == 1? 1 : 2); } return 0;}' 0
 run_test 171 'int a(int b){ return b; }int main(){int i; i=1; return a(i == 1? 174 : 2);}' 174
@@ -30,6 +37,7 @@ run_test 186 'struct A{int a; int b;};  struct A a[10]; int main(){return 174;}'
 run_test 187 'int ptrdiff();struct A{int a; int b;}; int main(){ struct A *p; return ptrdiff(p+1, p);}' 8
 run_test 188 'int ptrdiff();struct A{int a; char c; char d; int b;}; int main(){ struct A *p; return ptrdiff(p+1, p);}' 12
 run_test 189 'int ptrdiff();struct A{int a; int *b; int c;};  struct A a[1][5]; int main(){return ptrdiff(a+1, a);}' 120
+
 
 
 run_test 162 'int printf();int a() {return 3;}int main() {int i; printf("%d %d", i, a()); return 0;}' 0

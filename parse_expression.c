@@ -313,6 +313,18 @@ parse_unary_expression(const struct Token **ptr_tokvec)
 		struct UntypedExpression new_expr = unary_op_untyped(expr, opkind);
 		*ptr_tokvec = tokvec;
 		return new_expr;
+	} else if (tokvec[0].kind == RES_SIZEOF && tokvec[1].kind == LEFT_PAREN &&
+	           can_start_a_type(tokvec + 2)) {
+		tokvec += 2;
+		struct Type type = parse_type_name(&tokvec);
+		expect_and_consume(&tokvec, RIGHT_PAREN,
+		                   "closing parenthesis of sizeof(typename)");
+
+		struct UntypedExpression expr;
+		expr.category = SIZEOF_TYPE;
+		expr.operand_of_sizeof = type;
+		*ptr_tokvec = tokvec;
+		return expr;
 	} else {
 
 		struct UntypedExpression expr = parse_postfix_expression(&tokvec);

@@ -337,6 +337,13 @@ struct Expression typecheck_expression(const struct ParserState *ptr_ps,
                                        struct UntypedExpression uexpr)
 {
 	switch (uexpr.category) {
+		case SIZEOF_TYPE: {
+			struct Expression expr;
+			expr.details.type = INT_TYPE();
+			expr.int_value = size_of(ptr_ps, uexpr.operand_of_sizeof);
+			expr.category = INT_VALUE;
+			return expr;
+		}
 		case UNARY_EXPR: {
 			switch (uexpr.operator) {
 				case OP_NOT:
