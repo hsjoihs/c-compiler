@@ -126,9 +126,27 @@ struct Type *parse_type_specifier(const struct Token **ptr_tokvec)
 	return ptr;
 }
 
-/* `int a`, `int *a` */
+struct Type parse_declarator_or_type_name(const struct Token **ptr_tokvec,
+                                          const char **ptr_to_ident_str);
+
 struct Type parse_declarator(const struct Token **ptr_tokvec,
                              const char **ptr_to_ident_str)
+{
+	assert(ptr_to_ident_str);
+	return parse_declarator_or_type_name(ptr_tokvec, ptr_to_ident_str);
+}
+
+struct Type parse_type_name(const struct Token **ptr_tokvec)
+{
+	return parse_declarator_or_type_name(ptr_tokvec, 0);
+}
+
+/*
+    when ptr_to_ident_str is a valid pointer: `int a`, `int *a`
+    when ptr_to_ident_str is NULL: `int `, `int *`
+*/
+struct Type parse_declarator_or_type_name(const struct Token **ptr_tokvec,
+                                          const char **ptr_to_ident_str)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 
@@ -141,11 +159,13 @@ struct Type parse_declarator(const struct Token **ptr_tokvec,
 		asterisk_num++;
 	}
 
-	if (tokvec[0].kind == IDENT_OR_RESERVED) {
-		*ptr_to_ident_str = tokvec[0].ident_str;
-		++tokvec;
-	} else {
-		error_unexpected_token(tokvec, "an identifier in the declarator");
+	if (ptr_to_ident_str) {
+		if (tokvec[0].kind == IDENT_OR_RESERVED) {
+			*ptr_to_ident_str = tokvec[0].ident_str;
+			++tokvec;
+		} else {
+			error_unexpected_token(tokvec, "an identifier in the declarator");
+		}
 	}
 
 	while (1) {

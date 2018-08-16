@@ -147,6 +147,7 @@ int can_start_a_type(const struct Token *tokvec);
 
 struct Type parse_declarator(const struct Token **ptr_tokvec,
                              const char **ptr_to_ident_str);
+struct Type parse_type_name(const struct Token **ptr_tokvec);
 
 _Noreturn void unsupported(const char *str);
 
