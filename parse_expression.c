@@ -337,6 +337,8 @@ static struct UntypedExpression
 parse_postfix_expression(const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
+
+	struct UntypedExpression expr;
 	if (tokvec[0].kind == IDENT_OR_RESERVED && tokvec[1].kind == LEFT_PAREN) {
 		const char *ident_str = tokvec[0].ident_str;
 
@@ -377,14 +379,13 @@ parse_postfix_expression(const struct Token **ptr_tokvec)
 		}
 		*ptr_tokvec = tokvec;
 
-		struct UntypedExpression expr;
 		expr.category = FUNCCALL;
 		expr.arg_exprs_vec = arguments;
 		expr.var_name = ident_str;
-		return expr;
+	} else {
+		expr = parse_primary_expression(&tokvec);
 	}
 
-	struct UntypedExpression expr = parse_primary_expression(&tokvec);
 	while (1) {
 		if (tokvec[0].kind == LEFT_BRACKET) {
 			++tokvec;
