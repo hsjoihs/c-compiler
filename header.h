@@ -306,6 +306,8 @@ struct Toplevel {
 		struct Type ret_type;
 		int capacity;
 	} func;
+
+	int size_of_declarator_type;
 };
 
 struct UntypedExpression parse_expression(const struct Token **ptr_tokvec);

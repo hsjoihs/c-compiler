@@ -63,6 +63,9 @@ parse_toplevel_definition(struct ParserState *ptr_ps,
 		struct Toplevel d;
 		d.category = TOPLEVEL_VAR_DEFINITION;
 		d.declarator_type = *optional_ptr_type;
+		/* d.size_of_declarator_type need not be set; it is not a real variable
+		 */
+
 		record_if_global_struct_declaration(ptr_ps, d.declarator_type);
 		d.declarator_name = 0;
 		return d;
@@ -91,6 +94,7 @@ parse_toplevel_definition(struct ParserState *ptr_ps,
 		d.category = TOPLEVEL_VAR_DEFINITION;
 		d.declarator_name = declarator_name;
 		d.declarator_type = declarator_type;
+		d.size_of_declarator_type = size_of(declarator_type);
 		return d;
 	}
 
