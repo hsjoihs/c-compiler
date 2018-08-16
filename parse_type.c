@@ -60,6 +60,20 @@ struct TypeAndIdent *parse_param(const struct Token **ptr_tokvec)
 	return ptr_param_info;
 }
 
+struct Type *
+try_parse_type_specifier_and_semicolon(const struct Token **ptr_tokvec)
+{
+	const struct Token *tokvec3 = *ptr_tokvec;
+	struct Type *ptr_type = parse_type_specifier(&tokvec3);
+	if (tokvec3[0].kind == SEMICOLON) {
+		++tokvec3;
+		*ptr_tokvec = tokvec3;
+		return ptr_type;
+	} else {
+		return 0;
+	}
+}
+
 struct Type *parse_type_specifier(const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;

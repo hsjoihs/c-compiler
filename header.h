@@ -305,3 +305,6 @@ struct SizeAndAlignment {
 struct SizeAndAlignment
 get_size_alignment_offsets(const struct SizeAndAlignment *inner_type_vec,
                            int **ptr_offset_vec, int length);
+
+struct Type *
+try_parse_type_specifier_and_semicolon(const struct Token **ptr_tokvec);

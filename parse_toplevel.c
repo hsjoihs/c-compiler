@@ -7,20 +7,19 @@ static struct Toplevel
 parse_toplevel_definition(struct ParserState *ptr_ps,
                           const struct Token **ptr_tokvec)
 {
-	const char *declarator_name;
-	const struct Token *tokvec2 = *ptr_tokvec;
-	{
-		const struct Token *tokvec3 = tokvec2;
-		struct Type *ptr_type = parse_type_specifier(&tokvec3);
-		if (tokvec3[0].kind == SEMICOLON) {
-			++tokvec3;
-			struct Toplevel d;
-			d.category = TOPLEVEL_TYPE_DECLARATION;
-			d.declarator_type = *ptr_type;
-			*ptr_tokvec = tokvec3;
-			return d;
-		}
+	struct Type *optional_ptr_type =
+	    try_parse_type_specifier_and_semicolon(ptr_tokvec);
+
+	if (optional_ptr_type) {
+		struct Toplevel d;
+		d.category = TOPLEVEL_TYPE_DECLARATION;
+		d.declarator_type = *optional_ptr_type;
+		return d;
 	}
+
+	const struct Token *tokvec2 = *ptr_tokvec;
+
+	const char *declarator_name;
 	struct Type declarator_type = parse_declarator(&tokvec2, &declarator_name);
 
 	if (declarator_type.type_category != FN) {
