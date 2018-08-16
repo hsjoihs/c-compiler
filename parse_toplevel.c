@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int size_of(struct Type type)
+int size_of(const struct ParserState *ptr_ps, struct Type type)
 {
 	switch (type.type_category) {
 		case INT_:
@@ -13,7 +13,7 @@ int size_of(struct Type type)
 		case CHAR_:
 			return 1;
 		case ARRAY:
-			return type.array_length * size_of(*type.derived_from);
+			return type.array_length * size_of(ptr_ps, *type.derived_from);
 		case FN:
 			fprintf(stderr, "function type does not have size\n");
 			exit(EXIT_FAILURE);
@@ -22,7 +22,7 @@ int size_of(struct Type type)
 	}
 }
 
-int align_of(struct Type type)
+int align_of(const struct ParserState *ptr_ps, struct Type type)
 {
 	switch (type.type_category) {
 		case INT_:
@@ -32,7 +32,7 @@ int align_of(struct Type type)
 		case CHAR_:
 			return 1;
 		case ARRAY:
-			return align_of(*type.derived_from);
+			return align_of(ptr_ps, *type.derived_from);
 		case FN:
 			fprintf(stderr, "function type does not have size or alignment\n");
 			exit(EXIT_FAILURE);
@@ -54,8 +54,8 @@ static void record_global_struct_declaration(struct ParserState *ptr_ps,
 	int i = 0;
 	for (; i < types_and_idents.length; i++) {
 		const struct TypeAndIdent *ptr_vec_i = types_and_idents.vector[i];
-		inner_type_vec[i].size = size_of(ptr_vec_i->type);
-		inner_type_vec[i].alignment = align_of(ptr_vec_i->type);
+		inner_type_vec[i].size = size_of(ptr_ps, ptr_vec_i->type);
+		inner_type_vec[i].alignment = align_of(ptr_ps, ptr_vec_i->type);
 	}
 
 	int *offset_vec;
@@ -132,7 +132,7 @@ parse_toplevel_definition(struct ParserState *ptr_ps,
 		d.category = TOPLEVEL_VAR_DEFINITION;
 		d.declarator_name = declarator_name;
 		d.declarator_type = declarator_type;
-		d.size_of_declarator_type = size_of(declarator_type);
+		d.size_of_declarator_type = size_of(ptr_ps, declarator_type);
 		return d;
 	}
 

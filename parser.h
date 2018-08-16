@@ -34,5 +34,5 @@ struct Statement parse_compound_statement(struct ParserState *ptr_ps,
 int add_local_var_to_scope(struct ParserState *ptr_ps,
                            const struct Type vartype, const char *str);
 
-int size_of(struct Type type);
-int align_of(struct Type type);
+int size_of(const struct ParserState *ptr_ps, struct Type type);
+int align_of(const struct ParserState *ptr_ps, struct Type type);

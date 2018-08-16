@@ -85,9 +85,10 @@ static struct Expression simple_binary_op(struct Expression expr,
 	return new_expr;
 }
 
-static struct Expression pointer_plusorminus_int(struct Expression expr,
-                                                 struct Expression expr2,
-                                                 enum TokenKind kind)
+static struct Expression
+pointer_plusorminus_int(const struct ParserState *ptr_ps,
+                        struct Expression expr, struct Expression expr2,
+                        enum TokenKind kind)
 {
 	struct Expression *ptr_expr1 = calloc(1, sizeof(struct Expression));
 	struct Expression *ptr_expr2 = calloc(1, sizeof(struct Expression));
@@ -101,12 +102,13 @@ static struct Expression pointer_plusorminus_int(struct Expression expr,
 	new_expr.ptr2 = ptr_expr2;
 	new_expr.ptr3 = 0;
 	new_expr.size_info_for_pointer_arith =
-	    size_of(deref_type(expr.details.type));
+	    size_of(ptr_ps, deref_type(expr.details.type));
 
 	return new_expr;
 }
 
-static struct Expression combine_by_add(struct Expression expr,
+static struct Expression combine_by_add(const struct ParserState *ptr_ps,
+                                        struct Expression expr,
                                         struct Expression expr2)
 {
 	struct Type type1 = expr.details.type;
@@ -117,20 +119,21 @@ static struct Expression combine_by_add(struct Expression expr,
 			return simple_binary_op(expr, expr2, OP_PLUS, INT_TYPE());
 		} else if (is_pointer(type2)) {
 			/* swapped */
-			return pointer_plusorminus_int(expr2, expr, OP_PLUS);
+			return pointer_plusorminus_int(ptr_ps, expr2, expr, OP_PLUS);
 		}
 
 	} else if (is_pointer(type1)) {
 
 		expect_type(expr2.details.type, INT_TYPE(),
 		            "cannot add a pointer to a pointer");
-		return pointer_plusorminus_int(expr, expr2, OP_PLUS);
+		return pointer_plusorminus_int(ptr_ps, expr, expr2, OP_PLUS);
 	}
 	fprintf(stderr, "fail\n");
 	exit(EXIT_FAILURE);
 }
 
-static struct Expression combine_by_sub(struct Expression expr,
+static struct Expression combine_by_sub(const struct ParserState *ptr_ps,
+                                        struct Expression expr,
                                         struct Expression expr2)
 {
 	struct Type type1 = expr.details.type;
@@ -149,7 +152,7 @@ static struct Expression combine_by_sub(struct Expression expr,
 		if (is_compatible(type2, INT_TYPE())) {
 
 			/* pointer minus int */
-			return pointer_plusorminus_int(expr, expr2, OP_MINUS);
+			return pointer_plusorminus_int(ptr_ps, expr, expr2, OP_MINUS);
 		} else {
 			/* pointer minus pointer */
 
@@ -165,7 +168,7 @@ static struct Expression combine_by_sub(struct Expression expr,
 			new_expr.ptr2 = ptr_expr2;
 			new_expr.ptr3 = 0;
 			new_expr.size_info_for_pointer_arith =
-			    size_of(deref_type(expr.details.type));
+			    size_of(ptr_ps, deref_type(expr.details.type));
 
 			return new_expr;
 		}
@@ -547,14 +550,14 @@ struct Expression typecheck_expression(const struct ParserState *ptr_ps,
 					    typecheck_expression(ptr_ps, *uexpr.ptr1);
 					struct Expression expr2 =
 					    typecheck_expression(ptr_ps, *uexpr.ptr2);
-					return combine_by_add(expr, expr2);
+					return combine_by_add(ptr_ps, expr, expr2);
 				}
 				case OP_MINUS: {
 					struct Expression expr =
 					    typecheck_expression(ptr_ps, *uexpr.ptr1);
 					struct Expression expr2 =
 					    typecheck_expression(ptr_ps, *uexpr.ptr2);
-					return combine_by_sub(expr, expr2);
+					return combine_by_sub(ptr_ps, expr, expr2);
 				}
 				case OP_AND_AND: {
 					struct Expression first_expr =

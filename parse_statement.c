@@ -20,7 +20,8 @@ static struct Expression integer_1(void)
 int add_local_var_to_scope(struct ParserState *ptr_ps,
                            const struct Type vartype, const char *str)
 {
-	ptr_ps->newest_offset -= size_of(vartype) < 4 ? 4 : size_of(vartype);
+	ptr_ps->newest_offset -=
+	    size_of(ptr_ps, vartype) < 4 ? 4 : size_of(ptr_ps, vartype);
 
 	struct Map map_ = ptr_ps->scope_chain.var_table;
 
