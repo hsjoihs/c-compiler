@@ -2,13 +2,13 @@
 #include <assert.h>
 #include <stdlib.h>
 
-struct Vector init_vector(void)
+struct Vector *init_vector_(void)
 {
-	struct Vector res;
-	res.length = 0;
-	res._allocated_length = 256;
-	res.vector = calloc(res._allocated_length, sizeof(void *));
-	return res;
+	struct Vector *ptr_res = calloc(1, sizeof(struct Vector));
+	ptr_res->length = 0;
+	ptr_res->_allocated_length = 256;
+	ptr_res->vector = calloc(ptr_res->_allocated_length, sizeof(void *));
+	return ptr_res;
 }
 
 void extend_vector(struct Vector *ptr)
