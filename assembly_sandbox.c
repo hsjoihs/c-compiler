@@ -59,8 +59,7 @@ int main()
 	gen_write_to_local(-8);
 	gen_discard();
 
-	puts(
-	     "  movl -4(%rbp), %eax\n"
+	puts("  movl -4(%rbp), %eax\n"
 	     "  addl $168, %eax\n"
 	     "  movl %eax, %edx\n"
 	     "  movl -8(%rbp), %eax\n"
