@@ -112,7 +112,7 @@ struct Type *parse_type_specifier(const struct Token **ptr_tokvec)
 			expect_and_consume(&tokvec, SEMICOLON,
 			                   "semicolon after the declarator inside struct");
 			struct TypeAndIdent *ptr_t_and_i =
-			    calloc(1, sizeof(struct TypeAndIdent *));
+			    calloc(1, sizeof(struct TypeAndIdent));
 			ptr_t_and_i->type = t;
 			ptr_t_and_i->ident_str = ident_str;
 
