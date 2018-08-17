@@ -120,11 +120,7 @@ int size_of_basic(struct Type type);
 
 struct Type INT_TYPE(void);
 
-void expect_type(struct Type actual_type, struct Type expected_type,
-                 const char *message);
-
 struct Type deref_type(struct Type t);
-int is_compatible(struct Type t1, struct Type t2);
 int is_pointer(struct Type t);
 struct Type ptr_of_type_to_ptr_to_type(struct Type *ptr_type);
 
