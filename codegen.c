@@ -189,7 +189,10 @@ static void print_statement(struct PrinterState *ptr_prs,
 			gen_discard();
 			gen_label(label1);
 			print_expression(ptr_prs, sta.expr2); /* expression2 */
-			gen_while_part2(label1, break_label);
+
+			gen_discard();
+			gen_if_zero_jmp_4byte(break_label, -8);
+
 			struct Statement inner_s = *sta.inner_statement;
 			print_statement(ptr_prs, inner_s);
 			gen_label(cont_label);

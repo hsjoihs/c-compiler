@@ -77,13 +77,6 @@ void gen_discard(void)
 	printf("  addq $8, %%rsp\n");
 }
 
-void gen_while_part2(int label1, int label2)
-{
-	printf("//gen_while_part2(%d, %d)\n", label1, label2);
-	printf("  addq $8, %%rsp\n");
-	gen_if_zero_jmp_4byte(label2, -8);
-}
-
 /* push what's on local mem */
 void gen_push_from_local_4byte(int offset)
 {
