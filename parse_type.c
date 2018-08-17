@@ -191,11 +191,21 @@ struct Type parse_declarator_or_type_name(const struct Token **ptr_tokvec,
 		}
 
 		++tokvec;
-		if (tokvec[0].kind == RIGHT_PAREN) {
+		if (tokvec[0].kind == RIGHT_PAREN) { /* NO INFO */
 			++tokvec;
 			TypeNode f;
 			f.type_category = FN;
 			f.param_infos.vector = (const void **)0; /* crucial */
+			TypeNode *ptr = calloc(1, sizeof(TypeNode));
+			*ptr = f;
+			push_vector(&vec, ptr);
+		} else if (tokvec[0].kind == RES_VOID &&
+		           tokvec[1].kind == RIGHT_PAREN) { /* EXPLICITLY EMPTY */
+			tokvec += 2;
+			TypeNode f;
+			f.type_category = FN;
+			f.param_infos.vector = calloc(1, sizeof(struct TypeAndIdent *));
+			f.param_infos.length = 0;
 			TypeNode *ptr = calloc(1, sizeof(TypeNode));
 			*ptr = f;
 			push_vector(&vec, ptr);

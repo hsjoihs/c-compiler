@@ -15,6 +15,7 @@ run_test 206 'int main(){int *p; int a; p = &a; return p && &p;}' 1
 run_test 207 'int main(){int *p; int a; p = &a; return p || &p;}' 1
 run_test 208 'int main(){int *p; int a; p = &a; return p?174:1;}' 174
 run_test 209 'int main(){int *p; p = 0; return p?174:1;}' 1
+run_test 210 'int main(void){return 174;}' 174
 
 run_test 190 'int main(){return sizeof(int);}' 4
 run_test 191 'int main(){return sizeof(int*);}' 8

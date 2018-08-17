@@ -35,8 +35,7 @@ int size_of_basic(struct Type type)
 			        "array, function or struct type is not a basic type\n");
 			exit(EXIT_FAILURE);
 		case VOID_:
-			fprintf(stderr,
-			        "size of `void` is never known\n");
+			fprintf(stderr, "size of `void` is never known\n");
 			exit(EXIT_FAILURE);
 	}
 }
