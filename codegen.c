@@ -135,7 +135,9 @@ static void print_statement(struct PrinterState *ptr_prs,
 			struct Expression expr = sta.expr1;
 			print_expression(ptr_prs, expr);
 
-			gen_do_while_final(label1, break_label);
+			gen_discard();
+			gen_if_nonzero_jmp_4byte(label1, -8);
+			gen_label(break_label);
 
 			ptr_prs->break_label_name = stashed_break_label;
 			ptr_prs->continue_label_name = stashed_continue_label;
@@ -160,7 +162,8 @@ static void print_statement(struct PrinterState *ptr_prs,
 
 			print_expression(ptr_prs, expr);
 
-			gen_while_part2(label1, break_label);
+			gen_discard();
+			gen_if_zero_jmp_4byte(break_label, -8);
 
 			print_statement(ptr_prs, inner_s);
 

@@ -15,7 +15,6 @@ void gen_push_ret_of_4byte(const char *fname);
 void gen_pop_to_reg_4byte(const char *str);
 void gen_write_register_to_local_4byte(const char *str, int offset);
 void gen_label(int label1);
-void gen_do_while_final(int label1, int label2);
 void gen_while_part2(int label1, int label2);
 void gen_discard(void);
 void gen_push_address_of_local(int offset);

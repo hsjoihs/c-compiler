@@ -71,15 +71,6 @@ void gen_label(int label1)
 	printf(".L%d:\n", label1);
 }
 
-void gen_do_while_final(int label1, int label2)
-{
-	printf("//gen_do_while_final(%d, %d)\n", label1, label2);
-	printf("  addq $8, %%rsp\n");
-	gen_if_nonzero_jmp_4byte(label1, -8);
-
-	printf(".L%d:\n", label2);
-}
-
 void gen_discard(void)
 {
 	printf("//gen_discard()\n");
