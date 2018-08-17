@@ -78,7 +78,8 @@ static void print_statement(struct PrinterState *ptr_prs,
 			struct Expression expr = sta.expr1;
 			print_expression(ptr_prs, expr);
 
-			gen_if_else_part1(label1, label2);
+			gen_if_zero_jmp_4byte(label1, 0);
+			gen_discard();
 
 			struct Statement inner_s =
 			    *(const struct Statement *)sta.statement_vector.vector[0];
@@ -102,7 +103,8 @@ static void print_statement(struct PrinterState *ptr_prs,
 			struct Expression expr = sta.expr1;
 			print_expression(ptr_prs, expr);
 
-			gen_if_else_part1(label1, label2);
+			gen_if_zero_jmp_4byte(label1, 0);
+			gen_discard();
 
 			struct Statement inner_s = *sta.inner_statement;
 			print_statement(ptr_prs, inner_s);

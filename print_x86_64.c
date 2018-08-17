@@ -405,34 +405,6 @@ void gen_if_nonzero_jmp_4byte(int label1, int offset)
 	printf("  jne .L%d\n", label1);
 }
 
-void gen_ternary_part1(int label1, int label2)
-{
-	printf("//gen_ternary_part1(%d, %d)\n", label1, label2);
-	gen_if_zero_jmp_4byte(label1, 0);
-}
-
-void gen_ternary_part2(int label1, int label2)
-{
-	printf("//gen_ternary_part2(%d, %d)\n", label1, label2);
-	printf("  jmp .L%d\n", label2);
-	printf(".L%d:\n", label1);
-}
-
-void gen_ternary_part3(int label1, int label2)
-{
-	printf("//gen_ternary_part3(%d, %d)\n", label1, label2);
-	printf(".L%d:\n", label2);
-	gen_discard2nd_8byte();
-}
-
-/* consumes the top of the stack and branch */
-void gen_if_else_part1(int label1, int label2)
-{
-	printf("//gen_if_else_part1(%d, %d);\n", label1, label2);
-	gen_if_zero_jmp_4byte(label1, 0);
-	printf("  addq $8, %%rsp\n");
-}
-
 void gen_push_address_of_local(int offset)
 {
 	assert(offset < 0);
@@ -652,17 +624,9 @@ void gen_push_address_of_str(int strnum)
 	       strnum);
 }
 
-void gen_logical_OR_part1(int label1)
-{
-	printf("//gen_logical_OR_part1(%d)\n", label1);
-	gen_if_nonzero_jmp_4byte(label1, 0);
-}
-
 void gen_logical_OR_part2(int label1, int label2)
 {
 	printf("//gen_logical_OR_part2(%d, %d)\n", label1, label2);
-	gen_discard();
-	gen_if_nonzero_jmp_4byte(label1, -8);
 
 	printf("  movl $0, %%eax\n"
 	       "  jmp .L%d\n",

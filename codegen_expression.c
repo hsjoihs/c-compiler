@@ -244,8 +244,10 @@ void print_expression(struct PrinterState *ptr_prs, struct Expression expr)
 			int label2 = get_new_label_name(ptr_prs);
 			print_expression(ptr_prs, *expr.ptr1);
 
-			gen_logical_OR_part1(label1);
+			gen_if_nonzero_jmp_4byte(label1, 0);
 			print_expression(ptr_prs, *expr.ptr2);
+			gen_discard();
+			gen_if_nonzero_jmp_4byte(label1, -8);
 			gen_logical_OR_part2(label1, label2);
 			return;
 		}
@@ -333,16 +335,17 @@ void print_expression(struct PrinterState *ptr_prs, struct Expression expr)
 			}
 			return;
 		case CONDITIONAL_EXPR: {
-			print_expression(ptr_prs, *expr.ptr1);
 			int label1 = get_new_label_name(ptr_prs);
 			int label2 = get_new_label_name(ptr_prs);
 
-			gen_ternary_part1(label1, label2);
+			print_expression(ptr_prs, *expr.ptr1);
+			gen_if_zero_jmp_4byte(label1, 0);
 			print_expression(ptr_prs, *expr.ptr2);
-			gen_ternary_part2(label1, label2);
+			gen_jump(label2, "ternary operator");
+			gen_label(label1);
 			print_expression(ptr_prs, *expr.ptr3);
-
-			gen_ternary_part3(label1, label2);
+			gen_label(label2);
+			gen_discard2nd_8byte();
 			return;
 		}
 		case FUNCCALL_EXPR: {
