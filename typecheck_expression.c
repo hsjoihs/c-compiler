@@ -42,6 +42,14 @@ static int is_strictly_equal(const struct ParserState *ptr_ps, struct Type t1,
 		       (t1.array_length == t2.array_length);
 	}
 
+	if (t1.type_category == STRUCT_ && t2.type_category == STRUCT_) {
+		if ((0)) { /* both are local */
+			unsupported("locally declared struct");
+		}
+		return strcmp(t1.struct_tag, t2.struct_tag) == 0 &&
+		       lookup(ptr_ps->global_struct_tag_map, t1.struct_tag);
+	}
+
 	return 0;
 }
 
