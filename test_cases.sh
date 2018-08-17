@@ -8,6 +8,8 @@ run_test() {
 	if [ $res -ne $3 ]; then { echo "got:" $res; echo "expected:" $3; echo -e "\033[31mFAIL\033[m, at test case" $1: $2; exit 1; }; else echo -e "\033[32mPASS\033[m"; fi
 }
 
+run_test 203 'int ptrdiff(); int main(){int *p; p = 0; return ptrdiff(p+1, p);}' 4
+
 run_test 190 'int main(){return sizeof(int);}' 4
 run_test 191 'int main(){return sizeof(int*);}' 8
 run_test 192 'struct A{int a; int b;}; int main(){ return sizeof(struct A);}' 8

@@ -159,6 +159,10 @@ static void print_op_pointer_plusminus_int(int is_plus, int size)
 void print_expression(struct PrinterState *ptr_prs, struct Expression expr)
 {
 	switch (expr.category) {
+		case NULLPTR: {
+			gen_push_nullptr();
+			return;
+		}
 		case STRUCT_AND_OFFSET: {
 			print_expression_as_lvalue(ptr_prs, expr);
 			gen_discard2nd_8byte();

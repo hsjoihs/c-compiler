@@ -676,6 +676,12 @@ struct Expression typecheck_expression(const struct ParserState *ptr_ps,
 					exit(EXIT_FAILURE);
 				}
 
+				if (is_pointer(expr.details.type) &&
+				    expr2.category == INT_VALUE && expr2.int_value == 0) {
+					expr2.category = NULLPTR;
+					expr2.details.type = expr.details.type;
+				}
+
 				expect_type(ptr_ps, expr.details.type, expr2.details.type,
 				            "mismatch in assignment operator");
 

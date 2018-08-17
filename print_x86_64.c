@@ -853,3 +853,9 @@ const char *get_reg_name_from_arg_pos_8byte(int counter)
 			assert("cannot happen" && 0);
 	}
 }
+
+void gen_push_nullptr(void)
+{
+	printf("  subq $8, %%rsp\n"
+	       "  movq $0, (%%rsp)\n");
+}
