@@ -33,6 +33,10 @@ static int is_strictly_equal(const struct ParserState *ptr_ps, struct Type t1,
 		return 1;
 	}
 
+	if (t1.type_category == VOID_ && t2.type_category == VOID_) {
+		return 1;
+	}
+
 	if (t1.type_category == PTR_ && t2.type_category == PTR_) {
 		return is_strictly_equal(ptr_ps, *t1.derived_from, *t2.derived_from);
 	}
@@ -68,13 +72,18 @@ static int is_compatible(const struct ParserState *ptr_ps, struct Type t1,
 		return 1;
 	}
 
+	if (t1.type_category == PTR_ && t2.type_category == PTR_) {
+		return t1.derived_from->type_category == VOID_ ||
+		       t2.derived_from->type_category == VOID_;
+	}
+
 	if (t1.type_category == PTR_ && t2.type_category == ARRAY) {
-		return is_strictly_equal(ptr_ps, *t1.derived_from, *t2.derived_from);
+		t2.type_category = PTR_; /* t2 is copied; no problem */
+		return is_compatible(ptr_ps, t1, t2);
 	}
 
 	if (t1.type_category == ARRAY && t2.type_category == PTR_) {
-		return is_strictly_equal(ptr_ps, *t1.derived_from, *t2.derived_from) &&
-		       (t1.array_length == t2.array_length);
+		return is_compatible(ptr_ps, t2, t1);
 	}
 
 	return 0;

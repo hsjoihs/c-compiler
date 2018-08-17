@@ -88,6 +88,9 @@ struct Type *parse_type_specifier(const struct Token **ptr_tokvec)
 	} else if (tok == RES_INT) {
 		ptr->type_category = INT_;
 		++tokvec;
+	} else if (tok == RES_VOID) {
+		ptr->type_category = VOID_;
+		++tokvec;
 	} else if (tok == RES_STRUCT) {
 		++tokvec;
 		expect_and_consume(&tokvec, IDENT_OR_RESERVED,
@@ -258,5 +261,5 @@ struct Type parse_declarator_or_type_name(const struct Token **ptr_tokvec,
 int can_start_a_type(const struct Token *tokvec)
 {
 	return tokvec[0].kind == RES_INT || tokvec[0].kind == RES_CHAR ||
-	       tokvec[0].kind == RES_STRUCT;
+	       tokvec[0].kind == RES_STRUCT || tokvec[0].kind == RES_VOID;
 }
