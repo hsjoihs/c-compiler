@@ -36,3 +36,27 @@ int foobar(const char *str, int i, int j)
 }
 
 int ptrdiff(void *p1, void *p2) { return (char *)p1 - (char *)p2; }
+
+struct TWO_INTS {
+	int a;
+	int b;
+};
+
+int add_two_ints(struct TWO_INTS *p) { return p->a + p->b; }
+
+struct INT_CHAR_CHAR_INT {
+	int a;
+	char c;
+	char d;
+	int b;
+};
+
+int add_two_ints2(struct INT_CHAR_CHAR_INT *p) { return p->a + p->b; }
+
+struct INT_CHAR_CHAR_INT *get_struct_pointer(int a, int b)
+{
+	struct INT_CHAR_CHAR_INT *p = calloc(1, sizeof(struct INT_CHAR_CHAR_INT));
+	p->a = a;
+	p->b = b;
+	return p;
+}

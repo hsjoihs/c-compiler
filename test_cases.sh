@@ -17,6 +17,9 @@ run_test 195 'struct A{int a; int *b; int c;}; struct B{char d; struct A e;}; in
 run_test 196 'int *f(int *p){return p;} int main(){int a[4]; a[0] = 1; f(a)[0]++; f(a)[1] = 172; return a[1]+a[0];}' 174 
 run_test 197 'struct A{char a; int b;}; int main(){struct A a; a.a = 74; return a.a;}' 74
 run_test 198 'struct A{int a; int b;}; int main(){struct A a; a.a = 174; return a.a;}' 174
+run_test 199 'struct A{int a; int b;}; int main(){struct A a; a.a = 174; return a.a;}' 174
+run_test 200 'int add_two_ints(); struct A{int a; int b;}; int main(){struct A a; a.a = 100; a.b = 74; return add_two_ints(&a);}' 174
+run_test 201 'int add_two_ints2(); struct A{int a; char c; char d; int b;}; int main(){struct A a; a.a = 100; a.b = 74; return add_two_ints2(&a);}' 174
 
 
 run_test 169 'int a(int b){ return b; }int main(){int i; i=1; a(i == 1? 1 : 2); return 0;}' 0

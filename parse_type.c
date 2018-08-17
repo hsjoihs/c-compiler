@@ -201,7 +201,7 @@ struct Type parse_declarator_or_type_name(const struct Token **ptr_tokvec,
 		} else if (can_start_a_type(tokvec)) {
 			TypeNode f;
 			f.type_category = FN;
-			
+
 			/* ok, since parse_param returns (struct TypeAndIdent*) */
 			f.param_infos.vector = calloc(100, sizeof(struct TypeAndIdent *));
 
