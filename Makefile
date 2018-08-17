@@ -44,6 +44,7 @@ compile_files:
 	cat misc/nqueen5.c | ./out/compiler.out > s/nqueen5.s
 	gcc s/nqueen5.s s/supplement.s -o out/nqueen5.out
 	./out/nqueen5.out
+	cat misc/vector_test.c | ./out/compiler.out > s/vector_test.s
 
 test_valid:
 	rm out/*.out
