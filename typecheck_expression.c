@@ -428,7 +428,6 @@ struct Expression typecheck_expression(const struct ParserState *ptr_ps,
 
 			struct Vector /* <TypeAndIdent> */ vec =
 			    ptr_info->info.types_and_idents;
-			struct Type type_of_member;
 			int nth_member = -1;
 
 			struct Expression expr;
