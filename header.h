@@ -169,7 +169,8 @@ enum ExprCategory {
 	LOGICAL_AND_EXPR,
 	STRING_LITERAL,
 	STRUCT_AND_OFFSET,
-	NULLPTR
+	NULLPTR,
+	VOID_EXPR
 };
 
 enum UntypedExprCategory {

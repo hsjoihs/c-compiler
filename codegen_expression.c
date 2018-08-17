@@ -159,6 +159,10 @@ static void print_op_pointer_plusminus_int(int is_plus, int size)
 void print_expression(struct PrinterState *ptr_prs, struct Expression expr)
 {
 	switch (expr.category) {
+		case VOID_EXPR: {
+			gen_push_int(123); /* random garbage */
+			return;
+		}
 		case NULLPTR: {
 			gen_push_nullptr();
 			return;
@@ -382,7 +386,14 @@ void print_expression(struct PrinterState *ptr_prs, struct Expression expr)
 						unsupported("Unsupported width");
 				}
 			}
-			gen_push_ret_of_nbyte(size_of_basic(ret_type), ident_str);
+
+			int size;
+			if (ret_type.type_category != VOID_) {
+				size = size_of_basic(ret_type);
+			} else {
+				size = 4; /* for convenience */
+			}
+			gen_push_ret_of_nbyte(size, ident_str);
 
 			return;
 		}

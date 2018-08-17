@@ -18,6 +18,8 @@ run_test 209 'int main(){int *p; p = 0; return p?174:1;}' 1
 run_test 210 'int main(void){return 174;}' 174
 run_test 211 'int main(void){void *p; p = 0; p = p; return 174;}' 174
 run_test 212 'struct A{int a; int b;}; int main(){ struct A *p; void *q1; void *q2; q1 = p; q2 = p+1; char *r1; char *r2; r1 = q1; r2 = q2; return r2-r1;}' 8
+run_test 213 'void f(int *p){*p = 174; return;} int main(void){ int a; f(&a); return a;}' 174
+
 
 run_test 190 'int main(){return sizeof(int);}' 4
 run_test 191 'int main(){return sizeof(int*);}' 8

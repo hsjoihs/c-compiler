@@ -86,7 +86,15 @@ struct Statement parse_statement(struct ParserState *ptr_ps,
 		++tokvec;
 		*ptr_tokvec = tokvec;
 		if (tokvec[0].kind == SEMICOLON) {
-			unsupported("`return;`");
+			++tokvec;
+			struct Expression expr;
+			expr.category = VOID_EXPR;
+
+			struct Statement s;
+			s.category = RETURN_STATEMENT;
+			s.expr1 = expr;
+			*ptr_tokvec = tokvec;
+			return s;
 		} else {
 			struct Expression expr =
 			    typecheck_expression(ptr_ps, parse_expression(&tokvec));

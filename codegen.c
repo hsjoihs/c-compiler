@@ -263,7 +263,12 @@ static void print_toplevel_definition(struct PrinterState *ptr_prs,
 	}
 	print_statement(ptr_prs, sta);
 
-	gen_epilogue_nbyte(size_of_basic(ret_type), ptr_prs->return_label_name);
+	if (ret_type.type_category == VOID_) {
+		gen_label(ptr_prs->return_label_name);
+		printf("  movl $123, %%eax\nleave\nret\n");
+	} else {
+		gen_epilogue_nbyte(size_of_basic(ret_type), ptr_prs->return_label_name);
+	}
 }
 
 void generate(const struct Vector vec)
