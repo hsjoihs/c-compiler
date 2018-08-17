@@ -33,18 +33,28 @@ compile_files:
 	make supplement
 	make notest2
 	cat misc/nqueen2.c | ./out/compiler.out > s/nqueen2.s
-	gcc s/nqueen2.s s/supplement.s -o out/nqueen2.out
+	gcc s/nqueen2.s -o out/nqueen2.out
 	./out/nqueen2.out
 	cat misc/nqueen3.c | ./out/compiler.out > s/nqueen3.s
-	gcc s/nqueen3.s s/supplement.s -o out/nqueen3.out
+	gcc s/nqueen3.s -o out/nqueen3.out
 	./out/nqueen3.out
 	cat misc/nqueen4.c | ./out/compiler.out > s/nqueen4.s
-	gcc s/nqueen4.s s/supplement.s -o out/nqueen4.out
+	gcc s/nqueen4.s  -o out/nqueen4.out
 	./out/nqueen4.out
 	cat misc/nqueen5.c | ./out/compiler.out > s/nqueen5.s
-	gcc s/nqueen5.s s/supplement.s -o out/nqueen5.out
+	gcc s/nqueen5.s  -o out/nqueen5.out
 	./out/nqueen5.out
+	cat misc/nqueen6.c | ./out/compiler.out > s/nqueen6.s
+	gcc s/nqueen6.s -o out/nqueen6.out
+	./out/nqueen6.out
+	cat misc/nqueen7.c | ./out/compiler.out > s/nqueen7.s
+	gcc s/nqueen7.s -o out/nqueen7.out
+	./out/nqueen7.out
+	cat misc/nqueen8.c | ./out/compiler.out > s/nqueen8.s
+	gcc s/nqueen8.s -o out/nqueen8.out
+	./out/nqueen8.out
 	cat misc/vector_test.c | ./out/compiler.out > s/vector_test.s
+	cat misc/vector_test2.c | ./out/compiler.out > s/vector_test2.s
 
 test_valid:
 	rm out/*.out
@@ -84,11 +94,6 @@ warn:
 	clang -Wall -Wextra -Wimplicit-fallthrough -Weverything -Wno-padded -Wno-missing-prototypes -Wno-switch-enum codegen.c alignment.c parse_analyze_toplevel.c parse_analyze_statement.c codegen_expression.c main.c vector.c typecheck_expression.c parse_expression.c error.c type.c parse_type.c map.c print_x86_64.c $(CCFLAGS) lexer.c -o out/compiler.out
 	clang -Wall -Wextra -Wimplicit-fallthrough -Weverything -Wno-padded -Wno-missing-prototypes -Wno-switch-enum assembly_sandbox.c print_x86_64.c $(CCFLAGS) -o out/assembly_sandbox.out
 	
-
-fmt_compile_files:
-	clang-format -i misc/*.c -style=file
-	make compile_files
-
 
 fmt_sandbox:
 	make format
