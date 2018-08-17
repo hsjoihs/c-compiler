@@ -73,6 +73,7 @@ void gen_epilogue_nbyte(int n, int label_name);
 const char *get_reg_name_from_arg_pos_4byte(int counter);
 const char *get_reg_name_from_arg_pos_8byte(int counter);
 void gen_push_nullptr(void);
+void gen_if_zero_jmp_4byte(int label1, int offset);
 
 #ifdef OSX
 #define PREFIX "_"

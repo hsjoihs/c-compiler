@@ -90,9 +90,8 @@ void gen_discard(void)
 void gen_while_part2(int label1, int label2)
 {
 	printf("//gen_while_part2(%d, %d)\n", label1, label2);
-	printf("  addq $8, %%rsp\n"
-	       "  cmpl $0, -8(%%rsp)\n");
-	printf("  je .L%d\n", label2);
+	printf("  addq $8, %%rsp\n");
+	gen_if_zero_jmp_4byte(label2, -8);
 }
 
 /* push what's on local mem */
@@ -393,12 +392,17 @@ void gen_unary(const char *str)
 	printf("  %s (%%rsp)\n", str);
 }
 
+void gen_if_zero_jmp_4byte(int label1, int offset)
+{
+	printf("//gen_if_zero_jmp_4byte(%d, %d)\n", label1, offset);
+	printf("  cmpl $0, %d(%%rsp)\n", offset);
+	printf("  je .L%d\n", label1);
+}
+
 void gen_ternary_part1(int label1, int label2)
 {
 	printf("//gen_ternary_part1(%d, %d)\n", label1, label2);
-	printf("  cmpl $0, (%%rsp)\n"
-	       "  je .L%d\n",
-	       label1);
+	gen_if_zero_jmp_4byte(label1, 0);
 }
 
 void gen_ternary_part2(int label1, int label2)
@@ -419,10 +423,8 @@ void gen_ternary_part3(int label1, int label2)
 void gen_if_else_part1(int label1, int label2)
 {
 	printf("//gen_if_else_part1(%d, %d);\n", label1, label2);
-	printf("  cmpl $0, (%%rsp)\n"
-	       "  je .L%d\n"
-	       "  addq $8, %%rsp\n",
-	       label1);
+	gen_if_zero_jmp_4byte(label1, 0);
+	printf("  addq $8, %%rsp\n");
 }
 
 void gen_push_address_of_local(int offset)
@@ -670,17 +672,14 @@ void gen_logical_OR_part2(int label1, int label2)
 void gen_logical_AND_part1(int label1)
 {
 	printf("//gen_logical_AND_part1(%d)\n", label1);
-
-	printf("  cmpl $0, (%%rsp)\n");
-	printf("  je .L%d\n", label1);
+	gen_if_zero_jmp_4byte(label1, 0);
 }
 
 void gen_logical_AND_part2(int label1, int label2)
 {
 
 	printf("  addq $8, %%rsp\n");
-	printf("  cmpl $0, -8(%%rsp)\n");
-	printf("  je .L%d\n", label1);
+	gen_if_zero_jmp_4byte(label1, -8);
 	printf("  movl $1, %%eax\n"
 	       "  jmp .L%d\n",
 	       label2);
