@@ -257,8 +257,10 @@ void print_expression(struct PrinterState *ptr_prs, struct Expression expr)
 			int label2 = get_new_label_name(ptr_prs);
 			print_expression(ptr_prs, *expr.ptr1);
 
-			gen_logical_AND_part1(label1);
+			gen_if_zero_jmp_4byte(label1, 0);
 			print_expression(ptr_prs, *expr.ptr2);
+			gen_discard();
+			gen_if_zero_jmp_4byte(label1, -8);
 			gen_logical_AND_part2(label1, label2);
 			return;
 		}

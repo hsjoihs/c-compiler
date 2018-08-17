@@ -637,17 +637,9 @@ void gen_logical_OR_part2(int label1, int label2)
 	printf("  movl %%eax, (%%rsp)\n");
 }
 
-void gen_logical_AND_part1(int label1)
-{
-	printf("//gen_logical_AND_part1(%d)\n", label1);
-	gen_if_zero_jmp_4byte(label1, 0);
-}
-
 void gen_logical_AND_part2(int label1, int label2)
 {
 
-	printf("  addq $8, %%rsp\n");
-	gen_if_zero_jmp_4byte(label1, -8);
 	printf("  movl $1, %%eax\n"
 	       "  jmp .L%d\n",
 	       label2);
