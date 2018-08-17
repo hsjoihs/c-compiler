@@ -9,6 +9,12 @@ run_test() {
 }
 
 run_test 203 'int ptrdiff(); int main(){int *p; p = 0; return ptrdiff(p+1, p);}' 4
+run_test 204 'int main(){int *p; p = 0; if(p) {return 4; } return 174;}' 174
+run_test 205 'int main(){int *p; int a; p = &a; if(p) {return 4; } return 174;}' 4
+run_test 206 'int main(){int *p; int a; p = &a; return p && &p;}' 1
+run_test 207 'int main(){int *p; int a; p = &a; return p || &p;}' 1
+run_test 208 'int main(){int *p; int a; p = &a; return p?174:1;}' 174
+run_test 209 'int main(){int *p; p = 0; return p?174:1;}' 1
 
 run_test 190 'int main(){return sizeof(int);}' 4
 run_test 191 'int main(){return sizeof(int*);}' 8
