@@ -78,7 +78,7 @@ static void print_statement(struct PrinterState *ptr_prs,
 			struct Expression expr = sta.expr1;
 			print_expression(ptr_prs, expr);
 
-			gen_if_zero_jmp_4byte(label1, 0);
+			gen_if_zero_jmp_nbyte(size_of_basic(expr.details.type), label1, 0);
 			gen_discard();
 
 			struct Statement inner_s =
@@ -103,7 +103,7 @@ static void print_statement(struct PrinterState *ptr_prs,
 			struct Expression expr = sta.expr1;
 			print_expression(ptr_prs, expr);
 
-			gen_if_zero_jmp_4byte(label1, 0);
+			gen_if_zero_jmp_nbyte(size_of_basic(expr.details.type), label1, 0);
 			gen_discard();
 
 			struct Statement inner_s = *sta.inner_statement;
@@ -136,7 +136,8 @@ static void print_statement(struct PrinterState *ptr_prs,
 			print_expression(ptr_prs, expr);
 
 			gen_discard();
-			gen_if_nonzero_jmp_4byte(label1, -8);
+			gen_if_nonzero_jmp_nbyte(size_of_basic(expr.details.type), label1,
+			                         -8);
 			gen_label(break_label);
 
 			ptr_prs->break_label_name = stashed_break_label;
@@ -163,7 +164,8 @@ static void print_statement(struct PrinterState *ptr_prs,
 			print_expression(ptr_prs, expr);
 
 			gen_discard();
-			gen_if_zero_jmp_4byte(break_label, -8);
+			gen_if_zero_jmp_nbyte(size_of_basic(expr.details.type), break_label,
+			                      -8);
 
 			print_statement(ptr_prs, inner_s);
 
@@ -191,7 +193,8 @@ static void print_statement(struct PrinterState *ptr_prs,
 			print_expression(ptr_prs, sta.expr2); /* expression2 */
 
 			gen_discard();
-			gen_if_zero_jmp_4byte(break_label, -8);
+			gen_if_zero_jmp_nbyte(size_of_basic(sta.expr2.details.type),
+			                      break_label, -8);
 
 			struct Statement inner_s = *sta.inner_statement;
 			print_statement(ptr_prs, inner_s);

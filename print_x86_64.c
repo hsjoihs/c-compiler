@@ -375,42 +375,42 @@ void gen_unary(const char *str)
 	printf("  %s (%%rsp)\n", str);
 }
 
-void gen_if_zero_jmp_4byte(int label1, int offset)
+static void gen_if_zero_jmp_4byte(int label1, int offset)
 {
 	printf("//gen_if_zero_jmp_4byte(%d, %d)\n", label1, offset);
 	printf("  cmpl $0, %d(%%rsp)\n", offset);
 	printf("  je .L%d\n", label1);
 }
 
-void gen_if_nonzero_jmp_4byte(int label1, int offset)
+static void gen_if_nonzero_jmp_4byte(int label1, int offset)
 {
 	printf("//gen_if_nonzero_jmp_4byte(%d, %d)\n", label1, offset);
 	printf("  cmpl $0, %d(%%rsp)\n", offset);
 	printf("  jne .L%d\n", label1);
 }
 
-void gen_if_zero_jmp_8byte(int label1, int offset)
+static void gen_if_zero_jmp_8byte(int label1, int offset)
 {
 	printf("//gen_if_zero_jmp_8byte(%d, %d)\n", label1, offset);
 	printf("  cmpq $0, %d(%%rsp)\n", offset);
 	printf("  je .L%d\n", label1);
 }
 
-void gen_if_nonzero_jmp_8byte(int label1, int offset)
+static void gen_if_nonzero_jmp_8byte(int label1, int offset)
 {
 	printf("//gen_if_nonzero_jmp_8byte(%d, %d)\n", label1, offset);
 	printf("  cmpq $0, %d(%%rsp)\n", offset);
 	printf("  jne .L%d\n", label1);
 }
 
-void gen_if_zero_jmp_1byte(int label1, int offset)
+static void gen_if_zero_jmp_1byte(int label1, int offset)
 {
 	printf("//gen_if_zero_jmp_1byte(%d, %d)\n", label1, offset);
 	printf("  cmpb $0, %d(%%rsp)\n", offset);
 	printf("  je .L%d\n", label1);
 }
 
-void gen_if_nonzero_jmp_1byte(int label1, int offset)
+static void gen_if_nonzero_jmp_1byte(int label1, int offset)
 {
 	printf("//gen_if_nonzero_jmp_1byte(%d, %d)\n", label1, offset);
 	printf("  cmpb $0, %d(%%rsp)\n", offset);
