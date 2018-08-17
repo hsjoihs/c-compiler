@@ -291,9 +291,7 @@ void print_expression(struct PrinterState *ptr_prs, struct Expression expr)
 				}
 
 				case UNARY_OP_AND: {
-					/* pushes address, then pushes value */
-					print_expression_as_lvalue(ptr_prs, *expr.ptr1);
-					gen_discard();
+					print_address_of_lvalue(ptr_prs, *expr.ptr1);
 					return;
 				}
 
