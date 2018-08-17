@@ -37,5 +37,5 @@ int add_local_var_to_scope(struct ParserState *ptr_ps,
 int size_of(const struct ParserState *ptr_ps, struct Type type);
 int align_of(const struct ParserState *ptr_ps, struct Type type);
 
-void expect_type(struct Type actual_type, struct Type expected_type,
-                 const char *message);
+void expect_type(const struct ParserState *ptr_ps, struct Type actual_type,
+                 struct Type expected_type, const char *message);

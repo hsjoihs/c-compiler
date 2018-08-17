@@ -4,13 +4,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-static int is_compatible(struct Type t1, struct Type t2);
+static int is_compatible(const struct ParserState *ptr_ps, struct Type t1,
+                         struct Type t2);
 
-void expect_type(struct Type actual_type, struct Type expected_type,
-                 const char *message)
+void expect_type(const struct ParserState *ptr_ps, struct Type actual_type,
+                 struct Type expected_type, const char *message)
 {
 
-	if (!is_compatible(actual_type, expected_type)) {
+	if (!is_compatible(ptr_ps, actual_type, expected_type)) {
 		fprintf(stderr, "Unmatched type: expected `");
 		debug_print_type(expected_type);
 		fprintf(stderr, "`, but got `");
@@ -21,7 +22,8 @@ void expect_type(struct Type actual_type, struct Type expected_type,
 	}
 }
 
-static int is_strictly_equal(struct Type t1, struct Type t2)
+static int is_strictly_equal(const struct ParserState *ptr_ps, struct Type t1,
+                             struct Type t2)
 {
 	if (t1.type_category == INT_ && t2.type_category == INT_) {
 		return 1;
@@ -32,20 +34,21 @@ static int is_strictly_equal(struct Type t1, struct Type t2)
 	}
 
 	if (t1.type_category == PTR_ && t2.type_category == PTR_) {
-		return is_strictly_equal(*t1.derived_from, *t2.derived_from);
+		return is_strictly_equal(ptr_ps, *t1.derived_from, *t2.derived_from);
 	}
 
 	if (t1.type_category == ARRAY && t2.type_category == ARRAY) {
-		return is_strictly_equal(*t1.derived_from, *t2.derived_from) &&
+		return is_strictly_equal(ptr_ps, *t1.derived_from, *t2.derived_from) &&
 		       (t1.array_length == t2.array_length);
 	}
 
 	return 0;
 }
 
-static int is_compatible(struct Type t1, struct Type t2)
+static int is_compatible(const struct ParserState *ptr_ps, struct Type t1,
+                         struct Type t2)
 {
-	if (is_strictly_equal(t1, t2)) {
+	if (is_strictly_equal(ptr_ps, t1, t2)) {
 		return 1;
 	}
 
@@ -58,11 +61,11 @@ static int is_compatible(struct Type t1, struct Type t2)
 	}
 
 	if (t1.type_category == PTR_ && t2.type_category == ARRAY) {
-		return is_strictly_equal(*t1.derived_from, *t2.derived_from);
+		return is_strictly_equal(ptr_ps, *t1.derived_from, *t2.derived_from);
 	}
 
 	if (t1.type_category == ARRAY && t2.type_category == PTR_) {
-		return is_strictly_equal(*t1.derived_from, *t2.derived_from) &&
+		return is_strictly_equal(ptr_ps, *t1.derived_from, *t2.derived_from) &&
 		       (t1.array_length == t2.array_length);
 	}
 
@@ -179,8 +182,8 @@ static struct Expression combine_by_add(const struct ParserState *ptr_ps,
 	struct Type type1 = expr.details.type;
 	struct Type type2 = expr2.details.type;
 
-	if (is_compatible(type1, INT_TYPE())) {
-		if (is_compatible(type2, INT_TYPE())) {
+	if (is_compatible(ptr_ps, type1, INT_TYPE())) {
+		if (is_compatible(ptr_ps, type2, INT_TYPE())) {
 			return simple_binary_op(expr, expr2, OP_PLUS, INT_TYPE());
 		} else if (is_pointer(type2)) {
 			/* swapped */
@@ -189,7 +192,7 @@ static struct Expression combine_by_add(const struct ParserState *ptr_ps,
 
 	} else if (is_pointer(type1)) {
 
-		expect_type(expr2.details.type, INT_TYPE(),
+		expect_type(ptr_ps, expr2.details.type, INT_TYPE(),
 		            "cannot add a pointer to a pointer");
 		return pointer_plusorminus_int(ptr_ps, expr, expr2, OP_PLUS);
 	}
@@ -204,8 +207,8 @@ static struct Expression combine_by_sub(const struct ParserState *ptr_ps,
 	struct Type type1 = expr.details.type;
 	struct Type type2 = expr2.details.type;
 
-	if (is_compatible(type1, INT_TYPE())) {
-		if (is_compatible(type2, INT_TYPE())) {
+	if (is_compatible(ptr_ps, type1, INT_TYPE())) {
+		if (is_compatible(ptr_ps, type2, INT_TYPE())) {
 			return simple_binary_op(expr, expr2, OP_MINUS, INT_TYPE());
 		} else if (is_pointer(type2)) {
 
@@ -214,7 +217,7 @@ static struct Expression combine_by_sub(const struct ParserState *ptr_ps,
 		}
 
 	} else if (is_pointer(type1)) {
-		if (is_compatible(type2, INT_TYPE())) {
+		if (is_compatible(ptr_ps, type2, INT_TYPE())) {
 
 			/* pointer minus int */
 			return pointer_plusorminus_int(ptr_ps, expr, expr2, OP_MINUS);
@@ -473,7 +476,7 @@ struct Expression typecheck_expression(const struct ParserState *ptr_ps,
 					enum TokenKind kind = uexpr.operator;
 					struct Expression expr =
 					    typecheck_expression(ptr_ps, *uexpr.ptr1);
-					expect_type(expr.details.type, INT_TYPE(),
+					expect_type(ptr_ps, expr.details.type, INT_TYPE(),
 					            "operand of logical not, bitnot, unary plus or "
 					            "unary minus");
 
@@ -491,7 +494,7 @@ struct Expression typecheck_expression(const struct ParserState *ptr_ps,
 
 					struct Expression expr =
 					    typecheck_expression(ptr_ps, *uexpr.ptr1);
-					expect_type(expr.details.type, INT_TYPE(),
+					expect_type(ptr_ps, expr.details.type, INT_TYPE(),
 					            "operand of unary increment/decrement");
 
 					struct Expression new_expr =
@@ -637,7 +640,7 @@ struct Expression typecheck_expression(const struct ParserState *ptr_ps,
 			struct Expression false_branch =
 			    typecheck_expression(ptr_ps, *uexpr.ptr3);
 			expect_type(
-			    false_branch.details.type, true_branch.details.type,
+			    ptr_ps, false_branch.details.type, true_branch.details.type,
 			    "mismatch of type in the false branch and the true branch");
 			struct Expression *ptr_expr1 = calloc(1, sizeof(struct Expression));
 			struct Expression *ptr_expr2 = calloc(1, sizeof(struct Expression));
@@ -666,7 +669,7 @@ struct Expression typecheck_expression(const struct ParserState *ptr_ps,
 					exit(EXIT_FAILURE);
 				}
 
-				expect_type(expr.details.type, expr2.details.type,
+				expect_type(ptr_ps, expr.details.type, expr2.details.type,
 				            "mismatch in assignment operator");
 
 				return assignment_expr(expr, expr2, uexpr.operator);
@@ -720,9 +723,9 @@ struct Expression typecheck_expression(const struct ParserState *ptr_ps,
 					    typecheck_expression(ptr_ps, *uexpr.ptr1);
 					struct Expression expr2 =
 					    typecheck_expression(ptr_ps, *uexpr.ptr2);
-					expect_type(expr.details.type, INT_TYPE(),
+					expect_type(ptr_ps, expr.details.type, INT_TYPE(),
 					            "left operand of an operator");
-					expect_type(expr2.details.type, INT_TYPE(),
+					expect_type(ptr_ps, expr2.details.type, INT_TYPE(),
 					            "right operand of an operator");
 					return simple_binary_op(expr, expr2, uexpr.operator,
 					                        expr2.details.type);

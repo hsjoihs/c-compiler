@@ -90,7 +90,7 @@ struct Statement parse_statement(struct ParserState *ptr_ps,
 		} else {
 			struct Expression expr =
 			    typecheck_expression(ptr_ps, parse_expression(&tokvec));
-			expect_type(expr.details.type, ptr_ps->func_ret_type,
+			expect_type(ptr_ps, expr.details.type, ptr_ps->func_ret_type,
 			            "mismatched type in the return value");
 			expect_and_consume(&tokvec, SEMICOLON,
 			                   "semicolon (after `return expr`)");
