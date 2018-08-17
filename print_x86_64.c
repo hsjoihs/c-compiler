@@ -74,11 +74,10 @@ void gen_label(int label1)
 void gen_do_while_final(int label1, int label2)
 {
 	printf("//gen_do_while_final(%d, %d)\n", label1, label2);
-	printf("  addq $8, %%rsp\n"
-	       "  cmpl $0, -8(%%rsp)\n"
-	       "  jne .L%d\n"
-	       ".L%d:\n",
-	       label1, label2);
+	printf("  addq $8, %%rsp\n");
+	gen_if_nonzero_jmp_4byte(label1, -8);
+
+	printf(".L%d:\n", label2);
 }
 
 void gen_discard(void)
@@ -399,6 +398,13 @@ void gen_if_zero_jmp_4byte(int label1, int offset)
 	printf("  je .L%d\n", label1);
 }
 
+void gen_if_nonzero_jmp_4byte(int label1, int offset)
+{
+	printf("//gen_if_nonzero_jmp_4byte(%d, %d)\n", label1, offset);
+	printf("  cmpl $0, %d(%%rsp)\n", offset);
+	printf("  jne .L%d\n", label1);
+}
+
 void gen_ternary_part1(int label1, int label2)
 {
 	printf("//gen_ternary_part1(%d, %d)\n", label1, label2);
@@ -649,17 +655,15 @@ void gen_push_address_of_str(int strnum)
 void gen_logical_OR_part1(int label1)
 {
 	printf("//gen_logical_OR_part1(%d)\n", label1);
-	printf("  cmpl $0, (%%rsp)\n");
-	printf("  jne .L%d\n", label1);
+	gen_if_nonzero_jmp_4byte(label1, 0);
 }
 
 void gen_logical_OR_part2(int label1, int label2)
 {
 	printf("//gen_logical_OR_part2(%d, %d)\n", label1, label2);
-	printf("  addq $8, %%rsp\n"
-	       "  cmpl $0, -8(%%rsp)\n"
-	       "  jne .L%d\n",
-	       label1);
+	gen_discard();
+	gen_if_nonzero_jmp_4byte(label1, -8);
+
 	printf("  movl $0, %%eax\n"
 	       "  jmp .L%d\n",
 	       label2);
