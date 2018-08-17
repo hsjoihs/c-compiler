@@ -35,9 +35,8 @@ static void print_statement(struct PrinterState *ptr_prs,
 			return;
 		}
 		case RETURN_STATEMENT: {
+			print_expression(ptr_prs, sta.expr1);
 
-			struct Expression expr = sta.expr1;
-			print_expression(ptr_prs, expr);
 			/* the first occurrence of return within a function */
 			if (ptr_prs->return_label_name == -1) {
 				int ret_label = get_new_label_name(ptr_prs);
@@ -47,9 +46,6 @@ static void print_statement(struct PrinterState *ptr_prs,
 				gen_jump(ptr_prs->return_label_name, "return");
 			}
 
-			struct Statement s;
-			s.category = RETURN_STATEMENT;
-			s.expr1 = expr;
 			return;
 		}
 		case CONTINUE_STATEMENT: {
