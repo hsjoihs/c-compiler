@@ -362,11 +362,13 @@ struct Expression typecheck_expression(const struct ParserState *ptr_ps,
 			    ptr_info->info.types_and_idents;
 			struct Type type_of_member;
 			int nth_member = -1;
+
+			struct Expression expr;
 			for (int i = 0; i < vec.length; i++) {
 				const struct TypeAndIdent *ptr_vec_i = vec.vector[i];
 				if (strcmp(ptr_vec_i->ident_str, ident_after_dot) == 0) {
 					nth_member = i;
-					type_of_member = ptr_vec_i->type;
+					expr.details.type = ptr_vec_i->type;
 					break;
 				}
 			}
@@ -383,8 +385,6 @@ struct Expression typecheck_expression(const struct ParserState *ptr_ps,
 			    calloc(1, sizeof(struct Expression));
 			*ptr_struct_expr = struct_expr;
 
-			struct Expression expr;
-			expr.details.type = type_of_member;
 			expr.category = STRUCT_AND_OFFSET;
 			expr.struct_offset = offset;
 			expr.ptr1 = ptr_struct_expr;

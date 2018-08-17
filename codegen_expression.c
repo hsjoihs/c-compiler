@@ -66,6 +66,14 @@ static void print_address_of_lvalue(struct PrinterState *ptr_prs,
                                     struct Expression expr)
 {
 	switch (expr.category) {
+		case STRUCT_AND_OFFSET: {
+			print_address_of_lvalue(ptr_prs, *expr.ptr1);
+			int offset = expr.struct_offset;
+			gen_push_int(offset);
+			gen_cltq();
+			gen_op_8byte("addq");
+			return;
+		}
 		case LOCAL_VAR_: {
 			gen_push_address_of_local(expr.local_var_offset);
 
@@ -103,6 +111,11 @@ static void print_expression_as_lvalue(struct PrinterState *ptr_prs,
 {
 	print_address_of_lvalue(ptr_prs, expr);
 	switch (expr.category) {
+		case STRUCT_AND_OFFSET: {
+			struct Type type = expr.details.type;
+			gen_peek_deref_push_nbyte(size_of_basic(type));
+			return;
+		}
 		case LOCAL_VAR_: {
 			gen_push_from_local_nbyte(size_of_basic(expr.details.type),
 			                          expr.local_var_offset);
@@ -146,6 +159,11 @@ static void print_op_pointer_plusminus_int(int is_plus, int size)
 void print_expression(struct PrinterState *ptr_prs, struct Expression expr)
 {
 	switch (expr.category) {
+		case STRUCT_AND_OFFSET: {
+			print_expression_as_lvalue(ptr_prs, expr);
+			gen_discard2nd_8byte();
+			return;
+		}
 		case POINTER_MINUS_POINTER: {
 			print_expression(ptr_prs, *expr.ptr1);
 			print_expression(ptr_prs, *expr.ptr2);
