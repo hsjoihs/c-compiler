@@ -412,6 +412,8 @@ struct Token get_token(const char **ptr_to_str)
 		t.kind = RES_STRUCT;
 	} else if (strcmp(new_str, "sizeof") == 0) {
 		t.kind = RES_SIZEOF;
+	} else if (strcmp(new_str, "void") == 0) {
+		t.kind = RES_VOID;
 	}
 	return t;
 }

@@ -63,7 +63,8 @@ enum TokenKind {
 	RES_STRUCT,
 	RES_SIZEOF,
 	DOT,
-	ARROW
+	ARROW,
+	RES_VOID
 };
 
 struct Token {
@@ -79,7 +80,7 @@ struct Token get_token(const char **ptr_to_str);
 
 struct TypeAndIdent;
 
-enum TypeCategory { INT_ = 1, PTR_, ARRAY, FN, CHAR_, STRUCT_ };
+enum TypeCategory { INT_ = 1, PTR_, ARRAY, FN, CHAR_, STRUCT_, VOID_ };
 
 struct StructInternalInfo {
 	struct Vector /* <TypeAndIdent> */ types_and_idents;

@@ -32,6 +32,9 @@ int size_of(const struct ParserState *ptr_ps, struct Type type)
 				exit(EXIT_FAILURE);
 			}
 			return ptr_info->s_and_a.size;
+		case VOID_:
+			fprintf(stderr, "size of type `void` is never known\n");
+			exit(EXIT_FAILURE);
 	}
 }
 
@@ -64,6 +67,9 @@ int align_of(const struct ParserState *ptr_ps, struct Type type)
 				exit(EXIT_FAILURE);
 			}
 			return ptr_info->s_and_a.alignment;
+		case VOID_:
+			fprintf(stderr, "cannot get alignment of `void`\n");
+			exit(EXIT_FAILURE);
 	}
 }
 
@@ -110,6 +116,7 @@ static void record_if_global_struct_declaration(struct ParserState *ptr_ps,
 		case PTR_:
 			record_if_global_struct_declaration(ptr_ps, *type.derived_from);
 			return;
+		case VOID_:
 		case INT_:
 		case CHAR_:
 			return;

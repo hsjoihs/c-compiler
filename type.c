@@ -34,6 +34,10 @@ int size_of_basic(struct Type type)
 			fprintf(stderr,
 			        "array, function or struct type is not a basic type\n");
 			exit(EXIT_FAILURE);
+		case VOID_:
+			fprintf(stderr,
+			        "size of `void` is never known\n");
+			exit(EXIT_FAILURE);
 	}
 }
 
@@ -43,6 +47,9 @@ void debug_print_type(struct Type type)
 		case PTR_:
 			fprintf(stderr, "pointer to ");
 			debug_print_type(*type.derived_from);
+			return;
+		case VOID_:
+			fprintf(stderr, "void");
 			return;
 		case INT_:
 			fprintf(stderr, "int");
