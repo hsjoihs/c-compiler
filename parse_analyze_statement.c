@@ -82,6 +82,30 @@ struct Statement parse_statement(struct ParserState *ptr_ps,
 		}
 	}
 
+	if (tokvec[0].kind == RES_SWITCH) {
+		++tokvec;
+		expect_and_consume(&tokvec, LEFT_PAREN,
+		                   "left parenthesis immediately after `switch`");
+		struct Expression expr =
+		    typecheck_expression(ptr_ps, parse_expression(&tokvec));
+		expect_and_consume(&tokvec, RIGHT_PAREN,
+		                   "right parenthesis of `switch`");
+
+		expect_type(ptr_ps, expr.details.type, INT_TYPE(),
+		            "controlling expression of `switch` must be integer type");
+
+		struct Statement inner_s = parse_statement(ptr_ps, &tokvec);
+		struct Statement *ptr_inner_s = calloc(1, sizeof(struct Statement));
+		*ptr_inner_s = inner_s;
+
+		struct Statement s;
+		s.expr1 = expr;
+		*ptr_tokvec = tokvec;
+		s.category = SWITCH_STATEMENT;
+		s.inner_statement = ptr_inner_s;
+		return s;
+	}
+
 	if (tokvec[0].kind == RES_RETURN) {
 		++tokvec;
 		*ptr_tokvec = tokvec;

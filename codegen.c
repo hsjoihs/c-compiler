@@ -92,6 +92,13 @@ static void print_statement(struct PrinterState *ptr_prs,
 
 			return;
 		}
+		case SWITCH_STATEMENT: {
+			struct Expression expr = sta.expr1;
+			print_expression(ptr_prs, expr);
+			unsupported("switch");
+#warning support me
+			return;
+		}
 		case IF_STATEMENT: {
 
 			int label1 = get_new_label_name(ptr_prs);
@@ -141,6 +148,7 @@ static void print_statement(struct PrinterState *ptr_prs,
 
 			return;
 		}
+
 		case WHILE_STATEMENT: {
 			struct Expression expr = sta.expr1;
 

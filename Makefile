@@ -105,7 +105,6 @@ f:
 	make supplement
 	make fmt_sandbox
 	make test_valid
-	make fmt_compile_files
 	make check_error
 
 
