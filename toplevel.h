@@ -1,4 +1,4 @@
-#include "parser.h"
+#include "analyzer.h"
 #include "printerstate.h"
 
 void generate(const struct Vector vec);
