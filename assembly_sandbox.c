@@ -4,64 +4,43 @@
 int main()
 {
 	/*
-struct A {
-	char a; // offset: 0
-	int b; // offset: 4
-};
 
-int foo(struct A* p)
-{
-	return p->b;
-}
-
+int foo(){return 3;}
 int main()
 {
-	struct A a;
-	a.b = 3;
-	int b = a.b;
-	int c = foo(&a);
-	return 168+b+c;
+	int a = 24;
+	int b = 2;
+	switch(foo()){
+	    case 13:
+	    a=14;
+	default:
+	    b = 150;
+	}
+	return a+b;
 }
 
 
 	*/
-
 	gen_prologue(0, "foo");
-	gen_write_register_to_local_8byte("rdi", -8);
-	gen_push_from_local_8byte(-8);
-	gen_push_int(4);
-	gen_cltq();
-	gen_op_8byte("addq");
-	gen_peek_and_dereference_4byte();
-	gen_epilogue(1234);
+
+	puts(
+
+	    "  movl $3, %eax\n"
+	    "  popq %rbp\n"
+	    "  ret\n");
 
 	gen_prologue(16, "main");
 
-	gen_push_address_of_local(-16);
-	gen_push_int(4);
-	gen_cltq();
-	gen_op_8byte("addq");
-	gen_push_int(3);
-	gen_assign_4byte();
-	gen_discard();
-
-	gen_push_address_of_local(-16);
-	gen_push_int(4);
-	gen_cltq();
-	gen_op_8byte("addq");
-	gen_peek_and_dereference_4byte();
-	gen_write_to_local(-4);
-	gen_discard();
-
-	gen_push_address_of_local(-16);
-	gen_pop_to_reg_8byte("rdi");
-	gen_push_ret_of_4byte("foo");
-	gen_write_to_local(-8);
-	gen_discard();
-
-	puts("  movl -4(%rbp), %eax\n"
-	     "  addl $168, %eax\n"
-	     "  movl %eax, %edx\n"
+	puts("  movl $24, -4(%rbp)\n"
+	     "  movl $2, -8(%rbp)\n"
+	     "  movl $0, %eax\n"
+	     "  call " PREFIX "foo\n"
+	     "  cmpl $13, %eax\n"
+	     "  jne .L4\n"
+	     "  movl $14, -4(%rbp)\n"
+	     ".L4:\n"
+	     "  movl $150, -8(%rbp)\n"
+	     "  movl -4(%rbp), %edx\n"
 	     "  movl -8(%rbp), %eax\n"
 	     "  addl %edx, %eax\n"
 	     "  leave\n"
