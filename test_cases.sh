@@ -19,6 +19,9 @@ run_test 210 'int main(void){return 174;}' 174
 run_test 211 'int main(void){void *p; p = 0; p = p; return 174;}' 174
 run_test 212 'struct A{int a; int b;}; int main(){ struct A *p; void *q1; void *q2; q1 = p; q2 = p+1; char *r1; char *r2; r1 = q1; r2 = q2; return r2-r1;}' 8
 run_test 213 'void f(int *p){*p = 174; return;} int main(void){ int a; f(&a); return a;}' 174
+run_test 214 'int main(void){ foo: return 174;}' 174
+run_test 215 'int main(void){ foo: bar: return 174;}' 174
+run_test 216 'int main(void){ foo: {baz: hoge: 1;} bar: return 174;}' 174
 
 
 run_test 190 'int main(){return sizeof(int);}' 4

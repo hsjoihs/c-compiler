@@ -285,6 +285,14 @@ enum StatementCategory {
 	SWITCH_STATEMENT
 };
 
+enum LabelCategory { DEFAULT_LABEL, CASE_LABEL, IDENT_LABEL };
+
+struct Label {
+	enum LabelCategory category;
+	struct Expression case_expr;
+	const char *ident_str;
+};
+
 struct Statement {
 	enum StatementCategory category;
 	struct Vector statement_vector;
@@ -296,6 +304,7 @@ struct Statement {
 		struct Type type;
 		const char *ident_str;
 	} declaration;
+	struct Vector /*<Label>*/ labels;
 };
 
 enum ToplevelCategory {
@@ -332,3 +341,6 @@ get_size_alignment_offsets(const struct SizeAndAlignment *inner_type_vec,
 
 struct Type *
 try_parse_type_specifier_and_semicolon(const struct Token **ptr_tokvec);
+
+struct UntypedExpression
+parse_constant_expression(const struct Token **ptr_tokvec);

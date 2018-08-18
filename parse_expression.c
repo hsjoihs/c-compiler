@@ -567,6 +567,12 @@ parse_conditional_expression(const struct Token **ptr_tokvec)
 	return expr;
 }
 
+struct UntypedExpression
+parse_constant_expression(const struct Token **ptr_tokvec)
+{
+	return parse_conditional_expression(ptr_tokvec);
+}
+
 struct UntypedExpression parse_expression(const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;

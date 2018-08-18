@@ -34,12 +34,64 @@ int add_local_var_to_scope(struct ParserState *ptr_ps,
 	return ptr_varinfo->offset;
 }
 
+static struct Expression
+typecheck_constant_expression(struct ParserState *ptr_ps,
+                              struct UntypedExpression uexpr,
+                              const char *context)
+{
+	if ((0)) {
+		fprintf(stderr, "Expected const expression, but did not get one.\n");
+		fprintf(stderr, "context: %s\n", context);
+		exit(EXIT_FAILURE);
+	}
+#warning currently not guaranteed to be constant
+	return typecheck_expression(ptr_ps, uexpr);
+}
+
+struct Statement parse_labeled_statement(struct ParserState *ptr_ps,
+                                         const struct Token **ptr_tokvec)
+{
+	const struct Token *tokvec = *ptr_tokvec;
+	enum TokenKind kind = tokvec[0].kind;
+
+	struct Label l;
+	if (kind == RES_DEFAULT) {
+		++tokvec;
+		l.category = DEFAULT_LABEL;
+	} else if (kind == RES_CASE) {
+		++tokvec;
+		struct Expression expr = typecheck_constant_expression(
+		    ptr_ps, parse_constant_expression(&tokvec), "case");
+		l.category = CASE_LABEL;
+		l.case_expr = expr;
+	} else {
+		l.ident_str = tokvec[0].ident_str;
+		++tokvec;
+		l.category = IDENT_LABEL;
+	}
+	expect_and_consume(&tokvec, COLON, "colon of `default:`");
+
+	struct Statement s = parse_statement(ptr_ps, &tokvec);
+
+	struct Label *ptr_l = calloc(1, sizeof(struct Label));
+	*ptr_l = l;
+	push_vector(&s.labels, ptr_l);
+	*ptr_tokvec = tokvec;
+	return s;
+}
+
 struct Statement parse_statement(struct ParserState *ptr_ps,
                                  const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
+	if (tokvec[0].kind == RES_CASE || tokvec[0].kind == RES_DEFAULT ||
+	    (tokvec[0].kind == IDENT_OR_RESERVED && tokvec[1].kind == COLON)) {
+		struct Statement s = parse_labeled_statement(ptr_ps, ptr_tokvec);
+		return s;
+	}
 	if (tokvec[0].kind == LEFT_BRACE) {
 		struct Statement s = parse_compound_statement(ptr_ps, ptr_tokvec);
+		s.labels = init_vector();
 		return s;
 	}
 
@@ -57,6 +109,7 @@ struct Statement parse_statement(struct ParserState *ptr_ps,
 		*ptr_inner_s = inner_s;
 
 		struct Statement s;
+		s.labels = init_vector();
 		s.expr1 = expr;
 		if (tokvec[0].kind == RES_ELSE) { /* must bind to the most inner one */
 			++tokvec;
@@ -98,6 +151,7 @@ struct Statement parse_statement(struct ParserState *ptr_ps,
 		*ptr_inner_s = inner_s;
 
 		struct Statement s;
+		s.labels = init_vector();
 		s.expr1 = expr;
 		*ptr_tokvec = tokvec;
 		s.category = SWITCH_STATEMENT;
@@ -114,6 +168,7 @@ struct Statement parse_statement(struct ParserState *ptr_ps,
 			expr.category = VOID_EXPR;
 
 			struct Statement s;
+			s.labels = init_vector();
 			s.category = RETURN_STATEMENT;
 			s.expr1 = expr;
 			*ptr_tokvec = tokvec;
@@ -128,6 +183,7 @@ struct Statement parse_statement(struct ParserState *ptr_ps,
 			*ptr_tokvec = tokvec;
 
 			struct Statement s;
+			s.labels = init_vector();
 			s.category = RETURN_STATEMENT;
 			s.expr1 = expr;
 			return s;
@@ -151,6 +207,7 @@ struct Statement parse_statement(struct ParserState *ptr_ps,
 		*ptr_tokvec = tokvec;
 
 		struct Statement s;
+		s.labels = init_vector();
 		s.category = DO_WHILE_STATEMENT;
 		s.expr1 = expr;
 
@@ -175,6 +232,7 @@ struct Statement parse_statement(struct ParserState *ptr_ps,
 		*ptr_tokvec = tokvec;
 
 		struct Statement s;
+		s.labels = init_vector();
 		s.category = WHILE_STATEMENT;
 		s.expr1 = expr;
 
@@ -190,6 +248,7 @@ struct Statement parse_statement(struct ParserState *ptr_ps,
 		*ptr_tokvec = tokvec;
 
 		struct Statement s;
+		s.labels = init_vector();
 		s.category = BREAK_STATEMENT;
 		return s;
 	}
@@ -200,6 +259,7 @@ struct Statement parse_statement(struct ParserState *ptr_ps,
 		*ptr_tokvec = tokvec;
 
 		struct Statement s;
+		s.labels = init_vector();
 		s.category = CONTINUE_STATEMENT;
 		return s;
 	}
@@ -234,6 +294,7 @@ struct Statement parse_statement(struct ParserState *ptr_ps,
 		}
 		expect_and_consume(&tokvec, RIGHT_PAREN, "right parenthesis of `for`");
 		struct Statement s;
+		s.labels = init_vector();
 		s.category = FOR_STATEMENT;
 		s.expr1 = expr1;
 		s.expr2 = expr2;
@@ -255,6 +316,7 @@ struct Statement parse_statement(struct ParserState *ptr_ps,
 	*ptr_tokvec = tokvec;
 
 	struct Statement s;
+	s.labels = init_vector();
 	s.category = EXPRESSION_STATEMENT;
 	s.expr1 = expr;
 	return s;
