@@ -65,7 +65,9 @@ enum TokenKind {
 	DOT,
 	ARROW,
 	RES_VOID,
-	RES_SWITCH
+	RES_SWITCH,
+	RES_CASE,
+	RES_DEFAULT
 };
 
 struct Token {
