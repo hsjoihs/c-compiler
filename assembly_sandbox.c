@@ -35,18 +35,24 @@ int main()
 	gen_write_to_local(-8); /* b */
 	gen_discard();
 
-	int label = 4;
+	int label1 = 9;
+	int default_label = 4;
+	int constant1 = 13;
 	gen_push_ret_of_4byte("foo");
-	printf("  addq $8, %%rsp\n"
-	       "  cmpl $13, -8(%%rsp)\n"
-	       "  jne .L%d\n",
-	       label);
+
+	gen_discard();
+	printf("  cmpl $%d, -8(%%rsp)\n"
+	       "  je .L%d\n",
+	       constant1, label1);
+	gen_jump(default_label, "switch-default");
+
+	gen_label(label1); /* case 13: */
 
 	gen_push_int(14);
 	gen_write_to_local(-4); /* a */
 	gen_discard();
 
-	printf(".L%d:\n", label);
+	gen_label(default_label); /* default */
 
 	gen_push_int(150);
 	gen_write_to_local(-8); /* b */
