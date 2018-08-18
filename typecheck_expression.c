@@ -4,10 +4,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-static int is_compatible(const struct ParserState *ptr_ps, struct Type t1,
+static int is_compatible(const struct AnalyzerState *ptr_ps, struct Type t1,
                          struct Type t2);
 
-void expect_type(const struct ParserState *ptr_ps, struct Type actual_type,
+void expect_type(const struct AnalyzerState *ptr_ps, struct Type actual_type,
                  struct Type expected_type, const char *message)
 {
 
@@ -22,7 +22,7 @@ void expect_type(const struct ParserState *ptr_ps, struct Type actual_type,
 	}
 }
 
-static int is_strictly_equal(const struct ParserState *ptr_ps, struct Type t1,
+static int is_strictly_equal(const struct AnalyzerState *ptr_ps, struct Type t1,
                              struct Type t2)
 {
 	if (t1.type_category == INT_ && t2.type_category == INT_) {
@@ -57,7 +57,7 @@ static int is_strictly_equal(const struct ParserState *ptr_ps, struct Type t1,
 	return 0;
 }
 
-static int is_compatible(const struct ParserState *ptr_ps, struct Type t1,
+static int is_compatible(const struct AnalyzerState *ptr_ps, struct Type t1,
                          struct Type t2)
 {
 	if (is_strictly_equal(ptr_ps, t1, t2)) {
@@ -171,7 +171,7 @@ static struct Expression simple_binary_op(struct Expression expr,
 }
 
 static struct Expression
-pointer_plusorminus_int(const struct ParserState *ptr_ps,
+pointer_plusorminus_int(const struct AnalyzerState *ptr_ps,
                         struct Expression expr, struct Expression expr2,
                         enum TokenKind kind)
 {
@@ -192,7 +192,7 @@ pointer_plusorminus_int(const struct ParserState *ptr_ps,
 	return new_expr;
 }
 
-static struct Expression combine_by_add(const struct ParserState *ptr_ps,
+static struct Expression combine_by_add(const struct AnalyzerState *ptr_ps,
                                         struct Expression expr,
                                         struct Expression expr2)
 {
@@ -217,7 +217,7 @@ static struct Expression combine_by_add(const struct ParserState *ptr_ps,
 	exit(EXIT_FAILURE);
 }
 
-static struct Expression combine_by_sub(const struct ParserState *ptr_ps,
+static struct Expression combine_by_sub(const struct AnalyzerState *ptr_ps,
                                         struct Expression expr,
                                         struct Expression expr2)
 {
@@ -418,7 +418,7 @@ static struct Expression assignment_expr(struct Expression expr,
 	return new_expr;
 }
 
-struct Expression typecheck_expression(const struct ParserState *ptr_ps,
+struct Expression typecheck_expression(const struct AnalyzerState *ptr_ps,
                                        struct UntypedExpression uexpr)
 {
 	switch (uexpr.category) {

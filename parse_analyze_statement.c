@@ -17,7 +17,7 @@ static struct Expression integer_1(void)
  * Adjusts the newest_offset and add a local variable to the scope.
  * Returns the offset of the newly added variable.
  */
-int add_local_var_to_scope(struct ParserState *ptr_ps,
+int add_local_var_to_scope(struct AnalyzerState *ptr_ps,
                            const struct Type vartype, const char *str)
 {
 	ptr_ps->newest_offset -=
@@ -35,7 +35,7 @@ int add_local_var_to_scope(struct ParserState *ptr_ps,
 }
 
 static struct Expression
-typecheck_constant_expression(struct ParserState *ptr_ps,
+typecheck_constant_expression(struct AnalyzerState *ptr_ps,
                               struct UntypedExpression uexpr,
                               const char *context)
 {
@@ -48,7 +48,7 @@ typecheck_constant_expression(struct ParserState *ptr_ps,
 	return typecheck_expression(ptr_ps, uexpr);
 }
 
-struct Statement parse_labeled_statement(struct ParserState *ptr_ps,
+struct Statement parse_labeled_statement(struct AnalyzerState *ptr_ps,
                                          const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
@@ -80,7 +80,7 @@ struct Statement parse_labeled_statement(struct ParserState *ptr_ps,
 	return s;
 }
 
-struct Statement parse_statement(struct ParserState *ptr_ps,
+struct Statement parse_statement(struct AnalyzerState *ptr_ps,
                                  const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
@@ -322,7 +322,7 @@ struct Statement parse_statement(struct ParserState *ptr_ps,
 	return s;
 }
 
-struct Statement parse_compound_statement(struct ParserState *ptr_ps,
+struct Statement parse_compound_statement(struct AnalyzerState *ptr_ps,
                                           const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;

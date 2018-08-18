@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int size_of(const struct ParserState *ptr_ps, struct Type type)
+int size_of(const struct AnalyzerState *ptr_ps, struct Type type)
 {
 	switch (type.type_category) {
 		case INT_:
@@ -38,7 +38,7 @@ int size_of(const struct ParserState *ptr_ps, struct Type type)
 	}
 }
 
-int align_of(const struct ParserState *ptr_ps, struct Type type)
+int align_of(const struct AnalyzerState *ptr_ps, struct Type type)
 {
 	switch (type.type_category) {
 		case INT_:
@@ -73,7 +73,7 @@ int align_of(const struct ParserState *ptr_ps, struct Type type)
 	}
 }
 
-static void record_global_struct_declaration(struct ParserState *ptr_ps,
+static void record_global_struct_declaration(struct AnalyzerState *ptr_ps,
                                              struct Type struct_type)
 {
 	assert(struct_type.type_category == STRUCT_);
@@ -107,7 +107,7 @@ static void record_global_struct_declaration(struct ParserState *ptr_ps,
 	       ptr_complete);
 }
 
-static void record_if_global_struct_declaration(struct ParserState *ptr_ps,
+static void record_if_global_struct_declaration(struct AnalyzerState *ptr_ps,
                                                 struct Type type)
 {
 	switch (type.type_category) {
@@ -127,7 +127,7 @@ static void record_if_global_struct_declaration(struct ParserState *ptr_ps,
 }
 
 static struct Toplevel
-parse_toplevel_definition(struct ParserState *ptr_ps,
+parse_toplevel_definition(struct AnalyzerState *ptr_ps,
                           const struct Token **ptr_tokvec)
 {
 	struct Type *optional_ptr_type =
@@ -240,7 +240,7 @@ parse_toplevel_definition(struct ParserState *ptr_ps,
 
 struct Vector parse(const struct Token *tokvec)
 {
-	struct ParserState ps;
+	struct AnalyzerState ps;
 	ps.func_info_map = init_map();
 	ps.global_vars_type_map = init_map();
 	ps.global_struct_tag_map = init_map();
