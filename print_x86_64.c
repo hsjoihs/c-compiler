@@ -863,6 +863,21 @@ const char *get_reg_name_from_arg_pos_8byte(int counter)
 
 void gen_push_nullptr(void)
 {
+	printf("//gen_push_nullptr()\n");
 	printf("  subq $8, %%rsp\n"
 	       "  movq $0, (%%rsp)\n");
+}
+
+void gen_if_matches_jmp_4byte(int constant1, int label1)
+{
+	printf("//gen_if_matches_jmp_4byte(%d, %d)\n", constant1, label1);
+	printf("  cmpl $%d, -8(%%rsp)\n"
+	       "  je .L%d\n",
+	       constant1, label1);
+}
+
+void gen_extend_to_4byte(void)
+{
+	printf("  movsbl (%%rsp), %%eax\n"
+	       "  movl %%eax, (%%rsp)\n");
 }

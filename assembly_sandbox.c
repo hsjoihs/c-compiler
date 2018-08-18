@@ -41,9 +41,7 @@ int main()
 	gen_push_ret_of_4byte("foo");
 
 	gen_discard();
-	printf("  cmpl $%d, -8(%%rsp)\n"
-	       "  je .L%d\n",
-	       constant1, label1);
+	gen_if_matches_jmp_4byte(constant1, label1);
 	gen_jump(default_label, "switch-default");
 
 	gen_label(label1); /* case 13: */
