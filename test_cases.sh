@@ -23,6 +23,7 @@ run_test 214 'int main(void){ foo: return 174;}' 174
 run_test 215 'int main(void){ foo: bar: return 174;}' 174
 run_test 216 'int main(void){ foo: {baz: hoge: 1;} bar: return 174;}' 174
 run_test 217 'int main(void){ int a; a = 174; switch(1){a = 2; 1;} return a;}' 174
+run_test 218 'int main(void){ int a; a = 174; switch(1){a = 2; break; a = 3;} return a;}' 174
 
 
 run_test 190 'int main(){return sizeof(int);}' 4

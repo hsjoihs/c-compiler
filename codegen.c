@@ -93,7 +93,11 @@ static void print_statement(struct PrinterState *ptr_prs,
 			return;
 		}
 		case SWITCH_STATEMENT: {
+			int stashed_break_label = ptr_prs->break_label_name;
+
 			int break_label = get_new_label_name(ptr_prs);
+			ptr_prs->break_label_name = break_label;
+
 			struct Expression expr = sta.expr1;
 			print_expression(ptr_prs, expr);
 			int default_label = -1;
@@ -112,6 +116,8 @@ static void print_statement(struct PrinterState *ptr_prs,
 
 			print_statement(ptr_prs, *sta.inner_statement);
 			gen_label(break_label);
+
+			ptr_prs->break_label_name = stashed_break_label;
 			return;
 		}
 		case IF_STATEMENT: {
