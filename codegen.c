@@ -93,10 +93,25 @@ static void print_statement(struct PrinterState *ptr_prs,
 			return;
 		}
 		case SWITCH_STATEMENT: {
+			int break_label = get_new_label_name(ptr_prs);
 			struct Expression expr = sta.expr1;
 			print_expression(ptr_prs, expr);
-			unsupported("switch");
-#warning support me
+			int default_label = -1;
+
+			if (!0) { /* default_label is not found */
+				default_label = break_label;
+			}
+			gen_discard();
+
+			for (; 0;) { /* for each case */
+				int constant1 = 87950;
+				int label1 = 678432;
+				gen_if_neg8_matches_jmp_4byte(constant1, label1);
+			}
+			gen_jump(default_label, "switch-default");
+
+			print_statement(ptr_prs, *sta.inner_statement);
+			gen_label(break_label);
 			return;
 		}
 		case IF_STATEMENT: {
