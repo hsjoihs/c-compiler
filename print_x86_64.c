@@ -868,9 +868,9 @@ void gen_push_nullptr(void)
 	       "  movq $0, (%%rsp)\n");
 }
 
-void gen_if_matches_jmp_4byte(int constant1, int label1)
+void gen_if_neg8_matches_jmp_4byte(int constant1, int label1)
 {
-	printf("//gen_if_matches_jmp_4byte(%d, %d)\n", constant1, label1);
+	printf("//gen_if_neg8_matches_jmp_4byte(%d, %d)\n", constant1, label1);
 	printf("  cmpl $%d, -8(%%rsp)\n"
 	       "  je .L%d\n",
 	       constant1, label1);

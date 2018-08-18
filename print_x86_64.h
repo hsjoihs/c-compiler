@@ -68,7 +68,7 @@ const char *get_reg_name_from_arg_pos_8byte(int counter);
 void gen_push_nullptr(void);
 void gen_if_zero_jmp_nbyte(int n, int label1, int offset);
 void gen_if_nonzero_jmp_nbyte(int n, int label1, int offset);
-void gen_if_matches_jmp_4byte(int constant1, int label1);
+void gen_if_neg8_matches_jmp_4byte(int constant1, int label1);
 void gen_extend_to_4byte(void);
 
 #ifdef OSX

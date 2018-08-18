@@ -41,7 +41,7 @@ int main()
 	gen_push_ret_of_4byte("foo");
 
 	gen_discard();
-	gen_if_matches_jmp_4byte(constant1, label1);
+	gen_if_neg8_matches_jmp_4byte(constant1, label1);
 	gen_jump(default_label, "switch-default");
 
 	gen_label(label1); /* case 13: */
