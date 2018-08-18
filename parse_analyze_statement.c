@@ -39,8 +39,7 @@ struct Statement parse_statement(struct ParserState *ptr_ps,
 {
 	const struct Token *tokvec = *ptr_tokvec;
 	if (tokvec[0].kind == LEFT_BRACE) {
-		struct Statement s = parse_compound_statement(ptr_ps, &tokvec);
-		*ptr_tokvec = tokvec;
+		struct Statement s = parse_compound_statement(ptr_ps, ptr_tokvec);
 		return s;
 	}
 
