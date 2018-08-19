@@ -325,6 +325,21 @@ parse_unary_expression(const struct Token **ptr_tokvec)
 		expr.operand_of_sizeof = type;
 		*ptr_tokvec = tokvec;
 		return expr;
+	} else if (tokvec[0].kind == RES_ALIGNOF && tokvec[1].kind == LEFT_PAREN) {
+		tokvec += 2;
+		if (!can_start_a_type(tokvec)) {
+			fprintf(stderr, "_Alignof can only take type name\n");
+			exit(EXIT_FAILURE);
+		}
+		struct Type type = parse_type_name(&tokvec);
+		expect_and_consume(&tokvec, RIGHT_PAREN,
+		                   "closing parenthesis of sizeof(typename)");
+
+		struct UntypedExpression expr;
+		expr.category = ALIGNOF_TYPE;
+		expr.operand_of_sizeof = type;
+		*ptr_tokvec = tokvec;
+		return expr;
 	} else {
 
 		struct UntypedExpression expr = parse_postfix_expression(&tokvec);

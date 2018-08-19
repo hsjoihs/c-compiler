@@ -67,7 +67,8 @@ enum TokenKind {
 	RES_VOID,
 	RES_SWITCH,
 	RES_CASE,
-	RES_DEFAULT
+	RES_DEFAULT,
+	RES_ALIGNOF
 };
 
 struct Token {
@@ -186,6 +187,7 @@ enum UntypedExprCategory {
 	FUNCCALL,
 	STRING_LITERAL_,
 	SIZEOF_TYPE,
+	ALIGNOF_TYPE,
 	DOT_EXPR
 };
 

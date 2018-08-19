@@ -420,6 +420,8 @@ struct Token get_token(const char **ptr_to_str)
 		t.kind = RES_CASE;
 	} else if (strcmp(new_str, "default") == 0) {
 		t.kind = RES_DEFAULT;
+	} else if (strcmp(new_str, "_Alignof") == 0) {
+		t.kind = RES_ALIGNOF;
 	}
 	return t;
 }

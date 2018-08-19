@@ -30,6 +30,11 @@ run_test 221 'int main(void){ int a; a = 1; switch(1){ default: a = 173; switch(
 run_test 222 'int main(void){ int a; a = 1; switch(1){ case 1: a = 174; } return a; }' 174
 run_test 223 'int main(void){ int a; a = 174; switch(2){ case 1: a = 1; } return a; }' 174
 run_test 224 'int f(int a){switch(a){case 1: return 3; case 2: return 5; default: return 8;}} int main(void){ return (f(1)-3) || (f(2)-5) || (f(3)-8) || (f(100)-8);}' 0
+run_test 225 'int main(){return _Alignof(int);}' 4
+run_test 226 'int main(){return _Alignof(int*);}' 8
+run_test 227 'struct A{int a; int b;}; int main(){ return _Alignof(struct A);}' 4
+run_test 228 'struct A{int a; char c; char d; int b;}; int main(){ return _Alignof(struct A);}' 4
+run_test 229 'struct A{int a; int *b; int c;}; int main(){return _Alignof(struct A [5]);}' 8
 
 
 run_test 190 'int main(){return sizeof(int);}' 4
