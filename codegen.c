@@ -216,6 +216,9 @@ static void print_statement(struct PrinterState *ptr_prs,
 
 			struct Expr expr = sta.expr1;
 			print_expression(ptr_prs, expr);
+			if (size_of_basic(expr.details.type) == 1) {
+				gen_extend_to_4byte();
+			}
 
 			if (default_label == -1) { /* default_label is not found */
 				default_label = break_label;
