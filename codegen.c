@@ -46,7 +46,7 @@ static struct Vector /*<SourceLabel>*/ collect_labels(struct Statement sta)
 
 		case COMPOUND_STATEMENT:
 		case IF_ELSE_STATEMENT: {
-			struct Vector statement_vec = sta.statement_vector;
+			struct Vector /*<Statement>*/ statement_vec = sta.statement_vector;
 
 			for (int counter = 0; counter != statement_vec.length; ++counter) {
 				const struct Statement *ptr_ith = statement_vec.vector[counter];
@@ -140,7 +140,7 @@ static void print_statement(struct PrinterState *ptr_prs,
 		}
 		case COMPOUND_STATEMENT: {
 
-			struct Vector vec = sta.statement_vector;
+			struct Vector /*<Statement>*/ vec = sta.statement_vector;
 
 			for (int counter = 0; counter != vec.length; ++counter) {
 				const struct Statement *ptr_ith = vec.vector[counter];

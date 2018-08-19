@@ -288,7 +288,7 @@ struct SourceLabel {
 
 struct Statement {
 	enum StatementCategory category;
-	struct Vector statement_vector;
+	struct Vector /*<Statement>*/ statement_vector;
 	struct Expr expr1;
 	struct Expr expr2;
 	struct Expr expr3;
