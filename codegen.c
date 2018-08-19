@@ -152,7 +152,7 @@ static void print_statement(struct PrinterState *ptr_prs,
 		case IF_ELSE_STATEMENT: {
 			int label1 = get_new_label_name(ptr_prs);
 			int label2 = get_new_label_name(ptr_prs);
-			struct Expression expr = sta.expr1;
+			struct Expr expr = sta.expr1;
 			print_expression(ptr_prs, expr);
 
 			gen_if_zero_jmp_nbyte(size_of_basic(expr.details.type), label1, 0);
@@ -211,7 +211,7 @@ static void print_statement(struct PrinterState *ptr_prs,
 				push_vector(&ptr_prs->case_default_vec, ptr_ll);
 			}
 
-			struct Expression expr = sta.expr1;
+			struct Expr expr = sta.expr1;
 			print_expression(ptr_prs, expr);
 
 			if (default_label == -1) { /* default_label is not found */
@@ -244,7 +244,7 @@ static void print_statement(struct PrinterState *ptr_prs,
 
 			int label1 = get_new_label_name(ptr_prs);
 			int label2 = get_new_label_name(ptr_prs);
-			struct Expression expr = sta.expr1;
+			struct Expr expr = sta.expr1;
 			print_expression(ptr_prs, expr);
 
 			gen_if_zero_jmp_nbyte(size_of_basic(expr.details.type), label1, 0);
@@ -276,7 +276,7 @@ static void print_statement(struct PrinterState *ptr_prs,
 
 			gen_label(cont_label);
 
-			struct Expression expr = sta.expr1;
+			struct Expr expr = sta.expr1;
 			print_expression(ptr_prs, expr);
 
 			gen_discard();
@@ -291,7 +291,7 @@ static void print_statement(struct PrinterState *ptr_prs,
 		}
 
 		case WHILE_STATEMENT: {
-			struct Expression expr = sta.expr1;
+			struct Expr expr = sta.expr1;
 
 			struct Statement inner_s = *sta.inner_statement;
 

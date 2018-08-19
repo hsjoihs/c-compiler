@@ -3,9 +3,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static struct Expression integer_1(void)
+static struct Expr integer_1(void)
 {
-	struct Expression expr;
+	struct Expr expr;
 	expr.details.type = INT_TYPE();
 	expr.int_value = 1;
 	expr.category = INT_VALUE;
@@ -84,7 +84,7 @@ struct Statement parse_statement(struct AnalyzerState *ptr_ps,
 		++tokvec;
 		expect_and_consume(&tokvec, LEFT_PAREN,
 		                   "left parenthesis immediately after `if`");
-		struct Expression expr =
+		struct Expr expr =
 		    typecheck_expression(ptr_ps, parse_expression(&tokvec));
 		expect_and_consume(&tokvec, RIGHT_PAREN, "right parenthesis of `if`");
 
@@ -123,7 +123,7 @@ struct Statement parse_statement(struct AnalyzerState *ptr_ps,
 		++tokvec;
 		expect_and_consume(&tokvec, LEFT_PAREN,
 		                   "left parenthesis immediately after `switch`");
-		struct Expression expr =
+		struct Expr expr =
 		    typecheck_expression(ptr_ps, parse_expression(&tokvec));
 		expect_and_consume(&tokvec, RIGHT_PAREN,
 		                   "right parenthesis of `switch`");
@@ -149,7 +149,7 @@ struct Statement parse_statement(struct AnalyzerState *ptr_ps,
 		*ptr_tokvec = tokvec;
 		if (tokvec[0].kind == SEMICOLON) {
 			++tokvec;
-			struct Expression expr;
+			struct Expr expr;
 			expr.category = VOID_EXPR;
 
 			struct Statement s;
@@ -159,7 +159,7 @@ struct Statement parse_statement(struct AnalyzerState *ptr_ps,
 			*ptr_tokvec = tokvec;
 			return s;
 		} else {
-			struct Expression expr =
+			struct Expr expr =
 			    typecheck_expression(ptr_ps, parse_expression(&tokvec));
 			expect_type(ptr_ps, expr.details.type, ptr_ps->func_ret_type,
 			            "mismatched type in the return value");
@@ -183,7 +183,7 @@ struct Statement parse_statement(struct AnalyzerState *ptr_ps,
 		expect_and_consume(&tokvec, RES_WHILE, "`while` of do-while");
 		expect_and_consume(&tokvec, LEFT_PAREN, "left parenthesis of do-while");
 
-		struct Expression expr =
+		struct Expr expr =
 		    typecheck_expression(ptr_ps, parse_expression(&tokvec));
 
 		expect_and_consume(&tokvec, RIGHT_PAREN,
@@ -207,7 +207,7 @@ struct Statement parse_statement(struct AnalyzerState *ptr_ps,
 
 		expect_and_consume(&tokvec, LEFT_PAREN, "left parenthesis of while");
 
-		struct Expression expr =
+		struct Expr expr =
 		    typecheck_expression(ptr_ps, parse_expression(&tokvec));
 
 		expect_and_consume(&tokvec, RIGHT_PAREN, "left parenthesis of while");
@@ -254,9 +254,9 @@ struct Statement parse_statement(struct AnalyzerState *ptr_ps,
 		++tokvec;
 		expect_and_consume(&tokvec, LEFT_PAREN, "left parenthesis of `for`");
 
-		struct Expression expr1;
-		struct Expression expr2;
-		struct Expression expr3;
+		struct Expr expr1;
+		struct Expr expr2;
+		struct Expr expr3;
 
 		if (tokvec[0].kind == SEMICOLON) { /* expression1 is missing */
 			expr1 = integer_1();
@@ -293,8 +293,8 @@ struct Statement parse_statement(struct AnalyzerState *ptr_ps,
 		return s;
 	}
 
-	struct UntypedExpression uexpr = parse_expression(&tokvec);
-	struct Expression expr = typecheck_expression(ptr_ps, uexpr);
+	struct UntypedExpr uexpr = parse_expression(&tokvec);
+	struct Expr expr = typecheck_expression(ptr_ps, uexpr);
 
 	expect_and_consume(&tokvec, SEMICOLON, "semicolon after an expression");
 

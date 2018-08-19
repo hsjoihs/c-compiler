@@ -3,37 +3,34 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-static struct UntypedExpression
+static struct UntypedExpr
 parse_unary_expression(const struct Token **ptr_tokvec);
-static struct UntypedExpression
+static struct UntypedExpr
 parse_conditional_expression(const struct Token **ptr_tokvec);
-static struct UntypedExpression
+static struct UntypedExpr
 parse_logical_OR_expression(const struct Token **ptr_tokvec);
-static struct UntypedExpression
-parse_AND_expression(const struct Token **ptr_tokvec);
-static struct UntypedExpression
+static struct UntypedExpr parse_AND_expression(const struct Token **ptr_tokvec);
+static struct UntypedExpr
 parse_exclusive_OR_expression(const struct Token **ptr_tokvec);
-static struct UntypedExpression
+static struct UntypedExpr
 parse_equality_expression(const struct Token **ptr_tokvec);
-static struct UntypedExpression
+static struct UntypedExpr
 parse_postfix_expression(const struct Token **ptr_tokvec);
-static struct UntypedExpression
+static struct UntypedExpr
 parse_assignment_expression(const struct Token **ptr_tokvec);
-static struct UntypedExpression
+static struct UntypedExpr
 parse_primary_expression(const struct Token **ptr_tokvec);
 
-static struct UntypedExpression
-binary_op_untyped(struct UntypedExpression expr, struct UntypedExpression expr2,
-                  enum TokenKind kind)
+static struct UntypedExpr binary_op_untyped(struct UntypedExpr expr,
+                                            struct UntypedExpr expr2,
+                                            enum TokenKind kind)
 {
-	struct UntypedExpression *ptr_expr1 =
-	    calloc(1, sizeof(struct UntypedExpression));
-	struct UntypedExpression *ptr_expr2 =
-	    calloc(1, sizeof(struct UntypedExpression));
+	struct UntypedExpr *ptr_expr1 = calloc(1, sizeof(struct UntypedExpr));
+	struct UntypedExpr *ptr_expr2 = calloc(1, sizeof(struct UntypedExpr));
 	*ptr_expr1 = expr;
 	*ptr_expr2 = expr2;
 
-	struct UntypedExpression new_expr;
+	struct UntypedExpr new_expr;
 	new_expr.category = BINARY_EXPR;
 	new_expr.operator= kind;
 	new_expr.ptr1 = ptr_expr1;
@@ -43,12 +40,12 @@ binary_op_untyped(struct UntypedExpression expr, struct UntypedExpression expr2,
 	return new_expr;
 }
 
-static struct UntypedExpression
+static struct UntypedExpr
 parse_inclusive_OR_expression(const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 
-	struct UntypedExpression expr = parse_exclusive_OR_expression(&tokvec);
+	struct UntypedExpr expr = parse_exclusive_OR_expression(&tokvec);
 
 	while (1) {
 		enum TokenKind kind = tokvec[0].kind;
@@ -57,19 +54,19 @@ parse_inclusive_OR_expression(const struct Token **ptr_tokvec)
 		}
 		++tokvec;
 
-		struct UntypedExpression expr2 = parse_exclusive_OR_expression(&tokvec);
+		struct UntypedExpr expr2 = parse_exclusive_OR_expression(&tokvec);
 		expr = binary_op_untyped(expr, expr2, kind);
 	}
 	*ptr_tokvec = tokvec;
 	return expr;
 }
 
-static struct UntypedExpression
+static struct UntypedExpr
 parse_exclusive_OR_expression(const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 
-	struct UntypedExpression expr = parse_AND_expression(&tokvec);
+	struct UntypedExpr expr = parse_AND_expression(&tokvec);
 
 	while (1) {
 		enum TokenKind kind = tokvec[0].kind;
@@ -78,7 +75,7 @@ parse_exclusive_OR_expression(const struct Token **ptr_tokvec)
 		}
 		++tokvec;
 
-		struct UntypedExpression expr2 = parse_AND_expression(&tokvec);
+		struct UntypedExpr expr2 = parse_AND_expression(&tokvec);
 		expr = binary_op_untyped(expr, expr2, kind);
 	}
 	*ptr_tokvec = tokvec;
@@ -86,12 +83,11 @@ parse_exclusive_OR_expression(const struct Token **ptr_tokvec)
 	return expr;
 }
 
-static struct UntypedExpression
-parse_AND_expression(const struct Token **ptr_tokvec)
+static struct UntypedExpr parse_AND_expression(const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 
-	struct UntypedExpression expr = parse_equality_expression(&tokvec);
+	struct UntypedExpr expr = parse_equality_expression(&tokvec);
 
 	while (1) {
 		enum TokenKind kind = tokvec[0].kind;
@@ -100,7 +96,7 @@ parse_AND_expression(const struct Token **ptr_tokvec)
 		}
 		++tokvec;
 
-		struct UntypedExpression expr2 = parse_equality_expression(&tokvec);
+		struct UntypedExpr expr2 = parse_equality_expression(&tokvec);
 		expr = binary_op_untyped(expr, expr2, kind);
 	}
 	*ptr_tokvec = tokvec;
@@ -108,17 +104,16 @@ parse_AND_expression(const struct Token **ptr_tokvec)
 	return expr;
 }
 
-static struct UntypedExpression
-parse_cast_expression(const struct Token **ptr_tokvec)
+static struct UntypedExpr parse_cast_expression(const struct Token **ptr_tokvec)
 {
 	return parse_unary_expression(ptr_tokvec);
 }
 
-static struct UntypedExpression
+static struct UntypedExpr
 parse_multiplicative_expression(const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
-	struct UntypedExpression expr = parse_cast_expression(&tokvec);
+	struct UntypedExpr expr = parse_cast_expression(&tokvec);
 
 	while (1) {
 		enum TokenKind kind = tokvec[0].kind;
@@ -127,7 +122,7 @@ parse_multiplicative_expression(const struct Token **ptr_tokvec)
 		}
 		++tokvec;
 
-		struct UntypedExpression expr2 = parse_cast_expression(&tokvec);
+		struct UntypedExpr expr2 = parse_cast_expression(&tokvec);
 
 		expr = binary_op_untyped(expr, expr2, kind);
 	}
@@ -135,11 +130,11 @@ parse_multiplicative_expression(const struct Token **ptr_tokvec)
 	return expr;
 }
 
-static struct UntypedExpression
+static struct UntypedExpr
 parse_additive_expression(const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
-	struct UntypedExpression expr = parse_multiplicative_expression(&tokvec);
+	struct UntypedExpr expr = parse_multiplicative_expression(&tokvec);
 
 	while (1) {
 		enum TokenKind kind = tokvec[0].kind;
@@ -148,19 +143,18 @@ parse_additive_expression(const struct Token **ptr_tokvec)
 		}
 		++tokvec;
 
-		struct UntypedExpression expr2 =
-		    parse_multiplicative_expression(&tokvec);
+		struct UntypedExpr expr2 = parse_multiplicative_expression(&tokvec);
 		expr = binary_op_untyped(expr, expr2, kind);
 	}
 	*ptr_tokvec = tokvec;
 	return expr;
 }
 
-static struct UntypedExpression
+static struct UntypedExpr
 parse_shift_expression(const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
-	struct UntypedExpression expr = parse_additive_expression(&tokvec);
+	struct UntypedExpr expr = parse_additive_expression(&tokvec);
 
 	while (1) {
 		enum TokenKind kind = tokvec[0].kind;
@@ -169,19 +163,19 @@ parse_shift_expression(const struct Token **ptr_tokvec)
 		}
 		++tokvec;
 
-		struct UntypedExpression expr2 = parse_additive_expression(&tokvec);
+		struct UntypedExpr expr2 = parse_additive_expression(&tokvec);
 		expr = binary_op_untyped(expr, expr2, kind);
 	}
 	*ptr_tokvec = tokvec;
 	return expr;
 }
 
-static struct UntypedExpression
+static struct UntypedExpr
 parse_relational_expression(const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 
-	struct UntypedExpression expr = parse_shift_expression(&tokvec);
+	struct UntypedExpr expr = parse_shift_expression(&tokvec);
 
 	while (1) {
 		enum TokenKind kind = tokvec[0].kind;
@@ -191,18 +185,18 @@ parse_relational_expression(const struct Token **ptr_tokvec)
 		}
 		++tokvec;
 
-		struct UntypedExpression expr2 = parse_shift_expression(&tokvec);
+		struct UntypedExpr expr2 = parse_shift_expression(&tokvec);
 		expr = binary_op_untyped(expr, expr2, kind);
 	}
 	*ptr_tokvec = tokvec;
 	return expr;
 }
 
-static struct UntypedExpression
+static struct UntypedExpr
 parse_equality_expression(const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
-	struct UntypedExpression expr = parse_relational_expression(&tokvec);
+	struct UntypedExpr expr = parse_relational_expression(&tokvec);
 
 	while (1) {
 		enum TokenKind kind = tokvec[0].kind;
@@ -211,22 +205,21 @@ parse_equality_expression(const struct Token **ptr_tokvec)
 		}
 		++tokvec;
 
-		struct UntypedExpression expr2 = parse_relational_expression(&tokvec);
+		struct UntypedExpr expr2 = parse_relational_expression(&tokvec);
 		expr = binary_op_untyped(expr, expr2, kind);
 	}
 	*ptr_tokvec = tokvec;
 	return expr;
 }
 
-static struct UntypedExpression
+static struct UntypedExpr
 parse_logical_AND_expression(const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 
 	int counter = 0;
 
-	struct UntypedExpression first_expr =
-	    parse_inclusive_OR_expression(&tokvec);
+	struct UntypedExpr first_expr = parse_inclusive_OR_expression(&tokvec);
 
 	while (1) {
 		enum TokenKind kind = tokvec[0].kind;
@@ -236,7 +229,7 @@ parse_logical_AND_expression(const struct Token **ptr_tokvec)
 
 		++tokvec;
 
-		struct UntypedExpression expr2 = parse_inclusive_OR_expression(&tokvec);
+		struct UntypedExpr expr2 = parse_inclusive_OR_expression(&tokvec);
 		++counter;
 
 		first_expr = binary_op_untyped(first_expr, expr2, OP_AND_AND);
@@ -246,12 +239,12 @@ parse_logical_AND_expression(const struct Token **ptr_tokvec)
 	return first_expr;
 }
 
-static struct UntypedExpression
+static struct UntypedExpr
 parse_logical_OR_expression(const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 
-	struct UntypedExpression expr = parse_logical_AND_expression(&tokvec);
+	struct UntypedExpr expr = parse_logical_AND_expression(&tokvec);
 
 	while (1) {
 		enum TokenKind kind = tokvec[0].kind;
@@ -260,7 +253,7 @@ parse_logical_OR_expression(const struct Token **ptr_tokvec)
 		}
 
 		++tokvec;
-		struct UntypedExpression expr2 = parse_logical_AND_expression(&tokvec);
+		struct UntypedExpr expr2 = parse_logical_AND_expression(&tokvec);
 
 		expr = binary_op_untyped(expr, expr2, OP_OR_OR);
 	}
@@ -269,14 +262,13 @@ parse_logical_OR_expression(const struct Token **ptr_tokvec)
 	return expr;
 }
 
-static struct UntypedExpression unary_op_untyped(struct UntypedExpression expr,
-                                                 enum TokenKind kind)
+static struct UntypedExpr unary_op_untyped(struct UntypedExpr expr,
+                                           enum TokenKind kind)
 {
-	struct UntypedExpression *ptr_expr1 =
-	    calloc(1, sizeof(struct UntypedExpression));
+	struct UntypedExpr *ptr_expr1 = calloc(1, sizeof(struct UntypedExpr));
 	*ptr_expr1 = expr;
 
-	struct UntypedExpression new_expr;
+	struct UntypedExpr new_expr;
 	new_expr.category = UNARY_EXPR;
 	new_expr.operator= kind;
 	new_expr.ptr1 = ptr_expr1;
@@ -286,7 +278,7 @@ static struct UntypedExpression unary_op_untyped(struct UntypedExpression expr,
 	return new_expr;
 }
 
-static struct UntypedExpression
+static struct UntypedExpr
 parse_unary_expression(const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
@@ -297,9 +289,9 @@ parse_unary_expression(const struct Token **ptr_tokvec)
 		enum TokenKind kind = tokvec[0].kind;
 		++tokvec;
 
-		struct UntypedExpression expr = parse_cast_expression(&tokvec);
+		struct UntypedExpr expr = parse_cast_expression(&tokvec);
 
-		struct UntypedExpression new_expr = unary_op_untyped(expr, kind);
+		struct UntypedExpr new_expr = unary_op_untyped(expr, kind);
 
 		*ptr_tokvec = tokvec;
 		return new_expr;
@@ -308,9 +300,9 @@ parse_unary_expression(const struct Token **ptr_tokvec)
 		enum TokenKind opkind = tokvec[0].kind;
 		++tokvec;
 
-		struct UntypedExpression expr = parse_unary_expression(&tokvec);
+		struct UntypedExpr expr = parse_unary_expression(&tokvec);
 
-		struct UntypedExpression new_expr = unary_op_untyped(expr, opkind);
+		struct UntypedExpr new_expr = unary_op_untyped(expr, opkind);
 		*ptr_tokvec = tokvec;
 		return new_expr;
 	} else if (tokvec[0].kind == RES_SIZEOF && tokvec[1].kind == LEFT_PAREN &&
@@ -320,7 +312,7 @@ parse_unary_expression(const struct Token **ptr_tokvec)
 		expect_and_consume(&tokvec, RIGHT_PAREN,
 		                   "closing parenthesis of sizeof(typename)");
 
-		struct UntypedExpression expr;
+		struct UntypedExpr expr;
 		expr.category = SIZEOF_TYPE;
 		expr.operand_of_sizeof_or_alignof = type;
 		*ptr_tokvec = tokvec;
@@ -335,28 +327,27 @@ parse_unary_expression(const struct Token **ptr_tokvec)
 		expect_and_consume(&tokvec, RIGHT_PAREN,
 		                   "closing parenthesis of sizeof(typename)");
 
-		struct UntypedExpression expr;
+		struct UntypedExpr expr;
 		expr.category = ALIGNOF_TYPE;
 		expr.operand_of_sizeof_or_alignof = type;
 		*ptr_tokvec = tokvec;
 		return expr;
 	} else {
 
-		struct UntypedExpression expr = parse_postfix_expression(&tokvec);
+		struct UntypedExpr expr = parse_postfix_expression(&tokvec);
 		*ptr_tokvec = tokvec;
 		return expr;
 	}
 }
 
-static struct UntypedExpression dot(struct UntypedExpression expr,
-                                    const char *name);
+static struct UntypedExpr dot(struct UntypedExpr expr, const char *name);
 
-static struct UntypedExpression
+static struct UntypedExpr
 parse_postfix_expression(const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 
-	struct UntypedExpression expr;
+	struct UntypedExpr expr;
 	if (tokvec[0].kind == IDENT_OR_RESERVED && tokvec[1].kind == LEFT_PAREN) {
 		const char *ident_str = tokvec[0].ident_str;
 
@@ -367,9 +358,8 @@ parse_postfix_expression(const struct Token **ptr_tokvec)
 		if (tokvec[0].kind == RIGHT_PAREN) {
 			tokvec++;
 		} else {
-			struct UntypedExpression e = parse_assignment_expression(&tokvec);
-			struct UntypedExpression *ptr_e =
-			    calloc(1, sizeof(struct UntypedExpression));
+			struct UntypedExpr e = parse_assignment_expression(&tokvec);
+			struct UntypedExpr *ptr_e = calloc(1, sizeof(struct UntypedExpr));
 			*ptr_e = e;
 			push_vector(&arguments, ptr_e);
 
@@ -380,10 +370,9 @@ parse_postfix_expression(const struct Token **ptr_tokvec)
 				}
 				++tokvec;
 
-				struct UntypedExpression e =
-				    parse_assignment_expression(&tokvec);
-				struct UntypedExpression *ptr_e =
-				    calloc(1, sizeof(struct UntypedExpression));
+				struct UntypedExpr e = parse_assignment_expression(&tokvec);
+				struct UntypedExpr *ptr_e =
+				    calloc(1, sizeof(struct UntypedExpr));
 				*ptr_e = e;
 				push_vector(&arguments, ptr_e);
 			}
@@ -407,7 +396,7 @@ parse_postfix_expression(const struct Token **ptr_tokvec)
 	while (1) {
 		if (tokvec[0].kind == LEFT_BRACKET) {
 			++tokvec;
-			struct UntypedExpression expr2 = parse_expression(&tokvec);
+			struct UntypedExpr expr2 = parse_expression(&tokvec);
 			expect_and_consume(&tokvec, RIGHT_BRACKET, "right bracket ]");
 
 			expr = unary_op_untyped(binary_op_untyped(expr, expr2, OP_PLUS),
@@ -417,11 +406,11 @@ parse_postfix_expression(const struct Token **ptr_tokvec)
 			enum TokenKind opkind = tokvec[0].kind;
 			tokvec++;
 
-			struct UntypedExpression *ptr_expr1 =
-			    calloc(1, sizeof(struct UntypedExpression));
+			struct UntypedExpr *ptr_expr1 =
+			    calloc(1, sizeof(struct UntypedExpr));
 			*ptr_expr1 = expr;
 
-			struct UntypedExpression new_expr;
+			struct UntypedExpr new_expr;
 			new_expr.operator= opkind;
 			new_expr.category = POSTFIX_EXPR;
 			new_expr.ptr1 = ptr_expr1;
@@ -453,14 +442,12 @@ parse_postfix_expression(const struct Token **ptr_tokvec)
 	return expr;
 }
 
-static struct UntypedExpression dot(struct UntypedExpression expr,
-                                    const char *name)
+static struct UntypedExpr dot(struct UntypedExpr expr, const char *name)
 {
-	struct UntypedExpression *ptr_expr1 =
-	    calloc(1, sizeof(struct UntypedExpression));
+	struct UntypedExpr *ptr_expr1 = calloc(1, sizeof(struct UntypedExpr));
 	*ptr_expr1 = expr;
 
-	struct UntypedExpression new_expr;
+	struct UntypedExpr new_expr;
 	new_expr.category = DOT_EXPR;
 	new_expr.ptr1 = ptr_expr1;
 	new_expr.ptr2 = 0;
@@ -469,14 +456,14 @@ static struct UntypedExpression dot(struct UntypedExpression expr,
 	return new_expr;
 }
 
-static struct UntypedExpression
+static struct UntypedExpr
 parse_primary_expression(const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 	if (tokvec[0].kind == LIT_DEC_INTEGER) {
 		++*ptr_tokvec;
 
-		struct UntypedExpression expr;
+		struct UntypedExpr expr;
 		expr.int_value = tokvec[0].int_value;
 		expr.category = INT_LITERAL_;
 
@@ -485,7 +472,7 @@ parse_primary_expression(const struct Token **ptr_tokvec)
 	} else if (tokvec[0].kind == IDENT_OR_RESERVED) {
 		++*ptr_tokvec;
 
-		struct UntypedExpression expr;
+		struct UntypedExpr expr;
 		expr.category = VAR;
 		expr.var_name = tokvec[0].ident_str;
 		return expr;
@@ -493,7 +480,7 @@ parse_primary_expression(const struct Token **ptr_tokvec)
 	} else if (tokvec[0].kind == LEFT_PAREN) {
 		++tokvec;
 		*ptr_tokvec = tokvec;
-		struct UntypedExpression expr = parse_expression(&tokvec);
+		struct UntypedExpr expr = parse_expression(&tokvec);
 		expect_and_consume(&tokvec, RIGHT_PAREN, "right paren");
 
 		*ptr_tokvec = tokvec;
@@ -502,7 +489,7 @@ parse_primary_expression(const struct Token **ptr_tokvec)
 		struct Type *ptr_char = calloc(1, sizeof(struct Type));
 		*ptr_char = CHAR_TYPE();
 
-		struct UntypedExpression expr;
+		struct UntypedExpr expr;
 		expr.category = STRING_LITERAL_;
 		expr.literal_string = tokvec[0].literal_str;
 
@@ -514,17 +501,17 @@ parse_primary_expression(const struct Token **ptr_tokvec)
 	    tokvec, "the beginning of parse_typecheck_primary_expression");
 }
 
-static struct UntypedExpression
+static struct UntypedExpr
 parse_assignment_expression(const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 
 	const struct Token *tokvec2 = tokvec;
-	struct UntypedExpression expr = parse_unary_expression(&tokvec2);
+	struct UntypedExpr expr = parse_unary_expression(&tokvec2);
 
 	/* parse failed */
 	if (!isAssign(tokvec2[0].kind)) {
-		struct UntypedExpression expr_ = parse_conditional_expression(&tokvec);
+		struct UntypedExpr expr_ = parse_conditional_expression(&tokvec);
 		*ptr_tokvec = tokvec;
 		return expr_;
 	}
@@ -535,42 +522,38 @@ parse_assignment_expression(const struct Token **ptr_tokvec)
 	enum TokenKind opkind = tokvec[0].kind;
 	++tokvec;
 
-	struct UntypedExpression expr2 = parse_assignment_expression(&tokvec);
+	struct UntypedExpr expr2 = parse_assignment_expression(&tokvec);
 
 	*ptr_tokvec = tokvec;
 	return binary_op_untyped(expr, expr2, opkind);
 }
 
-static struct UntypedExpression
+static struct UntypedExpr
 parse_conditional_expression(const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
-	struct UntypedExpression expr = parse_logical_OR_expression(&tokvec);
+	struct UntypedExpr expr = parse_logical_OR_expression(&tokvec);
 	if (tokvec[0].kind == QUESTION) {
 
 		++tokvec;
 		*ptr_tokvec = tokvec;
-		struct UntypedExpression true_branch = parse_expression(&tokvec);
+		struct UntypedExpr true_branch = parse_expression(&tokvec);
 
 		expect_and_consume(&tokvec, COLON, "colon of the conditional operator");
 
 		*ptr_tokvec = tokvec;
-		struct UntypedExpression false_branch =
-		    parse_conditional_expression(&tokvec);
+		struct UntypedExpr false_branch = parse_conditional_expression(&tokvec);
 
 		*ptr_tokvec = tokvec;
 
-		struct UntypedExpression *ptr_expr1 =
-		    calloc(1, sizeof(struct UntypedExpression));
-		struct UntypedExpression *ptr_expr2 =
-		    calloc(1, sizeof(struct UntypedExpression));
-		struct UntypedExpression *ptr_expr3 =
-		    calloc(1, sizeof(struct UntypedExpression));
+		struct UntypedExpr *ptr_expr1 = calloc(1, sizeof(struct UntypedExpr));
+		struct UntypedExpr *ptr_expr2 = calloc(1, sizeof(struct UntypedExpr));
+		struct UntypedExpr *ptr_expr3 = calloc(1, sizeof(struct UntypedExpr));
 		*ptr_expr1 = expr;
 		*ptr_expr2 = true_branch;
 		*ptr_expr3 = false_branch;
 
-		struct UntypedExpression new_expr;
+		struct UntypedExpr new_expr;
 		new_expr.category = CONDITIONAL;
 		new_expr.ptr1 = ptr_expr1;
 		new_expr.ptr2 = ptr_expr2;
@@ -582,16 +565,15 @@ parse_conditional_expression(const struct Token **ptr_tokvec)
 	return expr;
 }
 
-struct UntypedExpression
-parse_constant_expression(const struct Token **ptr_tokvec)
+struct UntypedExpr parse_constant_expression(const struct Token **ptr_tokvec)
 {
 	return parse_conditional_expression(ptr_tokvec);
 }
 
-struct UntypedExpression parse_expression(const struct Token **ptr_tokvec)
+struct UntypedExpr parse_expression(const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
-	struct UntypedExpression expr = parse_assignment_expression(&tokvec);
+	struct UntypedExpr expr = parse_assignment_expression(&tokvec);
 	while (1) {
 		enum TokenKind kind = tokvec[0].kind;
 		if (kind != OP_COMMA) {
@@ -599,7 +581,7 @@ struct UntypedExpression parse_expression(const struct Token **ptr_tokvec)
 		}
 		++tokvec;
 
-		struct UntypedExpression expr2 = parse_assignment_expression(&tokvec);
+		struct UntypedExpr expr2 = parse_assignment_expression(&tokvec);
 
 		expr = binary_op_untyped(expr, expr2, kind);
 	}

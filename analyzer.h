@@ -19,8 +19,8 @@ struct AnalyzerState {
 	struct Map /*<StructInternalCompleteInfo>*/ global_struct_tag_map;
 };
 
-struct Expression typecheck_expression(const struct AnalyzerState *ptr_ps,
-                                       struct UntypedExpression uexpr);
+struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
+                                 struct UntypedExpr uexpr);
 
 struct Statement parse_statement(struct AnalyzerState *ptr_ps,
                                  const struct Token **ptr_tokvec);
@@ -41,5 +41,5 @@ void expect_type(const struct AnalyzerState *ptr_ps, struct Type actual_type,
                  struct Type expected_type, const char *message);
 
 int typecheck_constant_expression(struct AnalyzerState *ptr_ps,
-                                  struct UntypedExpression uexpr,
+                                  struct UntypedExpr uexpr,
                                   const char *context);

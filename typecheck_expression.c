@@ -5,8 +5,7 @@
 #include <string.h>
 
 int typecheck_constant_expression(struct AnalyzerState *ptr_ps,
-                                  struct UntypedExpression uexpr,
-                                  const char *context)
+                                  struct UntypedExpr uexpr, const char *context)
 {
 	if (uexpr.category == INT_LITERAL_) {
 		return uexpr.int_value;
@@ -143,16 +142,15 @@ static enum SimpleBinOp to_simplebinop(enum TokenKind t)
 	}
 }
 
-static struct Expression binary_op(struct Expression expr,
-                                   struct Expression expr2,
-                                   enum ExprCategory cat, struct Type type)
+static struct Expr binary_op(struct Expr expr, struct Expr expr2,
+                             enum ExprCategory cat, struct Type type)
 {
-	struct Expression *ptr_expr1 = calloc(1, sizeof(struct Expression));
-	struct Expression *ptr_expr2 = calloc(1, sizeof(struct Expression));
+	struct Expr *ptr_expr1 = calloc(1, sizeof(struct Expr));
+	struct Expr *ptr_expr2 = calloc(1, sizeof(struct Expr));
 	*ptr_expr1 = expr;
 	*ptr_expr2 = expr2;
 
-	struct Expression new_expr;
+	struct Expr new_expr;
 	new_expr.details.type = type;
 	new_expr.category = cat;
 	new_expr.ptr1 = ptr_expr1;
@@ -162,16 +160,15 @@ static struct Expression binary_op(struct Expression expr,
 	return new_expr;
 }
 
-static struct Expression simple_binary_op(struct Expression expr,
-                                          struct Expression expr2,
-                                          enum TokenKind kind, struct Type type)
+static struct Expr simple_binary_op(struct Expr expr, struct Expr expr2,
+                                    enum TokenKind kind, struct Type type)
 {
-	struct Expression *ptr_expr1 = calloc(1, sizeof(struct Expression));
-	struct Expression *ptr_expr2 = calloc(1, sizeof(struct Expression));
+	struct Expr *ptr_expr1 = calloc(1, sizeof(struct Expr));
+	struct Expr *ptr_expr2 = calloc(1, sizeof(struct Expr));
 	*ptr_expr1 = expr;
 	*ptr_expr2 = expr2;
 
-	struct Expression new_expr;
+	struct Expr new_expr;
 	new_expr.details.type = type;
 	new_expr.category = SIMPLE_BINARY_EXPR;
 	new_expr.simple_binary_operator = to_simplebinop(kind);
@@ -182,17 +179,16 @@ static struct Expression simple_binary_op(struct Expression expr,
 	return new_expr;
 }
 
-static struct Expression
-pointer_plusorminus_int(const struct AnalyzerState *ptr_ps,
-                        struct Expression expr, struct Expression expr2,
-                        enum TokenKind kind)
+static struct Expr pointer_plusorminus_int(const struct AnalyzerState *ptr_ps,
+                                           struct Expr expr, struct Expr expr2,
+                                           enum TokenKind kind)
 {
-	struct Expression *ptr_expr1 = calloc(1, sizeof(struct Expression));
-	struct Expression *ptr_expr2 = calloc(1, sizeof(struct Expression));
+	struct Expr *ptr_expr1 = calloc(1, sizeof(struct Expr));
+	struct Expr *ptr_expr2 = calloc(1, sizeof(struct Expr));
 	*ptr_expr1 = expr;
 	*ptr_expr2 = expr2;
 
-	struct Expression new_expr;
+	struct Expr new_expr;
 	new_expr.details = expr.details;
 	new_expr.category = kind == OP_PLUS ? POINTER_PLUS_INT : POINTER_MINUS_INT;
 	new_expr.ptr1 = ptr_expr1;
@@ -204,9 +200,8 @@ pointer_plusorminus_int(const struct AnalyzerState *ptr_ps,
 	return new_expr;
 }
 
-static struct Expression combine_by_add(const struct AnalyzerState *ptr_ps,
-                                        struct Expression expr,
-                                        struct Expression expr2)
+static struct Expr combine_by_add(const struct AnalyzerState *ptr_ps,
+                                  struct Expr expr, struct Expr expr2)
 {
 	struct Type type1 = expr.details.type;
 	struct Type type2 = expr2.details.type;
@@ -229,9 +224,8 @@ static struct Expression combine_by_add(const struct AnalyzerState *ptr_ps,
 	exit(EXIT_FAILURE);
 }
 
-static struct Expression combine_by_sub(const struct AnalyzerState *ptr_ps,
-                                        struct Expression expr,
-                                        struct Expression expr2)
+static struct Expr combine_by_sub(const struct AnalyzerState *ptr_ps,
+                                  struct Expr expr, struct Expr expr2)
 {
 	struct Type type1 = expr.details.type;
 	struct Type type2 = expr2.details.type;
@@ -253,12 +247,12 @@ static struct Expression combine_by_sub(const struct AnalyzerState *ptr_ps,
 		} else {
 			/* pointer minus pointer */
 
-			struct Expression *ptr_expr1 = calloc(1, sizeof(struct Expression));
-			struct Expression *ptr_expr2 = calloc(1, sizeof(struct Expression));
+			struct Expr *ptr_expr1 = calloc(1, sizeof(struct Expr));
+			struct Expr *ptr_expr2 = calloc(1, sizeof(struct Expr));
 			*ptr_expr1 = expr;
 			*ptr_expr2 = expr2;
 
-			struct Expression new_expr;
+			struct Expr new_expr;
 			new_expr.details.type = INT_TYPE();
 			new_expr.category = POINTER_MINUS_POINTER;
 			new_expr.ptr1 = ptr_expr1;
@@ -349,15 +343,15 @@ static enum UnaryOp to_unaryop(enum TokenKind t)
 	}
 }
 
-static struct Expression deref_expr(struct Expression expr);
+static struct Expr deref_expr(struct Expr expr);
 
-static struct Expression unary_op_(struct Expression expr, enum TokenKind kind,
-                                   struct Type type)
+static struct Expr unary_op_(struct Expr expr, enum TokenKind kind,
+                             struct Type type)
 {
-	struct Expression *ptr_expr1 = calloc(1, sizeof(struct Expression));
+	struct Expr *ptr_expr1 = calloc(1, sizeof(struct Expr));
 	*ptr_expr1 = expr;
 
-	struct Expression new_expr;
+	struct Expr new_expr;
 	new_expr.details.type = type;
 	new_expr.category = UNARY_OP_EXPR;
 	new_expr.unary_operator = to_unaryop(kind);
@@ -368,11 +362,11 @@ static struct Expression unary_op_(struct Expression expr, enum TokenKind kind,
 	return new_expr;
 }
 
-static struct Expression deref_expr(struct Expression expr)
+static struct Expr deref_expr(struct Expr expr)
 {
 	struct Type type = deref_type(expr.details.type);
 
-	struct Expression new_expr =
+	struct Expr new_expr =
 	    unary_op_(expr, OP_ASTERISK, if_array_convert_to_ptr(type));
 	new_expr.details.true_type = type;
 
@@ -410,16 +404,15 @@ static enum SimpleBinOp op_before_assign(enum TokenKind kind)
 	}
 }
 
-static struct Expression assignment_expr(struct Expression expr,
-                                         struct Expression expr2,
-                                         enum TokenKind opkind)
+static struct Expr assignment_expr(struct Expr expr, struct Expr expr2,
+                                   enum TokenKind opkind)
 {
-	struct Expression *ptr_expr1 = calloc(1, sizeof(struct Expression));
-	struct Expression *ptr_expr2 = calloc(1, sizeof(struct Expression));
+	struct Expr *ptr_expr1 = calloc(1, sizeof(struct Expr));
+	struct Expr *ptr_expr2 = calloc(1, sizeof(struct Expr));
 	*ptr_expr1 = expr;
 	*ptr_expr2 = expr2;
 
-	struct Expression new_expr;
+	struct Expr new_expr;
 	new_expr.details = expr.details;
 	new_expr.category = ASSIGNMENT_EXPR;
 	new_expr.simple_binary_operator = op_before_assign(opkind);
@@ -430,13 +423,12 @@ static struct Expression assignment_expr(struct Expression expr,
 	return new_expr;
 }
 
-struct Expression typecheck_expression(const struct AnalyzerState *ptr_ps,
-                                       struct UntypedExpression uexpr)
+struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
+                                 struct UntypedExpr uexpr)
 {
 	switch (uexpr.category) {
 		case DOT_EXPR: {
-			struct Expression struct_expr =
-			    typecheck_expression(ptr_ps, *uexpr.ptr1);
+			struct Expr struct_expr = typecheck_expression(ptr_ps, *uexpr.ptr1);
 			const char *ident_after_dot = uexpr.ident_after_dot;
 			if (struct_expr.details.type.type_category != STRUCT_) {
 				fprintf(stderr, "member is requested but the left operand is "
@@ -459,7 +451,7 @@ struct Expression typecheck_expression(const struct AnalyzerState *ptr_ps,
 			    ptr_info->info.types_and_idents;
 			int nth_member = -1;
 
-			struct Expression expr;
+			struct Expr expr;
 			for (int i = 0; i < vec.length; i++) {
 				const struct TypeAndIdent *ptr_vec_i = vec.vector[i];
 				if (strcmp(ptr_vec_i->ident_str, ident_after_dot) == 0) {
@@ -477,8 +469,7 @@ struct Expression typecheck_expression(const struct AnalyzerState *ptr_ps,
 
 			int offset = ptr_info->offset_vec[nth_member];
 
-			struct Expression *ptr_struct_expr =
-			    calloc(1, sizeof(struct Expression));
+			struct Expr *ptr_struct_expr = calloc(1, sizeof(struct Expr));
 			*ptr_struct_expr = struct_expr;
 
 			expr.category = STRUCT_AND_OFFSET;
@@ -489,7 +480,7 @@ struct Expression typecheck_expression(const struct AnalyzerState *ptr_ps,
 			return expr;
 		}
 		case SIZEOF_TYPE: {
-			struct Expression expr;
+			struct Expr expr;
 			expr.details.type = INT_TYPE();
 			expr.int_value =
 			    size_of(ptr_ps, uexpr.operand_of_sizeof_or_alignof);
@@ -497,7 +488,7 @@ struct Expression typecheck_expression(const struct AnalyzerState *ptr_ps,
 			return expr;
 		}
 		case ALIGNOF_TYPE: {
-			struct Expression expr;
+			struct Expr expr;
 			expr.details.type = INT_TYPE();
 			expr.int_value =
 			    align_of(ptr_ps, uexpr.operand_of_sizeof_or_alignof);
@@ -511,13 +502,13 @@ struct Expression typecheck_expression(const struct AnalyzerState *ptr_ps,
 				case OP_PLUS:
 				case OP_MINUS: {
 					enum TokenKind kind = uexpr.operator;
-					struct Expression expr =
+					struct Expr expr =
 					    typecheck_expression(ptr_ps, *uexpr.ptr1);
 					expect_type(ptr_ps, expr.details.type, INT_TYPE(),
 					            "operand of logical not, bitnot, unary plus or "
 					            "unary minus");
 
-					struct Expression new_expr =
+					struct Expr new_expr =
 					    unary_op_(expr, kind, expr.details.type);
 					/* new_expr.details.true_type = expr.details.true_type; */
 					/* should not propagate */
@@ -529,18 +520,17 @@ struct Expression typecheck_expression(const struct AnalyzerState *ptr_ps,
 				case OP_MINUS_MINUS: {
 					enum TokenKind opkind = uexpr.operator;
 
-					struct Expression expr =
+					struct Expr expr =
 					    typecheck_expression(ptr_ps, *uexpr.ptr1);
 					expect_type(ptr_ps, expr.details.type, INT_TYPE(),
 					            "operand of unary increment/decrement");
 
-					struct Expression new_expr =
-					    unary_op_(expr, opkind, INT_TYPE());
+					struct Expr new_expr = unary_op_(expr, opkind, INT_TYPE());
 					return new_expr;
 				}
 
 				case OP_AND: {
-					struct Expression expr;
+					struct Expr expr;
 
 					expr = typecheck_expression(ptr_ps, *uexpr.ptr1);
 
@@ -553,13 +543,13 @@ struct Expression typecheck_expression(const struct AnalyzerState *ptr_ps,
 					struct Type *ptr_type = calloc(1, sizeof(struct Type));
 					*ptr_type = expr.details.type;
 
-					struct Expression new_expr = unary_op_(
+					struct Expr new_expr = unary_op_(
 					    expr, OP_AND, ptr_of_type_to_ptr_to_type(ptr_type));
 
 					return new_expr;
 				}
 				case OP_ASTERISK: {
-					struct Expression expr =
+					struct Expr expr =
 					    typecheck_expression(ptr_ps, *uexpr.ptr1);
 
 					return deref_expr(expr);
@@ -588,11 +578,11 @@ struct Expression typecheck_expression(const struct AnalyzerState *ptr_ps,
 				ret_type = ptr_func_info->ret_type;
 			}
 
-			struct Expression *args = calloc(10, sizeof(struct Expression));
+			struct Expr *args = calloc(10, sizeof(struct Expr));
 
 			int counter = 0;
 			for (; counter < uexpr.arg_exprs_vec.length; counter++) {
-				const struct UntypedExpression *ptr =
+				const struct UntypedExpr *ptr =
 				    uexpr.arg_exprs_vec.vector[counter];
 				args[counter] = typecheck_expression(ptr_ps, *ptr);
 				if (counter > 5) {
@@ -600,7 +590,7 @@ struct Expression typecheck_expression(const struct AnalyzerState *ptr_ps,
 				}
 			}
 
-			struct Expression expr;
+			struct Expr expr;
 			expr.category = FUNCCALL_EXPR;
 			expr.arg_expr_vec = args;
 			expr.arg_length = counter;
@@ -609,13 +599,13 @@ struct Expression typecheck_expression(const struct AnalyzerState *ptr_ps,
 			return expr;
 		}
 		case POSTFIX_EXPR: {
-			struct Expression expr = typecheck_expression(ptr_ps, *uexpr.ptr1);
-			struct Expression *ptr_expr1 = calloc(1, sizeof(struct Expression));
+			struct Expr expr = typecheck_expression(ptr_ps, *uexpr.ptr1);
+			struct Expr *ptr_expr1 = calloc(1, sizeof(struct Expr));
 			*ptr_expr1 = expr;
 
 			enum TokenKind opkind = uexpr.operator;
 
-			struct Expression new_expr;
+			struct Expr new_expr;
 			new_expr.details.type = INT_TYPE();
 			new_expr.category =
 			    opkind == OP_PLUS_PLUS ? POSTFIX_INCREMENT : POSTFIX_DECREMENT;
@@ -625,7 +615,7 @@ struct Expression typecheck_expression(const struct AnalyzerState *ptr_ps,
 			return new_expr;
 		}
 		case INT_LITERAL_: {
-			struct Expression expr;
+			struct Expr expr;
 			expr.details.type = INT_TYPE();
 			expr.int_value = uexpr.int_value;
 			expr.category = INT_VALUE;
@@ -638,7 +628,7 @@ struct Expression typecheck_expression(const struct AnalyzerState *ptr_ps,
 				struct Type type =
 				    resolve_name_globally(ptr_ps->global_vars_type_map, name);
 
-				struct Expression expr;
+				struct Expr expr;
 				expr.details.type = if_array_convert_to_ptr(type);
 				;
 				expr.details.true_type = type;
@@ -649,7 +639,7 @@ struct Expression typecheck_expression(const struct AnalyzerState *ptr_ps,
 				struct LocalVarInfo info =
 				    resolve_name_locally(ptr_ps->scope_chain, name);
 
-				struct Expression expr;
+				struct Expr expr;
 				expr.details.type = if_array_convert_to_ptr(info.type);
 				expr.details.true_type = info.type;
 				expr.category = LOCAL_VAR_;
@@ -661,7 +651,7 @@ struct Expression typecheck_expression(const struct AnalyzerState *ptr_ps,
 			struct Type *ptr_char = calloc(1, sizeof(struct Type));
 			*ptr_char = CHAR_TYPE();
 
-			struct Expression expr;
+			struct Expr expr;
 			expr.details.type = ptr_of_type_to_ptr_to_type(ptr_char);
 			expr.details.true_type = ptr_of_type_to_arr_of_type(
 			    ptr_char, strlen(uexpr.literal_string) + 1);
@@ -671,22 +661,21 @@ struct Expression typecheck_expression(const struct AnalyzerState *ptr_ps,
 			return expr;
 		}
 		case CONDITIONAL: {
-			struct Expression expr = typecheck_expression(ptr_ps, *uexpr.ptr1);
-			struct Expression true_branch =
-			    typecheck_expression(ptr_ps, *uexpr.ptr2);
-			struct Expression false_branch =
+			struct Expr expr = typecheck_expression(ptr_ps, *uexpr.ptr1);
+			struct Expr true_branch = typecheck_expression(ptr_ps, *uexpr.ptr2);
+			struct Expr false_branch =
 			    typecheck_expression(ptr_ps, *uexpr.ptr3);
 			expect_type(
 			    ptr_ps, false_branch.details.type, true_branch.details.type,
 			    "mismatch of type in the false branch and the true branch");
-			struct Expression *ptr_expr1 = calloc(1, sizeof(struct Expression));
-			struct Expression *ptr_expr2 = calloc(1, sizeof(struct Expression));
-			struct Expression *ptr_expr3 = calloc(1, sizeof(struct Expression));
+			struct Expr *ptr_expr1 = calloc(1, sizeof(struct Expr));
+			struct Expr *ptr_expr2 = calloc(1, sizeof(struct Expr));
+			struct Expr *ptr_expr3 = calloc(1, sizeof(struct Expr));
 			*ptr_expr1 = expr;
 			*ptr_expr2 = true_branch;
 			*ptr_expr3 = false_branch;
 
-			struct Expression new_expr;
+			struct Expr new_expr;
 			new_expr.details = true_branch.details;
 			new_expr.category = CONDITIONAL_EXPR;
 			new_expr.ptr1 = ptr_expr1;
@@ -696,10 +685,8 @@ struct Expression typecheck_expression(const struct AnalyzerState *ptr_ps,
 		}
 		case BINARY_EXPR: {
 			if (isAssign(uexpr.operator)) {
-				struct Expression expr =
-				    typecheck_expression(ptr_ps, *uexpr.ptr1);
-				struct Expression expr2 =
-				    typecheck_expression(ptr_ps, *uexpr.ptr2);
+				struct Expr expr = typecheck_expression(ptr_ps, *uexpr.ptr1);
+				struct Expr expr2 = typecheck_expression(ptr_ps, *uexpr.ptr2);
 				if (is_array(expr.details.type) ||
 				    is_array(expr.details.true_type)) {
 					fprintf(stderr, "array is not an lvalue\n");
@@ -719,32 +706,32 @@ struct Expression typecheck_expression(const struct AnalyzerState *ptr_ps,
 			}
 			switch (uexpr.operator) {
 				case OP_PLUS: {
-					struct Expression expr =
+					struct Expr expr =
 					    typecheck_expression(ptr_ps, *uexpr.ptr1);
-					struct Expression expr2 =
+					struct Expr expr2 =
 					    typecheck_expression(ptr_ps, *uexpr.ptr2);
 					return combine_by_add(ptr_ps, expr, expr2);
 				}
 				case OP_MINUS: {
-					struct Expression expr =
+					struct Expr expr =
 					    typecheck_expression(ptr_ps, *uexpr.ptr1);
-					struct Expression expr2 =
+					struct Expr expr2 =
 					    typecheck_expression(ptr_ps, *uexpr.ptr2);
 					return combine_by_sub(ptr_ps, expr, expr2);
 				}
 				case OP_AND_AND: {
-					struct Expression first_expr =
+					struct Expr first_expr =
 					    typecheck_expression(ptr_ps, *uexpr.ptr1);
-					struct Expression expr2 =
+					struct Expr expr2 =
 					    typecheck_expression(ptr_ps, *uexpr.ptr2);
 
 					return binary_op(first_expr, expr2, LOGICAL_AND_EXPR,
 					                 INT_TYPE());
 				}
 				case OP_OR_OR: {
-					struct Expression expr =
+					struct Expr expr =
 					    typecheck_expression(ptr_ps, *uexpr.ptr1);
-					struct Expression expr2 =
+					struct Expr expr2 =
 					    typecheck_expression(ptr_ps, *uexpr.ptr2);
 					return binary_op(expr, expr2, LOGICAL_OR_EXPR, INT_TYPE());
 				}
@@ -762,9 +749,9 @@ struct Expression typecheck_expression(const struct AnalyzerState *ptr_ps,
 				case OP_ASTERISK:
 				case OP_SLASH:
 				case OP_PERCENT: {
-					struct Expression expr =
+					struct Expr expr =
 					    typecheck_expression(ptr_ps, *uexpr.ptr1);
-					struct Expression expr2 =
+					struct Expr expr2 =
 					    typecheck_expression(ptr_ps, *uexpr.ptr2);
 					expect_type(ptr_ps, expr.details.type, INT_TYPE(),
 					            "left operand of an operator");
@@ -774,9 +761,9 @@ struct Expression typecheck_expression(const struct AnalyzerState *ptr_ps,
 					                        expr2.details.type);
 				}
 				case OP_COMMA: {
-					struct Expression expr =
+					struct Expr expr =
 					    typecheck_expression(ptr_ps, *uexpr.ptr1);
-					struct Expression expr2 =
+					struct Expr expr2 =
 					    typecheck_expression(ptr_ps, *uexpr.ptr2);
 					return simple_binary_op(expr, expr2, uexpr.operator,
 					                        expr2.details.type);

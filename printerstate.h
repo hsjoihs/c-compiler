@@ -11,4 +11,4 @@ struct PrinterState {
 };
 
 int get_new_label_name(struct PrinterState *ptr_prs);
-void print_expression(struct PrinterState *ptr_prs, struct Expression expr);
+void print_expression(struct PrinterState *ptr_prs, struct Expr expr);

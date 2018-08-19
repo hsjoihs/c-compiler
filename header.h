@@ -225,21 +225,21 @@ enum UnaryOp {
 	UNARY_OP_ASTERISK
 };
 
-struct UntypedExpression {
+struct UntypedExpr {
 	enum TokenKind operator;
 	enum UntypedExprCategory category;
-	struct UntypedExpression *ptr1;
-	struct UntypedExpression *ptr2;
-	struct UntypedExpression *ptr3;
+	struct UntypedExpr *ptr1;
+	struct UntypedExpr *ptr2;
+	struct UntypedExpr *ptr3;
 	int int_value;
 	const char *var_name;
 	const char *literal_string;
-	struct Vector /* <UntypedExpression> */ arg_exprs_vec;
+	struct Vector /* <UntypedExpr> */ arg_exprs_vec;
 	struct Type operand_of_sizeof_or_alignof;
 	const char *ident_after_dot;
 };
 
-struct Expression {
+struct Expr {
 	struct {
 		struct Type type;
 		struct Type true_type;
@@ -247,13 +247,13 @@ struct Expression {
 	enum ExprCategory category;
 	enum SimpleBinOp simple_binary_operator;
 	enum UnaryOp unary_operator;
-	struct Expression *ptr1;
-	struct Expression *ptr2;
-	struct Expression *ptr3;
+	struct Expr *ptr1;
+	struct Expr *ptr2;
+	struct Expr *ptr3;
 	int int_value;
 	const char *global_var_name;
 	const char *literal_string;
-	struct Expression *arg_expr_vec;
+	struct Expr *arg_expr_vec;
 	int arg_length;
 	int local_var_offset;
 
@@ -298,9 +298,9 @@ struct SourceLabel {
 struct Statement {
 	enum StatementCategory category;
 	struct Vector statement_vector;
-	struct Expression expr1;
-	struct Expression expr2;
-	struct Expression expr3;
+	struct Expr expr1;
+	struct Expr expr2;
+	struct Expr expr3;
 	struct Statement *inner_statement;
 	struct {
 		struct Type type;
@@ -333,7 +333,7 @@ struct Toplevel {
 	int size_of_declarator_type;
 };
 
-struct UntypedExpression parse_expression(const struct Token **ptr_tokvec);
+struct UntypedExpr parse_expression(const struct Token **ptr_tokvec);
 int isAssign(enum TokenKind opkind);
 struct Type *parse_type_specifier(const struct Token **ptr_tokvec);
 
@@ -344,5 +344,4 @@ get_size_alignment_offsets(const struct SizeAndAlignment *inner_type_vec,
 struct Type *
 try_parse_type_specifier_and_semicolon(const struct Token **ptr_tokvec);
 
-struct UntypedExpression
-parse_constant_expression(const struct Token **ptr_tokvec);
+struct UntypedExpr parse_constant_expression(const struct Token **ptr_tokvec);

@@ -63,7 +63,7 @@ static void print_simple_binary_op(enum SimpleBinOp kind)
 }
 
 static void print_address_of_lvalue(struct PrinterState *ptr_prs,
-                                    struct Expression expr)
+                                    struct Expr expr)
 {
 	switch (expr.category) {
 		case STRUCT_AND_OFFSET: {
@@ -102,12 +102,12 @@ static void print_address_of_lvalue(struct PrinterState *ptr_prs,
 	}
 }
 
-void print_expression(struct PrinterState *ptr_prs, struct Expression expr);
+void print_expression(struct PrinterState *ptr_prs, struct Expr expr);
 static void print_expression_as_lvalue(struct PrinterState *ptr_prs,
-                                       struct Expression expr);
+                                       struct Expr expr);
 
 static void print_expression_as_lvalue(struct PrinterState *ptr_prs,
-                                       struct Expression expr)
+                                       struct Expr expr)
 {
 	print_address_of_lvalue(ptr_prs, expr);
 	switch (expr.category) {
@@ -156,7 +156,7 @@ static void print_op_pointer_plusminus_int(int is_plus, int size)
 	gen_op_8byte(is_plus ? "addq" : "subq");
 }
 
-void print_expression(struct PrinterState *ptr_prs, struct Expression expr)
+void print_expression(struct PrinterState *ptr_prs, struct Expr expr)
 {
 	switch (expr.category) {
 		case VOID_EXPR: {
@@ -364,13 +364,13 @@ void print_expression(struct PrinterState *ptr_prs, struct Expression expr)
 			struct Type ret_type = expr.details.type;
 
 			for (int counter = expr.arg_length - 1; counter >= 0; counter--) {
-				struct Expression expr_ = expr.arg_expr_vec[counter];
+				struct Expr expr_ = expr.arg_expr_vec[counter];
 
 				print_expression(ptr_prs, expr_);
 			}
 
 			for (int counter = 0; counter < expr.arg_length; counter++) {
-				struct Expression expr_ = expr.arg_expr_vec[counter];
+				struct Expr expr_ = expr.arg_expr_vec[counter];
 
 				switch (size_of_basic(expr_.details.type)) {
 					case 1:
