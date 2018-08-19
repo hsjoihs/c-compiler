@@ -315,6 +315,13 @@ enum ToplevelCategory {
 	TOPLEVEL_FUNCTION_DECLARATION,
 };
 
+struct ToplevelFuncInfo {
+	struct Statement sta;
+	struct Vector offsets_and_types;
+	struct Type ret_type;
+	int capacity;
+};
+
 struct Toplevel {
 	enum ToplevelCategory category;
 	const char *declarator_name;
@@ -323,12 +330,7 @@ struct Toplevel {
 	struct Type declarator_type;
 	/* used when it is TOPLEVEL_VAR_DEFINITION or TOPLEVEL_TYPE_DECLARATION */
 
-	struct {
-		struct Statement sta;
-		struct Vector offsets_and_types;
-		struct Type ret_type;
-		int capacity;
-	} func;
+	struct ToplevelFuncInfo func;
 
 	int size_of_declarator_type;
 };
