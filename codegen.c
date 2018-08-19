@@ -21,7 +21,7 @@ static void concat_vector(struct Vector *ptr_ans, struct Vector vec)
 
 static struct Vector /*<SourceLabel>*/ collect_labels(struct Statement sta)
 {
-	struct Vector ans = init_vector();
+	struct Vector /*<SourceLabel>*/ ans = init_vector();
 	concat_vector(&ans, sta.labels);
 	switch (sta.category) {
 		case RETURN_STATEMENT:
@@ -178,7 +178,7 @@ static void print_statement(struct PrinterState *ptr_prs,
 		case SWITCH_STATEMENT: {
 			int stashed_break_label = ptr_prs->break_label_name;
 			int stashed_is_inside_switch = ptr_prs->is_inside_switch;
-			struct Vector stashed_case_default_vec = ptr_prs->case_default_vec;
+			struct Vector /*<Label>*/ stashed_case_default_vec = ptr_prs->case_default_vec;
 
 			int break_label = get_new_label_name(ptr_prs);
 			ptr_prs->break_label_name = break_label;
@@ -422,7 +422,7 @@ static void print_toplevel_definition(struct PrinterState *ptr_prs,
 	}
 }
 
-void generate(const struct Vector vec)
+void generate(const struct Vector /*<Toplevel>*/ vec)
 {
 	struct PrinterState prs;
 	prs.final_label_name = 1;

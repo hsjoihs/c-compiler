@@ -33,7 +33,7 @@ int main(int argc, char const **argv)
 
 	++tokvec; /* skip the dummy token BEGINNING */
 
-	struct Vector vec = parse(tokvec);
+	struct Vector /*<Toplevel>*/ vec = parse(tokvec);
 
 	generate(vec);
 

@@ -27,5 +27,5 @@ struct Toplevel {
 	int size_of_declarator_type;
 };
 
-void generate(const struct Vector vec);
+void generate(const struct Vector /*<Toplevel>*/ vec);
 struct Vector /*<Toplevel>*/ parse(const struct Token *tokvec);

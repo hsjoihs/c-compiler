@@ -156,7 +156,7 @@ struct Type parse_declarator_or_type_name(const struct Token **ptr_tokvec,
 
 	struct Type *ptr_base_type = parse_type_specifier(&tokvec);
 
-	struct Vector vec = init_vector();
+	struct Vector /*<TypeNode>*/ vec = init_vector();
 
 	int asterisk_num = 0;
 	for (; tokvec[0].kind == OP_ASTERISK; ++tokvec) {

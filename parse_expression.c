@@ -353,7 +353,7 @@ parse_postfix_expression(const struct Token **ptr_tokvec)
 
 		tokvec += 2;
 
-		struct Vector arguments = init_vector();
+		struct Vector /*<UntypedExpr>*/ arguments = init_vector();
 
 		if (tokvec[0].kind == RIGHT_PAREN) {
 			tokvec++;
@@ -377,12 +377,8 @@ parse_postfix_expression(const struct Token **ptr_tokvec)
 				push_vector(&arguments, ptr_e);
 			}
 
-			*ptr_tokvec = tokvec;
-
 			expect_and_consume(&tokvec, RIGHT_PAREN,
 			                   "closing parenthesis of function call");
-
-			*ptr_tokvec = tokvec;
 		}
 		*ptr_tokvec = tokvec;
 
