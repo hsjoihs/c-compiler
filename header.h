@@ -289,7 +289,7 @@ enum LabelCategory { DEFAULT_LABEL, CASE_LABEL, IDENT_LABEL };
 
 struct Label {
 	enum LabelCategory category;
-	struct Expression case_expr;
+	int case_int;
 	const char *ident_str;
 };
 

@@ -4,6 +4,18 @@
 #include <stdlib.h>
 #include <string.h>
 
+int typecheck_constant_expression(struct AnalyzerState *ptr_ps,
+                                  struct UntypedExpression uexpr,
+                                  const char *context)
+{
+	if (uexpr.category == INT_LITERAL_) {
+		return uexpr.int_value;
+	}
+	fprintf(stderr, "Expected const expression, but did not get one.\n");
+	fprintf(stderr, "context: %s\n", context);
+	exit(EXIT_FAILURE);
+}
+
 static int is_compatible(const struct AnalyzerState *ptr_ps, struct Type t1,
                          struct Type t2);
 

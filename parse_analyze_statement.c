@@ -34,20 +34,6 @@ int add_local_var_to_scope(struct AnalyzerState *ptr_ps,
 	return ptr_varinfo->offset;
 }
 
-static struct Expression
-typecheck_constant_expression(struct AnalyzerState *ptr_ps,
-                              struct UntypedExpression uexpr,
-                              const char *context)
-{
-	if ((0)) {
-		fprintf(stderr, "Expected const expression, but did not get one.\n");
-		fprintf(stderr, "context: %s\n", context);
-		exit(EXIT_FAILURE);
-	}
-#warning currently not guaranteed to be constant
-	return typecheck_expression(ptr_ps, uexpr);
-}
-
 struct Statement parse_labeled_statement(struct AnalyzerState *ptr_ps,
                                          const struct Token **ptr_tokvec)
 {
@@ -60,10 +46,10 @@ struct Statement parse_labeled_statement(struct AnalyzerState *ptr_ps,
 		l.category = DEFAULT_LABEL;
 	} else if (kind == RES_CASE) {
 		++tokvec;
-		struct Expression expr = typecheck_constant_expression(
+		int case_int = typecheck_constant_expression(
 		    ptr_ps, parse_constant_expression(&tokvec), "case");
 		l.category = CASE_LABEL;
-		l.case_expr = expr;
+		l.case_int = case_int;
 	} else {
 		l.ident_str = tokvec[0].ident_str;
 		++tokvec;
