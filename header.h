@@ -68,7 +68,8 @@ enum TokenKind {
 	RES_SWITCH,
 	RES_CASE,
 	RES_DEFAULT,
-	RES_ALIGNOF
+	RES_ALIGNOF,
+	RES_ENUM
 };
 
 struct Token {
@@ -84,7 +85,7 @@ struct Token get_token(const char **ptr_to_str);
 
 struct TypeAndIdent;
 
-enum TypeCategory { INT_ = 1, PTR_, ARRAY, FN, CHAR_, STRUCT_, VOID_ };
+enum TypeCategory { INT_ = 1, PTR_, ARRAY, FN, CHAR_, STRUCT_, VOID_, ENUM_ };
 
 struct StructInternalInfo {
 	struct Vector /* <TypeAndIdent> */ types_and_idents;
@@ -101,6 +102,10 @@ struct StructInternalCompleteInfo {
 	struct SizeAndAlignment s_and_a;
 };
 
+struct EnumInfo {
+	struct Vector /*<const char>*/ idents;
+};
+
 struct Type {
 	enum TypeCategory type_category;
 	struct Type *derived_from;
@@ -113,6 +118,11 @@ struct Type {
 	struct {
 		const char *struct_tag;
 		struct StructInternalInfo struct_info;
+	};
+
+	struct {
+		const char *enum_tag;
+		struct EnumInfo enum_info;
 	};
 };
 

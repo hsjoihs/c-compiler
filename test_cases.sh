@@ -37,6 +37,8 @@ run_test 228 'struct A{int a; char c; char d; int b;}; int main(){ return _Align
 run_test 229 'struct A{int a; int *b; int c;}; int main(){return _Alignof(struct A [5]);}' 8
 run_test 230 'void f(int *p){*p = 174;} int main(void){ int a; f(&a); return a;}' 174
 run_test 231 'int main(void){ char a; a = 0; switch(a){case 0: a = 174; break; case 256: a = 3; break; default: a = 5; break;}  return a;}' 174
+run_test 232 'enum A{B, C}; int main(void){ enum A b; return 174; }' 174
+run_test 233 'enum A{B, C,}; int main(void){ enum A b; return 174; }' 174
 
 
 run_test 190 'int main(){return sizeof(int);}' 4

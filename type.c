@@ -23,6 +23,7 @@ int size_of_basic(struct Type type)
 {
 	switch (type.type_category) {
 		case INT_:
+		case ENUM_:
 			return 4;
 		case PTR_:
 			return 8;
@@ -58,6 +59,9 @@ void debug_print_type(struct Type type)
 			return;
 		case STRUCT_:
 			fprintf(stderr, "struct %s", type.struct_tag);
+			return;
+		case ENUM_:
+			fprintf(stderr, "enum %s", type.enum_tag);
 			return;
 		case ARRAY:
 			fprintf(stderr, "array (length %d) of ", type.array_length);

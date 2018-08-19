@@ -19,6 +19,7 @@ static struct Type from_type3_to_type(const void **type3)
 		case CHAR_:
 		case STRUCT_:
 		case VOID_:
+		case ENUM_:
 			return elem;
 
 		case PTR_:
@@ -122,8 +123,43 @@ struct Type *parse_type_specifier(const struct Token **ptr_tokvec)
 
 			push_vector(&ptr->struct_info.types_and_idents, ptr_t_and_i);
 		}
+	} else if (tok == RES_ENUM) {
+		++tokvec;
+		expect_and_consume(&tokvec, IDENT_OR_RESERVED,
+		                   "identifier after `enum`");
+		const char *ident = tokvec[-1].ident_str;
+		ptr->type_category = ENUM_;
+		ptr->enum_tag = ident;
+		if (tokvec[0].kind != LEFT_BRACE) {
+			*ptr_tokvec = tokvec;
+			return ptr;
+		}
+		++tokvec;
+
+		ptr->enum_info.idents = init_vector();
+
+		do { /* at least one enumerator is needed */
+			expect_and_consume(&tokvec, IDENT_OR_RESERVED,
+			                   "identifier as a declaration of an enumerator");
+			const char *ident_str = tokvec[-1].ident_str;
+			push_vector(&ptr->enum_info.idents, ident_str);
+
+			/* ending without comma */
+			if (tokvec[0].kind == RIGHT_BRACE) {
+				++tokvec;
+				break;
+			} else if (tokvec[0].kind == OP_COMMA) {
+				++tokvec;
+				if (tokvec[0].kind == RIGHT_BRACE) {
+					++tokvec;
+					break;
+				}
+			}
+		} while (1);
+
 	} else {
-		error_unexpected_token(tokvec, "type name `int` or `char`");
+		error_unexpected_token(
+		    tokvec, "type name `int`, `char`, `void`, `struct` or `enum`");
 	}
 
 	*ptr_tokvec = tokvec;
@@ -261,5 +297,6 @@ struct Type parse_declarator_or_type_name(const struct Token **ptr_tokvec,
 int can_start_a_type(const struct Token *tokvec)
 {
 	return tokvec[0].kind == RES_INT || tokvec[0].kind == RES_CHAR ||
-	       tokvec[0].kind == RES_STRUCT || tokvec[0].kind == RES_VOID;
+	       tokvec[0].kind == RES_STRUCT || tokvec[0].kind == RES_VOID ||
+	       tokvec[0].kind == RES_ENUM;
 }

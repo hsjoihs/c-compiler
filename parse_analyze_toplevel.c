@@ -35,6 +35,8 @@ int size_of(const struct AnalyzerState *ptr_ps, struct Type type)
 		case VOID_:
 			fprintf(stderr, "size of type `void` is never known\n");
 			exit(EXIT_FAILURE);
+		case ENUM_:
+			return 4;
 	}
 }
 
@@ -70,6 +72,8 @@ int align_of(const struct AnalyzerState *ptr_ps, struct Type type)
 		case VOID_:
 			fprintf(stderr, "cannot get alignment of `void`\n");
 			exit(EXIT_FAILURE);
+		case ENUM_:
+			return 4;
 	}
 }
 
@@ -107,14 +111,22 @@ static void record_global_struct_declaration(struct AnalyzerState *ptr_ps,
 	       ptr_complete);
 }
 
-static void record_if_global_struct_declaration(struct AnalyzerState *ptr_ps,
-                                                struct Type type)
+static void record_global_enum_declaration(struct AnalyzerState *ptr_ps,
+                                           struct Type struct_type)
+{
+#warning implement me
+}
+
+static void
+record_if_global_struct_or_enum_declaration(struct AnalyzerState *ptr_ps,
+                                            struct Type type)
 {
 	switch (type.type_category) {
 		case ARRAY:
 		case FN:
 		case PTR_:
-			record_if_global_struct_declaration(ptr_ps, *type.derived_from);
+			record_if_global_struct_or_enum_declaration(ptr_ps,
+			                                            *type.derived_from);
 			return;
 		case VOID_:
 		case INT_:
@@ -122,6 +134,9 @@ static void record_if_global_struct_declaration(struct AnalyzerState *ptr_ps,
 			return;
 		case STRUCT_:
 			record_global_struct_declaration(ptr_ps, type);
+			return;
+		case ENUM_:
+			record_global_enum_declaration(ptr_ps, type);
 			return;
 	}
 }
@@ -140,7 +155,7 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 		/* d.size_of_declarator_type need not be set; it is not a real variable
 		 */
 
-		record_if_global_struct_declaration(ptr_ps, d.declarator_type);
+		record_if_global_struct_or_enum_declaration(ptr_ps, d.declarator_type);
 		d.declarator_name = 0;
 		return d;
 	}
@@ -149,7 +164,7 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 
 	const char *declarator_name;
 	struct Type declarator_type = parse_declarator(&tokvec2, &declarator_name);
-	record_if_global_struct_declaration(ptr_ps, declarator_type);
+	record_if_global_struct_or_enum_declaration(ptr_ps, declarator_type);
 
 	if (declarator_type.type_category != FN) {
 
