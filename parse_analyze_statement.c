@@ -91,7 +91,6 @@ struct Statement parse_statement(struct AnalyzerState *ptr_ps,
 	}
 	if (tokvec[0].kind == LEFT_BRACE) {
 		struct Statement s = parse_compound_statement(ptr_ps, ptr_tokvec);
-		s.labels = init_vector();
 		return s;
 	}
 
@@ -328,6 +327,7 @@ struct Statement parse_compound_statement(struct AnalyzerState *ptr_ps,
 	const struct Token *tokvec = *ptr_tokvec;
 	struct Statement statement;
 	statement.category = COMPOUND_STATEMENT;
+	statement.labels = init_vector();
 	statement.statement_vector = init_vector();
 	if (tokvec[0].kind == LEFT_BRACE) {
 

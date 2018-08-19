@@ -12,9 +12,83 @@ int get_new_label_name(struct PrinterState *ptr_prs)
 	return ++(ptr_prs->final_label_name);
 }
 
+static void concat_vector(struct Vector *ptr_ans, struct Vector vec)
+{
+	for (int i = 0; i < vec.length; i++) {
+		push_vector(ptr_ans, vec.vector[i]);
+	}
+}
+
+static struct Vector /*<Label>*/ collect_labels(struct Statement sta)
+{
+	struct Vector ans = init_vector();
+	concat_vector(&ans, sta.labels);
+	switch (sta.category) {
+		case RETURN_STATEMENT:
+		case BREAK_STATEMENT:
+		case CONTINUE_STATEMENT:
+		case EXPRESSION_STATEMENT:
+		case DECLARATION_STATEMENT:
+			/* nothing */
+			break;
+		case SWITCH_STATEMENT:
+			/* do nothing; don't peek labels */
+			break;
+
+		case IF_STATEMENT:
+		case FOR_STATEMENT:
+		case WHILE_STATEMENT:
+		case DO_WHILE_STATEMENT: {
+			struct Vector inner_vec = collect_labels(*sta.inner_statement);
+			concat_vector(&ans, inner_vec);
+			break;
+		}
+
+		case COMPOUND_STATEMENT:
+		case IF_ELSE_STATEMENT: {
+			struct Vector statement_vec = sta.statement_vector;
+
+			for (int counter = 0; counter != statement_vec.length; ++counter) {
+				const struct Statement *ptr_ith = statement_vec.vector[counter];
+				struct Vector inner_vec = collect_labels(*ptr_ith);
+				concat_vector(&ans, inner_vec);
+			}
+			break;
+		}
+	}
+	return ans;
+}
+
+struct LabelAndLabel {
+	int assembly_label;
+	struct Label source_label;
+};
+
+static void print_source_labels(struct PrinterState *ptr_prs,
+                                const struct Statement sta)
+{
+	for (int j = 0; j < sta.labels.length; j++) {
+		const struct Label *ptr_label = sta.labels.vector[j];
+		if (ptr_label->category == DEFAULT_LABEL) {
+			for (int k = 0; k < ptr_prs->case_default_vec.length; k++) {
+				const struct LabelAndLabel *ptr_ll =
+				    ptr_prs->case_default_vec.vector[k];
+				if (ptr_ll->source_label.category == DEFAULT_LABEL) {
+					gen_label(ptr_ll->assembly_label);
+				}
+			}
+		} else {
+#warning support me
+		}
+	}
+}
+
 static void print_statement(struct PrinterState *ptr_prs,
                             const struct Statement sta)
 {
+	if (sta.category != DECLARATION_STATEMENT) {
+		print_source_labels(ptr_prs, sta);
+	}
 	switch (sta.category) {
 		case DECLARATION_STATEMENT: {
 			/* do nothing */
@@ -100,14 +174,40 @@ static void print_statement(struct PrinterState *ptr_prs,
 			int break_label = get_new_label_name(ptr_prs);
 			ptr_prs->break_label_name = break_label;
 			ptr_prs->is_inside_switch = 1;
+			struct Vector /*<Label>*/ vec =
+			    collect_labels(*sta.inner_statement);
+
+			int default_label = -1;
 			ptr_prs->case_default_vec = init_vector();
+			for (int i = 0; i < vec.length; i++) {
+				const struct Label *ptr_vec_i = vec.vector[i];
+				if (ptr_vec_i->category == IDENT_LABEL) {
+					continue;
+				}
+
+				int label = get_new_label_name(ptr_prs);
+				if (ptr_vec_i->category == DEFAULT_LABEL) {
+					if (default_label == -1) {
+						default_label = label;
+					} else {
+						fprintf(stderr, "duplicate `default` detected.\n");
+						exit(EXIT_FAILURE);
+					}
+				}
+				struct LabelAndLabel ll;
+				ll.assembly_label = label;
+				ll.source_label = *ptr_vec_i;
+
+				struct LabelAndLabel *ptr_ll =
+				    calloc(1, sizeof(struct LabelAndLabel));
+				*ptr_ll = ll;
+				push_vector(&ptr_prs->case_default_vec, ptr_ll);
+			}
 
 			struct Expression expr = sta.expr1;
 			print_expression(ptr_prs, expr);
-			int default_label = -1;
 
-			if (!0) { /* default_label is not found */
-#warning support default
+			if (default_label == -1) { /* default_label is not found */
 				default_label = break_label;
 			}
 			gen_discard();
