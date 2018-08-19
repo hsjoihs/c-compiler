@@ -236,14 +236,14 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 	return def;
 }
 
-struct Vector parse(const struct Token *tokvec)
+struct Vector /*<Toplevel>*/ parse(const struct Token *tokvec)
 {
 	struct AnalyzerState ps;
 	ps.func_info_map = init_map();
 	ps.global_vars_type_map = init_map();
 	ps.global_struct_tag_map = init_map();
 
-	struct Vector vec = init_vector();
+	struct Vector /*<Toplevel>*/ vec = init_vector();
 	while (1) {
 		if (tokvec[0].kind == END) {
 			expect_and_consume(&tokvec, END, "the end of file");

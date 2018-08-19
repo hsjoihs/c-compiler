@@ -39,7 +39,8 @@ static struct Vector /*<SourceLabel>*/ collect_labels(struct Statement sta)
 		case FOR_STATEMENT:
 		case WHILE_STATEMENT:
 		case DO_WHILE_STATEMENT: {
-			struct Vector inner_vec = collect_labels(*sta.inner_statement);
+			struct Vector /*<SourceLabel>*/ inner_vec =
+			    collect_labels(*sta.inner_statement);
 			concat_vector(&ans, inner_vec);
 			break;
 		}
@@ -50,7 +51,8 @@ static struct Vector /*<SourceLabel>*/ collect_labels(struct Statement sta)
 
 			for (int counter = 0; counter != statement_vec.length; ++counter) {
 				const struct Statement *ptr_ith = statement_vec.vector[counter];
-				struct Vector inner_vec = collect_labels(*ptr_ith);
+				struct Vector /*<SourceLabel>*/ inner_vec =
+				    collect_labels(*ptr_ith);
 				concat_vector(&ans, inner_vec);
 			}
 			break;

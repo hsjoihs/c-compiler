@@ -5,8 +5,6 @@
 
 struct Vector init_vector(void) { return *init_vector_(); }
 
-struct Vector parse(const struct Token *tokvec);
-
 int main(int argc, char const **argv)
 {
 

@@ -28,4 +28,4 @@ struct Toplevel {
 };
 
 void generate(const struct Vector vec);
-struct Vector parse(const struct Token *tokvec);
+struct Vector /*<Toplevel>*/ parse(const struct Token *tokvec);
