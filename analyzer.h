@@ -12,7 +12,7 @@ struct ScopeChain {
 
 struct FuncInfo {
 	struct Type ret_type;
-	struct Vector param_infos;
+	struct Vector /*<TypeAndIdent>*/ param_infos;
 	/*
 	 .vector points to the array of (TypeAndIdent*).
 	 if .vector itself is NULL, that means there is no info.

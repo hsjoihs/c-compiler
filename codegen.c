@@ -378,7 +378,7 @@ static void print_toplevel_definition(struct PrinterState *ptr_prs,
 	assert(def.category == TOPLEVEL_FUNCTION_DEFINITION);
 
 	struct Statement sta = def.func.sta;
-	struct Vector offsets_and_types = def.func.offsets_and_types;
+	struct Vector /*<LocalVarInfo>*/ offsets_and_types = def.func.offsets_and_types;
 	struct Type ret_type = def.func.ret_type;
 	const char *declarator_name = def.declarator_name;
 

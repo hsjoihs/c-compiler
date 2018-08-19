@@ -105,7 +105,7 @@ struct Type {
 	enum TypeCategory type_category;
 	struct Type *derived_from;
 	int array_length; /* only when type_category is ARRAY */
-	struct Vector param_infos;
+	struct Vector /*<TypeAndIdent>*/ param_infos;
 	/*
 	 .vector points to the array of (TypeAndIdent*).
 	 if .vector itself is NULL, that means there is no info.
