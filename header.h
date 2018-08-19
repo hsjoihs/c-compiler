@@ -297,12 +297,6 @@ struct Statement {
 	struct Vector /*<SourceLabel>*/ labels;
 };
 
-enum ToplevelCategory {
-	TOPLEVEL_VAR_DEFINITION = 1,
-	TOPLEVEL_FUNCTION_DEFINITION,
-	TOPLEVEL_FUNCTION_DECLARATION,
-};
-
 struct UntypedExpr parse_expression(const struct Token **ptr_tokvec);
 int isAssign(enum TokenKind opkind);
 struct Type *parse_type_specifier(const struct Token **ptr_tokvec);
