@@ -40,7 +40,7 @@ struct Statement parse_labeled_statement(struct AnalyzerState *ptr_ps,
 	const struct Token *tokvec = *ptr_tokvec;
 	enum TokenKind kind = tokvec[0].kind;
 
-	struct Label l;
+	struct SourceLabel l;
 	if (kind == RES_DEFAULT) {
 		++tokvec;
 		l.category = DEFAULT_LABEL;
@@ -59,7 +59,7 @@ struct Statement parse_labeled_statement(struct AnalyzerState *ptr_ps,
 
 	struct Statement s = parse_statement(ptr_ps, &tokvec);
 
-	struct Label *ptr_l = calloc(1, sizeof(struct Label));
+	struct SourceLabel *ptr_l = calloc(1, sizeof(struct SourceLabel));
 	*ptr_l = l;
 	push_vector(&s.labels, ptr_l);
 	*ptr_tokvec = tokvec;

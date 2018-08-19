@@ -285,10 +285,10 @@ enum StatementCategory {
 	SWITCH_STATEMENT
 };
 
-enum LabelCategory { DEFAULT_LABEL, CASE_LABEL, IDENT_LABEL };
+enum SourceLabelCategory { DEFAULT_LABEL, CASE_LABEL, IDENT_LABEL };
 
-struct Label {
-	enum LabelCategory category;
+struct SourceLabel {
+	enum SourceLabelCategory category;
 	int case_int;
 	const char *ident_str;
 };
@@ -304,7 +304,7 @@ struct Statement {
 		struct Type type;
 		const char *ident_str;
 	} declaration;
-	struct Vector /*<Label>*/ labels;
+	struct Vector /*<SourceLabel>*/ labels;
 };
 
 enum ToplevelCategory {

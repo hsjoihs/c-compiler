@@ -19,7 +19,7 @@ static void concat_vector(struct Vector *ptr_ans, struct Vector vec)
 	}
 }
 
-static struct Vector /*<Label>*/ collect_labels(struct Statement sta)
+static struct Vector /*<SourceLabel>*/ collect_labels(struct Statement sta)
 {
 	struct Vector ans = init_vector();
 	concat_vector(&ans, sta.labels);
@@ -59,19 +59,19 @@ static struct Vector /*<Label>*/ collect_labels(struct Statement sta)
 	return ans;
 }
 
-struct LabelAndLabel {
+struct SourceLabelAndAssemblyLabel {
 	int assembly_label;
-	struct Label source_label;
+	struct SourceLabel source_label;
 };
 
 static void print_source_labels(struct PrinterState *ptr_prs,
                                 const struct Statement sta)
 {
 	for (int j = 0; j < sta.labels.length; j++) {
-		const struct Label *ptr_label = sta.labels.vector[j];
+		const struct SourceLabel *ptr_label = sta.labels.vector[j];
 		if (ptr_label->category == DEFAULT_LABEL) {
 			for (int k = 0; k < ptr_prs->case_default_vec.length; k++) {
-				const struct LabelAndLabel *ptr_ll =
+				const struct SourceLabelAndAssemblyLabel *ptr_ll =
 				    ptr_prs->case_default_vec.vector[k];
 				if (ptr_ll->source_label.category == DEFAULT_LABEL) {
 					gen_label(ptr_ll->assembly_label);
@@ -174,13 +174,13 @@ static void print_statement(struct PrinterState *ptr_prs,
 			int break_label = get_new_label_name(ptr_prs);
 			ptr_prs->break_label_name = break_label;
 			ptr_prs->is_inside_switch = 1;
-			struct Vector /*<Label>*/ vec =
+			struct Vector /*<SourceLabel>*/ vec =
 			    collect_labels(*sta.inner_statement);
 
 			int default_label = -1;
 			ptr_prs->case_default_vec = init_vector();
 			for (int i = 0; i < vec.length; i++) {
-				const struct Label *ptr_vec_i = vec.vector[i];
+				const struct SourceLabel *ptr_vec_i = vec.vector[i];
 				if (ptr_vec_i->category == IDENT_LABEL) {
 					continue;
 				}
@@ -194,12 +194,12 @@ static void print_statement(struct PrinterState *ptr_prs,
 						exit(EXIT_FAILURE);
 					}
 				}
-				struct LabelAndLabel ll;
+				struct SourceLabelAndAssemblyLabel ll;
 				ll.assembly_label = label;
 				ll.source_label = *ptr_vec_i;
 
-				struct LabelAndLabel *ptr_ll =
-				    calloc(1, sizeof(struct LabelAndLabel));
+				struct SourceLabelAndAssemblyLabel *ptr_ll =
+				    calloc(1, sizeof(struct SourceLabelAndAssemblyLabel));
 				*ptr_ll = ll;
 				push_vector(&ptr_prs->case_default_vec, ptr_ll);
 			}
