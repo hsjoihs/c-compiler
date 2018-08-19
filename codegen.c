@@ -94,20 +94,26 @@ static void print_statement(struct PrinterState *ptr_prs,
 		}
 		case SWITCH_STATEMENT: {
 			int stashed_break_label = ptr_prs->break_label_name;
+			int stashed_is_inside_switch = ptr_prs->is_inside_switch;
+			struct Vector stashed_case_default_vec = ptr_prs->case_default_vec;
 
 			int break_label = get_new_label_name(ptr_prs);
 			ptr_prs->break_label_name = break_label;
+			ptr_prs->is_inside_switch = 1;
+			ptr_prs->case_default_vec = init_vector();
 
 			struct Expression expr = sta.expr1;
 			print_expression(ptr_prs, expr);
 			int default_label = -1;
 
 			if (!0) { /* default_label is not found */
+#warning support default
 				default_label = break_label;
 			}
 			gen_discard();
 
 			for (; 0;) { /* for each case */
+#warning support case
 				int constant1 = 87950;
 				int label1 = 678432;
 				gen_if_neg8_matches_jmp_4byte(constant1, label1);
@@ -118,6 +124,8 @@ static void print_statement(struct PrinterState *ptr_prs,
 			gen_label(break_label);
 
 			ptr_prs->break_label_name = stashed_break_label;
+			ptr_prs->is_inside_switch = stashed_is_inside_switch;
+			ptr_prs->case_default_vec = stashed_case_default_vec;
 			return;
 		}
 		case IF_STATEMENT: {

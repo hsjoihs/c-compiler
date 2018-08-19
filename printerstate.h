@@ -6,6 +6,8 @@ struct PrinterState {
 	                          */
 	struct Vector string_constant_pool;
 	int pool_largest_id;
+	int is_inside_switch;
+	struct Vector /*<Label>*/ case_default_vec;
 };
 
 int get_new_label_name(struct PrinterState *ptr_prs);
