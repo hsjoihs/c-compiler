@@ -155,12 +155,10 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 
 		expect_and_consume(&tokvec2, SEMICOLON,
 		                   "semicolon at the end of variable definition");
-		struct Map globalmap = ptr_ps->global_vars_type_map;
 
 		struct Type *ptr_type = calloc(1, sizeof(struct Type));
 		*ptr_type = declarator_type;
-		insert(&globalmap, declarator_name, ptr_type);
-		ptr_ps->global_vars_type_map = globalmap;
+		insert(&ptr_ps->global_vars_type_map, declarator_name, ptr_type);
 
 		*ptr_tokvec = tokvec2;
 

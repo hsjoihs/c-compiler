@@ -21,7 +21,7 @@ struct FuncInfo {
 
 struct AnalyzerState {
 	struct ScopeChain scope_chain;
-	struct Map global_vars_type_map;
+	struct Map /*<Type>*/ global_vars_type_map;
 	struct Map /*<FuncInfo>*/ func_info_map;
 	struct Type func_ret_type;
 	int newest_offset;
