@@ -302,10 +302,7 @@ struct Statement {
 	struct Expr expr2;
 	struct Expr expr3;
 	struct Statement *inner_statement;
-	struct {
-		struct Type type;
-		const char *ident_str;
-	} declaration;
+	struct TypeAndIdent declaration;
 	struct Vector /*<SourceLabel>*/ labels;
 };
 
