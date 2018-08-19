@@ -77,8 +77,15 @@ static void print_source_labels(struct PrinterState *ptr_prs,
 					gen_label(ptr_ll->assembly_label);
 				}
 			}
-		} else {
-#warning support me
+		} else if (ptr_label->category == CASE_LABEL) {
+			for (int k = 0; k < ptr_prs->case_default_vec.length; k++) {
+				const struct SourceLabelAndAssemblyLabel *ptr_ll =
+				    ptr_prs->case_default_vec.vector[k];
+				if (ptr_ll->source_label.category == CASE_LABEL &&
+				    ptr_label->case_int == ptr_ll->source_label.case_int) {
+					gen_label(ptr_ll->assembly_label);
+				}
+			}
 		}
 	}
 }
@@ -212,10 +219,15 @@ static void print_statement(struct PrinterState *ptr_prs,
 			}
 			gen_discard();
 
-			for (; 0;) { /* for each case */
-#warning support case
-				int constant1 = 87950;
-				int label1 = 678432;
+			for (int i = 0; i < ptr_prs->case_default_vec.length;
+			     i++) { /* for each case */
+				const struct SourceLabelAndAssemblyLabel *ptr_ll =
+				    ptr_prs->case_default_vec.vector[i];
+				if (ptr_ll->source_label.category != CASE_LABEL) {
+					continue;
+				}
+				int constant1 = ptr_ll->source_label.case_int;
+				int label1 = ptr_ll->assembly_label;
 				gen_if_neg8_matches_jmp_4byte(constant1, label1);
 			}
 			gen_jump(default_label, "switch-default");

@@ -27,6 +27,8 @@ run_test 218 'int main(void){ int a; a = 174; switch(1){a = 2; break; a = 3;} re
 run_test 219 'int main(void){ int a; a = 1; int b; b = 0; switch(1){ b = 15; default: a = 174; break; a = 3;} return a+b ;}' 174
 run_test 220 'int main(void){ switch(1){ if(0){ default: return 174; } } return 3; }' 174
 run_test 221 'int main(void){ int a; a = 1; switch(1){ default: a = 173; switch(0){ default: return a+1; } return 5; } return 3; }' 174
+run_test 222 'int main(void){ int a; a = 1; switch(1){ case 1: a = 174; } return a; }' 174
+run_test 223 'int main(void){ int a; a = 174; switch(2){ case 1: a = 1; } return a; }' 174
 
 
 run_test 190 'int main(){return sizeof(int);}' 4
