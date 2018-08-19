@@ -415,9 +415,15 @@ static void print_toplevel_definition(struct PrinterState *ptr_prs,
 	print_statement(ptr_prs, sta);
 
 	if (ret_type.type_category == VOID_) {
-		gen_label(ptr_prs->return_label_name);
+		if (ptr_prs->return_label_name != -1) {
+			gen_label(ptr_prs->return_label_name);
+		}
 		printf("  movl $123, %%eax\nleave\nret\n");
 	} else {
+		if (ptr_prs->return_label_name == -1) {
+			fprintf(stderr, "warning: the return type is not void, but "
+			                "`return` is not found");
+		}
 		gen_epilogue_nbyte(size_of_basic(ret_type), ptr_prs->return_label_name);
 	}
 }

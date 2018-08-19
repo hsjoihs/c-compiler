@@ -35,6 +35,7 @@ run_test 226 'int main(){return _Alignof(int*);}' 8
 run_test 227 'struct A{int a; int b;}; int main(){ return _Alignof(struct A);}' 4
 run_test 228 'struct A{int a; char c; char d; int b;}; int main(){ return _Alignof(struct A);}' 4
 run_test 229 'struct A{int a; int *b; int c;}; int main(){return _Alignof(struct A [5]);}' 8
+run_test 230 'void f(int *p){*p = 174;} int main(void){ int a; f(&a); return a;}' 174
 
 
 run_test 190 'int main(){return sizeof(int);}' 4
