@@ -194,7 +194,7 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 		return def;
 	}
 
-	struct Vector offsets_and_types = init_vector();
+	struct Vector /*<LocalVarInfo>*/ offsets_and_types = init_vector();
 
 	if (param_infos.vector) { /* parameter is not empty */
 		for (int counter = 0; counter < param_infos.length; ++counter) {

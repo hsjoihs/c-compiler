@@ -303,26 +303,6 @@ enum ToplevelCategory {
 	TOPLEVEL_FUNCTION_DECLARATION,
 };
 
-struct ToplevelFuncInfo {
-	struct Statement sta;
-	struct Vector offsets_and_types;
-	struct Type ret_type;
-	int capacity;
-};
-
-struct Toplevel {
-	enum ToplevelCategory category;
-	const char *declarator_name;
-	/* NULL when TOPLEVEL_VAR_DEFINITION does not have an identifier */
-
-	struct Type declarator_type;
-	/* used when it is TOPLEVEL_VAR_DEFINITION or TOPLEVEL_TYPE_DECLARATION */
-
-	struct ToplevelFuncInfo func;
-
-	int size_of_declarator_type;
-};
-
 struct UntypedExpr parse_expression(const struct Token **ptr_tokvec);
 int isAssign(enum TokenKind opkind);
 struct Type *parse_type_specifier(const struct Token **ptr_tokvec);
