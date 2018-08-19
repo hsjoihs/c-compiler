@@ -138,15 +138,6 @@ struct Token *read_all_tokens(const char *str);
 
 void debug_print_type(struct Type type);
 
-struct FuncInfo {
-	struct Type ret_type;
-	struct Vector param_infos;
-	/*
-	 .vector points to the array of (TypeAndIdent*).
-	 if .vector itself is NULL, that means there is no info.
-	 */
-};
-
 int can_start_a_type(const struct Token *tokvec);
 
 struct Type parse_declarator(const struct Token **ptr_tokvec,
