@@ -160,17 +160,17 @@ static void print_statement(struct PrinterState *ptr_prs,
 			gen_if_zero_jmp_nbyte(size_of_basic(expr.details.type), label1, 0);
 			gen_discard();
 
-			struct Statement inner_s =
-			    *(const struct Statement *)sta.statement_vector.vector[0];
-			print_statement(ptr_prs, inner_s);
+			const struct Statement *ptr_inner_s =
+			    sta.statement_vector.vector[0];
+			print_statement(ptr_prs, *ptr_inner_s);
 
 			gen_jump(label2, "if statement");
 			gen_label(label1);
 			gen_discard();
 
-			struct Statement inner_s2 =
-			    *(const struct Statement *)sta.statement_vector.vector[1];
-			print_statement(ptr_prs, inner_s2);
+			const struct Statement *ptr_inner_s2 =
+			    sta.statement_vector.vector[1];
+			print_statement(ptr_prs, *ptr_inner_s2);
 			gen_label(label2);
 
 			return;
@@ -178,7 +178,8 @@ static void print_statement(struct PrinterState *ptr_prs,
 		case SWITCH_STATEMENT: {
 			int stashed_break_label = ptr_prs->break_label_name;
 			int stashed_is_inside_switch = ptr_prs->is_inside_switch;
-			struct Vector /*<Label>*/ stashed_case_default_vec = ptr_prs->case_default_vec;
+			struct Vector /*<Label>*/ stashed_case_default_vec =
+			    ptr_prs->case_default_vec;
 
 			int break_label = get_new_label_name(ptr_prs);
 			ptr_prs->break_label_name = break_label;
@@ -378,7 +379,8 @@ static void print_toplevel_definition(struct PrinterState *ptr_prs,
 	assert(def.category == TOPLEVEL_FUNCTION_DEFINITION);
 
 	struct Statement sta = def.func.sta;
-	struct Vector /*<LocalVarInfo>*/ offsets_and_types = def.func.offsets_and_types;
+	struct Vector /*<LocalVarInfo>*/ offsets_and_types =
+	    def.func.offsets_and_types;
 	struct Type ret_type = def.func.ret_type;
 	const char *declarator_name = def.declarator_name;
 
