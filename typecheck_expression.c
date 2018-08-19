@@ -491,14 +491,16 @@ struct Expression typecheck_expression(const struct AnalyzerState *ptr_ps,
 		case SIZEOF_TYPE: {
 			struct Expression expr;
 			expr.details.type = INT_TYPE();
-			expr.int_value = size_of(ptr_ps, uexpr.operand_of_sizeof);
+			expr.int_value =
+			    size_of(ptr_ps, uexpr.operand_of_sizeof_or_alignof);
 			expr.category = INT_VALUE;
 			return expr;
 		}
 		case ALIGNOF_TYPE: {
 			struct Expression expr;
 			expr.details.type = INT_TYPE();
-			expr.int_value = align_of(ptr_ps, uexpr.operand_of_sizeof);
+			expr.int_value =
+			    align_of(ptr_ps, uexpr.operand_of_sizeof_or_alignof);
 			expr.category = INT_VALUE;
 			return expr;
 		}

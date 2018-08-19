@@ -322,7 +322,7 @@ parse_unary_expression(const struct Token **ptr_tokvec)
 
 		struct UntypedExpression expr;
 		expr.category = SIZEOF_TYPE;
-		expr.operand_of_sizeof = type;
+		expr.operand_of_sizeof_or_alignof = type;
 		*ptr_tokvec = tokvec;
 		return expr;
 	} else if (tokvec[0].kind == RES_ALIGNOF && tokvec[1].kind == LEFT_PAREN) {
@@ -337,7 +337,7 @@ parse_unary_expression(const struct Token **ptr_tokvec)
 
 		struct UntypedExpression expr;
 		expr.category = ALIGNOF_TYPE;
-		expr.operand_of_sizeof = type;
+		expr.operand_of_sizeof_or_alignof = type;
 		*ptr_tokvec = tokvec;
 		return expr;
 	} else {

@@ -235,7 +235,7 @@ struct UntypedExpression {
 	const char *var_name;
 	const char *literal_string;
 	struct Vector /* <UntypedExpression> */ arg_exprs_vec;
-	struct Type operand_of_sizeof;
+	struct Type operand_of_sizeof_or_alignof;
 	const char *ident_after_dot;
 };
 
