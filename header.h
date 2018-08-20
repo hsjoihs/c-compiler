@@ -102,8 +102,8 @@ struct StructInternalCompleteInfo {
 	struct SizeAndAlignment s_and_a;
 };
 
-struct EnumInfo {
-	struct Vector /*<const char>*/ idents;
+struct Enumerators {
+	struct Vector /*<const char>*/ enumerators;
 };
 
 struct Type {
@@ -122,7 +122,7 @@ struct Type {
 
 	struct {
 		const char *enum_tag;
-		struct EnumInfo enum_info;
+		struct Enumerators enum_info;
 	};
 };
 
