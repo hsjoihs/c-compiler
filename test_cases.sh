@@ -40,6 +40,8 @@ run_test 231 'int main(void){ char a; a = 0; switch(a){case 0: a = 174; break; c
 run_test 232 'enum A{B, C}; int main(void){ enum A b; return 174; }' 174
 run_test 233 'enum A{B, C,}; int main(void){ enum A b; return 174; }' 174
 run_test 234 'enum A{B, C,}; int main(void){ enum A b; b = 5; return 174; }' 174
+run_test 235 'enum A{B, C,}; int main(void){ enum A b; b = B; return 174+b; }' 174
+run_test 236 'enum A{B, C,D}; int main(void){ enum A b; b = D; return 172+b; }' 174
 
 
 run_test 190 'int main(){return sizeof(int);}' 4

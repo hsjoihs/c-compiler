@@ -329,6 +329,19 @@ static struct Type resolve_name_globally(struct Map m, const char *str)
 	}
 }
 
+static const struct EnumeratorAndValue *
+get_global_enumerator(struct Vector /*<EnumeratorAndValue>*/ list,
+                      const char *name)
+{
+	for (int i = 0; i < list.length; i++) {
+		const struct EnumeratorAndValue *ptr_vec_i = list.vector[i];
+		if (strcmp(ptr_vec_i->ident, name) == 0) {
+			return ptr_vec_i;
+		}
+	}
+	return 0;
+}
+
 static enum UnaryOp to_unaryop(enum TokenKind t)
 {
 	switch (t) {
@@ -639,6 +652,15 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 			const char *name = uexpr.var_name;
 
 			if (!is_local_var(ptr_ps->scope_chain, name)) {
+				const struct EnumeratorAndValue *ptr_enum_and_value =
+				    get_global_enumerator(ptr_ps->global_enumerator_list, name);
+				if (ptr_enum_and_value) {
+					struct Expr expr;
+					expr.details.type = INT_TYPE();
+					expr.category = INT_VALUE;
+					expr.int_value = ptr_enum_and_value->value;
+					return expr;
+				}
 				struct Type type =
 				    resolve_name_globally(ptr_ps->global_vars_type_map, name);
 

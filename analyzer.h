@@ -32,6 +32,7 @@ struct AnalyzerState {
 	int newest_offset;
 	struct Map /*<StructInternalCompleteInfo>*/ global_struct_tag_map;
 	struct Map /*<struct Vector<EnumeratorAndValue>>*/ global_enum_tag_map;
+	struct Vector /*<EnumeratorAndValue>*/ global_enumerator_list;
 };
 
 struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
