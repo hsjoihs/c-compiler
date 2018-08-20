@@ -37,3 +37,10 @@ const void *pop_vector(struct Vector *ptr)
 	return ptr->vector[ptr->length]; /* safe, since it is not yet released or
 	                                    anything */
 }
+
+void concat_vector(struct Vector *ptr_ans, struct Vector vec)
+{
+	for (int i = 0; i < vec.length; i++) {
+		push_vector(ptr_ans, vec.vector[i]);
+	}
+}

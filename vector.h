@@ -8,3 +8,4 @@ void extend_vector(struct Vector *ptr);
 void push_vector(struct Vector *ptr, const void *tok);
 const void *pop_vector(struct Vector *ptr);
 struct Vector init_vector(void);
+void concat_vector(struct Vector *ptr_ans, struct Vector vec);

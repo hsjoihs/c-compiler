@@ -12,13 +12,6 @@ int get_new_label_name(struct PrinterState *ptr_prs)
 	return ++(ptr_prs->final_label_name);
 }
 
-static void concat_vector(struct Vector *ptr_ans, struct Vector vec)
-{
-	for (int i = 0; i < vec.length; i++) {
-		push_vector(ptr_ans, vec.vector[i]);
-	}
-}
-
 static struct Vector /*<SourceLabel>*/ collect_labels(struct Statement sta)
 {
 	struct Vector /*<SourceLabel>*/ ans = init_vector();
