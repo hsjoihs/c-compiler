@@ -4,12 +4,38 @@
 #include <stdlib.h>
 #include <string.h>
 
-int typecheck_constant_expression(struct AnalyzerState *ptr_ps,
-                                  struct UntypedExpr uexpr, const char *context)
+static const struct EnumeratorAndValue *
+get_global_enumerator(struct Vector /*<EnumeratorAndValue>*/ list,
+                      const char *name);
+
+static int is_local_var(struct ScopeChain t, const char *str);
+
+int typecheck_constant_integral_expression(struct AnalyzerState *ptr_ps,
+                                           struct UntypedExpr uexpr,
+                                           const char *context)
 {
-	if (uexpr.category == INT_LITERAL_) {
-		return uexpr.int_value;
+	switch (uexpr.category) {
+		case INT_LITERAL_:
+			return uexpr.int_value;
+		case VAR: {
+			const char *name = uexpr.var_name;
+
+			if (is_local_var(ptr_ps->scope_chain, name)) {
+				break;
+			}
+			const struct EnumeratorAndValue *ptr_enum_and_value =
+			    get_global_enumerator(ptr_ps->global_enumerator_list, name);
+			if (ptr_enum_and_value) {
+				return ptr_enum_and_value->value;
+
+			} else {
+				break;
+			}
+		}
+		default:
+			break;
 	}
+
 	fprintf(stderr, "Expected const expression, but did not get one.\n");
 	fprintf(stderr, "context: %s\n", context);
 	exit(EXIT_FAILURE);

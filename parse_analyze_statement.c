@@ -46,7 +46,7 @@ struct Statement parse_labeled_statement(struct AnalyzerState *ptr_ps,
 		l.category = DEFAULT_LABEL;
 	} else if (kind == RES_CASE) {
 		++tokvec;
-		int case_int = typecheck_constant_expression(
+		int case_int = typecheck_constant_integral_expression(
 		    ptr_ps, parse_constant_expression(&tokvec), "case");
 		l.category = CASE_LABEL;
 		l.case_int = case_int;

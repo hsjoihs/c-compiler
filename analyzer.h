@@ -56,6 +56,6 @@ int align_of(const struct AnalyzerState *ptr_ps, struct Type type);
 void expect_type(const struct AnalyzerState *ptr_ps, struct Type actual_type,
                  struct Type expected_type, const char *message);
 
-int typecheck_constant_expression(struct AnalyzerState *ptr_ps,
-                                  struct UntypedExpr uexpr,
-                                  const char *context);
+int typecheck_constant_integral_expression(struct AnalyzerState *ptr_ps,
+                                           struct UntypedExpr uexpr,
+                                           const char *context);
