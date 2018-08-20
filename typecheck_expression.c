@@ -107,10 +107,7 @@ static int is_integral(struct Type t1)
 	       t1.type_category == ENUM_;
 }
 
-static int is_scalar(struct Type t1)
-{
-	return is_pointer(t1) && is_integral(t1);
-}
+int is_scalar(struct Type t1) { return is_pointer(t1) || is_integral(t1); }
 
 static int is_compatible(const struct AnalyzerState *ptr_ps, struct Type t1,
                          struct Type t2)
