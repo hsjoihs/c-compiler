@@ -65,7 +65,25 @@ static int is_strictly_equal(const struct AnalyzerState *ptr_ps, struct Type t1,
 		       lookup(ptr_ps->global_struct_tag_map, t1.struct_tag);
 	}
 
+	if (t1.type_category == ENUM_ && t2.type_category == ENUM_) {
+		if ((0)) { /* both are local */
+			unsupported("locally declared struct");
+		}
+		return strcmp(t1.enum_tag, t2.enum_tag) == 0;
+	}
+
 	return 0;
+}
+
+static int is_integral(struct Type t1)
+{
+	return t1.type_category == INT_ || t1.type_category == CHAR_ ||
+	       t1.type_category == ENUM_;
+}
+
+static int is_scalar(struct Type t1)
+{
+	return is_pointer(t1) && is_integral(t1);
 }
 
 static int is_compatible(const struct AnalyzerState *ptr_ps, struct Type t1,
@@ -75,11 +93,7 @@ static int is_compatible(const struct AnalyzerState *ptr_ps, struct Type t1,
 		return 1;
 	}
 
-	if (t1.type_category == INT_ && t2.type_category == CHAR_) {
-		return 1;
-	}
-
-	if (t1.type_category == CHAR_ && t2.type_category == INT_) {
+	if (is_integral(t1) && is_integral(t2)) {
 		return 1;
 	}
 
