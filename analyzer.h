@@ -59,3 +59,5 @@ void expect_type(const struct AnalyzerState *ptr_ps, struct Type actual_type,
 int typecheck_constant_integral_expression(struct AnalyzerState *ptr_ps,
                                            struct UntypedExpr uexpr,
                                            const char *context);
+
+int is_scalar(struct Type t1);

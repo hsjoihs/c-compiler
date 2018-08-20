@@ -66,6 +66,17 @@ struct Statement parse_labeled_statement(struct AnalyzerState *ptr_ps,
 	return s;
 }
 
+static void expect_scalar(struct Type type, const char *context)
+{
+	if (!is_scalar(type)) {
+		fprintf(stderr,
+		        "Expected a scalar type, but got a non-scalar type.\n"
+		        "context: %s\n",
+		        context);
+		exit(EXIT_FAILURE);
+	}
+}
+
 struct Statement parse_statement(struct AnalyzerState *ptr_ps,
                                  const struct Token **ptr_tokvec)
 {
@@ -86,6 +97,8 @@ struct Statement parse_statement(struct AnalyzerState *ptr_ps,
 		                   "left parenthesis immediately after `if`");
 		struct Expr expr =
 		    typecheck_expression(ptr_ps, parse_expression(&tokvec));
+		expect_scalar(expr.details.type, "`if` statement");
+
 		expect_and_consume(&tokvec, RIGHT_PAREN, "right parenthesis of `if`");
 
 		struct Statement inner_s = parse_statement(ptr_ps, &tokvec);
@@ -185,6 +198,7 @@ struct Statement parse_statement(struct AnalyzerState *ptr_ps,
 
 		struct Expr expr =
 		    typecheck_expression(ptr_ps, parse_expression(&tokvec));
+		expect_scalar(expr.details.type, "`do-while` statement");
 
 		expect_and_consume(&tokvec, RIGHT_PAREN,
 		                   "right parenthesis of do-while");
@@ -209,6 +223,7 @@ struct Statement parse_statement(struct AnalyzerState *ptr_ps,
 
 		struct Expr expr =
 		    typecheck_expression(ptr_ps, parse_expression(&tokvec));
+		expect_scalar(expr.details.type, "`while` statement");
 
 		expect_and_consume(&tokvec, RIGHT_PAREN, "left parenthesis of while");
 
@@ -270,6 +285,7 @@ struct Statement parse_statement(struct AnalyzerState *ptr_ps,
 		} else {
 			expr2 = typecheck_expression(ptr_ps, parse_expression(&tokvec));
 		}
+		expect_scalar(expr2.details.type, "`for` statement");
 		expect_and_consume(&tokvec, SEMICOLON, "second semicolon of `for`");
 
 		if (tokvec[0].kind == RIGHT_PAREN) { /* expression3 is missing */

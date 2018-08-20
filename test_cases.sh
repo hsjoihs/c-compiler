@@ -43,6 +43,7 @@ run_test 234 'enum A{B, C,}; int main(void){ enum A b; b = 5; return 174; }' 174
 run_test 235 'enum A{B, C,}; int main(void){ enum A b; b = B; return 174+b; }' 174
 run_test 236 'enum A{B, C,D}; int main(void){ enum A b; b = D; return 172+b; }' 174
 run_test 237 'enum A{B, C,D}; int f(enum A b){switch(b){case B: return 1; case C: return 5; case D: return 8;}} int main(void){ return (f(B) - 1) || (f(C) - 5) || (f(D) - 8);}' 0
+run_test 238 'int main(){int a[5]; if(a){return 174;} return 0;}' 174
 
 
 run_test 190 'int main(){return sizeof(int);}' 4

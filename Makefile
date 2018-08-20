@@ -85,6 +85,10 @@ check_error:
 	./test_compile_error.sh 'int main(){int a[1]; int *b; a = b;}'
 	./test_compile_error.sh 'int main(){return 1[2];}'
 	./test_compile_error.sh 'int main(){ foo: int a; return a;}'
+	./test_compile_error.sh 'struct A{int a; int b;}; int main(){struct A a; if(a){return 12;} return 3;}'
+	./test_compile_error.sh 'struct A{int a; int b;}; int main(){struct A a; for(;a;){return 12;} return 3;}'
+	./test_compile_error.sh 'struct A{int a; int b;}; int main(){struct A a; while(a){return 12;} return 3;}'
+	./test_compile_error.sh 'struct A{int a; int b;}; int main(){struct A a; do{return 12;}while(a); return 3;}'
 	
 
 # clang-format or clang
