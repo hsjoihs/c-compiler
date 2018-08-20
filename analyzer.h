@@ -19,6 +19,11 @@ struct FuncInfo {
 	 */
 };
 
+struct EnumeratorAndValue {
+	const char *ident;
+	int value;
+};
+
 struct AnalyzerState {
 	struct ScopeChain scope_chain;
 	struct Map /*<Type>*/ global_vars_type_map;
@@ -26,6 +31,7 @@ struct AnalyzerState {
 	struct Type func_ret_type;
 	int newest_offset;
 	struct Map /*<StructInternalCompleteInfo>*/ global_struct_tag_map;
+	struct Map /*<struct Vector<EnumeratorAndValue>>*/ global_enum_tag_map;
 };
 
 struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,

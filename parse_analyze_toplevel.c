@@ -112,9 +112,27 @@ static void record_global_struct_declaration(struct AnalyzerState *ptr_ps,
 }
 
 static void record_global_enum_declaration(struct AnalyzerState *ptr_ps,
-                                           struct Type struct_type)
+                                           struct Type type)
 {
-#warning implement me
+	assert(type.type_category == ENUM_);
+
+	struct Enumerators info = type.enum_info;
+	struct Vector /* <const char> */ idents = info.enumerators;
+	if (!idents.vector) { /* null; cannot record */
+		return;
+	}
+
+	struct Vector /*<EnumeratorAndValue>*/ *ptr_e_and_v_vec = init_vector_();
+	for (int i = 0; i < idents.length; i++) {
+		const char *vec_i = idents.vector[i];
+		struct EnumeratorAndValue *ptr_e_and_v =
+		    calloc(1, sizeof(struct EnumeratorAndValue));
+		ptr_e_and_v->ident = vec_i;
+		ptr_e_and_v->value = i;
+		push_vector(ptr_e_and_v_vec, ptr_e_and_v);
+	}
+
+	insert(&ptr_ps->global_enum_tag_map, type.enum_tag, ptr_e_and_v_vec);
 }
 
 static void
@@ -257,6 +275,7 @@ struct Vector /*<Toplevel>*/ parse(const struct Token *tokvec)
 	ps.func_info_map = init_map();
 	ps.global_vars_type_map = init_map();
 	ps.global_struct_tag_map = init_map();
+	ps.global_enum_tag_map = init_map();
 
 	struct Vector /*<Toplevel>*/ vec = init_vector();
 	while (1) {
