@@ -56,6 +56,10 @@ compile_files:
 	cat misc/duff.c | ./out/compiler.out > s/duff.s
 	gcc s/duff.s -o out/duff.out
 	./out/duff.out
+	cat misc/quine.c | ./out/compiler.out > s/quine.s
+	gcc s/quine.s -o out/quine.out
+	./out/quine.out > misc/quine_res.c
+	diff misc/quine.c misc/quine_res.c
 	cat misc/vector_test.c | ./out/compiler.out > s/vector_test.s
 	cat misc/vector_test2.c | ./out/compiler.out > s/vector_test2.s
 
