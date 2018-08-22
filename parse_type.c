@@ -324,12 +324,37 @@ struct Type parse_declaration(const struct Token **ptr_tokvec,
 	return from_type3_to_type(ptr_vec->vector);
 }
 
+/*
+
+type-name:
+  type-specifier abstract-declarator_opt
+
+abstract-declarator:
+  pointer
+  pointer_opt direct-abstract-declarator
+
+direct-abstract-declarator:
+  ( abstract-declarator )
+  direct-abstract-declarator_opt [ constant-expression_opt ]
+  direct-abstract-declarator_opt ( parameter-type-list_opt )
+
+*/
+
 /* `int `, `int *` */
 struct Type parse_type_name(const struct Token **ptr_tokvec)
 {
 	struct Type *ptr_base_type = parse_type_specifier(ptr_tokvec);
 	struct Vector /*<TypeNode>*/ *ptr_vec = init_vector_();
-	parse_abstract_declarator(ptr_tokvec, ptr_vec);
+
+	const struct Token *tokvec = *ptr_tokvec;
+
+	/* optional */
+	if (tokvec[0].kind == OP_ASTERISK || tokvec[0].kind == LEFT_PAREN ||
+	    tokvec[0].kind == LEFT_BRACKET) {
+		parse_abstract_declarator(&tokvec, ptr_vec);
+	}
 	push_vector(ptr_vec, ptr_base_type);
+
+	*ptr_tokvec = tokvec;
 	return from_type3_to_type(ptr_vec->vector);
 }
