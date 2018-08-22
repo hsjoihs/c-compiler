@@ -227,28 +227,12 @@ static void parse_declarator(const struct Token **ptr_tokvec,
                              const char **ptr_to_ident_str,
                              struct Vector /*<TypeNode>*/ *ptr_vec);
 
-static void parse_direct_declarator(const struct Token **ptr_tokvec,
-                                    const char **ptr_to_ident_str,
-                                    struct Vector /*<TypeNode>*/ *ptr_vec)
+static void parse_dcl_postfixes(const struct Token **ptr_tokvec,
+                                struct Vector /*<TypeNode>*/ *ptr_vec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 
 	struct Vector vec = *ptr_vec;
-	if (tokvec[0].kind == LEFT_PAREN) {
-		++tokvec;
-		parse_declarator(&tokvec, ptr_to_ident_str, &vec);
-		expect_and_consume(&tokvec, RIGHT_PAREN,
-		                   "closing parenthesis inside direct declarator");
-		*ptr_tokvec = tokvec;
-	} else if (ptr_to_ident_str) {
-		if (tokvec[0].kind == IDENT_OR_RESERVED) {
-			*ptr_to_ident_str = tokvec[0].ident_str;
-			++tokvec;
-		} else {
-			error_unexpected_token(tokvec, "an identifier in the declarator");
-		}
-	}
-
 	while (1) {
 		if (tokvec[0].kind == LEFT_BRACKET) {
 			++tokvec;
@@ -271,6 +255,34 @@ static void parse_direct_declarator(const struct Token **ptr_tokvec,
 		}
 		parse_parameter_list(&tokvec, &vec);
 	}
+
+	*ptr_tokvec = tokvec;
+	*ptr_vec = vec;
+}
+
+static void parse_direct_declarator(const struct Token **ptr_tokvec,
+                                    const char **ptr_to_ident_str,
+                                    struct Vector /*<TypeNode>*/ *ptr_vec)
+{
+	const struct Token *tokvec = *ptr_tokvec;
+
+	struct Vector vec = *ptr_vec;
+	if (tokvec[0].kind == LEFT_PAREN) {
+		++tokvec;
+		parse_declarator(&tokvec, ptr_to_ident_str, &vec);
+		expect_and_consume(&tokvec, RIGHT_PAREN,
+		                   "closing parenthesis inside direct declarator");
+		*ptr_tokvec = tokvec;
+	} else if (ptr_to_ident_str) {
+		if (tokvec[0].kind == IDENT_OR_RESERVED) {
+			*ptr_to_ident_str = tokvec[0].ident_str;
+			++tokvec;
+		} else {
+			error_unexpected_token(tokvec, "an identifier in the declarator");
+		}
+	}
+
+	parse_dcl_postfixes(&tokvec, &vec);
 
 	*ptr_tokvec = tokvec;
 	*ptr_vec = vec;
