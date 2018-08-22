@@ -207,7 +207,8 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 	}
 
 	struct Vector /*<TypeAndIdent>*/ param_infos = declarator_type.param_infos;
-	struct Type ret_type = *declarator_type.derived_from;
+	struct Type *ptr_ret_type = declarator_type.derived_from;
+	struct Type ret_type = *ptr_ret_type;
 
 	ptr_ps->scope_chain.outer = 0; /* most outer scope */
 	ptr_ps->scope_chain.var_table = init_map();
@@ -215,7 +216,7 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 	ptr_ps->func_ret_type = ret_type;
 
 	struct FuncInfo *ptr_func_info = calloc(1, sizeof(struct FuncInfo));
-	ptr_func_info->ret_type = ret_type;
+	ptr_func_info->ptr_ret_type = ptr_ret_type;
 	insert(&ptr_ps->func_info_map, declarator_name, ptr_func_info);
 
 	if (!param_infos.vector &&
