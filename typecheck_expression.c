@@ -628,7 +628,7 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 				ret_type = *(ptr_func_info->derived_from);
 			}
 
-			struct Expr **args = calloc(10, sizeof(struct Expr *));
+			const void **args = calloc(10, sizeof(struct Expr *));
 
 			int counter = 0;
 			for (; counter < uexpr.arg_exprs_vec.length; counter++) {
