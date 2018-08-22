@@ -59,12 +59,18 @@ struct SourceLabelAndAssemblyLabel {
 	struct SourceLabel source_label;
 };
 
-static void print_source_labels(struct PrinterState *ptr_prs,
+static void print_source_labels(const struct PrinterState *ptr_prs,
                                 const struct Statement sta)
 {
 	for (int j = 0; j < sta.labels.length; j++) {
 		const struct SourceLabel *ptr_label = sta.labels.vector[j];
 		if (ptr_label->category == DEFAULT_LABEL) {
+			if (!ptr_prs->is_inside_switch) {
+				fprintf(
+				    stderr,
+				    "`default` was detected, but is not inside `switch`.\n");
+				exit(EXIT_FAILURE);
+			}
 			for (int k = 0; k < ptr_prs->case_default_vec.length; k++) {
 				const struct SourceLabelAndAssemblyLabel *ptr_ll =
 				    ptr_prs->case_default_vec.vector[k];
@@ -73,6 +79,11 @@ static void print_source_labels(struct PrinterState *ptr_prs,
 				}
 			}
 		} else if (ptr_label->category == CASE_LABEL) {
+			if (!ptr_prs->is_inside_switch) {
+				fprintf(stderr,
+				        "`case` was detected, but is not inside `switch`.\n");
+				exit(EXIT_FAILURE);
+			}
 			for (int k = 0; k < ptr_prs->case_default_vec.length; k++) {
 				const struct SourceLabelAndAssemblyLabel *ptr_ll =
 				    ptr_prs->case_default_vec.vector[k];
@@ -433,6 +444,7 @@ void generate(const struct Vector /*<Toplevel>*/ vec)
 	prs.return_label_name = -1;
 	prs.string_constant_pool = init_vector();
 	prs.pool_largest_id = 0;
+	prs.is_inside_switch = 0;
 
 	for (int i = 0; i < vec.length; i++) {
 		const struct Toplevel *ptr = vec.vector[i];
