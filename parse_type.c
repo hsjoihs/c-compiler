@@ -166,6 +166,63 @@ struct Type *parse_type_specifier(const struct Token **ptr_tokvec)
 	return ptr;
 }
 
+static void parse_parameter_list(const struct Token **ptr_tokvec,
+                                 struct Vector /*<TypeNode>*/ *ptr_vec)
+{
+	assert((*ptr_tokvec)[0].kind == LEFT_PAREN);
+	const struct Token *tokvec = *ptr_tokvec;
+	struct Vector vec = *ptr_vec;
+	{
+		++tokvec;
+		if (tokvec[0].kind == RIGHT_PAREN) { /* NO INFO */
+			++tokvec;
+			TypeNode f;
+			f.type_category = FN;
+			f.is_param_infos_valid = 0;
+			f.param_infos = init_vector();
+			TypeNode *ptr = calloc(1, sizeof(TypeNode));
+			*ptr = f;
+			push_vector(&vec, ptr);
+		} else if (tokvec[0].kind == RES_VOID &&
+		           tokvec[1].kind == RIGHT_PAREN) { /* EXPLICITLY EMPTY */
+			tokvec += 2;
+			TypeNode f;
+			f.type_category = FN;
+			f.is_param_infos_valid = 1;
+			f.param_infos = init_vector();
+			TypeNode *ptr = calloc(1, sizeof(TypeNode));
+			*ptr = f;
+			push_vector(&vec, ptr);
+		} else if (can_start_a_type(tokvec)) {
+			TypeNode f;
+			f.type_category = FN;
+			f.is_param_infos_valid = 1;
+			f.param_infos = init_vector();
+
+			push_vector(&f.param_infos, parse_param(&tokvec));
+
+			while (1) {
+				enum TokenKind kind = tokvec[0].kind;
+				if (kind != OP_COMMA) {
+					break;
+				}
+				++tokvec;
+
+				push_vector(&f.param_infos, parse_param(&tokvec));
+			}
+
+			TypeNode *ptr = calloc(1, sizeof(TypeNode));
+			*ptr = f;
+			push_vector(&vec, ptr);
+
+			expect_and_consume(&tokvec, RIGHT_PAREN,
+			                   "closing ) while parsing functional type");
+		}
+	}
+	*ptr_tokvec = tokvec;
+	*ptr_vec = vec;
+}
+
 static void parse_declarator(const struct Token **ptr_tokvec,
                              const char **ptr_to_ident_str,
                              struct Vector /*<TypeNode>*/ *ptr_vec);
@@ -212,52 +269,7 @@ static void parse_direct_declarator(const struct Token **ptr_tokvec,
 		if (tokvec[0].kind != LEFT_PAREN) {
 			break;
 		}
-
-		++tokvec;
-		if (tokvec[0].kind == RIGHT_PAREN) { /* NO INFO */
-			++tokvec;
-			TypeNode f;
-			f.type_category = FN;
-			f.is_param_infos_valid = 0;
-			f.param_infos = init_vector();
-			TypeNode *ptr = calloc(1, sizeof(TypeNode));
-			*ptr = f;
-			push_vector(&vec, ptr);
-		} else if (tokvec[0].kind == RES_VOID &&
-		           tokvec[1].kind == RIGHT_PAREN) { /* EXPLICITLY EMPTY */
-			tokvec += 2;
-			TypeNode f;
-			f.type_category = FN;
-			f.is_param_infos_valid = 1;
-			f.param_infos = init_vector();
-			TypeNode *ptr = calloc(1, sizeof(TypeNode));
-			*ptr = f;
-			push_vector(&vec, ptr);
-		} else if (can_start_a_type(tokvec)) {
-			TypeNode f;
-			f.type_category = FN;
-			f.is_param_infos_valid = 1;
-			f.param_infos = init_vector();
-
-			push_vector(&f.param_infos, parse_param(&tokvec));
-
-			while (1) {
-				enum TokenKind kind = tokvec[0].kind;
-				if (kind != OP_COMMA) {
-					break;
-				}
-				++tokvec;
-
-				push_vector(&f.param_infos, parse_param(&tokvec));
-			}
-
-			TypeNode *ptr = calloc(1, sizeof(TypeNode));
-			*ptr = f;
-			push_vector(&vec, ptr);
-
-			expect_and_consume(&tokvec, RIGHT_PAREN,
-			                   "closing ) while parsing functional type");
-		}
+		parse_parameter_list(&tokvec, &vec);
 	}
 
 	*ptr_tokvec = tokvec;
