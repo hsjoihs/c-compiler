@@ -362,13 +362,13 @@ void print_expression(struct PrinterState *ptr_prs, struct Expr expr)
 			struct Type ret_type = expr.details.type;
 
 			for (int counter = expr.args.length - 1; counter >= 0; counter--) {
-				struct Expr expr_ = expr.args.expr_vec[counter];
+				struct Expr expr_ = *(expr.args.expr_vec[counter]);
 
 				print_expression(ptr_prs, expr_);
 			}
 
 			for (int counter = 0; counter < expr.args.length; counter++) {
-				struct Expr expr_ = expr.args.expr_vec[counter];
+				struct Expr expr_ = *(expr.args.expr_vec[counter]);
 
 				switch (size_of_basic(expr_.details.type)) {
 					case 1:

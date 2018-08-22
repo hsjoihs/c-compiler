@@ -255,7 +255,7 @@ struct Expr {
 	const char *global_var_name;
 	const char *literal_string;
 	struct {
-		struct Expr *expr_vec;
+		struct Expr **expr_vec;
 		int length;
 	} args;
 	int local_var_offset;
