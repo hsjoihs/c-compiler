@@ -8,6 +8,8 @@ run_test() {
 	if [ $res -ne $3 ]; then { echo "got:" $res; echo "expected:" $3; echo -e "\033[31mFAIL\033[m, at test case" $1: $2; exit 1; }; else echo -e "\033[32mPASS\033[m"; fi
 }
 
+run_test 247 'int (*func(int (*a)[5]))[5]{return a;} int main(){int a[6][5]; a[1][2] = 174; return func(a)[1][2];}' 174
+
 run_test 239 'int *foo(int *(p)){*p = 4;return p;} int main(){int (x);int (y); int (*(*(z))); *foo(&x) += 170;return x;}' 174
 run_test 240 'int main(){int a[1][2];int (*p)[2];p = a;int *q;q = *p;return 174;}' 174
 run_test 241 'int main(){int a[1][2];int (*p)[2];p = a;int *q;q = *p; *q=174; return **a;}' 174
