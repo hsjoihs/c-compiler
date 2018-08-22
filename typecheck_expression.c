@@ -628,25 +628,23 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 				ret_type = *(ptr_func_info->derived_from);
 			}
 
-			const void **args = calloc(10, sizeof(struct Expr *));
+			struct Expr expr;
+			expr.args = init_vector();
 
-			int counter = 0;
-			for (; counter < uexpr.arg_exprs_vec.length; counter++) {
+			for (int counter = 0; counter < uexpr.arg_exprs_vec.length;
+			     counter++) {
 				const struct UntypedExpr *ptr =
 				    uexpr.arg_exprs_vec.vector[counter];
 
 				struct Expr *ptr_arg = calloc(1, sizeof(struct Expr));
 				*ptr_arg = typecheck_expression(ptr_ps, *ptr);
-				args[counter] = ptr_arg;
+				push_vector(&expr.args, ptr_arg);
 				if (counter > 5) {
 					unsupported("calling with 7 or more arguments");
 				}
 			}
 
-			struct Expr expr;
 			expr.category = FUNCCALL_EXPR;
-			expr.args.expr_vec = args;
-			expr.args.length = counter;
 			expr.details.type = ret_type;
 			expr.global_var_name = ident_str;
 			return expr;

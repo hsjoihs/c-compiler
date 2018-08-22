@@ -254,10 +254,7 @@ struct Expr {
 	int int_value;
 	const char *global_var_name;
 	const char *literal_string;
-	struct {
-		const void **expr_vec;
-		int length;
-	} args;
+	struct Vector /*<Expr>*/ args;
 	int local_var_offset;
 
 	/* used in POINTER_PLUS_INT, POINTER_MINUS_INT and POINTER_MINUS_POINTER */

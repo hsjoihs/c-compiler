@@ -363,14 +363,14 @@ void print_expression(struct PrinterState *ptr_prs, struct Expr expr)
 
 			for (int counter = expr.args.length - 1; counter >= 0; counter--) {
 				struct Expr expr_ =
-				    *(const struct Expr *)(expr.args.expr_vec[counter]);
+				    *(const struct Expr *)(expr.args.vector[counter]);
 
 				print_expression(ptr_prs, expr_);
 			}
 
 			for (int counter = 0; counter < expr.args.length; counter++) {
 				struct Expr expr_ =
-				    *(const struct Expr *)(expr.args.expr_vec[counter]);
+				    *(const struct Expr *)(expr.args.vector[counter]);
 
 				switch (size_of_basic(expr_.details.type)) {
 					case 1:
