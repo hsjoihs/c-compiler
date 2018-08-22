@@ -23,14 +23,11 @@ int add_local_var_to_scope(struct AnalyzerState *ptr_ps,
 	ptr_ps->newest_offset -=
 	    size_of(ptr_ps, vartype) < 4 ? 4 : size_of(ptr_ps, vartype);
 
-	struct Map map_ = ptr_ps->scope_chain.var_table;
-
 	struct LocalVarInfo *ptr_varinfo = calloc(1, sizeof(struct LocalVarInfo));
 	ptr_varinfo->offset = ptr_ps->newest_offset;
 	ptr_varinfo->type = vartype;
-	insert(&map_, str, ptr_varinfo);
+	insert(&ptr_ps->scope_chain.var_table, str, ptr_varinfo);
 
-	ptr_ps->scope_chain.var_table = map_;
 	return ptr_varinfo->offset;
 }
 
@@ -83,12 +80,10 @@ struct Statement parse_statement(struct AnalyzerState *ptr_ps,
 	const struct Token *tokvec = *ptr_tokvec;
 	if (tokvec[0].kind == RES_CASE || tokvec[0].kind == RES_DEFAULT ||
 	    (tokvec[0].kind == IDENT_OR_RESERVED && tokvec[1].kind == COLON)) {
-		struct Statement s = parse_labeled_statement(ptr_ps, ptr_tokvec);
-		return s;
+		return parse_labeled_statement(ptr_ps, ptr_tokvec);
 	}
 	if (tokvec[0].kind == LEFT_BRACE) {
-		struct Statement s = parse_compound_statement(ptr_ps, ptr_tokvec);
-		return s;
+		return parse_compound_statement(ptr_ps, ptr_tokvec);
 	}
 
 	if (tokvec[0].kind == RES_IF) { /* or SWITCH */
@@ -101,20 +96,17 @@ struct Statement parse_statement(struct AnalyzerState *ptr_ps,
 
 		expect_and_consume(&tokvec, RIGHT_PAREN, "right parenthesis of `if`");
 
-		struct Statement inner_s = parse_statement(ptr_ps, &tokvec);
-
 		struct Statement *ptr_inner_s = calloc(1, sizeof(struct Statement));
-		*ptr_inner_s = inner_s;
+		*ptr_inner_s = parse_statement(ptr_ps, &tokvec);
 
 		struct Statement s;
 		s.labels = init_vector();
 		s.expr1 = expr;
 		if (tokvec[0].kind == RES_ELSE) { /* must bind to the most inner one */
 			++tokvec;
-			struct Statement inner_s2 = parse_statement(ptr_ps, &tokvec);
 			struct Statement *ptr_inner_s2 =
 			    calloc(1, sizeof(struct Statement));
-			*ptr_inner_s2 = inner_s2;
+			*ptr_inner_s2 = parse_statement(ptr_ps, &tokvec);
 
 			*ptr_tokvec = tokvec;
 
@@ -144,9 +136,8 @@ struct Statement parse_statement(struct AnalyzerState *ptr_ps,
 		expect_type(ptr_ps, expr.details.type, INT_TYPE(),
 		            "controlling expression of `switch` must be integer type");
 
-		struct Statement inner_s = parse_statement(ptr_ps, &tokvec);
 		struct Statement *ptr_inner_s = calloc(1, sizeof(struct Statement));
-		*ptr_inner_s = inner_s;
+		*ptr_inner_s = parse_statement(ptr_ps, &tokvec);
 
 		struct Statement s;
 		s.labels = init_vector();
@@ -160,17 +151,13 @@ struct Statement parse_statement(struct AnalyzerState *ptr_ps,
 	if (tokvec[0].kind == RES_RETURN) {
 		++tokvec;
 		*ptr_tokvec = tokvec;
+		struct Statement s;
+		s.labels = init_vector();
+		s.category = RETURN_STATEMENT;
+
 		if (tokvec[0].kind == SEMICOLON) {
 			++tokvec;
-			struct Expr expr;
-			expr.category = VOID_EXPR;
-
-			struct Statement s;
-			s.labels = init_vector();
-			s.category = RETURN_STATEMENT;
-			s.expr1 = expr;
-			*ptr_tokvec = tokvec;
-			return s;
+			s.expr1.category = VOID_EXPR;
 		} else {
 			struct Expr expr =
 			    typecheck_expression(ptr_ps, parse_expression(&tokvec));
@@ -178,14 +165,11 @@ struct Statement parse_statement(struct AnalyzerState *ptr_ps,
 			            "mismatched type in the return value");
 			expect_and_consume(&tokvec, SEMICOLON,
 			                   "semicolon (after `return expr`)");
-			*ptr_tokvec = tokvec;
-
-			struct Statement s;
-			s.labels = init_vector();
-			s.category = RETURN_STATEMENT;
 			s.expr1 = expr;
-			return s;
 		}
+
+		*ptr_tokvec = tokvec;
+		return s;
 	}
 
 	if (tokvec[0].kind == RES_DO) {

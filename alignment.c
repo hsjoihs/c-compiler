@@ -6,9 +6,10 @@ struct SizeAndAlignment
 get_size_alignment_offsets(const struct SizeAndAlignment *inner_type_vec,
                            int **ptr_offset_vec, int length)
 {
-	int *offset_vec = *ptr_offset_vec;
 	struct SizeAndAlignment res;
 	res.alignment = 1;
+
+	/* struct's alignment is the maximum of the members' alignments */
 	for (int i = 0; i < length; i++) {
 		if (inner_type_vec[i].alignment > res.alignment) {
 			res.alignment = inner_type_vec[i].alignment;
@@ -16,7 +17,7 @@ get_size_alignment_offsets(const struct SizeAndAlignment *inner_type_vec,
 	}
 
 	int offset = 0;
-	offset_vec = calloc(length, sizeof(int));
+	int *offset_vec = calloc(length, sizeof(int));
 
 	for (int i = 0; i < length; i++) {
 		if (offset % inner_type_vec[i].alignment) {

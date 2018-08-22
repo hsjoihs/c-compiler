@@ -80,8 +80,7 @@ static void print_address_of_lvalue(struct PrinterState *ptr_prs,
 			return;
 		}
 		case GLOBAL_VAR_: {
-			const char *name = expr.global_var_name;
-			gen_push_address_of_global(name);
+			gen_push_address_of_global(expr.global_var_name);
 
 			return;
 		}
@@ -191,6 +190,7 @@ void print_expression(struct PrinterState *ptr_prs, struct Expr expr)
 		}
 		case POSTFIX_INCREMENT:
 		case POSTFIX_DECREMENT: {
+#warning does not work with pointer
 			enum SimpleBinOp opkind2 = expr.category == POSTFIX_INCREMENT
 			                               ? SIMPLE_BIN_OP_PLUS
 			                               : SIMPLE_BIN_OP_MINUS;
@@ -200,9 +200,7 @@ void print_expression(struct PrinterState *ptr_prs, struct Expr expr)
 
 			print_simple_binary_op(opkind2);
 
-			struct Type type = expr.ptr1->details.type;
-
-			gen_assign_nbyte(size_of_basic(type));
+			gen_assign_nbyte(size_of_basic(expr.ptr1->details.type));
 
 			gen_push_int(-1);
 			print_simple_binary_op(opkind2);
