@@ -288,27 +288,6 @@ static void parse_direct_declarator(const struct Token **ptr_tokvec,
 	*ptr_vec = vec;
 }
 
-static void
-parse_direct_abstract_declarator(const struct Token **ptr_tokvec,
-                                 struct Vector /*<TypeNode>*/ *ptr_vec)
-{
-	const struct Token *tokvec = *ptr_tokvec;
-
-	struct Vector vec = *ptr_vec;
-	if (tokvec[0].kind == LEFT_PAREN) {
-		++tokvec;
-		parse_declarator(&tokvec, 0, &vec);
-		expect_and_consume(&tokvec, RIGHT_PAREN,
-		                   "closing parenthesis inside direct declarator");
-		*ptr_tokvec = tokvec;
-	}
-
-	parse_dcl_postfixes(&tokvec, &vec);
-
-	*ptr_tokvec = tokvec;
-	*ptr_vec = vec;
-}
-
 static void parse_declarator(const struct Token **ptr_tokvec,
                              const char **ptr_to_ident_str,
                              struct Vector /*<TypeNode>*/ *ptr_vec)
@@ -364,6 +343,29 @@ direct-abstract-declarator:
   direct-abstract-declarator_opt ( parameter-type-list_opt )
 
 */
+
+static void parse_abstract_declarator(const struct Token **ptr_tokvec,
+                                      struct Vector /*<TypeNode>*/ *ptr_vec);
+
+static void
+parse_direct_abstract_declarator(const struct Token **ptr_tokvec,
+                                 struct Vector /*<TypeNode>*/ *ptr_vec)
+{
+	const struct Token *tokvec = *ptr_tokvec;
+
+	struct Vector vec = *ptr_vec;
+	if (tokvec[0].kind == LEFT_PAREN && !can_start_a_type(&tokvec[1])) {
+		++tokvec;
+		parse_abstract_declarator(&tokvec, &vec);
+		expect_and_consume(&tokvec, RIGHT_PAREN,
+		                   "closing parenthesis inside direct declarator");
+	}
+
+	parse_dcl_postfixes(&tokvec, &vec);
+
+	*ptr_tokvec = tokvec;
+	*ptr_vec = vec;
+}
 
 static void parse_abstract_declarator(const struct Token **ptr_tokvec,
                                       struct Vector /*<TypeNode>*/ *ptr_vec)
