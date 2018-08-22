@@ -297,26 +297,6 @@ static void parse_declarator(const struct Token **ptr_tokvec,
 	*ptr_tokvec = tokvec;
 }
 
-static void parse_abstract_declarator(const struct Token **ptr_tokvec,
-                                      struct Vector /*<TypeNode>*/ *ptr_vec)
-{
-	const struct Token *tokvec = *ptr_tokvec;
-	int asterisk_num = 0;
-	for (; tokvec[0].kind == OP_ASTERISK; ++tokvec) {
-		asterisk_num++;
-	}
-
-	parse_direct_declarator(&tokvec, 0, ptr_vec);
-
-	while (asterisk_num-- > 0) {
-		TypeNode *ptr = calloc(1, sizeof(TypeNode));
-		ptr->type_category = PTR_;
-		push_vector(ptr_vec, ptr);
-	}
-
-	*ptr_tokvec = tokvec;
-}
-
 int can_start_a_type(const struct Token *tokvec)
 {
 	return tokvec[0].kind == RES_INT || tokvec[0].kind == RES_CHAR ||
@@ -351,6 +331,26 @@ direct-abstract-declarator:
   direct-abstract-declarator_opt ( parameter-type-list_opt )
 
 */
+
+static void parse_abstract_declarator(const struct Token **ptr_tokvec,
+                                      struct Vector /*<TypeNode>*/ *ptr_vec)
+{
+	const struct Token *tokvec = *ptr_tokvec;
+	int asterisk_num = 0;
+	for (; tokvec[0].kind == OP_ASTERISK; ++tokvec) {
+		asterisk_num++;
+	}
+
+	parse_direct_declarator(&tokvec, 0, ptr_vec);
+
+	while (asterisk_num-- > 0) {
+		TypeNode *ptr = calloc(1, sizeof(TypeNode));
+		ptr->type_category = PTR_;
+		push_vector(ptr_vec, ptr);
+	}
+
+	*ptr_tokvec = tokvec;
+}
 
 /* `int `, `int *` */
 struct Type parse_type_name(const struct Token **ptr_tokvec)
