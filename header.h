@@ -103,7 +103,7 @@ struct StructInternalCompleteInfo {
 };
 
 struct Enumerators {
-	struct Vector /*<const char>*/ enumerators;
+	struct Vector /*<const char>*/ *ptr_enumerators; /* nullable */
 };
 
 struct Type {

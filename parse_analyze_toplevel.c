@@ -118,10 +118,10 @@ static void record_global_enum_declaration(struct AnalyzerState *ptr_ps,
 	assert(type.type_category == ENUM_);
 
 	struct Enumerators info = type.enum_info;
-	struct Vector /* <const char> */ idents = info.enumerators;
-	if (!idents.vector) { /* null; cannot record */
+	if (!info.ptr_enumerators) { /* null; cannot record */
 		return;
 	}
+	struct Vector /* <const char> */ idents = *info.ptr_enumerators;
 
 	struct Vector /*<EnumeratorAndValue>*/ *ptr_e_and_v_vec = init_vector_();
 	for (int i = 0; i < idents.length; i++) {

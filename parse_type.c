@@ -132,18 +132,19 @@ struct Type *parse_type_specifier(const struct Token **ptr_tokvec)
 		ptr->type_category = ENUM_;
 		ptr->enum_tag = ident;
 		if (tokvec[0].kind != LEFT_BRACE) {
+			ptr->enum_info.ptr_enumerators = 0; /* crucial; no info */
 			*ptr_tokvec = tokvec;
 			return ptr;
 		}
 		++tokvec;
 
-		ptr->enum_info.enumerators = init_vector();
+		ptr->enum_info.ptr_enumerators = init_vector_();
 
 		do { /* at least one enumerator is needed */
 			expect_and_consume(&tokvec, IDENT_OR_RESERVED,
 			                   "identifier as a declaration of an enumerator");
 			const char *ident_str = tokvec[-1].ident_str;
-			push_vector(&ptr->enum_info.enumerators, ident_str);
+			push_vector(ptr->enum_info.ptr_enumerators, ident_str);
 
 			/* ending without comma */
 			if (tokvec[0].kind == RIGHT_BRACE) {
