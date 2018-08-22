@@ -23,6 +23,10 @@ clean:
 supplement:
 	gcc supplement.c -S -o s/supplement.s
 
+verify_typeparse:
+	clang -Wall -Wextra -Wimplicit-fallthrough vector.c verifier/typeparse_checker.c lexer.c type.c parse_type.c error.c -o out/typeparse_check.out
+	./out/typeparse_check.out
+
 assembly_sandbox:
 	gcc -Wall -Wextra assembly_sandbox.c print_x86_64.c $(CCFLAGS) -o out/assembly_sandbox.out
 	echo -e '' | ./out/assembly_sandbox.out > s/assembly_sandbox.s
