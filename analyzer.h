@@ -11,7 +11,7 @@ struct ScopeChain {
 };
 
 struct FuncInfo {
-	struct Type *ptr_ret_type;
+	struct Type *derived_from;
 	struct Vector /*<TypeAndIdent>*/ param_infos;
 	/*
 	 .vector points to the array of (TypeAndIdent*).

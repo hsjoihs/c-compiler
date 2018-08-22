@@ -625,7 +625,7 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 			} else {
 				struct FuncInfo *ptr_func_info =
 				    lookup(ptr_ps->func_info_map, ident_str);
-				ret_type = *(ptr_func_info->ptr_ret_type);
+				ret_type = *(ptr_func_info->derived_from);
 			}
 
 			struct Expr *args = calloc(10, sizeof(struct Expr));
