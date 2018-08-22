@@ -642,8 +642,8 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 
 			struct Expr expr;
 			expr.category = FUNCCALL_EXPR;
-			expr.arg_expr_vec = args;
-			expr.arg_length = counter;
+			expr.args.expr_vec = args;
+			expr.args.length = counter;
 			expr.details.type = ret_type;
 			expr.global_var_name = ident_str;
 			return expr;
