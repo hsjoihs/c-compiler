@@ -41,7 +41,7 @@ struct TypeAndIdent *parse_param(const struct Token **ptr_tokvec)
 	struct TypeAndIdent *ptr_param_info =
 	    calloc(1, sizeof(struct TypeAndIdent));
 
-	struct Type type = parse_declarator(ptr_tokvec, &ident_str);
+	struct Type type = parse_declaration(ptr_tokvec, &ident_str);
 	if (type.type_category == FN) {
 		/* shall be adjusted to `pointer to func`, according to the spec */
 		struct Type *ptr_type = calloc(1, sizeof(struct Type));
@@ -110,7 +110,7 @@ struct Type *parse_type_specifier(const struct Token **ptr_tokvec)
 				break;
 			}
 			const char *ident_str;
-			struct Type t = parse_declarator(&tokvec, &ident_str);
+			struct Type t = parse_declaration(&tokvec, &ident_str);
 			expect_and_consume(&tokvec, SEMICOLON,
 			                   "semicolon after the declarator inside struct");
 			struct TypeAndIdent *ptr_t_and_i =
@@ -164,27 +164,27 @@ struct Type *parse_type_specifier(const struct Token **ptr_tokvec)
 	return ptr;
 }
 
-struct Type parse_declarator_or_type_name(const struct Token **ptr_tokvec,
-                                          const char **ptr_to_ident_str);
+struct Type parse_declaration_or_type_name(const struct Token **ptr_tokvec,
+                                           const char **ptr_to_ident_str);
 
-struct Type parse_declarator(const struct Token **ptr_tokvec,
-                             const char **ptr_to_ident_str)
+struct Type parse_declaration(const struct Token **ptr_tokvec,
+                              const char **ptr_to_ident_str)
 {
 	assert(ptr_to_ident_str);
-	return parse_declarator_or_type_name(ptr_tokvec, ptr_to_ident_str);
+	return parse_declaration_or_type_name(ptr_tokvec, ptr_to_ident_str);
 }
 
 struct Type parse_type_name(const struct Token **ptr_tokvec)
 {
-	return parse_declarator_or_type_name(ptr_tokvec, 0);
+	return parse_declaration_or_type_name(ptr_tokvec, 0);
 }
 
 /*
     when ptr_to_ident_str is a valid pointer: `int a`, `int *a`
     when ptr_to_ident_str is NULL: `int `, `int *`
 */
-struct Type parse_declarator_or_type_name(const struct Token **ptr_tokvec,
-                                          const char **ptr_to_ident_str)
+struct Type parse_declaration_or_type_name(const struct Token **ptr_tokvec,
+                                           const char **ptr_to_ident_str)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 

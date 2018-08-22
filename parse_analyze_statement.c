@@ -357,7 +357,7 @@ struct Statement parse_compound_statement(struct AnalyzerState *ptr_ps,
 				struct Type vartype;
 
 				const char *str;
-				vartype = parse_declarator(&tokvec, &str);
+				vartype = parse_declaration(&tokvec, &str);
 
 				/* while function prototypes are also allowed here in C, I will
 				 * not implement it here */
