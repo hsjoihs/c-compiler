@@ -101,6 +101,7 @@ struct Type *parse_type_specifier(const struct Token **ptr_tokvec)
 		ptr->type_category = STRUCT_;
 		ptr->struct_tag = ident;
 		if (tokvec[0].kind != LEFT_BRACE) {
+			ptr->struct_info.types_and_idents.vector = 0; /* crucial; no info */
 			*ptr_tokvec = tokvec;
 			return ptr;
 		}
