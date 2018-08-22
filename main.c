@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-struct Vector init_vector(void) { return *init_vector_(); }
 
 int main(int argc, char const **argv)
 {

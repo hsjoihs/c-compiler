@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+struct Vector init_vector(void) { return *init_vector_(); }
 /***************************************
  * pure parsers with respect to types. *
  ***************************************/
