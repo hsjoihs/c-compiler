@@ -498,7 +498,7 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 			}
 
 			struct Vector /* <TypeAndIdent> */ vec =
-			    ptr_info->info.types_and_idents;
+			    *ptr_info->info.ptr_types_and_idents;
 			int nth_member = -1;
 
 			struct Expr expr;

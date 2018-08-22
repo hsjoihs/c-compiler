@@ -88,7 +88,7 @@ struct TypeAndIdent;
 enum TypeCategory { INT_ = 1, PTR_, ARRAY, FN, CHAR_, STRUCT_, VOID_, ENUM_ };
 
 struct StructInternalInfo {
-	struct Vector /* <TypeAndIdent> */ types_and_idents;
+	struct Vector /* <TypeAndIdent> */ *ptr_types_and_idents; /* nullable */
 };
 
 struct SizeAndAlignment {
