@@ -369,12 +369,22 @@ static void parse_abstract_declarator(const struct Token **ptr_tokvec,
                                       struct Vector /*<TypeNode>*/ *ptr_vec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
+
+	if (tokvec[0].kind != OP_ASTERISK) {
+		parse_direct_abstract_declarator(&tokvec, ptr_vec);
+		*ptr_tokvec = tokvec;
+		return;
+	}
+
 	int asterisk_num = 0;
 	for (; tokvec[0].kind == OP_ASTERISK; ++tokvec) {
 		asterisk_num++;
 	}
 
-	parse_direct_abstract_declarator(&tokvec, ptr_vec);
+	/* optional */
+	if (tokvec[0].kind == LEFT_PAREN || tokvec[0].kind == LEFT_BRACKET) {
+		parse_direct_abstract_declarator(&tokvec, ptr_vec);
+	}
 
 	while (asterisk_num-- > 0) {
 		TypeNode *ptr = calloc(1, sizeof(TypeNode));
