@@ -166,21 +166,6 @@ struct Type *parse_type_specifier(const struct Token **ptr_tokvec)
 	return ptr;
 }
 
-struct Type parse_declaration_or_type_name(const struct Token **ptr_tokvec,
-                                           const char **ptr_to_ident_str);
-
-struct Type parse_declaration(const struct Token **ptr_tokvec,
-                              const char **ptr_to_ident_str)
-{
-	assert(ptr_to_ident_str);
-	return parse_declaration_or_type_name(ptr_tokvec, ptr_to_ident_str);
-}
-
-struct Type parse_type_name(const struct Token **ptr_tokvec)
-{
-	return parse_declaration_or_type_name(ptr_tokvec, 0);
-}
-
 static void parse_declarator(const struct Token **ptr_tokvec,
                              const char **ptr_to_ident_str,
                              struct Vector /*<TypeNode>*/ *ptr_vec);
@@ -320,27 +305,31 @@ static void parse_abstract_declarator(const struct Token **ptr_tokvec,
 	*ptr_tokvec = tokvec;
 }
 
-/*
-    when ptr_to_ident_str is a valid pointer: `int a`, `int *a`
-    when ptr_to_ident_str is NULL: `int `, `int *`
-*/
-struct Type parse_declaration_or_type_name(const struct Token **ptr_tokvec,
-                                           const char **ptr_to_ident_str)
-{
-	struct Type *ptr_base_type = parse_type_specifier(ptr_tokvec);
-	struct Vector /*<TypeNode>*/ *ptr_vec = init_vector_();
-	if (ptr_to_ident_str) {
-		parse_declarator(ptr_tokvec, ptr_to_ident_str, ptr_vec);
-	} else {
-		parse_abstract_declarator(ptr_tokvec, ptr_vec);
-	}
-	push_vector(ptr_vec, ptr_base_type);
-	return from_type3_to_type(ptr_vec->vector);
-}
-
 int can_start_a_type(const struct Token *tokvec)
 {
 	return tokvec[0].kind == RES_INT || tokvec[0].kind == RES_CHAR ||
 	       tokvec[0].kind == RES_STRUCT || tokvec[0].kind == RES_VOID ||
 	       tokvec[0].kind == RES_ENUM;
+}
+
+/* `int a`, `int *a` */
+struct Type parse_declaration(const struct Token **ptr_tokvec,
+                              const char **ptr_to_ident_str)
+{
+	assert(ptr_to_ident_str);
+	struct Type *ptr_base_type = parse_type_specifier(ptr_tokvec);
+	struct Vector /*<TypeNode>*/ *ptr_vec = init_vector_();
+	parse_declarator(ptr_tokvec, ptr_to_ident_str, ptr_vec);
+	push_vector(ptr_vec, ptr_base_type);
+	return from_type3_to_type(ptr_vec->vector);
+}
+
+/* `int `, `int *` */
+struct Type parse_type_name(const struct Token **ptr_tokvec)
+{
+	struct Type *ptr_base_type = parse_type_specifier(ptr_tokvec);
+	struct Vector /*<TypeNode>*/ *ptr_vec = init_vector_();
+	parse_abstract_declarator(ptr_tokvec, ptr_vec);
+	push_vector(ptr_vec, ptr_base_type);
+	return from_type3_to_type(ptr_vec->vector);
 }
