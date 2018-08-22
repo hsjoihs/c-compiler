@@ -69,7 +69,7 @@ void debug_print_type(struct Type type)
 			return;
 		case FN:
 			fprintf(stderr, "function (");
-			if (!type.param_infos.vector) {
+			if (!type.is_param_infos_valid) {
 				fprintf(stderr, "param: no info");
 			} else {
 				if (type.param_infos.length < 2) {

@@ -111,10 +111,8 @@ struct Type {
 	struct Type *derived_from;
 	int array_length; /* only when type_category is ARRAY */
 	struct Vector /*<TypeAndIdent>*/ param_infos;
-	/*
-	 .vector points to the array of (TypeAndIdent*).
-	 if .vector itself is NULL, that means there is no info.
-	 */
+	int is_param_infos_valid; /* zero when there is no info of parameters*/
+
 	struct {
 		const char *struct_tag;
 		struct StructInternalInfo struct_info;

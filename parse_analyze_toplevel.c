@@ -207,6 +207,7 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 	}
 
 	struct Vector /*<TypeAndIdent>*/ param_infos = declarator_type.param_infos;
+	int is_param_infos_valid = declarator_type.is_param_infos_valid;
 	struct Type *derived_from = declarator_type.derived_from;
 	struct Type ret_type = *derived_from;
 
@@ -219,7 +220,7 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 	ptr_func_info->derived_from = derived_from;
 	insert(&ptr_ps->func_info_map, declarator_name, ptr_func_info);
 
-	if (!param_infos.vector &&
+	if (!is_param_infos_valid &&
 	    tokvec2[0].kind == SEMICOLON) { /* function prototype */
 		++tokvec2;
 		/* do nothing, since the return value is already in the retmap
@@ -233,7 +234,7 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 
 	struct Vector /*<LocalVarInfo>*/ offsets_and_types = init_vector();
 
-	if (param_infos.vector) { /* parameter is not empty */
+	if (is_param_infos_valid) { /* parameter is not empty */
 		for (int counter = 0; counter < param_infos.length; ++counter) {
 
 			struct TypeAndIdent param_info =

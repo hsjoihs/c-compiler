@@ -28,6 +28,7 @@ static struct Type from_type3_to_type(const void **type3)
 			type.array_length = elem.array_length;
 			/* garbage enters here in case of PTR_ and FN */
 			type.param_infos = elem.param_infos;
+			type.is_param_infos_valid = elem.is_param_infos_valid;
 			/* garbage enters here in case of PTR_ and ARRAY */
 
 			struct Type *ptr_to_current_type = calloc(1, sizeof(struct Type));
@@ -236,7 +237,8 @@ struct Type parse_declarator_or_type_name(const struct Token **ptr_tokvec,
 			++tokvec;
 			TypeNode f;
 			f.type_category = FN;
-			f.param_infos.vector = (const void **)0; /* crucial */
+			f.is_param_infos_valid = 0;
+			f.param_infos = init_vector();
 			TypeNode *ptr = calloc(1, sizeof(TypeNode));
 			*ptr = f;
 			push_vector(&vec, ptr);
@@ -245,6 +247,7 @@ struct Type parse_declarator_or_type_name(const struct Token **ptr_tokvec,
 			tokvec += 2;
 			TypeNode f;
 			f.type_category = FN;
+			f.is_param_infos_valid = 1;
 			f.param_infos = init_vector();
 			TypeNode *ptr = calloc(1, sizeof(TypeNode));
 			*ptr = f;
@@ -252,7 +255,7 @@ struct Type parse_declarator_or_type_name(const struct Token **ptr_tokvec,
 		} else if (can_start_a_type(tokvec)) {
 			TypeNode f;
 			f.type_category = FN;
-
+			f.is_param_infos_valid = 1;
 			f.param_infos = init_vector();
 
 			push_vector(&f.param_infos, parse_param(&tokvec));
