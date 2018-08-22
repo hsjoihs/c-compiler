@@ -99,6 +99,7 @@ check_error:
 	./test_compile_error.sh 'struct A{int a; int b;}; int main(){struct A a; do{return 12;}while(a); return 3;}'
 	./test_compile_error.sh 'int main(){case 5: return 0;}'
 	./test_compile_error.sh 'int main(){default: return 0;}'
+	./test_compile_error.sh 'int main const(){return const 123 const; const} const'
 
 # clang-format or clang
 notest:

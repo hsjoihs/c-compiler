@@ -69,7 +69,8 @@ enum TokenKind {
 	RES_CASE,
 	RES_DEFAULT,
 	RES_ALIGNOF,
-	RES_ENUM
+	RES_ENUM,
+	RES_CONST
 };
 
 struct Token {

@@ -8,6 +8,17 @@ struct Vector init_vector(void) { return *init_vector_(); }
 /***************************************
  * pure parsers with respect to types. *
  ***************************************/
+
+static void skip_consts(const struct Token **ptr_tokvec)
+{
+	const struct Token *tokvec = *ptr_tokvec;
+	while (tokvec[0].kind == RES_CONST) {
+		++tokvec;
+	}
+	*ptr_tokvec = tokvec;
+	return;
+}
+
 typedef struct Type TypeNode; /* the link list is incomplete and should not be
                                  brought outside */
 
@@ -78,6 +89,8 @@ struct Type *parse_type_specifier(const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 
+	skip_consts(&tokvec);
+
 	enum TokenKind tok = tokvec[0].kind;
 	TypeNode *ptr = calloc(1, sizeof(TypeNode));
 
@@ -100,6 +113,7 @@ struct Type *parse_type_specifier(const struct Token **ptr_tokvec)
 		ptr->struct_tag = ident;
 		if (tokvec[0].kind != LEFT_BRACE) {
 			ptr->struct_info.ptr_types_and_idents = 0; /* crucial; no info */
+			skip_consts(&tokvec);
 			*ptr_tokvec = tokvec;
 			return ptr;
 		}
@@ -131,6 +145,7 @@ struct Type *parse_type_specifier(const struct Token **ptr_tokvec)
 		ptr->enum_tag = ident;
 		if (tokvec[0].kind != LEFT_BRACE) {
 			ptr->enum_info.ptr_enumerators = 0; /* crucial; no info */
+			skip_consts(&tokvec);
 			*ptr_tokvec = tokvec;
 			return ptr;
 		}
@@ -162,6 +177,7 @@ struct Type *parse_type_specifier(const struct Token **ptr_tokvec)
 		    tokvec, "type name `int`, `char`, `void`, `struct` or `enum`");
 	}
 
+	skip_consts(&tokvec);
 	*ptr_tokvec = tokvec;
 	return ptr;
 }
@@ -273,13 +289,11 @@ static void parse_direct_declarator(const struct Token **ptr_tokvec,
 		expect_and_consume(&tokvec, RIGHT_PAREN,
 		                   "closing parenthesis inside direct declarator");
 		*ptr_tokvec = tokvec;
-	} else if (ptr_to_ident_str) {
-		if (tokvec[0].kind == IDENT_OR_RESERVED) {
-			*ptr_to_ident_str = tokvec[0].ident_str;
-			++tokvec;
-		} else {
-			error_unexpected_token(tokvec, "an identifier in the declarator");
-		}
+	} else if (tokvec[0].kind == IDENT_OR_RESERVED) {
+		*ptr_to_ident_str = tokvec[0].ident_str;
+		++tokvec;
+	} else {
+		error_unexpected_token(tokvec, "an identifier in the declarator");
 	}
 
 	parse_dcl_postfixes(&tokvec, &vec);
@@ -294,7 +308,7 @@ static void parse_declarator(const struct Token **ptr_tokvec,
 {
 	const struct Token *tokvec = *ptr_tokvec;
 	int asterisk_num = 0;
-	for (; tokvec[0].kind == OP_ASTERISK; ++tokvec) {
+	for (; tokvec[0].kind == OP_ASTERISK; ++tokvec, skip_consts(&tokvec)) {
 		asterisk_num++;
 	}
 
@@ -313,7 +327,7 @@ int can_start_a_type(const struct Token *tokvec)
 {
 	return tokvec[0].kind == RES_INT || tokvec[0].kind == RES_CHAR ||
 	       tokvec[0].kind == RES_STRUCT || tokvec[0].kind == RES_VOID ||
-	       tokvec[0].kind == RES_ENUM;
+	       tokvec[0].kind == RES_ENUM || tokvec[0].kind == RES_CONST;
 }
 
 /* `int a`, `int *a` */
@@ -379,7 +393,7 @@ static void parse_abstract_declarator(const struct Token **ptr_tokvec,
 	}
 
 	int asterisk_num = 0;
-	for (; tokvec[0].kind == OP_ASTERISK; ++tokvec) {
+	for (; tokvec[0].kind == OP_ASTERISK; ++tokvec, skip_consts(&tokvec)) {
 		asterisk_num++;
 	}
 
