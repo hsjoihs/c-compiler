@@ -179,19 +179,12 @@ struct Type parse_type_name(const struct Token **ptr_tokvec)
 	return parse_declaration_or_type_name(ptr_tokvec, 0);
 }
 
-/*
-    when ptr_to_ident_str is a valid pointer: `int a`, `int *a`
-    when ptr_to_ident_str is NULL: `int `, `int *`
-*/
-struct Type parse_declaration_or_type_name(const struct Token **ptr_tokvec,
-                                           const char **ptr_to_ident_str)
+static void parse_declarator(const struct Token **ptr_tokvec,
+                             const char **ptr_to_ident_str,
+                             struct Vector /*<TypeNode>*/ *ptr_vec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
-
-	struct Type *ptr_base_type = parse_type_specifier(&tokvec);
-
-	struct Vector /*<TypeNode>*/ vec = init_vector();
-
+	struct Vector vec = *ptr_vec;
 	int asterisk_num = 0;
 	for (; tokvec[0].kind == OP_ASTERISK; ++tokvec) {
 		asterisk_num++;
@@ -279,6 +272,25 @@ struct Type parse_declaration_or_type_name(const struct Token **ptr_tokvec,
 		ptr->type_category = PTR_;
 		push_vector(&vec, ptr);
 	}
+
+	*ptr_vec = vec;
+	*ptr_tokvec = tokvec;
+}
+
+/*
+    when ptr_to_ident_str is a valid pointer: `int a`, `int *a`
+    when ptr_to_ident_str is NULL: `int `, `int *`
+*/
+struct Type parse_declaration_or_type_name(const struct Token **ptr_tokvec,
+                                           const char **ptr_to_ident_str)
+{
+	const struct Token *tokvec = *ptr_tokvec;
+
+	struct Type *ptr_base_type = parse_type_specifier(&tokvec);
+
+	struct Vector /*<TypeNode>*/ vec = init_vector();
+
+	parse_declarator(&tokvec, ptr_to_ident_str, &vec);
 
 	*ptr_tokvec = tokvec;
 
