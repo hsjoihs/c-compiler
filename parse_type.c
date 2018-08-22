@@ -245,8 +245,7 @@ struct Type parse_declarator_or_type_name(const struct Token **ptr_tokvec,
 			tokvec += 2;
 			TypeNode f;
 			f.type_category = FN;
-			f.param_infos.vector = calloc(1, sizeof(struct TypeAndIdent *));
-			f.param_infos.length = 0;
+			f.param_infos = init_vector();
 			TypeNode *ptr = calloc(1, sizeof(TypeNode));
 			*ptr = f;
 			push_vector(&vec, ptr);
@@ -254,12 +253,9 @@ struct Type parse_declarator_or_type_name(const struct Token **ptr_tokvec,
 			TypeNode f;
 			f.type_category = FN;
 
-			/* ok, since parse_param returns (struct TypeAndIdent*) */
-			f.param_infos.vector = calloc(100, sizeof(struct TypeAndIdent *));
+			f.param_infos = init_vector();
 
-			f.param_infos.vector[0] = parse_param(&tokvec);
-
-			int i = 1;
+			push_vector(&f.param_infos, parse_param(&tokvec));
 
 			while (1) {
 				enum TokenKind kind = tokvec[0].kind;
@@ -268,11 +264,8 @@ struct Type parse_declarator_or_type_name(const struct Token **ptr_tokvec,
 				}
 				++tokvec;
 
-				f.param_infos.vector[i] = parse_param(&tokvec);
-				i++;
+				push_vector(&f.param_infos, parse_param(&tokvec));
 			}
-
-			f.param_infos.length = i;
 
 			TypeNode *ptr = calloc(1, sizeof(TypeNode));
 			*ptr = f;
