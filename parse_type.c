@@ -13,24 +13,18 @@ static struct Type from_type3_to_type(const void **type3)
 {
 	struct Type type;
 	TypeNode elem = *(const TypeNode *)type3[0];
-	type.type_category = elem.type_category;
+	type = elem;
 	switch (elem.type_category) {
 		case INT_:
 		case CHAR_:
 		case STRUCT_:
 		case VOID_:
 		case ENUM_:
-			return elem;
+			return type;
 
 		case PTR_:
 		case ARRAY:
 		case FN: {
-			type.array_length = elem.array_length;
-			/* garbage enters here in case of PTR_ and FN */
-			type.param_infos = elem.param_infos;
-			type.is_param_infos_valid = elem.is_param_infos_valid;
-			/* garbage enters here in case of PTR_ and ARRAY */
-
 			struct Type *ptr_to_current_type = calloc(1, sizeof(struct Type));
 			*ptr_to_current_type = from_type3_to_type(type3 + 1);
 
@@ -38,6 +32,7 @@ static struct Type from_type3_to_type(const void **type3)
 			return type;
 		}
 	}
+	assert("unmatched case" && 0);
 }
 
 struct TypeAndIdent *parse_param(const struct Token **ptr_tokvec)
