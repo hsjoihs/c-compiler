@@ -623,7 +623,7 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 				        ident_str);
 				ret_type = INT_TYPE();
 			} else {
-				struct FuncInfo *ptr_func_info =
+				struct Type *ptr_func_info =
 				    lookup(ptr_ps->func_info_map, ident_str);
 				ret_type = *(ptr_func_info->derived_from);
 			}

@@ -10,15 +10,6 @@ struct ScopeChain {
 	struct ScopeChain *outer;
 };
 
-struct FuncInfo {
-	struct Type *derived_from;
-	struct Vector /*<TypeAndIdent>*/ param_infos;
-	/*
-	 .vector points to the array of (TypeAndIdent*).
-	 if .vector itself is NULL, that means there is no info.
-	 */
-};
-
 struct EnumeratorAndValue {
 	const char *ident;
 	int value;
@@ -27,7 +18,7 @@ struct EnumeratorAndValue {
 struct AnalyzerState {
 	struct ScopeChain scope_chain;
 	struct Map /*<Type>*/ global_vars_type_map;
-	struct Map /*<FuncInfo>*/ func_info_map;
+	struct Map /*<Type>*/ func_info_map;
 	struct Type func_ret_type;
 	int newest_offset;
 	struct Map /*<StructInternalCompleteInfo>*/ global_struct_tag_map;

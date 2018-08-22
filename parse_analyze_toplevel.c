@@ -215,7 +215,7 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 	ptr_ps->newest_offset = 0;
 	ptr_ps->func_ret_type = ret_type;
 
-	struct FuncInfo *ptr_func_info = calloc(1, sizeof(struct FuncInfo));
+	struct Type *ptr_func_info = calloc(1, sizeof(struct Type));
 	ptr_func_info->derived_from = derived_from;
 	insert(&ptr_ps->func_info_map, declarator_name, ptr_func_info);
 
