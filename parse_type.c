@@ -395,7 +395,9 @@ parse_direct_abstract_declarator(const struct Token **ptr_tokvec,
 	const struct Token *tokvec = *ptr_tokvec;
 
 	struct Vector vec = *ptr_vec;
-	if (tokvec[0].kind == LEFT_PAREN && !can_start_a_type(&tokvec[1])) {
+	if (tokvec[0].kind == LEFT_PAREN && !can_start_a_type(&tokvec[1]) &&
+	    tokvec[1].kind !=
+	        RIGHT_PAREN) { /* an empty parenthesis must be of a function */
 		++tokvec;
 		parse_abstract_declarator(&tokvec, &vec);
 		expect_and_consume(&tokvec, RIGHT_PAREN,
