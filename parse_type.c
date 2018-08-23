@@ -13,6 +13,9 @@ static void parse_declarator(const struct Token **ptr_tokvec,
                              const char **ptr_to_ident_str,
                              struct Vector /*<TypeNode>*/ *ptr_vec);
 
+struct Type parse_struct_declaration(const struct Token **ptr_tokvec,
+                                     const char **ptr_to_ident_str);
+
 static void skip_consts(const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
@@ -153,7 +156,7 @@ struct Type *parse_type_specifier(const struct Token **ptr_tokvec)
 				break;
 			}
 			const char *ident_str;
-			struct Type t = parse_declaration(&tokvec, &ident_str);
+			struct Type t = parse_struct_declaration(&tokvec, &ident_str);
 			expect_and_consume(&tokvec, SEMICOLON,
 			                   "semicolon after the declarator inside struct");
 			struct TypeAndIdent *ptr_t_and_i =
@@ -355,6 +358,18 @@ int can_start_a_type(const struct Token *tokvec)
 	return tokvec[0].kind == RES_INT || tokvec[0].kind == RES_CHAR ||
 	       tokvec[0].kind == RES_STRUCT || tokvec[0].kind == RES_VOID ||
 	       tokvec[0].kind == RES_ENUM || tokvec[0].kind == RES_CONST;
+}
+
+/* `int a`, `int *a` */
+struct Type parse_struct_declaration(const struct Token **ptr_tokvec,
+                                     const char **ptr_to_ident_str)
+{
+	assert(ptr_to_ident_str);
+	struct Type *ptr_base_type = parse_type_specifier(ptr_tokvec);
+	struct Vector /*<TypeNode>*/ *ptr_vec = init_vector_();
+	parse_declarator(ptr_tokvec, ptr_to_ident_str, ptr_vec);
+	push_vector(ptr_vec, ptr_base_type);
+	return from_type3_to_type(ptr_vec->vector);
 }
 
 /* `int a`, `int *a` */
