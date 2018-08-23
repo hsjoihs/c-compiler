@@ -233,6 +233,9 @@ static void parse_parameter_list(const struct Token **ptr_tokvec,
 
 			expect_and_consume(&tokvec, RIGHT_PAREN,
 			                   "closing ) while parsing functional type");
+		} else {
+			error_unexpected_token(tokvec,
+			                       "while parsing function parameter list");
 		}
 	}
 	*ptr_tokvec = tokvec;
@@ -266,10 +269,11 @@ static void parse_dcl_postfixes(const struct Token **ptr_tokvec,
 			push_vector(&vec, ptr);
 			continue;
 		}
-		if (tokvec[0].kind != LEFT_PAREN) {
-			break;
+		if (tokvec[0].kind == LEFT_PAREN &&
+		    (can_start_a_type(&tokvec[1]) || tokvec[1].kind == RIGHT_PAREN)) {
+			parse_parameter_list(&tokvec, &vec);
 		}
-		parse_parameter_list(&tokvec, &vec);
+		break;
 	}
 
 	*ptr_tokvec = tokvec;
