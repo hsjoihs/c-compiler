@@ -13,6 +13,7 @@
 - `#include`, `#define`, `#ifdef`
 - pointer comparison
 - `int f(struct A a)`
+- full function prototype
 
 ## Features not used within the code
 

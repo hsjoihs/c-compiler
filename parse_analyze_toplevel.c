@@ -220,16 +220,19 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 	ptr_func_info->derived_from = derived_from;
 	insert(&ptr_ps->func_info_map, declarator_name, ptr_func_info);
 
-	if (!is_param_infos_valid &&
-	    tokvec2[0].kind == SEMICOLON) { /* function prototype */
-		++tokvec2;
-		/* do nothing, since the return value is already in the retmap
-		 */
-		*ptr_tokvec = tokvec2;
+	if (tokvec2[0].kind == SEMICOLON) { /* function prototype */
+		if (!is_param_infos_valid) {
+			++tokvec2;
+			/* do nothing, since the return value is already in the retmap
+			 */
+			*ptr_tokvec = tokvec2;
 
-		struct Toplevel def;
-		def.category = TOPLEVEL_FUNCTION_DECLARATION;
-		return def;
+			struct Toplevel def;
+			def.category = TOPLEVEL_FUNCTION_DECLARATION;
+			return def;
+		} else {
+			unsupported("full function prototype");
+		}
 	}
 
 	struct Vector /*<LocalVarInfo>*/ offsets_and_types = init_vector();
