@@ -65,12 +65,18 @@ compile_files:
 	gcc s/quine.s -o out/quine.out
 	./out/quine.out > misc/quine_res.c
 	diff misc/quine.c misc/quine_res.c
+	cat misc/quine2.c | ./out/compiler.out > s/quine2.s
+	gcc s/quine2.s -o out/quine2.out
+	./out/quine2.out > misc/quine2_res.c
+	diff misc/quine2.c misc/quine2_res.c
 	cat misc/vector_test.c | ./out/compiler.out > s/vector_test.s
 	cat misc/vector_test2.c | ./out/compiler.out > s/vector_test2.s
 	cat misc/vector_test3.c | ./out/compiler.out > s/vector_test3.s
+	cat misc/vector_test4.c | ./out/compiler.out > s/vector_test4.s
 	gcc s/vector_test.s -c
 	gcc s/vector_test2.s -c
 	gcc s/vector_test3.s -c
+	gcc s/vector_test4.s -c
 
 test_valid:
 	rm out/*.out
