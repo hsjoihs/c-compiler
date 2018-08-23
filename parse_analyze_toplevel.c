@@ -184,8 +184,14 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 	const struct Token *tokvec2 = *ptr_tokvec;
 
 	const char *declarator_name;
-	struct Type declarator_type = parse_declaration(&tokvec2, &declarator_name);
+	struct UntypedExpr *ptr_uexpr;
+	struct Type declarator_type =
+	    parse_declaration(&tokvec2, &declarator_name, &ptr_uexpr);
 	record_if_global_struct_or_enum_declaration(ptr_ps, declarator_type);
+
+	if (ptr_uexpr) { /* initializer exists */
+		unsupported("global var with initializer");
+	}
 
 	if (declarator_type.type_category != FN) {
 

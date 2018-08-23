@@ -357,7 +357,8 @@ struct Statement parse_compound_statement(struct AnalyzerState *ptr_ps,
 				struct Type vartype;
 
 				const char *str;
-				vartype = parse_declaration(&tokvec, &str);
+				struct UntypedExpr *ptr_uexpr;
+				vartype = parse_declaration(&tokvec, &str, &ptr_uexpr);
 
 				/* while function prototypes are also allowed here in C, I will
 				 * not implement it here */
@@ -378,6 +379,17 @@ struct Statement parse_compound_statement(struct AnalyzerState *ptr_ps,
 				struct Statement *ptr_s = calloc(1, sizeof(struct Statement));
 				*ptr_s = s;
 				push_vector(&statement.statement_vector, ptr_s);
+
+				if (ptr_uexpr) { /* initializer exists */
+					struct Expr expr = typecheck_expression(ptr_ps, *ptr_uexpr);
+					/*struct Statement assignment_statement;
+					unsupported("assignment statement");
+					struct Statement *ptr_s =
+					    calloc(1, sizeof(struct Statement));
+					*ptr_s = assignment_statement;
+					push_vector(&statement.statement_vector, ptr_s);*/
+				}
+
 			} else {
 				struct Statement s = parse_statement(ptr_ps, &tokvec);
 				struct Statement *ptr_s = calloc(1, sizeof(struct Statement));

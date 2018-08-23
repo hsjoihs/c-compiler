@@ -13,9 +13,6 @@ static void parse_declarator(const struct Token **ptr_tokvec,
                              const char **ptr_to_ident_str,
                              struct Vector /*<TypeNode>*/ *ptr_vec);
 
-struct Type parse_struct_declaration(const struct Token **ptr_tokvec,
-                                     const char **ptr_to_ident_str);
-
 static void skip_consts(const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
@@ -388,13 +385,15 @@ struct Type parse_struct_declaration(const struct Token **ptr_tokvec,
 
 /* `int a`, `int *a`, `int a = 5` */
 struct Type parse_declaration(const struct Token **ptr_tokvec,
-                              const char **ptr_to_ident_str)
+                              const char **ptr_to_ident_str,
+                              struct UntypedExpr **ptr_ptr_uexpr)
 {
 	assert(ptr_to_ident_str);
 	struct Type *ptr_base_type = parse_type_specifier(ptr_tokvec);
 	struct Vector /*<TypeNode>*/ *ptr_vec = init_vector_();
-	struct UntypedExpr *ptr_uexpr =
-	    parse_init_declarator(ptr_tokvec, ptr_to_ident_str, ptr_vec);
+	struct UntypedExpr *ptr_uexpr = parse_init_declarator(
+	    ptr_tokvec, ptr_to_ident_str, ptr_vec); /* nullable */
+	*ptr_ptr_uexpr = ptr_uexpr;
 	push_vector(ptr_vec, ptr_base_type);
 	return from_type3_to_type(ptr_vec->vector);
 }

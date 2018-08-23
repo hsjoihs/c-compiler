@@ -149,8 +149,6 @@ void debug_print_type(struct Type type);
 
 int can_start_a_type(const struct Token *tokvec);
 
-struct Type parse_declaration(const struct Token **ptr_tokvec,
-                              const char **ptr_to_ident_str);
 struct Type parse_type_name(const struct Token **ptr_tokvec);
 
 _Noreturn void unsupported(const char *str);
@@ -239,6 +237,10 @@ struct UntypedExpr {
 	const char *ident_after_dot;
 };
 
+struct Type parse_declaration(const struct Token **ptr_tokvec,
+                              const char **ptr_to_ident_str,
+                              struct UntypedExpr **ptr_ptr_uexpr);
+
 struct Expr {
 	struct {
 		struct Type type;
@@ -319,3 +321,6 @@ try_parse_type_specifier_and_semicolon(const struct Token **ptr_tokvec);
 struct UntypedExpr parse_constant_expression(const struct Token **ptr_tokvec);
 
 struct UntypedExpr parse_assignment_expression(const struct Token **ptr_tokvec);
+
+struct Type parse_struct_declaration(const struct Token **ptr_tokvec,
+                                     const char **ptr_to_ident_str);
