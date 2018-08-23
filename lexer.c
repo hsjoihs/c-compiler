@@ -448,16 +448,25 @@ struct Token *read_all_tokens(const char *str)
 	tok.token_begins_here = str;
 
 	tokvec[0] = tok;
-	int i = 0;
-	while (1) {
+
+	for (int i = 1;; ++i) {
 		tok = get_token(&str);
-		++i;
 		tokvec[i] = tok;
+
 		if (tok.kind == END) {
 			break;
 		}
 	}
-	return tokvec;
+
+	struct Token *tokvec_new = calloc(tok_num, sizeof(struct Token));
+
+	for (int j = 0;; j++) {
+		tokvec_new[j] = tokvec[j];
+		if (tokvec[j].kind == END) {
+			break;
+		}
+	}
+	return tokvec_new;
 }
 
 static int count_all_tokens(const char *str)
