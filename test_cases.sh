@@ -10,6 +10,12 @@ run_test() {
 
 run_test 252 'int main(void){int a = 5; int *p = &a; return 174;}' 174
 run_test 253 'int main(void){int a = 4; int *p = &a; *p += 170; return a;}' 174
+run_test 254 'int main(){int a; int *p = &a; *p = 2; int *q = &*p; *q = 174; return a;}' 174
+run_test 255 'int main(){int a; int *p = &a; *p = 2; int *q = &(*p); *q = 174; return a;}' 174
+run_test 256 'int main(){int x = 86;int *y = &x; return (*y) + x + 2;}' 174
+run_test 257 'int main(){int x = 86;int *y = &x; return (*y) + (*y) + 2;}' 174
+run_test 258 'int main(){int x = 86;int *y = &x;int **z = &y;return (*y) + (**z) + 2;}' 174
+run_test 259 'int main(){int x = 86;int *y = &x;int **z = &y;return*y+**z+2;}' 174
 
 run_test 247 'int (*func(int (*a)[5]))[5]{return a;} int main(){int a[6][5]; a[1][2] = 174; return func(a)[1][2];}' 174
 run_test 248 'struct A {int a;};int main(){const struct A *a; return 174;}' 174
