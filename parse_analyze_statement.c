@@ -381,13 +381,22 @@ struct Statement parse_compound_statement(struct AnalyzerState *ptr_ps,
 				push_vector(&statement.statement_vector, ptr_s);
 
 				if (ptr_uexpr) { /* initializer exists */
-					struct Expr expr = typecheck_expression(ptr_ps, *ptr_uexpr);
-					/*struct Statement assignment_statement;
-					unsupported("assignment statement");
+
+					struct UntypedExpr left_uexpr;
+					left_uexpr.category = VAR;
+					left_uexpr.var_name = str;
+
+					struct UntypedExpr uexpr =
+					    binary_op_untyped(left_uexpr, *ptr_uexpr, OP_EQ);
+					struct Expr expr = typecheck_expression(ptr_ps, uexpr);
+					struct Statement assignment;
+					s.labels = init_vector();
+					assignment.category = EXPRESSION_STATEMENT;
+					assignment.expr1 = expr;
 					struct Statement *ptr_s =
 					    calloc(1, sizeof(struct Statement));
-					*ptr_s = assignment_statement;
-					push_vector(&statement.statement_vector, ptr_s);*/
+					*ptr_s = assignment;
+					push_vector(&statement.statement_vector, ptr_s);
 				}
 
 			} else {

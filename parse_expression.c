@@ -19,9 +19,9 @@ parse_postfix_expression(const struct Token **ptr_tokvec);
 static struct UntypedExpr
 parse_primary_expression(const struct Token **ptr_tokvec);
 
-static struct UntypedExpr binary_op_untyped(struct UntypedExpr expr,
-                                            struct UntypedExpr expr2,
-                                            enum TokenKind kind)
+struct UntypedExpr binary_op_untyped(struct UntypedExpr expr,
+                                     struct UntypedExpr expr2,
+                                     enum TokenKind kind)
 {
 	struct UntypedExpr *ptr_expr1 = calloc(1, sizeof(struct UntypedExpr));
 	struct UntypedExpr *ptr_expr2 = calloc(1, sizeof(struct UntypedExpr));

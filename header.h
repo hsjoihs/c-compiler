@@ -324,3 +324,7 @@ struct UntypedExpr parse_assignment_expression(const struct Token **ptr_tokvec);
 
 struct Type parse_struct_declaration(const struct Token **ptr_tokvec,
                                      const char **ptr_to_ident_str);
+
+struct UntypedExpr binary_op_untyped(struct UntypedExpr expr,
+                                     struct UntypedExpr expr2,
+                                     enum TokenKind kind);
