@@ -48,7 +48,8 @@ static struct Type from_type3_to_type(const void **type3)
 	assert("unmatched case" && 0);
 }
 
-struct TypeAndIdent *parse_param(const struct Token **ptr_tokvec)
+struct TypeAndIdent *
+parse_parameter_declaration(const struct Token **ptr_tokvec)
 {
 	const char *ident_str;
 	struct TypeAndIdent *ptr_param_info =
@@ -214,7 +215,7 @@ static void parse_parameter_type_list(const struct Token **ptr_tokvec,
 			f.is_param_infos_valid = 1;
 			f.param_infos = init_vector();
 
-			push_vector(&f.param_infos, parse_param(&tokvec));
+			push_vector(&f.param_infos, parse_parameter_declaration(&tokvec));
 
 			while (1) {
 				enum TokenKind kind = tokvec[0].kind;
@@ -223,7 +224,8 @@ static void parse_parameter_type_list(const struct Token **ptr_tokvec,
 				}
 				++tokvec;
 
-				push_vector(&f.param_infos, parse_param(&tokvec));
+				push_vector(&f.param_infos,
+				            parse_parameter_declaration(&tokvec));
 			}
 
 			TypeNode *ptr = calloc(1, sizeof(TypeNode));
