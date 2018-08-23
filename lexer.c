@@ -44,7 +44,7 @@ char *unescape(const char *str)
 
 char *escape(const char *str)
 {
-	char *ans = calloc(strlen(str) * 2 + 1, sizeof(char));
+	char *ans = calloc(strlen(str) * 4 + 1, sizeof(char));
 	int j = 0;
 	for (int i = 0; str[i]; i++) {
 		switch (str[i]) {
@@ -63,10 +63,12 @@ char *escape(const char *str)
 				ans[j + 1] = 'n';
 				j += 2;
 				break;
-			case 11:
+			case 11: /* somehow \v fails */
 				ans[j] = 92;
-				ans[j + 1] = 'v';
-				j += 2;
+				ans[j + 1] = '0';
+				ans[j + 2] = '1';
+				ans[j + 3] = '3';
+				j += 4;
 				break;
 			case 12:
 				ans[j] = 92;
