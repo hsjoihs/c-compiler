@@ -8,6 +8,8 @@ run_test() {
 	if [ $res -ne $3 ]; then { echo "got:" $res; echo "expected:" $3; echo -e "\033[31mFAIL\033[m, at test case" $1: $2; exit 1; }; else echo -e "\033[32mPASS\033[m"; fi
 }
 
+run_test 252 'int main(void){int a = 5; int *p = &a; return 174;}' 174
+
 run_test 247 'int (*func(int (*a)[5]))[5]{return a;} int main(){int a[6][5]; a[1][2] = 174; return func(a)[1][2];}' 174
 run_test 248 'struct A {int a;};int main(){const struct A *a; return 174;}' 174
 run_test 249 'struct A {int a;};int main(){const struct A const *const a; return 174;}' 174

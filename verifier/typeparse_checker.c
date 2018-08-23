@@ -1,5 +1,11 @@
 #include "../header.h"
 #include <stdio.h>
+#include <stdlib.h>
+
+struct UntypedExpr parse_assignment_expression(const struct Token **ptr_tokvec)
+{
+	exit(EXIT_FAILURE);
+}
 
 void check_declaration(const char *str)
 {
