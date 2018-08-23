@@ -353,6 +353,13 @@ static void parse_declarator(const struct Token **ptr_tokvec,
 	*ptr_tokvec = tokvec;
 }
 
+static void parse_init_declarator(const struct Token **ptr_tokvec,
+                                  const char **ptr_to_ident_str,
+                                  struct Vector /*<TypeNode>*/ *ptr_vec)
+{
+	parse_declarator(ptr_tokvec, ptr_to_ident_str, ptr_vec);
+}
+
 int can_start_a_type(const struct Token *tokvec)
 {
 	return tokvec[0].kind == RES_INT || tokvec[0].kind == RES_CHAR ||
@@ -379,7 +386,7 @@ struct Type parse_declaration(const struct Token **ptr_tokvec,
 	assert(ptr_to_ident_str);
 	struct Type *ptr_base_type = parse_type_specifier(ptr_tokvec);
 	struct Vector /*<TypeNode>*/ *ptr_vec = init_vector_();
-	parse_declarator(ptr_tokvec, ptr_to_ident_str, ptr_vec);
+	parse_init_declarator(ptr_tokvec, ptr_to_ident_str, ptr_vec);
 	push_vector(ptr_vec, ptr_base_type);
 	return from_type3_to_type(ptr_vec->vector);
 }
