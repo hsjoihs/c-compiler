@@ -13,6 +13,7 @@ test_all_:
 	make supplement
 	make assembly_sandbox
 	make test_valid
+	make verify_typeparse
 	make compile_files
 	make check_error
 
@@ -156,6 +157,8 @@ f:
 	make supplement
 	make fmt_sandbox
 	make test_valid
+	make verify_typeparse
+	make compile_files
 	make check_error
 
 
