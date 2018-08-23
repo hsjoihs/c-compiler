@@ -369,7 +369,7 @@ static struct Token get_token_raw(const char **ptr_to_str)
 		for (int j = 0; j < i; j++) {
 			new_str[j] = str[j];
 		}
-		new_str[i] = '\0';
+		new_str[i] = 0;
 
 		t.ident_str = new_str;
 
