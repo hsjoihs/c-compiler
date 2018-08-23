@@ -17,8 +17,6 @@ parse_equality_expression(const struct Token **ptr_tokvec);
 static struct UntypedExpr
 parse_postfix_expression(const struct Token **ptr_tokvec);
 static struct UntypedExpr
-parse_assignment_expression(const struct Token **ptr_tokvec);
-static struct UntypedExpr
 parse_primary_expression(const struct Token **ptr_tokvec);
 
 static struct UntypedExpr binary_op_untyped(struct UntypedExpr expr,
@@ -497,8 +495,7 @@ parse_primary_expression(const struct Token **ptr_tokvec)
 	    tokvec, "the beginning of parse_typecheck_primary_expression");
 }
 
-static struct UntypedExpr
-parse_assignment_expression(const struct Token **ptr_tokvec)
+struct UntypedExpr parse_assignment_expression(const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 

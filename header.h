@@ -317,3 +317,5 @@ struct Type *
 try_parse_type_specifier_and_semicolon(const struct Token **ptr_tokvec);
 
 struct UntypedExpr parse_constant_expression(const struct Token **ptr_tokvec);
+
+struct UntypedExpr parse_assignment_expression(const struct Token **ptr_tokvec);
