@@ -157,13 +157,18 @@ static struct Token get_token_raw(const char **ptr_to_str)
 	if (*str == '"') {
 		int i = 0;
 		++str;
-		for (;; ++i) {
-			if (str[i] == '\\') {
-				unsupported("escape sequence");
+		while (1) {
+			if (str[i] == '\\' && str[i + 1] == '\\') {
+				i += 2;
+				continue;
+			}
+			if (str[i] == '\\' && str[i + 1] == '"') {
+				unsupported("escape sequence of double quote");
 			}
 			if (str[i] == '"') {
 				break;
 			}
+			i++;
 		}
 		int length = i;
 		char *new_str = calloc(length + 1, sizeof(char));

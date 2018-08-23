@@ -58,6 +58,9 @@ compile_files:
 	cat misc/nqueen8.c | ./out/compiler.out > s/nqueen8.s
 	gcc s/nqueen8.s -o out/nqueen8.out
 	./out/nqueen8.out
+	cat misc/escape.c | ./out/compiler.out > s/escape.s
+	gcc s/escape.s -o out/escape.out
+	./out/escape.out
 	cat misc/duff.c | ./out/compiler.out > s/duff.s
 	gcc s/duff.s -o out/duff.out
 	./out/duff.out
