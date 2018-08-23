@@ -4,6 +4,91 @@
 #include <stdlib.h>
 #include <string.h>
 
+char *unescape(const char *str)
+{
+	char *ans = calloc(strlen(str) + 1, sizeof(char));
+	int j = 0;
+	for (int i = 0; str[i];) {
+		if (str[i] != 92) {
+			ans[j] = str[i];
+			i++;
+			j++;
+		} else {
+			switch (str[i + 1]) {
+				case 92:
+					ans[j] = 92;
+					break;
+				case 't':
+					ans[j] = 9;
+					break;
+				case 'n':
+					ans[j] = 10;
+					break;
+				case 'v':
+					ans[j] = 11;
+					break;
+				case 'f':
+					ans[j] = 12;
+					break;
+				case 'r':
+					ans[j] = 13;
+					break;
+			}
+			i += 2;
+			j++;
+		}
+	}
+	/* calloc means automatically null terminated */
+	return ans;
+}
+
+char *escape(const char *str)
+{
+	char *ans = calloc(strlen(str) * 2 + 1, sizeof(char));
+	int j = 0;
+	for (int i = 0; str[i]; i++) {
+		switch (str[i]) {
+			case 92:
+				ans[j] = 92;
+				ans[j + 1] = 92;
+				j += 2;
+				break;
+			case 9:
+				ans[j] = 92;
+				ans[j + 1] = 't';
+				j += 2;
+				break;
+			case 10:
+				ans[j] = 92;
+				ans[j + 1] = 'n';
+				j += 2;
+				break;
+			case 11:
+				ans[j] = 92;
+				ans[j + 1] = 'v';
+				j += 2;
+				break;
+			case 12:
+				ans[j] = 92;
+				ans[j + 1] = 'f';
+				j += 2;
+				break;
+			case 13:
+				ans[j] = 92;
+				ans[j + 1] = 'r';
+				j += 2;
+				break;
+			default:
+				ans[j] = str[i];
+				j++;
+				break;
+		}
+	}
+
+	/* calloc means automatically null terminated */
+	return ans;
+}
+
 void read_all_tokens_debug(const char *str)
 {
 	struct Token tok;
