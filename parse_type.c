@@ -9,6 +9,10 @@ struct Vector init_vector(void) { return *init_vector_(); }
  * pure parsers with respect to types. *
  ***************************************/
 
+static void parse_declarator(const struct Token **ptr_tokvec,
+                             const char **ptr_to_ident_str,
+                             struct Vector /*<TypeNode>*/ *ptr_vec);
+
 static void skip_consts(const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
@@ -55,7 +59,15 @@ parse_parameter_declaration(const struct Token **ptr_tokvec)
 	struct TypeAndIdent *ptr_param_info =
 	    calloc(1, sizeof(struct TypeAndIdent));
 
-	struct Type type = parse_declaration(ptr_tokvec, &ident_str);
+	struct Type type;
+	{
+		struct Type *ptr_base_type = parse_type_specifier(ptr_tokvec);
+		struct Vector /*<TypeNode>*/ *ptr_vec = init_vector_();
+		parse_declarator(ptr_tokvec, &ident_str, ptr_vec);
+		push_vector(ptr_vec, ptr_base_type);
+		type = from_type3_to_type(ptr_vec->vector);
+	}
+
 	if (type.type_category == FN) {
 		/* shall be adjusted to `pointer to func`, according to the spec */
 		struct Type *ptr_type = calloc(1, sizeof(struct Type));
@@ -239,10 +251,6 @@ static void parse_parameter_type_list(const struct Token **ptr_tokvec,
 	*ptr_tokvec = tokvec;
 	*ptr_vec = vec;
 }
-
-static void parse_declarator(const struct Token **ptr_tokvec,
-                             const char **ptr_to_ident_str,
-                             struct Vector /*<TypeNode>*/ *ptr_vec);
 
 static void parse_dcl_postfixes(const struct Token **ptr_tokvec,
                                 struct Vector /*<TypeNode>*/ *ptr_vec)
