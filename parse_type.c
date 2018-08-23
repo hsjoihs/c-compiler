@@ -52,10 +52,15 @@ static struct Type from_type3_to_type(const void **type3)
 	assert("unmatched case" && 0);
 }
 
+/*
+parameter-declaration:
+  declaration-specifiers declarator
+  declaration-specifiers abstract-declarator_opt
+*/
 struct TypeAndIdent *
 parse_parameter_declaration(const struct Token **ptr_tokvec)
 {
-	const char *ident_str;
+	const char *ident_str = 0; /* null when abstract */
 	struct TypeAndIdent *ptr_param_info =
 	    calloc(1, sizeof(struct TypeAndIdent));
 
@@ -63,7 +68,16 @@ parse_parameter_declaration(const struct Token **ptr_tokvec)
 	{
 		struct Type *ptr_base_type = parse_type_specifier(ptr_tokvec);
 		struct Vector /*<TypeNode>*/ *ptr_vec = init_vector_();
-		parse_declarator(ptr_tokvec, &ident_str, ptr_vec);
+		if ((*ptr_tokvec)[0].kind == OP_COMMA ||
+		    (*ptr_tokvec)[0].kind == RIGHT_PAREN) {
+			/* comma or right paren signifies the immediate end of
+			 * parameter_declaration */
+		} else {
+			parse_declarator(ptr_tokvec, &ident_str, ptr_vec);
+			if ((0)) {
+				unsupported("abstract-declarator inside parameter declaration");
+			}
+		}
 		push_vector(ptr_vec, ptr_base_type);
 		type = from_type3_to_type(ptr_vec->vector);
 	}

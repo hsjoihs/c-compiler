@@ -50,6 +50,8 @@ int main()
 	check_declaration("char arr[13]");
 	check_declaration("char (*daytab)[13]");
 	check_declaration("char (*(*x[3])[2])[4]");
+	check_declaration("int atexit(int (*func)(int))");
+	check_declaration("int (*signal(int, int (*func)(int)))(int)");
 
 	check_typename("int **");
 	check_typename("int [13]");
@@ -60,6 +62,8 @@ int main()
 	check_typename("int (*)()");
 	check_typename("int (*(*())[2])()");
 	check_typename("int (int (*func)(int a))");
+	check_typename("int (int (*func)(int))");
 	check_typename("int (*(int sig, int (*func)(int a)))(int b)");
+	check_typename("int (*(int, int (*func)(int)))(int)");
 	return 0;
 }
