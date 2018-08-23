@@ -182,16 +182,15 @@ struct Type *parse_type_specifier(const struct Token **ptr_tokvec)
 	return ptr;
 }
 
-static void parse_parameter_list(const struct Token **ptr_tokvec,
-                                 struct Vector /*<TypeNode>*/ *ptr_vec)
+static void parse_parameter_type_list(const struct Token **ptr_tokvec,
+                                      struct Vector /*<TypeNode>*/ *ptr_vec)
 {
-	assert((*ptr_tokvec)[0].kind == LEFT_PAREN);
+	assert((*ptr_tokvec)[-1].kind == LEFT_PAREN);
 	const struct Token *tokvec = *ptr_tokvec;
 	struct Vector vec = *ptr_vec;
 	{
-		++tokvec;
+
 		if (tokvec[0].kind == RIGHT_PAREN) { /* NO INFO */
-			++tokvec;
 			TypeNode f;
 			f.type_category = FN;
 			f.is_param_infos_valid = 0;
@@ -201,7 +200,7 @@ static void parse_parameter_list(const struct Token **ptr_tokvec,
 			push_vector(&vec, ptr);
 		} else if (tokvec[0].kind == RES_VOID &&
 		           tokvec[1].kind == RIGHT_PAREN) { /* EXPLICITLY EMPTY */
-			tokvec += 2;
+			tokvec += 1;
 			TypeNode f;
 			f.type_category = FN;
 			f.is_param_infos_valid = 1;
@@ -230,9 +229,6 @@ static void parse_parameter_list(const struct Token **ptr_tokvec,
 			TypeNode *ptr = calloc(1, sizeof(TypeNode));
 			*ptr = f;
 			push_vector(&vec, ptr);
-
-			expect_and_consume(&tokvec, RIGHT_PAREN,
-			                   "closing ) while parsing functional type");
 		} else {
 			error_unexpected_token(tokvec,
 			                       "while parsing function parameter list");
@@ -271,7 +267,10 @@ static void parse_dcl_postfixes(const struct Token **ptr_tokvec,
 		}
 		if (tokvec[0].kind == LEFT_PAREN &&
 		    (can_start_a_type(&tokvec[1]) || tokvec[1].kind == RIGHT_PAREN)) {
-			parse_parameter_list(&tokvec, &vec);
+			++tokvec;
+			parse_parameter_type_list(&tokvec, &vec);
+			expect_and_consume(&tokvec, RIGHT_PAREN,
+			                   "closing ) while parsing functional type");
 		}
 		break;
 	}
