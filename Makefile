@@ -66,6 +66,10 @@ compile_files:
 	diff misc/quine.c misc/quine_res.c
 	cat misc/vector_test.c | ./out/compiler.out > s/vector_test.s
 	cat misc/vector_test2.c | ./out/compiler.out > s/vector_test2.s
+	cat misc/vector_test3.c | ./out/compiler.out > s/vector_test3.s
+	gcc s/vector_test.s -c
+	gcc s/vector_test2.s -c
+	gcc s/vector_test3.s -c
 
 test_valid:
 	rm out/*.out
