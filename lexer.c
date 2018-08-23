@@ -460,13 +460,20 @@ struct Token *read_all_tokens(const char *str)
 
 	struct Token *tokvec_new = calloc(tok_num, sizeof(struct Token));
 
-	for (int j = 0;; j++) {
-		tokvec_new[j] = tokvec[j];
-		if (tokvec_new[j].kind == LIT_STRING &&
-		    tokvec[j + 1].kind == LIT_STRING) {
-			tokvec_new[j].literal_str;
-			tokvec[j + 1].literal_str;
-			unsupported("two consecutive literal strings");
+	int j = 0;
+	int k = 0;
+	for (;; j++, k++) {
+		tokvec_new[j] = tokvec[k];
+		if (tokvec_new[j].kind == LIT_STRING) {
+			while (tokvec[k + 1].kind == LIT_STRING) {
+				int total_len = strlen(tokvec_new[j].literal_str) +
+				                strlen(tokvec[k + 1].literal_str);
+				char *new_str = calloc(total_len + 1, sizeof(char));
+				strcpy(new_str, tokvec_new[j].literal_str);
+				strcat(new_str, tokvec[k + 1].literal_str);
+				tokvec_new[j].literal_str = new_str;
+				k++;
+			}
 		}
 
 		if (tokvec[j].kind == END) {

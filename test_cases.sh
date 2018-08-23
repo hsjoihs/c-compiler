@@ -7,6 +7,7 @@ run_test() {
 	res=$?
 	if [ $res -ne $3 ]; then { echo "got:" $res; echo "expected:" $3; echo -e "\033[31mFAIL\033[m, at test case" $1: $2; exit 1; }; else echo -e "\033[32mPASS\033[m"; fi
 }
+run_test 260 'int printf(); int puts(); int main(){printf("H""e" "l" "lo," " W" "or" "ld!"); puts(""); return 174;}' 174
 
 run_test 252 'int main(void){int a = 5; int *p = &a; return 174;}' 174
 run_test 253 'int main(void){int a = 4; int *p = &a; *p += 170; return a;}' 174
