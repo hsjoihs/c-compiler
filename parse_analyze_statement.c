@@ -386,5 +386,5 @@ struct Statement parse_compound_statement(struct AnalyzerState *ptr_ps,
 			}
 		}
 	}
-	exit(EXIT_FAILURE);
+	assert("should not reach here" && 0);
 }
