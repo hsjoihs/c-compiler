@@ -462,6 +462,13 @@ struct Token *read_all_tokens(const char *str)
 
 	for (int j = 0;; j++) {
 		tokvec_new[j] = tokvec[j];
+		if (tokvec_new[j].kind == LIT_STRING &&
+		    tokvec[j + 1].kind == LIT_STRING) {
+			tokvec_new[j].literal_str;
+			tokvec[j + 1].literal_str;
+			unsupported("two consecutive literal strings");
+		}
+
 		if (tokvec[j].kind == END) {
 			break;
 		}
