@@ -170,7 +170,7 @@ static struct Token get_token_raw(const char **ptr_to_str)
 		}
 		new_str[length] = 0;
 		t.kind = LIT_STRING;
-		t.literal_str = new_str;
+		t.literal_str = unescape(new_str);
 
 		*ptr_to_str = str + length + 1;
 		return t;

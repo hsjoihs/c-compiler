@@ -454,6 +454,6 @@ void generate(const struct Vector /*<Toplevel>*/ vec)
 
 	for (int i = 0; i < prs.string_constant_pool.length; ++i) {
 		const char *str = prs.string_constant_pool.vector[i];
-		gen_str(i, str);
+		gen_str(i, escape(str));
 	}
 }

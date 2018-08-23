@@ -328,3 +328,6 @@ struct Type parse_struct_declaration(const struct Token **ptr_tokvec,
 struct UntypedExpr binary_op_untyped(struct UntypedExpr expr,
                                      struct UntypedExpr expr2,
                                      enum TokenKind kind);
+
+char *unescape(const char *str);
+char *escape(const char *str);
