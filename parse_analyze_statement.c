@@ -1,7 +1,6 @@
 #include "analyzer.h"
-#include <assert.h>
+#include "std.h"
 #include <stdio.h>
-#include <stdlib.h>
 
 static struct Expr integer_1(void)
 {
@@ -407,5 +406,5 @@ struct Statement parse_compound_statement(struct AnalyzerState *ptr_ps,
 			}
 		}
 	}
-	assert("should not reach here" && 0);
+	assert0("should not reach here" && 0);
 }

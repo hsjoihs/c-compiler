@@ -1,6 +1,5 @@
 #include "vector.h"
-#include <assert.h>
-#include <stdlib.h>
+#include "std.h"
 
 struct Vector *init_vector_(void)
 {

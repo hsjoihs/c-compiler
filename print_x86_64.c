@@ -1,7 +1,6 @@
 #include "print_x86_64.h"
-#include <assert.h>
+#include "std.h"
 #include <stdio.h>
-#include <stdlib.h>
 
 void gen_prologue(int alloc_size, const char *fname)
 {
@@ -837,7 +836,7 @@ const char *get_reg_name_from_arg_pos_4byte(int counter)
 		case 5:
 			return "r9d";
 		default:
-			assert("cannot happen" && 0);
+			assert0("cannot happen" && 0);
 	}
 }
 
@@ -857,7 +856,7 @@ const char *get_reg_name_from_arg_pos_8byte(int counter)
 		case 5:
 			return "r9";
 		default:
-			assert("cannot happen" && 0);
+			assert0("cannot happen" && 0);
 	}
 }
 

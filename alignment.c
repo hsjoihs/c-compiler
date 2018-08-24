@@ -1,6 +1,5 @@
 #include "header.h"
-#include <stdio.h>
-#include <stdlib.h>
+#include "std.h"
 
 struct SizeAndAlignment
 get_size_alignment_offsets(const struct SizeAndAlignment *inner_type_vec,

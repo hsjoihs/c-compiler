@@ -1,8 +1,6 @@
 #include "header.h"
-#include <assert.h>
+#include "std.h"
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 struct Vector init_vector(void) { return *init_vector_(); }
 /***************************************
@@ -375,7 +373,6 @@ int can_start_a_type(const struct Token *tokvec)
 struct Type parse_struct_declaration(const struct Token **ptr_tokvec,
                                      const char **ptr_to_ident_str)
 {
-	assert(ptr_to_ident_str);
 	struct Type *ptr_base_type = parse_type_specifier(ptr_tokvec);
 	struct Vector /*<TypeNode>*/ *ptr_vec = init_vector_();
 	parse_declarator(ptr_tokvec, ptr_to_ident_str, ptr_vec);
@@ -388,7 +385,6 @@ struct Type parse_declaration(const struct Token **ptr_tokvec,
                               const char **ptr_to_ident_str,
                               struct UntypedExpr **ptr_ptr_uexpr)
 {
-	assert(ptr_to_ident_str);
 	struct Type *ptr_base_type = parse_type_specifier(ptr_tokvec);
 	struct Vector /*<TypeNode>*/ *ptr_vec = init_vector_();
 	struct UntypedExpr *ptr_uexpr = parse_init_declarator(

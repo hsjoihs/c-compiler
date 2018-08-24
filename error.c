@@ -1,6 +1,6 @@
 #include "header.h"
+#include "std.h"
 #include <stdio.h>
-#include <stdlib.h>
 
 _Noreturn void error_unexpected_token(const struct Token *tokvec,
                                       const char *str)

@@ -1,9 +1,8 @@
 #include "header.h"
 #include "print_x86_64.h"
 #include "printerstate.h"
-#include <assert.h>
+#include "std.h"
 #include <stdio.h>
-#include <stdlib.h>
 
 static void print_simple_binary_op(enum SimpleBinOp kind)
 {

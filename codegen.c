@@ -1,8 +1,7 @@
 #include "print_x86_64.h"
+#include "std.h"
 #include "toplevel.h"
-#include <assert.h>
 #include <stdio.h>
-#include <stdlib.h>
 
 static void print_toplevel_definition(struct PrinterState *ptr_prs,
                                       const struct Toplevel def);

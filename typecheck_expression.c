@@ -1,8 +1,6 @@
 #include "analyzer.h"
-#include <assert.h>
+#include "std.h"
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 static const struct EnumeratorAndValue *
 get_global_enumerator(struct Vector /*<EnumeratorAndValue>*/ list,

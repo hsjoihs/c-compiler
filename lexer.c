@@ -1,8 +1,6 @@
 #include "header.h"
-#include <assert.h>
+#include "std.h"
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 char *unescape(const char *str)
 {
