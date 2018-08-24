@@ -73,6 +73,10 @@ static void expect_scalar(struct Type type, const char *context)
 	}
 }
 
+static struct Expr *declare_var_and_return_initializer(
+    struct AnalyzerState *ptr_ps, const struct Type vartype, const char *str,
+    const struct UntypedExpr *ptr_uexpr, struct Statement *ptr_statement);
+
 struct Statement parse_statement(struct AnalyzerState *ptr_ps,
                                  const struct Token **ptr_tokvec)
 {
@@ -276,7 +280,15 @@ struct Statement parse_statement(struct AnalyzerState *ptr_ps,
 			const char *str;
 			struct UntypedExpr *ptr_uexpr;
 			struct Type vartype = parse_declaration(&tokvec, &str, &ptr_uexpr);
-			unsupported("`for` that declares");
+
+			struct Expr *ptr_expr = declare_var_and_return_initializer(
+			    ptr_ps, vartype, str, ptr_uexpr, &statement);
+
+			if (ptr_expr) {
+				expr1 = *ptr_expr;
+			} else {
+				expr1 = integer_1();
+			}
 		} else {
 			expr1 = typecheck_expression(ptr_ps, parse_expression(&tokvec));
 			expect_and_consume(&tokvec, SEMICOLON, "first semicolon of `for`");

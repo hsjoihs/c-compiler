@@ -2,7 +2,6 @@
 
 ## Features used within the code
 
-- `for(int i = 0; ...)`
 - `_Noreturn`
 - `enum Foo {Bar = 1, Baz};`
 - `typedef` (`stderr` is `FILE *`, though internally it seems to be `struct __sFILE *` internally)
