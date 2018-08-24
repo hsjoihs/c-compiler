@@ -403,8 +403,8 @@ struct Statement parse_compound_statement(struct AnalyzerState *ptr_ps,
 				*ptr_s = s;
 				push_vector(&statement.statement_vector, ptr_s);
 
+				struct Expr *ptr_expr = 0;
 				if (ptr_uexpr) { /* initializer exists */
-
 					struct UntypedExpr left_uexpr;
 					left_uexpr.category = VAR;
 					left_uexpr.var_name = str;
@@ -412,11 +412,13 @@ struct Statement parse_compound_statement(struct AnalyzerState *ptr_ps,
 					struct UntypedExpr uexpr =
 					    binary_op_untyped(left_uexpr, *ptr_uexpr, OP_EQ);
 					struct Expr expr = typecheck_expression(ptr_ps, uexpr);
-					struct Expr *ptr_expr_;
-					//*ptr_expr = expr;
+					ptr_expr = calloc(1, sizeof(struct Expr));
+					*ptr_expr = expr;
+				}
+				if (ptr_expr) {
 					struct Statement assignment;
 					assignment.category = EXPRESSION_STATEMENT;
-					assignment.expr1 = expr;
+					assignment.expr1 = *ptr_expr;
 					assignment.labels = init_vector();
 					struct Statement *ptr_s =
 					    calloc(1, sizeof(struct Statement));
