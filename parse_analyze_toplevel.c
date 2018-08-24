@@ -185,7 +185,7 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 	const char *declarator_name;
 	struct UntypedExpr *ptr_uexpr;
 	struct Type declarator_type =
-	    parse_declaration(&tokvec2, &declarator_name, &ptr_uexpr);
+	    parse_former_half_of_definition(&tokvec2, &declarator_name, &ptr_uexpr);
 	record_if_global_struct_or_enum_declaration(ptr_ps, declarator_type);
 
 	if (ptr_uexpr) { /* initializer exists */

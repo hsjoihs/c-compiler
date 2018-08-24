@@ -380,10 +380,26 @@ struct Type parse_struct_declaration(const struct Token **ptr_tokvec,
 	return from_type3_to_type(ptr_vec->vector);
 }
 
-/* `int a`, `int *a`, `int a = 5` */
+/* `int a;`, `int *a;`, `int a = 5;` */
 struct Type parse_declaration(const struct Token **ptr_tokvec,
                               const char **ptr_to_ident_str,
                               struct UntypedExpr **ptr_ptr_uexpr)
+{
+	struct Type *ptr_base_type = parse_type_specifier(ptr_tokvec);
+	struct Vector /*<TypeNode>*/ *ptr_vec = init_vector_();
+	struct UntypedExpr *ptr_uexpr = parse_init_declarator(
+	    ptr_tokvec, ptr_to_ident_str, ptr_vec); /* nullable */
+	*ptr_ptr_uexpr = ptr_uexpr;
+	push_vector(ptr_vec, ptr_base_type);
+	expect_and_consume(
+	    ptr_tokvec, SEMICOLON,
+	    "semicolon at the end of variable definition/declaration");
+	return from_type3_to_type(ptr_vec->vector);
+}
+
+struct Type parse_former_half_of_definition(const struct Token **ptr_tokvec,
+                                            const char **ptr_to_ident_str,
+                                            struct UntypedExpr **ptr_ptr_uexpr)
 {
 	struct Type *ptr_base_type = parse_type_specifier(ptr_tokvec);
 	struct Vector /*<TypeNode>*/ *ptr_vec = init_vector_();

@@ -367,9 +367,6 @@ struct Statement parse_compound_statement(struct AnalyzerState *ptr_ps,
 					fprintf(stderr, "cannot declare function here\n");
 					exit(EXIT_FAILURE);
 				}
-				expect_and_consume(
-				    &tokvec, SEMICOLON,
-				    "semicolon at the end of variable definition");
 
 				add_local_var_to_scope(ptr_ps, vartype, str);
 
