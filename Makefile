@@ -37,45 +37,45 @@ assembly_sandbox:
 compile_files:
 	make supplement
 	make notest2
-	cat misc/nqueen2.c | ./out/compiler.out > s/nqueen2.s
+	cat test/nqueen2.c | ./out/compiler.out > s/nqueen2.s
 	gcc s/nqueen2.s -o out/nqueen2.out
 	./out/nqueen2.out
-	cat misc/nqueen3.c | ./out/compiler.out > s/nqueen3.s
+	cat test/nqueen3.c | ./out/compiler.out > s/nqueen3.s
 	gcc s/nqueen3.s -o out/nqueen3.out
 	./out/nqueen3.out
-	cat misc/nqueen4.c | ./out/compiler.out > s/nqueen4.s
+	cat test/nqueen4.c | ./out/compiler.out > s/nqueen4.s
 	gcc s/nqueen4.s  -o out/nqueen4.out
 	./out/nqueen4.out
-	cat misc/nqueen5.c | ./out/compiler.out > s/nqueen5.s
+	cat test/nqueen5.c | ./out/compiler.out > s/nqueen5.s
 	gcc s/nqueen5.s  -o out/nqueen5.out
 	./out/nqueen5.out
-	cat misc/nqueen6.c | ./out/compiler.out > s/nqueen6.s
+	cat test/nqueen6.c | ./out/compiler.out > s/nqueen6.s
 	gcc s/nqueen6.s -o out/nqueen6.out
 	./out/nqueen6.out
-	cat misc/nqueen7.c | ./out/compiler.out > s/nqueen7.s
+	cat test/nqueen7.c | ./out/compiler.out > s/nqueen7.s
 	gcc s/nqueen7.s -o out/nqueen7.out
 	./out/nqueen7.out
-	cat misc/nqueen8.c | ./out/compiler.out > s/nqueen8.s
+	cat test/nqueen8.c | ./out/compiler.out > s/nqueen8.s
 	gcc s/nqueen8.s -o out/nqueen8.out
 	./out/nqueen8.out
-	cat misc/escape.c | ./out/compiler.out > s/escape.s
+	cat test/escape.c | ./out/compiler.out > s/escape.s
 	gcc s/escape.s -o out/escape.out
 	./out/escape.out
-	cat misc/duff.c | ./out/compiler.out > s/duff.s
+	cat test/duff.c | ./out/compiler.out > s/duff.s
 	gcc s/duff.s -o out/duff.out
 	./out/duff.out
-	cat misc/quine.c | ./out/compiler.out > s/quine.s
+	cat test/quine.c | ./out/compiler.out > s/quine.s
 	gcc s/quine.s -o out/quine.out
-	./out/quine.out > misc/quine_res.c
-	diff misc/quine.c misc/quine_res.c
-	cat misc/quine2.c | ./out/compiler.out > s/quine2.s
+	./out/quine.out > test/quine_res.c
+	diff test/quine.c test/quine_res.c
+	cat test/quine2.c | ./out/compiler.out > s/quine2.s
 	gcc s/quine2.s -o out/quine2.out
-	./out/quine2.out > misc/quine2_res.c
-	diff misc/quine2.c misc/quine2_res.c
-	cat misc/vector_test.c | ./out/compiler.out > s/vector_test.s
-	cat misc/vector_test2.c | ./out/compiler.out > s/vector_test2.s
-	cat misc/vector_test3.c | ./out/compiler.out > s/vector_test3.s
-	cat misc/vector_test4.c | ./out/compiler.out > s/vector_test4.s
+	./out/quine2.out > test/quine2_res.c
+	diff test/quine2.c test/quine2_res.c
+	cat test/vector_test.c | ./out/compiler.out > s/vector_test.s
+	cat test/vector_test2.c | ./out/compiler.out > s/vector_test2.s
+	cat test/vector_test3.c | ./out/compiler.out > s/vector_test3.s
+	cat test/vector_test4.c | ./out/compiler.out > s/vector_test4.s
 	gcc s/vector_test.s -c
 	gcc s/vector_test2.s -c
 	gcc s/vector_test3.s -c
