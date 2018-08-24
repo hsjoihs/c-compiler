@@ -332,6 +332,36 @@ struct Statement parse_statement(struct AnalyzerState *ptr_ps,
 	return s;
 }
 
+static struct Expr *declare_var_and_return_initializer(
+    struct AnalyzerState *ptr_ps, const struct Type vartype, const char *str,
+    const struct UntypedExpr *ptr_uexpr, struct Statement *ptr_statement)
+{
+	add_local_var_to_scope(ptr_ps, vartype, str);
+
+	struct Statement s;
+	s.category = DECLARATION_STATEMENT;
+	s.declaration.type = vartype;
+	s.declaration.ident_str = str;
+	s.labels = init_vector();
+	struct Statement *ptr_s = calloc(1, sizeof(struct Statement));
+	*ptr_s = s;
+	push_vector(&ptr_statement->statement_vector, ptr_s);
+
+	struct Expr *ptr_expr = 0;
+	if (ptr_uexpr) { /* initializer exists */
+		struct UntypedExpr left_uexpr;
+		left_uexpr.category = VAR;
+		left_uexpr.var_name = str;
+
+		struct UntypedExpr uexpr =
+		    binary_op_untyped(left_uexpr, *ptr_uexpr, OP_EQ);
+		struct Expr expr = typecheck_expression(ptr_ps, uexpr);
+		ptr_expr = calloc(1, sizeof(struct Expr));
+		*ptr_expr = expr;
+	}
+	return ptr_expr;
+}
+
 struct Statement parse_compound_statement(struct AnalyzerState *ptr_ps,
                                           const struct Token **ptr_tokvec)
 {
@@ -392,29 +422,9 @@ struct Statement parse_compound_statement(struct AnalyzerState *ptr_ps,
 					exit(EXIT_FAILURE);
 				}
 
-				add_local_var_to_scope(ptr_ps, vartype, str);
+				struct Expr *ptr_expr = declare_var_and_return_initializer(
+				    ptr_ps, vartype, str, ptr_uexpr, &statement);
 
-				struct Statement s;
-				s.category = DECLARATION_STATEMENT;
-				s.declaration.type = vartype;
-				s.declaration.ident_str = str;
-				s.labels = init_vector();
-				struct Statement *ptr_s = calloc(1, sizeof(struct Statement));
-				*ptr_s = s;
-				push_vector(&statement.statement_vector, ptr_s);
-
-				struct Expr *ptr_expr = 0;
-				if (ptr_uexpr) { /* initializer exists */
-					struct UntypedExpr left_uexpr;
-					left_uexpr.category = VAR;
-					left_uexpr.var_name = str;
-
-					struct UntypedExpr uexpr =
-					    binary_op_untyped(left_uexpr, *ptr_uexpr, OP_EQ);
-					struct Expr expr = typecheck_expression(ptr_ps, uexpr);
-					ptr_expr = calloc(1, sizeof(struct Expr));
-					*ptr_expr = expr;
-				}
 				if (ptr_expr) {
 					struct Statement assignment;
 					assignment.category = EXPRESSION_STATEMENT;
