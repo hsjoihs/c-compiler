@@ -397,8 +397,8 @@ struct Type parse_declaration(const struct Token **ptr_tokvec,
 	return from_type3_to_type(ptr_vec->vector);
 }
 
-struct Type parse_former_half_of_definition(const struct Token **ptr_tokvec,
-                                            const char **ptr_to_ident_str)
+struct Type parse_type_specifier_and_declarator(const struct Token **ptr_tokvec,
+                                                const char **ptr_to_ident_str)
 {
 	struct Type *ptr_base_type = parse_type_specifier(ptr_tokvec);
 	struct Vector /*<TypeNode>*/ *ptr_vec = init_vector_();

@@ -332,5 +332,5 @@ struct UntypedExpr binary_op_untyped(struct UntypedExpr expr,
 char *unescape(const char *str);
 char *escape(const char *str);
 
-struct Type parse_former_half_of_definition(const struct Token **ptr_tokvec,
-                                            const char **ptr_to_ident_str);
+struct Type parse_type_specifier_and_declarator(const struct Token **ptr_tokvec,
+                                                const char **ptr_to_ident_str);

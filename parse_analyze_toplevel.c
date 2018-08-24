@@ -181,10 +181,9 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 	}
 
 	const struct Token *tokvec2 = *ptr_tokvec;
-
 	const char *declarator_name;
 	struct Type declarator_type =
-	    parse_former_half_of_definition(&tokvec2, &declarator_name);
+	    parse_type_specifier_and_declarator(&tokvec2, &declarator_name);
 	record_if_global_struct_or_enum_declaration(ptr_ps, declarator_type);
 
 	if (declarator_type.type_category != FN) {
