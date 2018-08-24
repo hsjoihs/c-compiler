@@ -398,14 +398,11 @@ struct Type parse_declaration(const struct Token **ptr_tokvec,
 }
 
 struct Type parse_former_half_of_definition(const struct Token **ptr_tokvec,
-                                            const char **ptr_to_ident_str,
-                                            struct UntypedExpr **ptr_ptr_uexpr)
+                                            const char **ptr_to_ident_str)
 {
 	struct Type *ptr_base_type = parse_type_specifier(ptr_tokvec);
 	struct Vector /*<TypeNode>*/ *ptr_vec = init_vector_();
-	struct UntypedExpr *ptr_uexpr = parse_init_declarator(
-	    ptr_tokvec, ptr_to_ident_str, ptr_vec); /* nullable */
-	*ptr_ptr_uexpr = ptr_uexpr;
+	parse_declarator(ptr_tokvec, ptr_to_ident_str, ptr_vec);
 	push_vector(ptr_vec, ptr_base_type);
 	return from_type3_to_type(ptr_vec->vector);
 }

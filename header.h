@@ -333,5 +333,4 @@ char *unescape(const char *str);
 char *escape(const char *str);
 
 struct Type parse_former_half_of_definition(const struct Token **ptr_tokvec,
-                                            const char **ptr_to_ident_str,
-                                            struct UntypedExpr **ptr_ptr_uexpr);
+                                            const char **ptr_to_ident_str);
