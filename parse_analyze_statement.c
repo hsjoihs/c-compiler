@@ -295,7 +295,17 @@ struct Statement parse_statement(struct AnalyzerState *ptr_ps,
 		struct Statement *ptr_inner_s = calloc(1, sizeof(struct Statement));
 		*ptr_inner_s = inner_s;
 		s.inner_statement = ptr_inner_s;
-		return s;
+
+		/* make the whole thing into a block*/
+		struct Statement statement;
+		statement.category = COMPOUND_STATEMENT;
+		statement.labels = init_vector();
+		statement.statement_vector = init_vector();
+		struct Statement *ptr_s = calloc(1, sizeof(struct Statement));
+		*ptr_s = s;
+		push_vector(&statement.statement_vector, ptr_s);
+
+		return statement;
 	}
 
 	struct UntypedExpr uexpr = parse_expression(&tokvec);
