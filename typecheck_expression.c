@@ -447,8 +447,9 @@ static enum SimpleBinOp op_before_assign(enum TokenKind kind)
 		case OP_OR_EQ:
 			return SIMPLE_BIN_OP_OR;
 		default:
-			assert0("op_before_assign called before a non-assignment operator" &&
-			       0);
+			assert0(
+			    "op_before_assign called before a non-assignment operator" &&
+			    0);
 	}
 }
 
