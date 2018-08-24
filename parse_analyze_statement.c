@@ -398,6 +398,7 @@ struct Statement parse_compound_statement(struct AnalyzerState *ptr_ps,
 				s.category = DECLARATION_STATEMENT;
 				s.declaration.type = vartype;
 				s.declaration.ident_str = str;
+				s.labels = init_vector();
 				struct Statement *ptr_s = calloc(1, sizeof(struct Statement));
 				*ptr_s = s;
 				push_vector(&statement.statement_vector, ptr_s);
@@ -411,10 +412,12 @@ struct Statement parse_compound_statement(struct AnalyzerState *ptr_ps,
 					struct UntypedExpr uexpr =
 					    binary_op_untyped(left_uexpr, *ptr_uexpr, OP_EQ);
 					struct Expr expr = typecheck_expression(ptr_ps, uexpr);
+					struct Expr *ptr_expr_;
+					//*ptr_expr = expr;
 					struct Statement assignment;
-					s.labels = init_vector();
 					assignment.category = EXPRESSION_STATEMENT;
 					assignment.expr1 = expr;
+					assignment.labels = init_vector();
 					struct Statement *ptr_s =
 					    calloc(1, sizeof(struct Statement));
 					*ptr_s = assignment;
