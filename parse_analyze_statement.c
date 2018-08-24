@@ -258,6 +258,8 @@ struct Statement parse_statement(struct AnalyzerState *ptr_ps,
 
 		if (tokvec[0].kind == SEMICOLON) { /* expression1 is missing */
 			expr1 = integer_1();
+		} else if (can_start_a_type(tokvec)) {
+			unsupported("`for` that declares");
 		} else {
 			expr1 = typecheck_expression(ptr_ps, parse_expression(&tokvec));
 		}
