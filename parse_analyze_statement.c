@@ -252,6 +252,19 @@ struct Statement parse_statement(struct AnalyzerState *ptr_ps,
 		++tokvec;
 		expect_and_consume(&tokvec, LEFT_PAREN, "left parenthesis of `for`");
 
+		/* make the whole thing into a block*/
+		struct Statement statement;
+		statement.category = COMPOUND_STATEMENT;
+		statement.labels = init_vector();
+		statement.statement_vector = init_vector();
+
+		/* block scope begins */
+		struct ScopeChain current_table = ptr_ps->scope_chain;
+		struct ScopeChain new_table;
+		new_table.var_table = init_map();
+		new_table.outer = &current_table;
+		ptr_ps->scope_chain = new_table;
+
 		struct Expr expr1;
 		struct Expr expr2;
 		struct Expr expr3;
@@ -296,15 +309,12 @@ struct Statement parse_statement(struct AnalyzerState *ptr_ps,
 		*ptr_inner_s = inner_s;
 		s.inner_statement = ptr_inner_s;
 
-		/* make the whole thing into a block*/
-		struct Statement statement;
-		statement.category = COMPOUND_STATEMENT;
-		statement.labels = init_vector();
-		statement.statement_vector = init_vector();
 		struct Statement *ptr_s = calloc(1, sizeof(struct Statement));
 		*ptr_s = s;
 		push_vector(&statement.statement_vector, ptr_s);
 
+		/* block scope ends */
+		ptr_ps->scope_chain = current_table;
 		return statement;
 	}
 
