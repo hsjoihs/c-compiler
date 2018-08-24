@@ -38,9 +38,9 @@ const void *pop_vector(struct Vector *ptr)
 	                                    anything */
 }
 
-void concat_vector(struct Vector *ptr_ans, struct Vector vec)
+void concat_vector(struct Vector *ptr_ans, const struct Vector *ptr_vec)
 {
-	for (int i = 0; i < vec.length; i++) {
-		push_vector(ptr_ans, vec.vector[i]);
+	for (int i = 0; i < ptr_vec->length; i++) {
+		push_vector(ptr_ans, ptr_vec->vector[i]);
 	}
 }
