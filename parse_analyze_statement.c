@@ -258,12 +258,16 @@ struct Statement parse_statement(struct AnalyzerState *ptr_ps,
 
 		if (tokvec[0].kind == SEMICOLON) { /* expression1 is missing */
 			expr1 = integer_1();
+			++tokvec;
 		} else if (can_start_a_type(tokvec)) {
+			const char *str;
+			struct UntypedExpr *ptr_uexpr;
+			struct Type vartype = parse_declaration(&tokvec, &str, &ptr_uexpr);
 			unsupported("`for` that declares");
 		} else {
 			expr1 = typecheck_expression(ptr_ps, parse_expression(&tokvec));
+			expect_and_consume(&tokvec, SEMICOLON, "first semicolon of `for`");
 		}
-		expect_and_consume(&tokvec, SEMICOLON, "first semicolon of `for`");
 
 		if (tokvec[0].kind == SEMICOLON) { /* expression2 is missing */
 			expr2 = integer_1();
