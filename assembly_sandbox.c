@@ -5,60 +5,47 @@ int main()
 {
 	/*
 
-int foo(){return 3;}
 int main()
 {
-	int a = 24;
-	int b = 2;
-	switch(foo()){
-	    case 13:
-	    a=14;
-	default:
-	    b = 150;
+	int a[5];
+	int *p = a;
+	int *q = a+3;
+	int r = p < q;
+    if (r) {
+	    return 174;
+	} else {
+	    return 1;
 	}
-	return a+b;
 }
 
 
 	*/
-	gen_prologue(0, "foo");
-	gen_push_int(3);
-	gen_epilogue(123);
+	gen_prologue(60, "main");
 
-	gen_prologue(16, "main");
-
-	gen_push_int(24);
-	gen_write_to_local(-4); /* a */
+	gen_push_address_of_local(-48);
+	gen_write_to_local_8byte(-8);
 	gen_discard();
 
-	gen_push_int(2);
-	gen_write_to_local(-8); /* b */
+	gen_push_address_of_local(-48);
+	gen_push_int(12);
+	gen_cltq();
+	gen_op_8byte("addq");
+	gen_write_to_local_8byte(-16);
 	gen_discard();
 
-	int label1 = 9;
-	int default_label = 4;
-	int constant1 = 13;
-	gen_push_ret_of_4byte("foo");
+	puts("  movq -8(%rbp), %rax\n"
+	     "  cmpq -16(%rbp), %rax\n"
+	     "  setb %al\n"
+	     "  movzbl %al, %eax\n"
+	     "  movl %eax, -20(%rbp)\n");
 
-	gen_discard();
-	gen_if_neg8_matches_jmp_4byte(constant1, label1);
-	gen_jump(default_label, "switch-default");
+	gen_if_zero_jmp_nbyte(4, 2, -20);
+	gen_push_int(174);
 
-	gen_label(label1); /* case 13: */
+	gen_jump(4, "");
+	gen_label(2);
+	gen_push_int(1);
 
-	gen_push_int(14);
-	gen_write_to_local(-4); /* a */
-	gen_discard();
-
-	gen_label(default_label); /* default */
-
-	gen_push_int(150);
-	gen_write_to_local(-8); /* b */
-	gen_discard();
-
-	gen_push_from_local_4byte(-4);
-	gen_push_from_local_4byte(-8);
-	gen_op_ints("addl");
-	gen_epilogue(234);
+	gen_epilogue(4);
 	return 0;
 }
