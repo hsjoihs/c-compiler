@@ -247,7 +247,7 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 			ident_str = param_info.ident_str;
 
 			if (counter > 5) {
-				unsupported("6-or-more parameters");
+				unsupported("7-or-more parameters");
 			}
 
 			int offset = add_local_var_to_scope(ptr_ps, type, ident_str);

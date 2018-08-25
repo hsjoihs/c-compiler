@@ -60,3 +60,8 @@ struct INT_CHAR_CHAR_INT *get_struct_pointer(int a, int b)
 	p->b = b;
 	return p;
 }
+
+int add6(int a, int b, int c, int d, int e, int f)
+{
+	return a + b + c + d + e + f;
+}
