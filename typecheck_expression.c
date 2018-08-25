@@ -453,7 +453,8 @@ static enum SimpleBinOp op_before_assign(enum TokenKind kind)
 	}
 }
 
-static struct Expr assignment_expr(struct Expr expr, struct Expr expr2,
+static struct Expr assignment_expr(const struct AnalyzerState *ptr_ps,
+                                   struct Expr expr, struct Expr expr2,
                                    enum TokenKind opkind)
 {
 	struct Expr *ptr_expr1 = calloc(1, sizeof(struct Expr));
@@ -468,6 +469,12 @@ static struct Expr assignment_expr(struct Expr expr, struct Expr expr2,
 	new_expr.ptr1 = ptr_expr1;
 	new_expr.ptr2 = ptr_expr2;
 	new_expr.ptr3 = 0;
+
+	if (is_pointer(expr.details.type) &&
+	    (opkind == OP_PLUS_EQ || opkind == OP_MINUS_EQ)) {
+		new_expr.size_info_for_pointer_arith =
+		    size_of(ptr_ps, deref_type(expr.details.type));
+	}
 
 	return new_expr;
 }
@@ -752,16 +759,30 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 					exit(EXIT_FAILURE);
 				}
 
-				if (is_pointer(expr.details.type) &&
-				    expr2.category == INT_VALUE && expr2.int_value == 0) {
-					expr2.category = NULLPTR;
-					expr2.details.type = expr.details.type;
+				if (is_pointer(expr.details.type)) {
+					if (uexpr.operator== OP_EQ) {
+						if (expr2.category == INT_VALUE &&
+						    expr2.int_value == 0) {
+							expr2.category = NULLPTR;
+							expr2.details.type = expr.details.type;
+						}
+						expect_type(ptr_ps, expr.details.type,
+						            expr2.details.type,
+						            "mismatch in assignment operator");
+					} else if ((uexpr.operator== OP_PLUS_EQ || uexpr.operator==
+					            OP_MINUS_EQ)) {
+						expect_type(ptr_ps, expr2.details.type, INT_TYPE(),
+						            "right side of += or -= to a pointer");
+					} else {
+						fprintf(stderr, "invalid operator used on a pointer\n");
+						exit(EXIT_FAILURE);
+					}
+				} else {
+					expect_type(ptr_ps, expr.details.type, expr2.details.type,
+					            "mismatch in assignment operator");
 				}
 
-				expect_type(ptr_ps, expr.details.type, expr2.details.type,
-				            "mismatch in assignment operator");
-
-				return assignment_expr(expr, expr2, uexpr.operator);
+				return assignment_expr(ptr_ps, expr, expr2, uexpr.operator);
 			}
 			switch (uexpr.operator) {
 				case OP_PLUS: {
