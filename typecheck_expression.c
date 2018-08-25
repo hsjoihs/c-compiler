@@ -578,10 +578,13 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 
 					struct Expr expr =
 					    typecheck_expression(ptr_ps, *uexpr.ptr1);
-					expect_type(ptr_ps, expr.details.type, INT_TYPE(),
-					            "operand of unary increment/decrement");
 
-					struct Expr new_expr = unary_op_(expr, opkind, INT_TYPE());
+					struct Expr new_expr =
+					    unary_op_(expr, opkind, expr.details.type);
+					if (is_pointer(expr.details.type)) {
+						new_expr.size_info_for_pointer_arith =
+						    size_of(ptr_ps, deref_type(expr.details.type));
+					}
 					return new_expr;
 				}
 
@@ -663,12 +666,18 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 			enum TokenKind opkind = uexpr.operator_;
 
 			struct Expr new_expr;
-			new_expr.details.type = INT_TYPE();
+			new_expr.details.type = expr.details.type;
+			new_expr.details.true_type = expr.details.type;
 			new_expr.category =
 			    opkind == OP_PLUS_PLUS ? POSTFIX_INCREMENT : POSTFIX_DECREMENT;
 			new_expr.ptr1 = ptr_expr1;
 			new_expr.ptr2 = 0;
 			new_expr.ptr3 = 0;
+			if (is_pointer(expr.details.type)) {
+				new_expr.size_info_for_pointer_arith =
+				    size_of(ptr_ps, deref_type(expr.details.type));
+			}
+
 			return new_expr;
 		}
 		case INT_LITERAL_: {

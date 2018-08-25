@@ -12,6 +12,12 @@ run_test 264 'int main(void){int a[5]; a[3] = 174; int *p = a; p += 3; return *p
 run_test 265 'int a[10][10]; int foo(int p[10][10]){int q;q = ((p+=1)-1)[0][0]; return q+p[0][0];} int main(){a[0][0] = 100; a[1][0] = 74; return foo(a);}' 174
 run_test 266 'int main(void){int a[5]; a[1] = 174; int *p = a + 3; p -= 2; return *p;}' 174
 run_test 267 'int main(void){char a[5]; a[1] = 74; char *p = a + 3; p -= 2; return *p;}' 74
+run_test 268 'int a[10][10]; int foo(int p[10][10]){int q;q = p++[0][0]; return q+p[0][0];} int main(){a[0][0] = 100; a[1][0] = 74; return foo(a);}' 174
+run_test 269 'int main(void){int a[5]; a[3] = 174; int *p = a + 2; p++; return *p;}' 174
+run_test 270 'int main(void){int a[5]; a[3] = 174; int *p = a + 2; ++p; return *p;}' 174
+run_test 271 'int main(void){int a[5]; a[3] = 174; int *p = a + 2; return *++p;}' 174
+run_test 272 'int main(void){int a[5]; a[3] = 174; int *p = a + 3; return *p++;}' 174
+run_test 273 'int main(void){char a[5]; a[1] = 74; char *p = a + 2; return *--p;}' 74
 
 run_test 260 'int printf(); int puts(); int main(){printf("H""e" "l" "lo," " W" "or" "ld!"); puts(""); return 174;}' 174
 
