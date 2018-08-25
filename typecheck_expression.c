@@ -552,12 +552,12 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 			return expr;
 		}
 		case UNARY_EXPR: {
-			switch (uexpr.operator) {
+			switch (uexpr.operator_) {
 				case OP_NOT:
 				case OP_TILDA:
 				case OP_PLUS:
 				case OP_MINUS: {
-					enum TokenKind kind = uexpr.operator;
+					enum TokenKind kind = uexpr.operator_;
 					struct Expr expr =
 					    typecheck_expression(ptr_ps, *uexpr.ptr1);
 					expect_type(ptr_ps, expr.details.type, INT_TYPE(),
@@ -574,7 +574,7 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 
 				case OP_PLUS_PLUS:
 				case OP_MINUS_MINUS: {
-					enum TokenKind opkind = uexpr.operator;
+					enum TokenKind opkind = uexpr.operator_;
 
 					struct Expr expr =
 					    typecheck_expression(ptr_ps, *uexpr.ptr1);
@@ -613,7 +613,7 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 				default: {
 					fprintf(stderr,
 					        "FAILURE::::::: INVALID TOKEN %d in unary\n",
-					        uexpr.operator);
+					        uexpr.operator_);
 					exit(EXIT_FAILURE);
 				}
 			}
@@ -660,7 +660,7 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 			struct Expr *ptr_expr1 = calloc(1, sizeof(struct Expr));
 			*ptr_expr1 = expr;
 
-			enum TokenKind opkind = uexpr.operator;
+			enum TokenKind opkind = uexpr.operator_;
 
 			struct Expr new_expr;
 			new_expr.details.type = INT_TYPE();
@@ -750,7 +750,7 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 			return new_expr;
 		}
 		case BINARY_EXPR: {
-			if (isAssign(uexpr.operator)) {
+			if (isAssign(uexpr.operator_)) {
 				struct Expr expr = typecheck_expression(ptr_ps, *uexpr.ptr1);
 				struct Expr expr2 = typecheck_expression(ptr_ps, *uexpr.ptr2);
 				if (is_array(expr.details.type) ||
@@ -760,7 +760,7 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 				}
 
 				if (is_pointer(expr.details.type)) {
-					if (uexpr.operator== OP_EQ) {
+					if (uexpr.operator_ == OP_EQ) {
 						if (expr2.category == INT_VALUE &&
 						    expr2.int_value == 0) {
 							expr2.category = NULLPTR;
@@ -769,8 +769,8 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 						expect_type(ptr_ps, expr.details.type,
 						            expr2.details.type,
 						            "mismatch in assignment operator");
-					} else if ((uexpr.operator== OP_PLUS_EQ || uexpr.operator==
-					            OP_MINUS_EQ)) {
+					} else if ((uexpr.operator_ == OP_PLUS_EQ ||
+					            uexpr.operator_ == OP_MINUS_EQ)) {
 						expect_type(ptr_ps, expr2.details.type, INT_TYPE(),
 						            "right side of += or -= to a pointer");
 					} else {
@@ -782,9 +782,9 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 					            "mismatch in assignment operator");
 				}
 
-				return assignment_expr(ptr_ps, expr, expr2, uexpr.operator);
+				return assignment_expr(ptr_ps, expr, expr2, uexpr.operator_);
 			}
-			switch (uexpr.operator) {
+			switch (uexpr.operator_) {
 				case OP_PLUS: {
 					struct Expr expr =
 					    typecheck_expression(ptr_ps, *uexpr.ptr1);
@@ -837,7 +837,7 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 					            "left operand of an operator");
 					expect_type(ptr_ps, expr2.details.type, INT_TYPE(),
 					            "right operand of an operator");
-					return simple_binary_op(expr, expr2, uexpr.operator,
+					return simple_binary_op(expr, expr2, uexpr.operator_,
 					                        expr2.details.type);
 				}
 				case OP_COMMA: {
@@ -845,13 +845,13 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 					    typecheck_expression(ptr_ps, *uexpr.ptr1);
 					struct Expr expr2 =
 					    typecheck_expression(ptr_ps, *uexpr.ptr2);
-					return simple_binary_op(expr, expr2, uexpr.operator,
+					return simple_binary_op(expr, expr2, uexpr.operator_,
 					                        expr2.details.type);
 				}
 				default: {
 					fprintf(stderr,
 					        "FAILURE::::::: INVALID TOKEN %d in binary expr\n",
-					        uexpr.operator);
+					        uexpr.operator_);
 					exit(EXIT_FAILURE);
 				}
 			}

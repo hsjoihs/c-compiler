@@ -224,7 +224,7 @@ enum UnaryOp {
 };
 
 struct UntypedExpr {
-	enum TokenKind operator;
+	enum TokenKind operator_;
 	enum UntypedExprCategory category;
 	struct UntypedExpr *ptr1;
 	struct UntypedExpr *ptr2;

@@ -28,7 +28,7 @@ struct UntypedExpr binary_op_untyped(struct UntypedExpr expr,
 
 	struct UntypedExpr new_expr;
 	new_expr.category = BINARY_EXPR;
-	new_expr.operator= kind;
+	new_expr.operator_ = kind;
 	new_expr.ptr1 = ptr_expr1;
 	new_expr.ptr2 = ptr_expr2;
 	new_expr.ptr3 = 0;
@@ -266,7 +266,7 @@ static struct UntypedExpr unary_op_untyped(struct UntypedExpr expr,
 
 	struct UntypedExpr new_expr;
 	new_expr.category = UNARY_EXPR;
-	new_expr.operator= kind;
+	new_expr.operator_ = kind;
 	new_expr.ptr1 = ptr_expr1;
 	new_expr.ptr2 = 0;
 	new_expr.ptr3 = 0;
@@ -403,7 +403,7 @@ parse_postfix_expression(const struct Token **ptr_tokvec)
 			*ptr_expr1 = expr;
 
 			struct UntypedExpr new_expr;
-			new_expr.operator= opkind;
+			new_expr.operator_ = opkind;
 			new_expr.category = POSTFIX_EXPR;
 			new_expr.ptr1 = ptr_expr1;
 			new_expr.ptr2 = 0;
