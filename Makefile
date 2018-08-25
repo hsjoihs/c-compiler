@@ -144,6 +144,7 @@ check_error:
 	./test_compile_error.sh 'int main(){default: return 0;}'
 	./test_compile_error.sh 'int main const(){return const 123 const; const} const'
 	./test_compile_error.sh 'int main(void){void *p = 0; p += 3;}'
+	./test_compile_error.sh 'int main(void){char a[5]; a[1] = 74; int *p = a + 3; p -= 2; return *p;}'
 
 # clang-format or clang
 notest:

@@ -4,7 +4,16 @@
 #include "std.h"
 #include <stdio.h>
 
-static void print_simple_binary_op(enum SimpleBinOp kind, struct Type left_type)
+static void print_op_pointer_plusminus_int(int is_plus, int size)
+{
+	gen_cltq();
+	gen_mul_by_const(size);
+	gen_op_8byte(is_plus ? "addq" : "subq");
+}
+
+/* size is garbage unless left_type is a pointer */
+static void print_simple_binary_op(enum SimpleBinOp kind, struct Type left_type,
+                                   int size)
 {
 	if (is_pointer(left_type)) {
 		switch (kind) {
@@ -12,8 +21,12 @@ static void print_simple_binary_op(enum SimpleBinOp kind, struct Type left_type)
 				gen_discard2nd_8byte();
 				return;
 			case SIMPLE_BIN_OP_PLUS:
+				print_op_pointer_plusminus_int(1, size);
+				return;
 			case SIMPLE_BIN_OP_MINUS:
-				unsupported("+=, ++, -- or -= on pointers\n");
+				print_op_pointer_plusminus_int(0, size);
+				return;
+
 			case SIMPLE_BIN_OP_EQ_EQ:
 			case SIMPLE_BIN_OP_LT_EQ:
 			case SIMPLE_BIN_OP_GT_EQ:
@@ -168,13 +181,6 @@ static void print_expression_as_lvalue(struct PrinterState *ptr_prs,
 	}
 }
 
-static void print_op_pointer_plusminus_int(int is_plus, int size)
-{
-	gen_cltq();
-	gen_mul_by_const(size);
-	gen_op_8byte(is_plus ? "addq" : "subq");
-}
-
 void print_expression(struct PrinterState *ptr_prs, struct Expr expr)
 {
 	switch (expr.category) {
@@ -217,13 +223,15 @@ void print_expression(struct PrinterState *ptr_prs, struct Expr expr)
 			print_expression_as_lvalue(ptr_prs, *expr.ptr1);
 			gen_push_int(1);
 
-			print_simple_binary_op(opkind2, expr.ptr1->details.type);
+			print_simple_binary_op(opkind2, expr.ptr1->details.type,
+			                       expr.size_info_for_pointer_arith);
 
 			gen_assign_nbyte(size_of_basic(expr.ptr1->details.type));
 
 			gen_push_int(-1);
 
-			print_simple_binary_op(opkind2, expr.ptr1->details.type);
+			print_simple_binary_op(opkind2, expr.ptr1->details.type,
+			                       expr.size_info_for_pointer_arith);
 
 			return;
 		}
@@ -257,7 +265,8 @@ void print_expression(struct PrinterState *ptr_prs, struct Expr expr)
 			print_expression(ptr_prs, *expr.ptr1);
 			print_expression(ptr_prs, *expr.ptr2);
 			print_simple_binary_op(expr.simple_binary_operator,
-			                       expr.ptr1->details.type);
+			                       expr.ptr1->details.type,
+			                       expr.size_info_for_pointer_arith);
 			return;
 		}
 
@@ -298,7 +307,8 @@ void print_expression(struct PrinterState *ptr_prs, struct Expr expr)
 			print_expression(ptr_prs, *expr.ptr2);
 
 			print_simple_binary_op(expr.simple_binary_operator,
-			                       expr.ptr1->details.type);
+			                       expr.ptr1->details.type,
+			                       expr.size_info_for_pointer_arith);
 
 			struct Type type = expr.ptr1->details.type;
 
@@ -337,7 +347,8 @@ void print_expression(struct PrinterState *ptr_prs, struct Expr expr)
 					                               UNARY_OP_PLUS_PLUS
 					                           ? SIMPLE_BIN_OP_PLUS
 					                           : SIMPLE_BIN_OP_MINUS,
-					                       expr.ptr1->details.type);
+					                       expr.ptr1->details.type,
+					                       expr.size_info_for_pointer_arith);
 
 					struct Type type = expr.ptr1->details.type;
 
