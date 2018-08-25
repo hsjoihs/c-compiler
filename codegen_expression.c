@@ -189,7 +189,6 @@ void print_expression(struct PrinterState *ptr_prs, struct Expr expr)
 		}
 		case POSTFIX_INCREMENT:
 		case POSTFIX_DECREMENT: {
-#warning does not work with pointer
 			enum SimpleBinOp opkind2 = expr.category == POSTFIX_INCREMENT
 			                               ? SIMPLE_BIN_OP_PLUS
 			                               : SIMPLE_BIN_OP_MINUS;
@@ -197,12 +196,21 @@ void print_expression(struct PrinterState *ptr_prs, struct Expr expr)
 			print_expression_as_lvalue(ptr_prs, *expr.ptr1);
 			gen_push_int(1);
 
-			print_simple_binary_op(opkind2);
+			if (is_pointer(expr.ptr1->details.type)) {
+				unsupported("postfix increment of pointer");
+			} else {
+				print_simple_binary_op(opkind2);
+			}
 
 			gen_assign_nbyte(size_of_basic(expr.ptr1->details.type));
 
 			gen_push_int(-1);
-			print_simple_binary_op(opkind2);
+
+			if (is_pointer(expr.ptr1->details.type)) {
+				unsupported("postfix increment of pointer");
+			} else {
+				print_simple_binary_op(opkind2);
+			}
 
 			return;
 		}
