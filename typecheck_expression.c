@@ -826,12 +826,6 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 				}
 				case OP_OR:
 				case OP_AND:
-				case OP_EQ_EQ:
-				case OP_NOT_EQ:
-				case OP_GT:
-				case OP_GT_EQ:
-				case OP_LT:
-				case OP_LT_EQ:
 				case OP_LSHIFT:
 				case OP_RSHIFT:
 				case OP_HAT:
@@ -848,6 +842,22 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 					            "right operand of an operator");
 					return simple_binary_op(expr, expr2, uexpr.operator_,
 					                        expr2.details.type);
+				}
+				case OP_GT:
+				case OP_GT_EQ:
+				case OP_LT:
+				case OP_LT_EQ:
+				case OP_NOT_EQ:
+				case OP_EQ_EQ: {
+					struct Expr expr =
+					    typecheck_expression(ptr_ps, *uexpr.ptr1);
+					struct Expr expr2 =
+					    typecheck_expression(ptr_ps, *uexpr.ptr2);
+					expect_type(ptr_ps, expr.details.type, expr2.details.type,
+					            "mismatch in operands of an "
+					            "equality/comparison operator");
+					return simple_binary_op(expr, expr2, uexpr.operator_,
+					                        INT_TYPE());
 				}
 				case OP_COMMA: {
 					struct Expr expr =

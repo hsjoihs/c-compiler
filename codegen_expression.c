@@ -28,14 +28,25 @@ static void print_simple_binary_op(enum SimpleBinOp kind, struct Type left_type,
 				return;
 
 			case SIMPLE_BIN_OP_EQ_EQ:
+				gen_compare_ptrs("sete");
+				return;
+			case SIMPLE_BIN_OP_NOT_EQ:
+				gen_compare_ptrs("setne");
+				return;
 			case SIMPLE_BIN_OP_LT_EQ:
+				gen_compare_ptrs("setbe");
+				return;
 			case SIMPLE_BIN_OP_GT_EQ:
+				gen_compare_ptrs("setnb");
+				return;
 			case SIMPLE_BIN_OP_LT:
+				gen_compare_ptrs("setb");
+				return;
 			case SIMPLE_BIN_OP_GT:
-				unsupported("==, <=, >=, < or > on pointers\n");
+				gen_compare_ptrs("seta");
 				return;
 			default:
-				fprintf(stderr, "unexpected pointer\n");
+				fprintf(stderr, "unexpected pointer in binary operation\n");
 				exit(EXIT_FAILURE);
 		}
 		return;

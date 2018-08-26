@@ -7,6 +7,21 @@ run_test() {
 	res=$?
 	if [ $res -ne $3 ]; then { echo "got:" $res; echo "expected:" $3; echo -e "\033[31mFAIL\033[m, at test case" $1: $2; exit 1; }; else echo -e "\033[32mPASS\033[m"; fi
 }
+
+run_test 274 'int main(){int a[5];int *p = a;int *q = a+3;if (p < q) {return 174;} else {return 1;}}' 174
+run_test 275 'int main(){int a[5];int *p = a;int *q = a+3;if (p > q) {return 174;} else {return 1;}}' 1
+run_test 276 'int main(){int a[5];int *p = a;int *q = a+3;if (p <= q) {return 174;} else {return 1;}}' 174
+run_test 277 'int main(){int a[5];int *p = a;int *q = a+3;if (p >= q) {return 174;} else {return 1;}}' 1
+run_test 278 'int main(){int a[5];int *p = a;int *q = a;if (p < q) {return 174;} else {return 1;}}' 1
+run_test 279 'int main(){int a[5];int *p = a;int *q = a;if (p > q) {return 174;} else {return 1;}}' 1
+run_test 280 'int main(){int a[5];int *p = a;int *q = a;if (p <= q) {return 174;} else {return 1;}}' 174
+run_test 281 'int main(){int a[5];int *p = a;int *q = a;if (p >= q) {return 174;} else {return 1;}}' 174
+run_test 282 'int main(){int a[5];int *p = a;int *q = a;if (p == q) {return 174;} else {return 1;}}' 174
+run_test 283 'int main(){int a[5];int *p = a;int *q = a;if (p != q) {return 174;} else {return 1;}}' 1
+run_test 284 'int main(){int a[5];int *p = a;int *q = a+3;if (p == q) {return 174;} else {return 1;}}' 1
+run_test 285 'int main(){int a[5];int *p = a;int *q = a+3;if (p != q) {return 174;} else {return 1;}}' 174
+
+
 run_test 263 'int add6();int main(void){return add6(add6(1,2,3,4,5,6),7,8,9,10,174-55);}' 174
 run_test 264 'int main(void){int a[5]; a[3] = 174; int *p = a; p += 3; return *p;}' 174
 run_test 265 'int a[10][10]; int foo(int p[10][10]){int q;q = ((p+=1)-1)[0][0]; return q+p[0][0];} int main(){a[0][0] = 100; a[1][0] = 74; return foo(a);}' 174
