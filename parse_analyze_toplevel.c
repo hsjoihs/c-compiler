@@ -224,24 +224,20 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 	if (!ptr_old_func_info) {
 		insert(&ptr_ps->func_info_map, declarator_name, ptr_func_info);
 	} else {
-		expect_type(ptr_ps, *ptr_old_func_info, *ptr_func_info,
+		expect_type(ptr_ps, declarator_type, *ptr_old_func_info,
 		            "conflicting function definition");
 #warning record the stronger one
 	}
 
 	if (tokvec2[0].kind == SEMICOLON) { /* function prototype */
-		if (!is_param_infos_valid) {
-			++tokvec2;
-			/* do nothing, since the return value is already in the retmap
-			 */
-			*ptr_tokvec = tokvec2;
+		++tokvec2;
+		/* do nothing, since the return value is already in the retmap
+		 */
+		*ptr_tokvec = tokvec2;
 
-			struct Toplevel def;
-			def.category = TOPLEVEL_FUNCTION_DECLARATION;
-			return def;
-		} else {
-			unsupported("full function prototype");
-		}
+		struct Toplevel def;
+		def.category = TOPLEVEL_FUNCTION_DECLARATION;
+		return def;
 	}
 
 	struct Vector /*<LocalVarInfo>*/ offsets_and_types = init_vector();

@@ -70,7 +70,9 @@ void debug_print_type(struct Type type)
 			if (!type.is_param_infos_valid) {
 				fprintf(stderr, "param: no info");
 			} else {
-				if (type.param_infos.length < 2) {
+				if (type.param_infos.length == 0) {
+					fprintf(stderr, "no params");
+				} else if (type.param_infos.length < 2) {
 					const struct TypeAndIdent *vec_0 =
 					    (const struct TypeAndIdent *)type.param_infos.vector[0];
 					fprintf(stderr, "%s: ",
