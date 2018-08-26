@@ -45,33 +45,7 @@ assembly_sandbox:
 compile_files:
 	make supplement
 	make notest2
-	cat test/nqueen2.c | ./out/compiler.out > s/nqueen2.s
-	gcc s/nqueen2.s -o out/nqueen2.out
-	./out/nqueen2.out
-	cat test/nqueen3.c | ./out/compiler.out > s/nqueen3.s
-	gcc s/nqueen3.s -o out/nqueen3.out
-	./out/nqueen3.out
-	cat test/nqueen4.c | ./out/compiler.out > s/nqueen4.s
-	gcc s/nqueen4.s  -o out/nqueen4.out
-	./out/nqueen4.out
-	cat test/nqueen5.c | ./out/compiler.out > s/nqueen5.s
-	gcc s/nqueen5.s  -o out/nqueen5.out
-	./out/nqueen5.out
-	cat test/nqueen6.c | ./out/compiler.out > s/nqueen6.s
-	gcc s/nqueen6.s -o out/nqueen6.out
-	./out/nqueen6.out
-	cat test/nqueen7.c | ./out/compiler.out > s/nqueen7.s
-	gcc s/nqueen7.s -o out/nqueen7.out
-	./out/nqueen7.out
-	cat test/nqueen8.c | ./out/compiler.out > s/nqueen8.s
-	gcc s/nqueen8.s -o out/nqueen8.out
-	./out/nqueen8.out
-	cat test/escape.c | ./out/compiler.out > s/escape.s
-	gcc s/escape.s -o out/escape.out
-	./out/escape.out
-	cat test/duff.c | ./out/compiler.out > s/duff.s
-	gcc s/duff.s -o out/duff.out
-	./out/duff.out
+	./build_files.sh
 	cat test/quine.c | ./out/compiler.out > s/quine.s
 	gcc s/quine.s -o out/quine.out
 	./out/quine.out > test/quine_res.c
