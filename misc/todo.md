@@ -4,7 +4,7 @@
 
 - `_Noreturn`
 - `enum Foo {Bar = 1, Baz};`
-- `typedef` (`stderr` is `FILE *`, though internally it seems to be `struct __sFILE *` internally)
+- `typedef` (`stderr` is `FILE *`, though it seems to be `struct __sFILE *` internally)
 - `extern` (`stderr`)
 - `#include`, `#define`, `#ifdef`
 - `int f(struct A a)`
