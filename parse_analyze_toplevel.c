@@ -215,9 +215,15 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 	ptr_ps->newest_offset = 0;
 	ptr_ps->func_ret_type = ret_type;
 
-	struct Type *ptr_func_info = calloc(1, sizeof(struct Type));
-	ptr_func_info->derived_from = derived_from;
-	insert(&ptr_ps->func_info_map, declarator_name, ptr_func_info);
+	const struct Type *ptr_old_func_info =
+	    lookup(ptr_ps->func_info_map, declarator_name);
+	if (!ptr_old_func_info) {
+		struct Type *ptr_func_info = calloc(1, sizeof(struct Type));
+		ptr_func_info->derived_from = derived_from;
+		insert(&ptr_ps->func_info_map, declarator_name, ptr_func_info);
+	} else {
+#warning multiple declaration detected, but not checked
+	}
 
 	if (tokvec2[0].kind == SEMICOLON) { /* function prototype */
 		if (!is_param_infos_valid) {
