@@ -234,8 +234,6 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 
 	if (tokvec2[0].kind == SEMICOLON) { /* function prototype */
 		++tokvec2;
-		/* do nothing, since the return value is already in the retmap
-		 */
 		*ptr_tokvec = tokvec2;
 
 		struct Toplevel def;
