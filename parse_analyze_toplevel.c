@@ -219,10 +219,7 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 	    lookup(ptr_ps->func_info_map, declarator_name);
 
 	struct Type *ptr_func_info = calloc(1, sizeof(struct Type));
-	ptr_func_info->derived_from = derived_from;
-	ptr_func_info->type_category = FN;
-	ptr_func_info->is_param_infos_valid = 0;
-#warning no arg info
+	*ptr_func_info = declarator_type;
 
 	if (!ptr_old_func_info) {
 		insert(&ptr_ps->func_info_map, declarator_name, ptr_func_info);
