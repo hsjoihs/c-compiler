@@ -11,10 +11,10 @@ static void parse_declarator(const struct Token **ptr_tokvec,
                              const char **ptr_to_ident_str,
                              struct Vector /*<TypeNode>*/ *ptr_vec);
 
-static void skip_consts(const struct Token **ptr_tokvec)
+static void skip_consts_or_noreturns(const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
-	while (tokvec[0].kind == RES_CONST) {
+	while (tokvec[0].kind == RES_CONST || tokvec[0].kind == RES_NORETURN) {
 		++tokvec;
 	}
 	*ptr_tokvec = tokvec;
@@ -114,7 +114,7 @@ struct Type *parse_type_specifier(const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 
-	skip_consts(&tokvec);
+	skip_consts_or_noreturns(&tokvec);
 
 	enum TokenKind tok = tokvec[0].kind;
 	TypeNode *ptr = calloc(1, sizeof(TypeNode));
@@ -138,7 +138,7 @@ struct Type *parse_type_specifier(const struct Token **ptr_tokvec)
 		ptr->struct_tag = ident;
 		if (tokvec[0].kind != LEFT_BRACE) {
 			ptr->struct_info.ptr_types_and_idents = 0; /* crucial; no info */
-			skip_consts(&tokvec);
+			skip_consts_or_noreturns(&tokvec);
 			*ptr_tokvec = tokvec;
 			return ptr;
 		}
@@ -170,7 +170,7 @@ struct Type *parse_type_specifier(const struct Token **ptr_tokvec)
 		ptr->enum_tag = ident;
 		if (tokvec[0].kind != LEFT_BRACE) {
 			ptr->enum_info.ptr_enumerators = 0; /* crucial; no info */
-			skip_consts(&tokvec);
+			skip_consts_or_noreturns(&tokvec);
 			*ptr_tokvec = tokvec;
 			return ptr;
 		}
@@ -202,7 +202,7 @@ struct Type *parse_type_specifier(const struct Token **ptr_tokvec)
 		    tokvec, "type name `int`, `char`, `void`, `struct` or `enum`");
 	}
 
-	skip_consts(&tokvec);
+	skip_consts_or_noreturns(&tokvec);
 	*ptr_tokvec = tokvec;
 	return ptr;
 }
@@ -333,7 +333,8 @@ static void parse_declarator(const struct Token **ptr_tokvec,
 {
 	const struct Token *tokvec = *ptr_tokvec;
 	int asterisk_num = 0;
-	for (; tokvec[0].kind == OP_ASTERISK; ++tokvec, skip_consts(&tokvec)) {
+	for (; tokvec[0].kind == OP_ASTERISK;
+	     ++tokvec, skip_consts_or_noreturns(&tokvec)) {
 		asterisk_num++;
 	}
 
@@ -366,7 +367,8 @@ int can_start_a_type(const struct Token *tokvec)
 {
 	return tokvec[0].kind == RES_INT || tokvec[0].kind == RES_CHAR ||
 	       tokvec[0].kind == RES_STRUCT || tokvec[0].kind == RES_VOID ||
-	       tokvec[0].kind == RES_ENUM || tokvec[0].kind == RES_CONST;
+	       tokvec[0].kind == RES_ENUM || tokvec[0].kind == RES_CONST ||
+	       tokvec[0].kind == RES_NORETURN;
 }
 
 /* `int a`, `int *a` */
@@ -460,7 +462,8 @@ static void parse_abstract_declarator(const struct Token **ptr_tokvec,
 	}
 
 	int asterisk_num = 0;
-	for (; tokvec[0].kind == OP_ASTERISK; ++tokvec, skip_consts(&tokvec)) {
+	for (; tokvec[0].kind == OP_ASTERISK;
+	     ++tokvec, skip_consts_or_noreturns(&tokvec)) {
 		asterisk_num++;
 	}
 
