@@ -42,13 +42,14 @@ int main()
 
 	gen_push_from_local_8byte(-8);
 	gen_push_from_local_8byte(-16);
-	puts(
-	     "  movq 8(%rsp), %rax\n"
+	puts("  movq 8(%rsp), %rax\n"
 	     "  cmpq (%rsp), %rax\n"
 	     "  setb %al\n"
 	     "  movzbl %al, %eax\n"
-	     "  movl %eax, -20(%rbp)\n"
-	     "  addq $16, %rsp\n");
+	     "  movl %eax, 8(%rsp)\n"
+	     "  addq $8, %rsp\n");
+	gen_write_to_local_8byte(-20);
+	gen_discard();
 
 	gen_if_zero_jmp_nbyte(4, 2, -20);
 	gen_push_int(174);
