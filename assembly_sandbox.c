@@ -11,12 +11,19 @@ int main()
 	int *p = a;
 	int *q = a+3;
 	int r = p < q;
-    if (r) {
+	if (r) {
 	    return 174;
 	} else {
 	    return 1;
 	}
 }
+
+<  : setb
+<= : setbe
+>  : seta
+>= : setnb
+== : sete
+!= : setne
 
 
 	*/
@@ -33,11 +40,15 @@ int main()
 	gen_write_to_local_8byte(-16);
 	gen_discard();
 
-	puts("  movq -8(%rbp), %rax\n"
-	     "  cmpq -16(%rbp), %rax\n"
+	gen_push_from_local_8byte(-8);
+	gen_push_from_local_8byte(-16);
+	puts(
+	     "  movq 8(%rsp), %rax\n"
+	     "  cmpq (%rsp), %rax\n"
 	     "  setb %al\n"
 	     "  movzbl %al, %eax\n"
-	     "  movl %eax, -20(%rbp)\n");
+	     "  movl %eax, -20(%rbp)\n"
+	     "  addq $16, %rsp\n");
 
 	gen_if_zero_jmp_nbyte(4, 2, -20);
 	gen_push_int(174);
