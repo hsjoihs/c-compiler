@@ -226,7 +226,10 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 	} else {
 		expect_type(ptr_ps, declarator_type, *ptr_old_func_info,
 		            "conflicting function definition");
-#warning record the stronger one
+		if (!(ptr_old_func_info->is_param_infos_valid) &&
+		    declarator_type.is_param_infos_valid) {
+			insert(&ptr_ps->func_info_map, declarator_name, ptr_func_info);
+		}
 	}
 
 	if (tokvec2[0].kind == SEMICOLON) { /* function prototype */
