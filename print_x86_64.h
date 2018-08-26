@@ -70,6 +70,7 @@ void gen_if_zero_jmp_nbyte(int n, int label1, int offset);
 void gen_if_nonzero_jmp_nbyte(int n, int label1, int offset);
 void gen_if_neg8_matches_jmp_4byte(int constant1, int label1);
 void gen_extend_to_4byte(void);
+void gen_compare_ptrs(const char *str);
 
 #ifdef OSX
 #define PREFIX "_"

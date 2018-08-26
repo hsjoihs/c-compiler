@@ -877,6 +877,26 @@ void gen_if_neg8_matches_jmp_4byte(int constant1, int label1)
 
 void gen_extend_to_4byte(void)
 {
+	printf("//gen_extend_to_4byte()\n");
 	printf("  movsbl (%%rsp), %%eax\n"
 	       "  movl %%eax, (%%rsp)\n");
+}
+
+/*
+<  : setb
+<= : setbe
+>  : seta
+>= : setnb
+== : sete
+!= : setne
+*/
+void gen_compare_ptrs(const char *str)
+{
+	printf("//gen_compare_ptrs(\"%s\")\n", str);
+	puts("  movq 8(%rsp), %rax\n"
+	     "  cmpq (%rsp), %rax");
+	printf("  %s %%al\n", str);
+	puts("  movzbl %al, %eax\n"
+	     "  movl %eax, 8(%rsp)\n"
+	     "  addq $8, %rsp");
 }

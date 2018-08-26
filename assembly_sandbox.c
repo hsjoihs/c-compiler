@@ -18,14 +18,6 @@ int main()
 	}
 }
 
-<  : setb
-<= : setbe
->  : seta
->= : setnb
-== : sete
-!= : setne
-
-
 	*/
 	gen_prologue(60, "main");
 
@@ -42,12 +34,7 @@ int main()
 
 	gen_push_from_local_8byte(-8);
 	gen_push_from_local_8byte(-16);
-	puts("  movq 8(%rsp), %rax\n"
-	     "  cmpq (%rsp), %rax\n"
-	     "  setb %al\n"
-	     "  movzbl %al, %eax\n"
-	     "  movl %eax, 8(%rsp)\n"
-	     "  addq $8, %rsp\n");
+	gen_compare_ptrs("setb");
 	gen_write_to_local_8byte(-20);
 	gen_discard();
 
