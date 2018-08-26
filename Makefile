@@ -11,9 +11,10 @@ notest2:
 
 test_mixed_compiler:
 	make notest2
-	gcc -E vector.c -DOVERRIDE_STD -U__STDC__ | grep -v "#" | ./out/compiler.out > vector.s
-	gcc -Wall -Wextra -DOVERRIDE_STD -g std.c codegen.c alignment.c parse_analyze_toplevel.c parse_analyze_statement.c codegen_expression.c main.c vector.s typecheck_expression.c parse_expression.c error.c type.c parse_type.c map.c print_x86_64.c $(CCFLAGS) lexer.c -o out/compiler.out
+	gcc -E vector.c -DOVERRIDE_STD -U__STDC__ | grep -v "#" | ./out/compiler.out > self_compile_asm/vector.s
+	gcc -Wall -Wextra -DOVERRIDE_STD -g std.c codegen.c alignment.c parse_analyze_toplevel.c parse_analyze_statement.c codegen_expression.c main.c self_compile_asm/vector.s typecheck_expression.c parse_expression.c error.c type.c parse_type.c map.c print_x86_64.c $(CCFLAGS) lexer.c -o out/compiler.out
 	./test_cases.sh
+	make ch
 
 test_all_:
 	make supplement
@@ -22,6 +23,7 @@ test_all_:
 	make verify_typeparse
 	make compile_files
 	make check_error
+	make test_mixed_compiler
 
 
 clean:
@@ -95,6 +97,9 @@ test_valid:
 
 check_error:
 	make notest2
+	make ch
+
+ch:
 	./test_compile_error.sh 'int main(){int a; {int b;} return b;}'
 	./test_compile_error.sh 'int main(){main(1}'
 	./test_compile_error.sh 'int main(){return (123}'
@@ -179,6 +184,7 @@ f:
 	make verify_typeparse
 	make compile_files
 	make check_error
+	make test_mixed_compiler
 
 
 format:
