@@ -9,6 +9,12 @@ endif
 notest2:
 	gcc -Wall -Wextra -DOVERRIDE_STD -g std.c codegen.c alignment.c parse_analyze_toplevel.c parse_analyze_statement.c codegen_expression.c main.c vector.c typecheck_expression.c parse_expression.c error.c type.c parse_type.c map.c print_x86_64.c $(CCFLAGS) lexer.c -o out/compiler.out
 
+test_mixed_compiler:
+	make notest2
+	gcc -E vector.c -DOVERRIDE_STD -U__STDC__ | grep -v "#" | ./out/compiler.out > vector.s
+	gcc -Wall -Wextra -DOVERRIDE_STD -g std.c codegen.c alignment.c parse_analyze_toplevel.c parse_analyze_statement.c codegen_expression.c main.c vector.s typecheck_expression.c parse_expression.c error.c type.c parse_type.c map.c print_x86_64.c $(CCFLAGS) lexer.c -o out/compiler.out
+	./test_cases.sh
+
 test_all_:
 	make supplement
 	make assembly_sandbox
