@@ -217,12 +217,19 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 
 	const struct Type *ptr_old_func_info =
 	    lookup(ptr_ps->func_info_map, declarator_name);
+
+	struct Type *ptr_func_info = calloc(1, sizeof(struct Type));
+	ptr_func_info->derived_from = derived_from;
+	ptr_func_info->type_category = FN;
+	ptr_func_info->is_param_infos_valid = 0;
+#warning no arg info
+
 	if (!ptr_old_func_info) {
-		struct Type *ptr_func_info = calloc(1, sizeof(struct Type));
-		ptr_func_info->derived_from = derived_from;
 		insert(&ptr_ps->func_info_map, declarator_name, ptr_func_info);
 	} else {
-#warning multiple declaration detected, but not checked
+		expect_type(ptr_ps, *ptr_old_func_info, *ptr_func_info,
+		            "conflicting function definition");
+#warning record the stronger one
 	}
 
 	if (tokvec2[0].kind == SEMICOLON) { /* function prototype */

@@ -132,6 +132,30 @@ static int is_compatible(const struct AnalyzerState *ptr_ps, struct Type t1,
 		return is_compatible(ptr_ps, t2, t1);
 	}
 
+	if (t1.type_category == FN && t2.type_category == FN) {
+		if (!is_strictly_equal(ptr_ps, *t1.derived_from, *t2.derived_from)) {
+			return 0;
+		}
+
+		if (!t1.is_param_infos_valid || !t2.is_param_infos_valid) {
+			return 1;
+		}
+
+		if (t1.param_infos.length != t2.param_infos.length) {
+			return 0;
+		}
+
+		for (int i = 0; i < t1.param_infos.length; i++) {
+			const struct TypeAndIdent *ptr_ti1 = t1.param_infos.vector[i];
+			const struct TypeAndIdent *ptr_ti2 = t2.param_infos.vector[i];
+
+			if (!is_strictly_equal(ptr_ps, ptr_ti1->type, ptr_ti2->type)) {
+				return 0;
+			}
+		}
+		return 1;
+	}
+
 	return 0;
 }
 
