@@ -7,7 +7,6 @@
 - `typedef` (`stderr` is `FILE *`, though internally it seems to be `struct __sFILE *` internally)
 - `extern` (`stderr`)
 - `#include`, `#define`, `#ifdef`
-- pointer comparison
 - `int f(struct A a)`
 - full function prototype
 
