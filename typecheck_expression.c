@@ -877,6 +877,18 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 					    typecheck_expression(ptr_ps, *uexpr.ptr1);
 					struct Expr expr2 =
 					    typecheck_expression(ptr_ps, *uexpr.ptr2);
+
+					if (is_pointer(expr.details.type) &&
+					    expr2.category == INT_VALUE && expr2.int_value == 0) {
+						expr2.category = NULLPTR;
+						expr2.details.type = expr.details.type;
+					} else if (is_pointer(expr2.details.type) &&
+					           expr.category == INT_VALUE &&
+					           expr.int_value == 0) {
+						expr.category = NULLPTR;
+						expr.details.type = expr2.details.type;
+					}
+
 					expect_type(ptr_ps, expr.details.type, expr2.details.type,
 					            "mismatch in operands of an "
 					            "equality/comparison operator");

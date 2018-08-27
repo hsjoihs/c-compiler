@@ -7,6 +7,12 @@ run_test() {
 	res=$?
 	if [ $res -ne $3 ]; then { echo "got:" $res; echo "expected:" $3; echo -e "\033[31mFAIL\033[m, at test case" $1: $2; exit 1; }; else echo -e "\033[32mPASS\033[m"; fi
 }
+
+run_test 287 'int main(){int a[5];int *p = a;if (p == 0) {return 174;} else {return 1;}}' 1
+run_test 288 'int main(){int a[5];int *p = 0;if (p == 0) {return 174;} else {return 1;}}' 174
+run_test 289 'int main(){int a[5];int *p = 0;if (p != 0) {return 174;} else {return 1;}}' 1
+run_test 290 'int main(){int a[5];int *p = a;if (p != 0) {return 174;} else {return 1;}}' 174
+
 run_test 286 'int main(); int main(void){return 174;} int main(void);' 174
 
 run_test 274 'int main(){int a[5];int *p = a;int *q = a+3;if (p < q) {return 174;} else {return 1;}}' 174
