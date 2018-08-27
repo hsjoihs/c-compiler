@@ -6,7 +6,7 @@ struct LocalVarInfo {
 };
 
 struct ScopeChain {
-	struct Map var_table;
+	struct Map2 *var_table;
 	struct ScopeChain *outer;
 };
 
@@ -17,12 +17,12 @@ struct EnumeratorAndValue {
 
 struct AnalyzerState {
 	struct ScopeChain scope_chain;
-	struct Map /*<Type>*/ global_vars_type_map;
-	struct Map /*<Type>*/ func_info_map;
+	struct Map2 * /*<Type>*/ global_vars_type_map;
+	struct Map2 * /*<Type>*/ func_info_map;
 	struct Type func_ret_type;
 	int newest_offset;
-	struct Map /*<StructInternalCompleteInfo>*/ global_struct_tag_map;
-	struct Map /*<struct Vector<EnumeratorAndValue>>*/ global_enum_tag_map;
+	struct Map2 * /*<StructInternalCompleteInfo>*/ global_struct_tag_map;
+	struct Map2 * /*<struct Vector<EnumeratorAndValue>>*/ global_enum_tag_map;
 	struct Vector /*<EnumeratorAndValue>*/ global_enumerator_list;
 };
 
