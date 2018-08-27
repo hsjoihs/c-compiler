@@ -6,15 +6,16 @@ ifeq ($(UNAME_S),Darwin)
     CCFLAGS += -D OSX
 endif
 
-notest2:
+# out/compiler.out is purely from clang/gcc
+1stgen:
 	gcc -Wall -Wextra -DOVERRIDE_STD -g std.c codegen.c alignment.c parse_analyze_toplevel.c parse_analyze_statement.c codegen_expression.c main.c vector.c typecheck_expression.c parse_expression.c error.c type.c parse_type.c map.c print_x86_64.c $(CCFLAGS) lexer.c -o out/compiler.out
 
 test_mixed_compiler:
-	make notest2
+	make 1stgen
 	gcc -E vector.c -DOVERRIDE_STD -U__STDC__ | grep -v "#" | ./out/compiler.out > self_compile_asm/vector.s
 	gcc -Wall -Wextra -DOVERRIDE_STD -g std.c codegen.c alignment.c parse_analyze_toplevel.c parse_analyze_statement.c codegen_expression.c main.c self_compile_asm/vector.s typecheck_expression.c parse_expression.c error.c type.c parse_type.c map.c print_x86_64.c $(CCFLAGS) lexer.c -o out/compiler.out
 	./test_cases.sh
-	make ch
+	./test_compile_error.sh
 
 test_all_:
 	make supplement
@@ -44,7 +45,7 @@ assembly_sandbox:
 
 compile_files:
 	make supplement
-	make notest2
+	make 1stgen
 	./build_files.sh
 	cat test/quine.c | ./out/compiler.out > s/quine.s
 	gcc s/quine.s -o out/quine.out
@@ -66,20 +67,17 @@ compile_files:
 test_valid:
 	rm out/*.out
 	make supplement
-	make notest2
+	make 1stgen
 	./test_cases.sh
 
 check_error:
-	make notest2
-	make ch
-
-ch:
-	./test_compile_error.sh 
+	make 1stgen
+	./test_compile_error.sh
 
 # clang-format or clang
 notest:
 	make format
-	make notest2
+	make 1stgen
 
 warn:
 	make format
