@@ -1,6 +1,5 @@
 #include "map.h"
 #include "std.h"
-#include <stdio.h>
 
 struct Map2 {
 	int _length;
