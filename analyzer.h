@@ -6,7 +6,7 @@ struct LocalVarInfo {
 };
 
 struct ScopeChain {
-	struct Map2 *var_table;
+	struct Map2 * /*<LocalVarInfo>*/ var_table;
 	struct ScopeChain *outer;
 };
 
