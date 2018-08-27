@@ -10,10 +10,16 @@ endif
 1stgen:
 	gcc -Wall -Wextra -DOVERRIDE_STD -g std.c codegen.c alignment.c parse_analyze_toplevel.c parse_analyze_statement.c codegen_expression.c main.c vector.c typecheck_expression.c parse_expression.c error.c type.c parse_type.c map.c print_x86_64.c $(CCFLAGS) lexer.c -o out/compiler.out
 
-test_mixed_compiler:
+2ndgen:
 	make 1stgen
 	gcc -E vector.c -DOVERRIDE_STD -U__STDC__ | grep -v "#" | ./out/compiler.out > self_compile_asm/vector.s
-	gcc -Wall -Wextra -DOVERRIDE_STD -g std.c codegen.c alignment.c parse_analyze_toplevel.c parse_analyze_statement.c codegen_expression.c main.c self_compile_asm/vector.s typecheck_expression.c parse_expression.c error.c type.c parse_type.c map.c print_x86_64.c $(CCFLAGS) lexer.c -o out/compiler.out
+	gcc -Wall -Wextra -DOVERRIDE_STD std.c codegen.c alignment.c parse_analyze_toplevel.c parse_analyze_statement.c codegen_expression.c main.c self_compile_asm/vector.s typecheck_expression.c parse_expression.c error.c type.c parse_type.c map.c print_x86_64.c $(CCFLAGS) lexer.c -o out/compiler.out
+
+test_mixed_compiler:
+	make 2ndgen
+	gcc -E vector.c -DOVERRIDE_STD -U__STDC__ | grep -v "#" | ./out/compiler.out > self_compile_asm/vector__with2nd.s
+	gcc -Wall -Wextra -DOVERRIDE_STD std.c codegen.c alignment.c parse_analyze_toplevel.c parse_analyze_statement.c codegen_expression.c main.c self_compile_asm/vector__with2nd.s typecheck_expression.c parse_expression.c error.c type.c parse_type.c map.c print_x86_64.c $(CCFLAGS) lexer.c -o out/compiler_gen3.out
+	cmp out/compiler.out out/compiler_gen3.out || { echo "\n\033[31mBINARY COMPARISON FAIL\033[m"; exit 1; }
 	./test_cases.sh
 	./test_compile_error.sh
 
