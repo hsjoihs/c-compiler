@@ -107,8 +107,7 @@ static void record_global_struct_declaration(struct AnalyzerState *ptr_ps,
 	ptr_complete->offset_vec = offset_vec;
 	ptr_complete->s_and_a = outer_s_and_a;
 
-	insert(&ptr_ps->global_struct_tag_map, struct_type.struct_tag,
-	       ptr_complete);
+	insert(ptr_ps->global_struct_tag_map, struct_type.struct_tag, ptr_complete);
 }
 
 static void record_global_enum_declaration(struct AnalyzerState *ptr_ps,
@@ -134,7 +133,7 @@ static void record_global_enum_declaration(struct AnalyzerState *ptr_ps,
 
 	concat_vector(&ptr_ps->global_enumerator_list, ptr_e_and_v_vec);
 
-	insert(&ptr_ps->global_enum_tag_map, type.enum_tag, ptr_e_and_v_vec);
+	insert(ptr_ps->global_enum_tag_map, type.enum_tag, ptr_e_and_v_vec);
 }
 
 static void
@@ -193,7 +192,7 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 
 		struct Type *ptr_type = calloc(1, sizeof(struct Type));
 		*ptr_type = declarator_type;
-		insert(&ptr_ps->global_vars_type_map, declarator_name, ptr_type);
+		insert(ptr_ps->global_vars_type_map, declarator_name, ptr_type);
 
 		*ptr_tokvec = tokvec2;
 
@@ -222,13 +221,13 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 	*ptr_func_info = declarator_type;
 
 	if (!ptr_old_func_info) {
-		insert(&ptr_ps->func_info_map, declarator_name, ptr_func_info);
+		insert(ptr_ps->func_info_map, declarator_name, ptr_func_info);
 	} else {
 		expect_type(ptr_ps, declarator_type, *ptr_old_func_info,
 		            "conflicting function definition");
 		if (!(ptr_old_func_info->is_param_infos_valid) &&
 		    declarator_type.is_param_infos_valid) {
-			insert(&ptr_ps->func_info_map, declarator_name, ptr_func_info);
+			insert(ptr_ps->func_info_map, declarator_name, ptr_func_info);
 		}
 	}
 

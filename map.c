@@ -13,22 +13,22 @@ struct _mapchip {
 };
 
 /* it overrides; it does not overwrite. */
-void insert(struct Map2 **ptr, const char *key, void *value)
+void insert(struct Map2 *map, const char *key, void *value)
 {
 	struct _mapchip a;
 	a.ptr = key;
 	a.value = value;
 
-	if ((*ptr)->_alloc < (*ptr)->_length + 1) {
+	if (map->_alloc < map->_length + 1) {
 
-		(*ptr)->_vec =
-		    realloc((*ptr)->_vec, (*ptr)->_alloc * 2 * sizeof(struct _mapchip));
+		map->_vec =
+		    realloc(map->_vec, map->_alloc * 2 * sizeof(struct _mapchip));
 
-		(*ptr)->_alloc *= 2;
+		map->_alloc *= 2;
 	}
 
-	(*ptr)->_vec[(*ptr)->_length] = a;
-	++((*ptr)->_length);
+	map->_vec[map->_length] = a;
+	++(map->_length);
 }
 
 void *lookup(const struct Map2 *m, const char *key)

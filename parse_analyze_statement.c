@@ -25,7 +25,7 @@ int add_local_var_to_scope(struct AnalyzerState *ptr_ps,
 	struct LocalVarInfo *ptr_varinfo = calloc(1, sizeof(struct LocalVarInfo));
 	ptr_varinfo->offset = ptr_ps->newest_offset;
 	ptr_varinfo->type = vartype;
-	insert(&ptr_ps->scope_chain.var_table, str, ptr_varinfo);
+	insert(ptr_ps->scope_chain.var_table, str, ptr_varinfo);
 
 	return ptr_varinfo->offset;
 }
