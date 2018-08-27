@@ -792,7 +792,16 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 					exit(EXIT_FAILURE);
 				}
 
-				if (is_pointer(expr.details.type)) {
+				if (expr.details.type.type_category == STRUCT_) {
+					if (uexpr.operator_ != OP_EQ) {
+						fprintf(stderr, "invalid compound assignment operator "
+						                "used on a struct\n");
+						exit(EXIT_FAILURE);
+					}
+					expect_type(ptr_ps, expr.details.type, expr2.details.type,
+					            "mismatch in assignment operator");
+					unsupported("assignment of struct");
+				} else if (is_pointer(expr.details.type)) {
 					if (uexpr.operator_ == OP_EQ) {
 						if (expr2.category == INT_VALUE &&
 						    expr2.int_value == 0) {
@@ -807,7 +816,8 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 						expect_type(ptr_ps, expr2.details.type, INT_TYPE(),
 						            "right side of += or -= to a pointer");
 					} else {
-						fprintf(stderr, "invalid operator used on a pointer\n");
+						fprintf(stderr, "invalid compound assignment operator "
+						                "used on a pointer\n");
 						exit(EXIT_FAILURE);
 					}
 				} else {
