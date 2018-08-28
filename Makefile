@@ -1,9 +1,9 @@
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
-    OSFLAG += -D LINUX
+    OSFLAG += -DLINUX
 endif
 ifeq ($(UNAME_S),Darwin)
-    OSFLAG += -D OSX
+    OSFLAG += -DOSX
 endif
 
 # out/compiler.out is purely from clang/gcc
@@ -12,18 +12,18 @@ endif
 
 2ndgen:
 	make 1stgen
-	gcc -E vector.c -DOVERRIDE_STD -U__STDC__ $(OSFLAG) | grep -v "#" | ./out/compiler.out > self_compile_asm/vector.s
-	gcc -E map.c -DOVERRIDE_STD -U__STDC__ $(OSFLAG) | grep -v "#" | ./out/compiler.out > self_compile_asm/map.s
-	gcc -E print_x86_64.c -DOVERRIDE_STD -U__STDC__ $(OSFLAG) | grep -v "#" | ./out/compiler.out > self_compile_asm/print_x86_64.s
+	./compile.sh vector $(OSFLAG)
+	./compile.sh map $(OSFLAG)
+	./compile.sh print_x86_64 $(OSFLAG)
 	gcc -Wall -Wextra -DOVERRIDE_STD std.c codegen.c alignment.c parse_analyze_toplevel.c parse_analyze_statement.c codegen_expression.c main.c self_compile_asm/vector.s typecheck_expression.c parse_expression.c error.c type.c parse_type.c self_compile_asm/map.s self_compile_asm/print_x86_64.s $(OSFLAG) lexer.c -o out/compiler.out
 
 test_mixed_compiler:
 	make 2ndgen
 	./test_cases.sh
 	./test_compile_error.sh
-	gcc -E vector.c -DOVERRIDE_STD -U__STDC__ $(OSFLAG) | grep -v "#" | ./out/compiler.out > self_compile_asm/vector__with2nd.s
-	gcc -E map.c -DOVERRIDE_STD -U__STDC__ $(OSFLAG) | grep -v "#" | ./out/compiler.out > self_compile_asm/map__with2nd.s
-	gcc -E print_x86_64.c -DOVERRIDE_STD -U__STDC__ $(OSFLAG) | grep -v "#" | ./out/compiler.out > self_compile_asm/print_x86_64__with2nd.s
+	./compile.sh vector $(OSFLAG) __with_2nd
+	./compile.sh map $(OSFLAG) __with_2nd
+	./compile.sh print_x86_64 $(OSFLAG) __with_2nd
 	gcc -Wall -Wextra -DOVERRIDE_STD std.c codegen.c alignment.c parse_analyze_toplevel.c parse_analyze_statement.c codegen_expression.c main.c self_compile_asm/vector__with2nd.s typecheck_expression.c parse_expression.c error.c type.c parse_type.c self_compile_asm/map__with2nd.s self_compile_asm/print_x86_64__with2nd.s $(OSFLAG) lexer.c -o out/compiler_gen3.out
 	cmp out/compiler.out out/compiler_gen3.out || { echo "\n\033[31mBINARY COMPARISON FAIL\033[m"; exit 1; }
 	
