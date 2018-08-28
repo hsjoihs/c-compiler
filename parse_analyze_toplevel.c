@@ -107,7 +107,11 @@ enum SystemVAbiClass system_v_abi_class_of(const struct AnalyzerState *ptr_ps,
 				    type.struct_tag);
 				exit(EXIT_FAILURE);
 			}
-			unsupported("system v abi class of struct");
+
+			if (size_of(ptr_ps, type) > 2 * 8) {
+				return MEMORY_CLASS;
+			}
+			return INTEGER_CLASS;
 	}
 }
 
