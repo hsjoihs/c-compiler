@@ -164,6 +164,16 @@ static struct Toplevel
 parse_toplevel_definition(struct AnalyzerState *ptr_ps,
                           const struct Token **ptr_tokvec)
 {
+	const struct Token *tokvec2 = *ptr_tokvec;
+
+	int is_extern_global_var = 0;
+	if (tokvec2[0].kind == RES_EXTERN) {
+		tokvec2++;
+		is_extern_global_var = 1;
+	}
+
+	*ptr_tokvec = tokvec2;
+
 	struct Type *optional_ptr_type =
 	    try_parse_type_specifier_and_semicolon(ptr_tokvec);
 
@@ -179,7 +189,6 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 		return d;
 	}
 
-	const struct Token *tokvec2 = *ptr_tokvec;
 	const char *declarator_name;
 	struct Type declarator_type =
 	    parse_type_specifier_and_declarator(&tokvec2, &declarator_name);
@@ -201,6 +210,7 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 		d.declarator_name = declarator_name;
 		d.declarator_type = declarator_type;
 		d.size_of_declarator_type = size_of(ptr_ps, declarator_type);
+		d.is_extern_global_var = is_extern_global_var;
 		return d;
 	}
 

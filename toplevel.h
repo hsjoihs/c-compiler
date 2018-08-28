@@ -25,6 +25,7 @@ struct Toplevel {
 	struct ToplevelFuncInfo func;
 
 	int size_of_declarator_type;
+	int is_extern_global_var;
 };
 
 void generate(const struct Vector /*<Toplevel>*/ vec);

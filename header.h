@@ -71,7 +71,8 @@ enum TokenKind {
 	RES_ALIGNOF,
 	RES_ENUM,
 	RES_CONST,
-	RES_NORETURN
+	RES_NORETURN,
+	RES_EXTERN,
 };
 
 struct Token {

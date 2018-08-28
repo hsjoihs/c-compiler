@@ -373,7 +373,7 @@ static void print_toplevel_definition(struct PrinterState *ptr_prs,
                                       const struct Toplevel def)
 {
 	if (def.category == TOPLEVEL_VAR_DEFINITION) {
-		if (def.declarator_name) {
+		if (def.declarator_name && !def.is_extern_global_var) {
 			gen_global_declaration(def.declarator_name,
 			                       def.size_of_declarator_type);
 		}

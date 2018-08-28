@@ -20,7 +20,7 @@ int fprintf();
 int printf();
 #endif
 
-char *fgets(char *buf, int a, FILE *fp);
+char *fgets(char *buf, int a, struct __FILE *fp);
 int puts(const char *str);
 
 #endif

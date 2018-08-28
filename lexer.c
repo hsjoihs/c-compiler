@@ -518,6 +518,8 @@ struct Token get_token(const char **ptr_to_str)
 		t.kind = RES_CONST;
 	} else if (strcmp(new_str, "_Noreturn") == 0) {
 		t.kind = RES_NORETURN;
+	} else if (strcmp(new_str, "extern") == 0) {
+		t.kind = RES_EXTERN;
 	}
 	return t;
 }
