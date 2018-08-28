@@ -17,8 +17,7 @@ _Noreturn void exit();
 
 #ifdef __STDC__
 #define size_t2 unsigned long
-#endif
-#ifndef __STDC__
+#else
 #define size_t2 int
 #endif
 size_t2 strlen();
