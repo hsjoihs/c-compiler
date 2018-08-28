@@ -63,18 +63,18 @@ int main()
 		gen_push_int(1);
 		gen_write_to_local(-24);
 		gen_discard();
-		puts("  movq -24(%rbp), %rax\n"
-		     "  movq %rax, (%rsp)\n"
-		     "  movq (%rsp),%rax\n"
-		     "  movq %rax, -12(%rbp)\n"
-		     "  movl -16(%rbp), %eax\n"
-		     "  movl %eax, -4(%rbp)\n"
-		     "  movq -12(%rbp), %rdx\n"
-		     "  movl -4(%rbp), %eax\n"
-		     "  movq %rdx, %rcx\n"
-		     "  movl %eax, %edx\n"
+		puts(
+
+		    "  movq -24(%rbp), %rax\n"
+		    "  movq %rax, -12(%rbp)\n"
+
+		    "  movl -16(%rbp), %eax\n"
+		    "  movl %eax, -4(%rbp)\n");
+
+		puts("  movq -12(%rbp), %rax\n"
+		     "  movl -4(%rbp), %edx\n"
 		     "  subq $8, %rsp\n"
-		     "  movq %rcx, (%rsp)\n");
+		     "  movq %rax, (%rsp)\n");
 		gen_epilogue_8byte(5423);
 	}
 
