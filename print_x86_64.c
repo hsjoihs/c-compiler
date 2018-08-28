@@ -14,6 +14,18 @@ void gen_prologue(int alloc_size, const char *fname)
 	}
 }
 
+void gen_prologue_static(int alloc_size, const char *fname)
+{
+	printf("//gen_prologue_static(%d, %s)\n", alloc_size, fname);
+	printf(PREFIX "%s:\n"
+	              "  pushq %%rbp\n"
+	              "  movq %%rsp, %%rbp\n",
+	       fname);
+	if (alloc_size) {
+		printf("  subq $%d, %%rsp\n", alloc_size);
+	}
+}
+
 /* write to local mem what's at the top of the stack. does not consume stack. */
 void gen_write_to_local(int offset)
 {

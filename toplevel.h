@@ -6,6 +6,7 @@ struct ToplevelFuncInfo {
 	struct Vector /*<LocalVarInfo>*/ offsets_and_types;
 	struct Type ret_type;
 	int capacity;
+	int is_static_function;
 };
 
 enum ToplevelCategory {

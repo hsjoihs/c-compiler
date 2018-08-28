@@ -398,7 +398,11 @@ static void print_toplevel_definition(struct PrinterState *ptr_prs,
 	int label2;
 	label1 = get_new_label_name(ptr_prs);
 	label2 = get_new_label_name(ptr_prs);
-	gen_prologue(def.func.capacity, declarator_name);
+	if (def.func.is_static_function) {
+		gen_prologue_static(def.func.capacity, declarator_name);
+	} else {
+		gen_prologue(def.func.capacity, declarator_name);
+	}
 	for (int counter = 0; counter < offsets_and_types.length; ++counter) {
 		const struct LocalVarInfo *ptr_info = offsets_and_types.vector[counter];
 

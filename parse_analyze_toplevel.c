@@ -172,6 +172,12 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 		is_extern_global_var = 1;
 	}
 
+	int is_static_function = 0;
+	if (tokvec2[0].kind == RES_STATIC) {
+		tokvec2++;
+		is_static_function = 1;
+	}
+
 	*ptr_tokvec = tokvec2;
 
 	struct Type *optional_ptr_type =
@@ -290,6 +296,7 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 	def.func.offsets_and_types = offsets_and_types;
 	def.func.ret_type = ret_type;
 	def.func.capacity = -ptr_ps->newest_offset;
+	def.func.is_static_function = is_static_function;
 	return def;
 }
 

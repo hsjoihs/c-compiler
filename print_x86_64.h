@@ -72,6 +72,7 @@ void gen_if_neg8_matches_jmp_4byte(int constant1, int label1);
 void gen_extend_to_4byte(void);
 void gen_compare_ptrs(const char *str);
 void gen_copy_struct_and_discard(int size);
+void gen_prologue_static(int alloc_size, const char *fname);
 
 #ifdef OSX
 #define PREFIX "_"

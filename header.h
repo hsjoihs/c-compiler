@@ -73,6 +73,7 @@ enum TokenKind {
 	RES_CONST,
 	RES_NORETURN,
 	RES_EXTERN,
+	RES_STATIC,
 };
 
 struct Token {
