@@ -414,17 +414,15 @@ void print_expression(struct PrinterState *ptr_prs, struct Expr expr)
 			struct Type ret_type = expr.details.type;
 
 			for (int counter = expr.args.length - 1; counter >= 0; counter--) {
-				struct Expr expr_ =
-				    *(const struct Expr *)(expr.args.vector[counter]);
+				const struct Expr *ptr_expr_ = expr.args.vector[counter];
 
-				print_expression(ptr_prs, expr_);
+				print_expression(ptr_prs, *ptr_expr_);
 			}
 
 			for (int counter = 0; counter < expr.args.length; counter++) {
-				struct Expr expr_ =
-				    *(const struct Expr *)(expr.args.vector[counter]);
+				const struct Expr *ptr_expr_ = expr.args.vector[counter];
 
-				switch (size_of_basic(expr_.details.type)) {
+				switch (size_of_basic(ptr_expr_->details.type)) {
 					case 1:
 					case 4:
 						gen_pop_to_reg_4byte(

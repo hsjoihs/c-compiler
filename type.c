@@ -74,7 +74,7 @@ void debug_print_type(struct Type type)
 					fprintf(stderr, "no params");
 				} else if (type.param_infos.length < 2) {
 					const struct TypeAndIdent *vec_0 =
-					    (const struct TypeAndIdent *)type.param_infos.vector[0];
+					    type.param_infos.vector[0];
 					fprintf(stderr, "%s: ",
 					        vec_0->ident_str ? vec_0->ident_str : "@anon");
 					debug_print_type(vec_0->type);
@@ -82,8 +82,7 @@ void debug_print_type(struct Type type)
 					fprintf(stderr, "params: \n");
 					for (int i = 0; i < type.param_infos.length; i++) {
 						const struct TypeAndIdent *ptr_paraminfo =
-						    (const struct TypeAndIdent *)
-						        type.param_infos.vector[i];
+						    type.param_infos.vector[i];
 						fprintf(stderr, "  %s: ",
 						        ptr_paraminfo->ident_str
 						            ? ptr_paraminfo->ident_str
