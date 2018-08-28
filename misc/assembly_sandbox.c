@@ -6,44 +6,47 @@ int main()
 	/*
 struct B {int a; int b;};
 struct D {int a; int b; char c;};
-struct F {int *a; int *b; char *c; char *d; int *e;};
+struct F {int k; int *a; int *b; char *c; char *d; int *e;};
 
 struct B foo()
 {
-	struct B s;
-	s.a = 1;
-	s.b = 2;
-	return s;
+    struct B s;
+    s.a = 1;
+    return s;
 }
 
 struct D bar()
 {
-	struct D s;
-	s.a = 1;
-	s.b = 2;
-	return s;
+    struct D s;
+    s.a = 1;
+    return s;
 }
 
 
 struct F baz()
 {
-	struct F s;
-	s.a = 0;
-	s.b = 0;
-	return s;
+    struct F s;
+    s.k = 172;
+    return s;
 }
 
 
 int main()
 {
-	struct B b;
-	b = foo();
+    int num = 0;
+    struct B b;
+    b = foo();
+    num += b.a;
 
-	struct D a;
-	a = bar();
+    struct D a;
+    a = bar();
+    num += a.a;
 
-	struct F c;
-	c = baz();
+    struct F c;
+    c = baz();
+    num += c.k;
+
+    return num;
 }
 
 	*/
