@@ -71,6 +71,7 @@ int main()
 	     "  movq %rcx, (%rsp)\n");
 	gen_epilogue_8byte(5423);
 
+{
 	/* baz */
 	gen_prologue(8, "baz");
 
@@ -82,16 +83,10 @@ int main()
 
 	gen_push_from_local_8byte(-56);
 	gen_push_address_of_local(-48);
-	
 	gen_copy_struct_and_discard(48);
 
-	puts(
-		"  subq $16, %rsp\n"
-	    "  movq -56(%rbp), %rdx\n"
-	    "  movq %rdx, (%rsp)\n"
-
-	    "  addq $8, %rsp\n");
 	gen_epilogue_8byte(5463);
+}
 
 	gen_prologue(80, "main");
 	puts("  movl $0, -4(%rbp)\n"
