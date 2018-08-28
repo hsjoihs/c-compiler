@@ -1,6 +1,13 @@
-#include <stdio.h>
 #include <assert.h>
-struct F {int k; int *a; int *b; char *c; char *d; int *e;};
+#include <stdio.h>
+struct F {
+	int k;
+	int *a;
+	int *b;
+	char *c;
+	char *d;
+	int *e;
+};
 struct F baz(void);
 
 int main()
@@ -13,4 +20,3 @@ int main()
 	printf("successful\n");
 	return 0;
 }
-

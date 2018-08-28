@@ -10,43 +10,43 @@ struct F {int k; int *a; int *b; char *c; char *d; int *e;};
 
 struct B foo()
 {
-    struct B s;
-    s.a = 1;
-    return s;
+	struct B s;
+	s.a = 1;
+	return s;
 }
 
 struct D bar()
 {
-    struct D s;
-    s.a = 1;
-    return s;
+	struct D s;
+	s.a = 1;
+	return s;
 }
 
 
 struct F baz()
 {
-    struct F s;
-    s.k = 172;
-    return s;
+	struct F s;
+	s.k = 172;
+	return s;
 }
 
 
 int main()
 {
-    int num = 0;
-    struct B b;
-    b = foo();
-    num += b.a;
+	int num = 0;
+	struct B b;
+	b = foo();
+	num += b.a;
 
-    struct D a;
-    a = bar();
-    num += a.a;
+	struct D a;
+	a = bar();
+	num += a.a;
 
-    struct F c;
-    c = baz();
-    num += c.k;
+	struct F c;
+	c = baz();
+	num += c.k;
 
-    return num;
+	return num;
 }
 
 	*/
@@ -57,36 +57,43 @@ int main()
 	     "  movq %rax, (%rsp)\n");
 	gen_epilogue_8byte(523);
 
-	gen_prologue(8, "bar");
-	puts("  movl $1, -24(%rbp)\n"
-	     "  movq -24(%rbp), %rax\n"
-	     "  movq %rax, -12(%rbp)\n"
-	     "  movl -16(%rbp), %eax\n"
-	     "  movl %eax, -4(%rbp)\n"
-	     "  movq -12(%rbp), %rdx\n"
-	     "  movl -4(%rbp), %eax\n"
-	     "  movq %rdx, %rcx\n"
-	     "  movl %eax, %edx\n"
-	     "  subq $8, %rsp\n"
-	     "  movq %rcx, (%rsp)\n");
-	gen_epilogue_8byte(5423);
+	{
+		gen_prologue(8, "bar");
 
-{
-	/* baz */
-	gen_prologue(8, "baz");
+		gen_push_int(1);
+		gen_write_to_local(-24);
+		gen_discard();
+		puts("  movq -24(%rbp), %rax\n"
+		     "  movq %rax, (%rsp)\n"
+		     "  movq (%rsp),%rax\n"
+		     "  movq %rax, -12(%rbp)\n"
+		     "  movl -16(%rbp), %eax\n"
+		     "  movl %eax, -4(%rbp)\n"
+		     "  movq -12(%rbp), %rdx\n"
+		     "  movl -4(%rbp), %eax\n"
+		     "  movq %rdx, %rcx\n"
+		     "  movl %eax, %edx\n"
+		     "  subq $8, %rsp\n"
+		     "  movq %rcx, (%rsp)\n");
+		gen_epilogue_8byte(5423);
+	}
 
-	gen_write_register_to_local_8byte("rdi", -56);
+	{
+		/* baz */
+		gen_prologue(8, "baz");
 
-	gen_push_int(172);
-	gen_write_to_local(-48);
-	gen_discard();
+		gen_write_register_to_local_8byte("rdi", -56);
 
-	gen_push_from_local_8byte(-56);
-	gen_push_address_of_local(-48);
-	gen_copy_struct_and_discard(48);
+		gen_push_int(172);
+		gen_write_to_local(-48);
+		gen_discard();
 
-	gen_epilogue_8byte(5463);
-}
+		gen_push_from_local_8byte(-56);
+		gen_push_address_of_local(-48);
+		gen_copy_struct_and_discard(48);
+
+		gen_epilogue_8byte(5463);
+	}
 
 	gen_prologue(80, "main");
 	puts("  movl $0, -4(%rbp)\n"

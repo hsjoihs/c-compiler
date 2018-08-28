@@ -1,5 +1,12 @@
 #include <stdlib.h>
-struct F {int k; int *a; int *b; char *c; char *d; int *e;};
+struct F {
+	int k;
+	int *a;
+	int *b;
+	char *c;
+	char *d;
+	int *e;
+};
 
 void baz(struct F *ptr)
 {
@@ -9,7 +16,6 @@ void baz(struct F *ptr)
 	q[1] = 5;
 	q[2] = 6;
 	ptr->a = q;
-	ptr->b = q+1;
-	ptr->e = q+2;
+	ptr->b = q + 1;
+	ptr->e = q + 2;
 }
-
