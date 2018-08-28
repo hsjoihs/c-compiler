@@ -42,14 +42,14 @@ clean:
 	rm out/*.out s/*.s
 
 supplement:
-	gcc supplement.c -S -o s/supplement.s
+	gcc misc/supplement.c -S -o s/supplement.s
 
 verify_typeparse:
 	clang -Wall -Wextra -Wimplicit-fallthrough $(OSFLAG) vector.c verifier/typeparse_checker.c lexer.c type.c parse_type.c error.c -o out/typeparse_check.out
 	./out/typeparse_check.out
 
 assembly_sandbox:
-	gcc -Wall -Wextra assembly_sandbox.c print_x86_64.c $(OSFLAG) -o out/assembly_sandbox.out
+	gcc -Wall -Wextra misc/assembly_sandbox.c print_x86_64.c $(OSFLAG) -o out/assembly_sandbox.out
 	echo -e '' | ./out/assembly_sandbox.out > s/assembly_sandbox.s
 	gcc s/assembly_sandbox.s s/supplement.s -o out/sandbox.out
 	./out/sandbox.out || if [ $$? -ne 174 ]; then { echo "\n\033[31mFAIL\033[m"; exit 1; }; else echo "\n\033[32mPASS\033[m"; fi
@@ -93,7 +93,7 @@ notest:
 warn:
 	make format
 	clang -Wall -Wextra -Wimplicit-fallthrough -Weverything -Wno-documentation -Wno-padded -Wno-missing-prototypes -Wno-switch-enum -DOVERRIDE_STD std.c codegen.c alignment.c parse_analyze_toplevel.c parse_analyze_statement.c codegen_expression.c main.c vector.c typecheck_expression.c parse_expression.c error.c type.c parse_type.c map.c print_x86_64.c $(OSFLAG) lexer.c -o out/compiler.out
-	clang -Wall -Wextra -Wimplicit-fallthrough -Weverything -Wno-documentation -Wno-padded -Wno-missing-prototypes -Wno-switch-enum assembly_sandbox.c print_x86_64.c $(OSFLAG) -o out/assembly_sandbox.out
+	clang -Wall -Wextra -Wimplicit-fallthrough -Weverything -Wno-documentation -Wno-padded -Wno-missing-prototypes -Wno-switch-enum misc/assembly_sandbox.c print_x86_64.c $(OSFLAG) -o out/assembly_sandbox.out
 
 f:
 	make format
