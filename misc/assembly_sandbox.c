@@ -68,25 +68,31 @@ int main()
 	     "  movq %rcx, (%rsp)\n");
 	gen_epilogue_8byte(5423);
 
+	/* baz */
 	gen_prologue(8, "baz");
-	puts("  movq %rdi, -56(%rbp)\n"
-	     "  movl $172, -48(%rbp)\n"
-	     "  movq -56(%rbp), %rax\n"
-	     "  movq -48(%rbp), %rdx\n"
-	     "  movq -40(%rbp), %rcx\n"
-	     "  movq %rdx, (%rax)\n"
-	     "  movq %rcx, 8(%rax)\n"
-	     "  movq -32(%rbp), %rdx\n"
-	     "  movq -24(%rbp), %rcx\n"
-	     "  movq %rdx, 16(%rax)\n"
-	     "  movq %rcx, 24(%rax)\n"
-	     "  movq -16(%rbp), %rdx\n"
-	     "  movq -8(%rbp), %rcx\n"
-	     "  movq %rdx, 32(%rax)\n"
-	     "  movq %rcx, 40(%rax)\n"
+
+	gen_write_register_to_local_8byte("rdi", -56);
+
+	gen_push_int(172);
+	gen_write_to_local(-48);
+	gen_discard();
+	puts(
+	     "  movq -56(%rbp), %rdx\n"
+	     "  movq -48(%rbp), %rax\n"
+	     "  movq %rax, (%rdx)\n"
+	     "  movq -40(%rbp), %rax\n"
+	     "  movq %rax, 8(%rdx)\n"
+	     "  movq -32(%rbp), %rax\n"
+	     "  movq %rax, 16(%rdx)\n"
+	     "  movq -24(%rbp), %rax\n"
+	     "  movq %rax, 24(%rdx)\n"
+	     "  movq -16(%rbp), %rax\n"
+	     "  movq %rax, 32(%rdx)\n"
+	     "  movq -8(%rbp), %rax\n"
+	     "  movq %rax, 40(%rdx)\n"
 	     "  subq $8, %rsp\n"
-	     "  movq -56(%rbp), %rax\n"
-	     "  movq  %rax, (%rsp)\n");
+	     "  movq -56(%rbp), %rdx\n"
+	     "  movq %rdx, (%rsp)\n");
 	gen_epilogue_8byte(5463);
 
 	gen_prologue(80, "main");
