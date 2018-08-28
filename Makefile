@@ -27,7 +27,7 @@ test_mixed_compiler:
 	gcc -Wall -Wextra -DOVERRIDE_STD std.c codegen.c alignment.c parse_analyze_toplevel.c parse_analyze_statement.c codegen_expression.c main.c self_compile_asm/vector__with2nd.s typecheck_expression.c parse_expression.c error.c type.c parse_type.c self_compile_asm/map__with2nd.s self_compile_asm/print_x86_64__with2nd.s $(OSFLAG) lexer.c -o out/compiler_gen3.out
 	diff self_compile_asm/vector.s self_compile_asm/vector__with2nd.s
 	diff self_compile_asm/map.s self_compile_asm/map__with2nd.s
-	diff self_compile_asm/print_x86_64.c self_compile_asm/print_x86_64__with2nd.s
+	diff self_compile_asm/print_x86_64.s self_compile_asm/print_x86_64__with2nd.s
 	
 
 test_all_:
