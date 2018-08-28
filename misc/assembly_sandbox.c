@@ -47,13 +47,14 @@ int main()
 }
 
 	*/
-	gen_prologue(0, "foo");
+	gen_prologue(8, "foo");
 	puts("  movl $1, -8(%rbp)\n"
+	     "  subq $8, %rsp\n"
 	     "  movq -8(%rbp), %rax\n"
-	     "  popq %rbp\n"
-	     "  ret\n");
+	     "  movq %rax, (%rsp)\n");
+	gen_epilogue_8byte(523);
 
-	gen_prologue(0, "bar");
+	gen_prologue(8, "bar");
 	puts("  movl $1, -24(%rbp)\n"
 	     "  movq -24(%rbp), %rax\n"
 	     "  movq %rax, -12(%rbp)\n"
@@ -63,11 +64,11 @@ int main()
 	     "  movl -4(%rbp), %eax\n"
 	     "  movq %rdx, %rcx\n"
 	     "  movl %eax, %edx\n"
-	     "  movq %rcx, %rax\n"
-	     "  popq %rbp\n"
-	     "  ret\n");
+	     "  subq $8, %rsp\n"
+	     "  movq %rcx, (%rsp)\n");
+	gen_epilogue_8byte(5423);
 
-	gen_prologue(0, "baz");
+	gen_prologue(8, "baz");
 	puts("  movq %rdi, -56(%rbp)\n"
 	     "  movl $172, -48(%rbp)\n"
 	     "  movq -56(%rbp), %rax\n"
@@ -83,9 +84,10 @@ int main()
 	     "  movq -8(%rbp), %rcx\n"
 	     "  movq %rdx, 32(%rax)\n"
 	     "  movq %rcx, 40(%rax)\n"
+	     "  subq $8, %rsp\n"
 	     "  movq -56(%rbp), %rax\n"
-	     "  popq %rbp\n"
-	     "  ret\n");
+	     "  movq  %rax, (%rsp)\n");
+	gen_epilogue_8byte(5463);
 
 	gen_prologue(80, "main");
 	puts("  movl $0, -4(%rbp)\n"
@@ -108,8 +110,9 @@ int main()
 	     "  call " PREFIX "baz\n"
 	     "  movl -80(%rbp), %eax\n"
 	     "  addl %eax, -4(%rbp)\n"
+	     "  subq $8, %rsp\n"
 	     "  movl -4(%rbp), %eax\n"
-	     "  leave\n"
-	     "  ret\n");
+	     "  movl  %eax, (%rsp)\n");
+	gen_epilogue(425);
 	return 0;
 }
