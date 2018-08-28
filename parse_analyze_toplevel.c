@@ -76,6 +76,41 @@ int align_of(const struct AnalyzerState *ptr_ps, struct Type type)
 	}
 }
 
+enum SystemVAbiClass system_v_abi_class_of(const struct AnalyzerState *ptr_ps,
+                                           struct Type type)
+{
+	switch (type.type_category) {
+		case INT_:
+		case PTR_:
+		case CHAR_:
+		case ARRAY:
+		case ENUM_:
+			return INTEGER_CLASS;
+		case FN:
+			fprintf(stderr, "function type does not have System V ABI class\n");
+			exit(EXIT_FAILURE);
+		case VOID_:
+			fprintf(stderr, "type `void` does not have System V ABI class\n");
+			exit(EXIT_FAILURE);
+		case STRUCT_:
+			if ((0)) { /* is local struct */
+				unsupported("local struct");
+			}
+			const char *tag = type.struct_tag;
+			const struct StructInternalCompleteInfo *ptr_info =
+			    lookup(ptr_ps->global_struct_tag_map, tag);
+			if (!ptr_info) {
+				fprintf(
+				    stderr,
+				    "tried to find the System V ABI class of incomplete type "
+				    "`struct %s`\n",
+				    type.struct_tag);
+				exit(EXIT_FAILURE);
+			}
+			unsupported("system v abi class of struct");
+	}
+}
+
 static void record_global_struct_declaration(struct AnalyzerState *ptr_ps,
                                              struct Type struct_type)
 {
