@@ -173,7 +173,8 @@ enum ExprCategory {
 	STRING_LITERAL,
 	STRUCT_AND_OFFSET,
 	NULLPTR,
-	VOID_EXPR
+	VOID_EXPR,
+	STRUCT_ASSIGNMENT_EXPR,
 };
 
 enum UntypedExprCategory {
@@ -261,6 +262,9 @@ struct Expr {
 
 	/* used in POINTER_PLUS_INT, POINTER_MINUS_INT and POINTER_MINUS_POINTER */
 	int size_info_for_pointer_arith;
+
+	/* used in STRUCT_ASSIGNMENT_EXPR */
+	int size_info_for_struct_assign;
 
 	int struct_offset;
 };

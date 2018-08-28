@@ -195,6 +195,12 @@ static void print_expression_as_lvalue(struct PrinterState *ptr_prs,
 void print_expression(struct PrinterState *ptr_prs, struct Expr expr)
 {
 	switch (expr.category) {
+		case STRUCT_ASSIGNMENT_EXPR: {
+			print_address_of_lvalue(ptr_prs, *expr.ptr1);
+			print_address_of_lvalue(ptr_prs, *expr.ptr2);
+			int size = expr.size_info_for_struct_assign;
+			unsupported("struct assignment");
+		}
 		case VOID_EXPR: {
 			gen_push_int(123); /* random garbage */
 			return;
