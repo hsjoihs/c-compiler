@@ -1,6 +1,6 @@
 #include "std.h"
+#include "std_io.h"
 #include "toplevel.h"
-#include <stdio.h>
 
 int main(int argc, char const **argv)
 {

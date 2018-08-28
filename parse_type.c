@@ -1,6 +1,6 @@
 #include "header.h"
 #include "std.h"
-#include <stdio.h>
+#include "std_io.h"
 
 struct Vector init_vector(void) { return *init_vector_(); }
 /***************************************

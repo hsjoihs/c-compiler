@@ -1,6 +1,6 @@
 #include "analyzer.h"
 #include "std.h"
-#include <stdio.h>
+#include "std_io.h"
 
 static struct Expr integer_1(void)
 {

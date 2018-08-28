@@ -2,7 +2,7 @@
 #include "print_x86_64.h"
 #include "printerstate.h"
 #include "std.h"
-#include <stdio.h>
+#include "std_io.h"
 
 static void print_op_pointer_plusminus_int(int is_plus, int size)
 {

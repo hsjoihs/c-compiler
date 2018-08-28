@@ -1,6 +1,6 @@
 #include "header.h"
 #include "std.h"
-#include <stdio.h>
+#include "std_io.h"
 
 char *unescape(const char *str)
 {
@@ -436,14 +436,14 @@ static struct Token get_token_raw(const char **ptr_to_str)
 	}
 
 	if (strchr("_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", *str) !=
-	    NULL) {
+	    0) {
 		t.kind = IDENT_OR_RESERVED;
 		int i = 1;
 
 		for (;; ++i) {
 			if (strchr("_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 			           "0123456789",
-			           str[i]) == NULL) {
+			           str[i]) == 0) {
 				break;
 			}
 		}

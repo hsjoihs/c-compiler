@@ -1,6 +1,6 @@
 #include "std.h"
+#include "std_io.h"
 #include "toplevel.h"
-#include <stdio.h>
 
 int size_of(const struct AnalyzerState *ptr_ps, struct Type type)
 {

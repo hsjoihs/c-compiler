@@ -1,6 +1,6 @@
 #include "header.h"
 #include "std.h"
-#include <stdio.h>
+#include "std_io.h"
 static struct UntypedExpr
 parse_unary_expression(const struct Token **ptr_tokvec);
 static struct UntypedExpr

@@ -1,6 +1,6 @@
 #include "print_x86_64.h"
 #include "std.h"
-#include <stdio.h>
+#include "std_io.h"
 
 void gen_prologue(int alloc_size, const char *fname)
 {

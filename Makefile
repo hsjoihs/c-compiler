@@ -43,7 +43,7 @@ supplement:
 	gcc supplement.c -S -o s/supplement.s
 
 verify_typeparse:
-	clang -Wall -Wextra -Wimplicit-fallthrough vector.c verifier/typeparse_checker.c lexer.c type.c parse_type.c error.c -o out/typeparse_check.out
+	clang -Wall -Wextra -Wimplicit-fallthrough $(CCFLAGS) vector.c verifier/typeparse_checker.c lexer.c type.c parse_type.c error.c -o out/typeparse_check.out
 	./out/typeparse_check.out
 
 assembly_sandbox:

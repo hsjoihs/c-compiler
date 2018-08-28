@@ -1,6 +1,6 @@
 #include "header.h"
 #include "std.h"
-#include <stdio.h>
+#include "std_io.h"
 
 int is_strictly_equal(struct Type t1, struct Type t2);
 

@@ -7,5 +7,5 @@ void assert(int i)
 	}
 }
 
-_Noreturn void assert0(int i) { exit(EXIT_FAILURE); }
+_Noreturn void assert0(int i) { exit(EXIT_FAILURE + i); }
 #endif
