@@ -21,9 +21,9 @@ test_mixed_compiler:
 	make 2ndgen
 	./test_cases.sh
 	./test_compile_error.sh
-	./compile.sh vector $(OSFLAG) __with_2nd
-	./compile.sh map $(OSFLAG) __with_2nd
-	./compile.sh print_x86_64 $(OSFLAG) __with_2nd
+	./compile.sh vector $(OSFLAG) __with2nd
+	./compile.sh map $(OSFLAG) __with2nd
+	./compile.sh print_x86_64 $(OSFLAG) __with2nd
 	gcc -Wall -Wextra -DOVERRIDE_STD std.c codegen.c alignment.c parse_analyze_toplevel.c parse_analyze_statement.c codegen_expression.c main.c self_compile_asm/vector__with2nd.s typecheck_expression.c parse_expression.c error.c type.c parse_type.c self_compile_asm/map__with2nd.s self_compile_asm/print_x86_64__with2nd.s $(OSFLAG) lexer.c -o out/compiler_gen3.out
 	cmp out/compiler.out out/compiler_gen3.out || { echo "\n\033[31mBINARY COMPARISON FAIL\033[m"; exit 1; }
 	
