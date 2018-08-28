@@ -934,7 +934,7 @@ struct Foo *p = pop();
 
 *p = *q;
 */
-void copy_struct_and_discard(int size) 
+void gen_copy_struct_and_discard(int size)
 {
 	int next_copy_begins_at = 0;
 	while (1) {

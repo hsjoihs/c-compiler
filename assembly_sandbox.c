@@ -21,8 +21,8 @@ int main()
 	gen_push_address_of_local(-16);
 	gen_push_address_of_local(-32);
 
-	copy_struct_and_discard(16);
-	
+	gen_copy_struct_and_discard(16);
+
 	gen_push_int(174);
 	gen_epilogue(543);
 	return 0;

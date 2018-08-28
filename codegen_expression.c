@@ -199,7 +199,8 @@ void print_expression(struct PrinterState *ptr_prs, struct Expr expr)
 			print_address_of_lvalue(ptr_prs, *expr.ptr1);
 			print_address_of_lvalue(ptr_prs, *expr.ptr2);
 			int size = expr.size_info_for_struct_assign;
-			unsupported("struct assignment");
+			gen_copy_struct_and_discard(size);
+			gen_push_int(143253); /* random garbage */
 		}
 		case VOID_EXPR: {
 			gen_push_int(123); /* random garbage */

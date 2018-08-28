@@ -8,6 +8,18 @@ run_test() {
 	if [ $res -ne $3 ]; then { echo "got:" $res; echo "expected:" $3; echo -e "\033[31mFAIL\033[m, at test case" $1: $2; exit 1; }; else echo -e "\033[32mPASS\033[m"; fi
 }
 
+run_test 292 'struct A{char a; int b;}; int main(){struct A a; a.a = 74; struct A b; b = a; return b.a;}' 74
+run_test 293 'struct A{char a; int b;}; int main(){struct A a; a.a = 74; struct A b = a; return b.a;}' 74
+run_test 294 'struct A{int a; int b;}; int main(){struct A a; a.a = 174; struct A b = a; return b.a;}' 174
+run_test 295 'struct A{int a; int b;}; int main(){struct A a; a.a = 174; struct A b = a; return b.a;}' 174
+run_test 296 'struct A{char a; int b; char c;}; int main(){struct A a; a.c = 74; struct A b = a; return b.c;}' 74
+run_test 297 'int add_two_ints(); struct A{int a; int b;}; int main(){struct A a; a.a = 100; a.b = 74; struct A b = a; return add_two_ints(&b);}' 174
+run_test 298 'int add_two_ints2(); struct A{int a; char c; char d; int b;}; int main(){struct A a; a.a = 100; a.b = 74; struct A b = a; return add_two_ints2(&b);}' 174
+run_test 299 'struct A{int a; char c; char d; int b;}; struct A *get_struct_pointer(); int main(){ struct A *p; p = get_struct_pointer(100, 74); struct A a = *p; return a.a + a.b;  }' 174
+run_test 300 'struct A{int a; char c; char d; int b;}; struct A *get_struct_pointer(); int main(){ struct A *p = get_struct_pointer(100, 74); struct A a = *p; return a.a + a.b;  }' 174
+run_test 301 'struct A{int a; char c; char d; int b;}; struct A *get_struct_pointer(); int main(){ struct A a = *get_struct_pointer(100, 74); return a.a + a.b;  }' 174
+
+
 run_test 291 'int *foo(){return 0;} int main(){int *p = foo(); if (p == 0) {return 174;} else {return 1;} }' 174
 
 run_test 287 'int main(){int a[5];int *p = a;if (p == 0) {return 174;} else {return 1;}}' 1
