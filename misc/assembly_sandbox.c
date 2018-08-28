@@ -73,9 +73,9 @@ int main()
 
 		puts("  movq -12(%rbp), %rax\n"
 		     "  movl -4(%rbp), %edx\n"
-		     "  subq $8, %rsp\n"
-		     "  movq %rax, (%rsp)\n");
-		gen_epilogue_8byte(5423);
+		     "  leave\n"
+		     "  ret\n"
+		     );
 	}
 
 	{
