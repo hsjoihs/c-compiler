@@ -15,6 +15,9 @@ struct _mapchip {
 /* it overrides; it does not overwrite. */
 void insert(struct Map2 *map, const char *key, void *value)
 {
+	struct _mapchip a;
+	a.ptr = key;
+	a.value = value;
 	if (map->_alloc < map->_length + 1) {
 
 		map->_vec =
@@ -23,8 +26,7 @@ void insert(struct Map2 *map, const char *key, void *value)
 		map->_alloc *= 2;
 	}
 
-	map->_vec[map->_length].ptr = key;
-	map->_vec[map->_length].value = value;
+	map->_vec[map->_length] = a;
 	++(map->_length);
 }
 
