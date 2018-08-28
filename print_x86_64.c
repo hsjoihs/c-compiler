@@ -441,8 +441,7 @@ void gen_if_zero_jmp_nbyte(int n, int label1, int offset)
 			gen_if_zero_jmp_8byte(label1, offset);
 			break;
 		default:
-			fprintf(stderr, "Unsupported width\n");
-			exit(EXIT_FAILURE);
+			assert0("Unsupported width; cannot happen" && 0);
 	}
 }
 
@@ -459,8 +458,7 @@ void gen_if_nonzero_jmp_nbyte(int n, int label1, int offset)
 			gen_if_nonzero_jmp_8byte(label1, offset);
 			break;
 		default:
-			fprintf(stderr, "Unsupported width\n");
-			exit(EXIT_FAILURE);
+			assert0("Unsupported width; cannot happen" && 0);
 	}
 }
 
@@ -547,8 +545,7 @@ void gen_div_by_const(int num)
 			printf("  sarq $3, %%rax\n");
 			break;
 		default:
-			fprintf(stderr, "Unsupported width\n");
-			exit(EXIT_FAILURE);
+			assert0("Unsupported width; cannot happen" && 0);
 	}
 	printf("  movq %%rax, (%%rsp)\n");
 }
@@ -721,8 +718,7 @@ void gen_push_from_local_nbyte(int n, int offset)
 			gen_push_from_local_8byte(offset);
 			break;
 		default:
-			fprintf(stderr, "Unsupported width\n");
-			exit(EXIT_FAILURE);
+			assert0("Unsupported width; cannot happen" && 0);
 	}
 }
 
@@ -739,8 +735,7 @@ void gen_peek_deref_push_nbyte(int n)
 			gen_peek_deref_push_8byte();
 			break;
 		default:
-			fprintf(stderr, "Unsupported width\n");
-			exit(EXIT_FAILURE);
+			assert0("Unsupported width; cannot happen" && 0);
 	}
 }
 
@@ -757,8 +752,7 @@ void gen_push_from_global_nbyte(int n, const char *name)
 			gen_push_from_global_8byte(name);
 			break;
 		default:
-			fprintf(stderr, "Unsupported width\n");
-			exit(EXIT_FAILURE);
+			assert0("Unsupported width; cannot happen" && 0);
 	}
 }
 
@@ -775,8 +769,7 @@ void gen_assign_nbyte(int n)
 			gen_assign_8byte();
 			break;
 		default:
-			fprintf(stderr, "Unsupported width\n");
-			exit(EXIT_FAILURE);
+			assert0("Unsupported width; cannot happen" && 0);
 	}
 }
 
@@ -793,8 +786,7 @@ void gen_peek_and_dereference_nbyte(int n)
 			gen_peek_and_dereference_8byte();
 			break;
 		default:
-			fprintf(stderr, "Unsupported width\n");
-			exit(EXIT_FAILURE);
+			assert0("Unsupported width; cannot happen" && 0);
 	}
 }
 
@@ -811,8 +803,7 @@ void gen_push_ret_of_nbyte(int n, const char *ident_str)
 			gen_push_ret_of_8byte(ident_str);
 			break;
 		default:
-			fprintf(stderr, "Unsupported width\n");
-			exit(EXIT_FAILURE);
+			assert0("Unsupported width; cannot happen" && 0);
 	}
 }
 
@@ -827,8 +818,7 @@ void gen_epilogue_nbyte(int n, int label_name)
 			gen_epilogue_8byte(label_name);
 			break;
 		default:
-			fprintf(stderr, "Unsupported width\n");
-			exit(EXIT_FAILURE);
+			assert0("Unsupported width; cannot happen" && 0);
 	}
 }
 
