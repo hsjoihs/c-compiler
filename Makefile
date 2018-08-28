@@ -1,28 +1,28 @@
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
-    CCFLAGS += -D LINUX
+    OSFLAG += -D LINUX
 endif
 ifeq ($(UNAME_S),Darwin)
-    CCFLAGS += -D OSX
+    OSFLAG += -D OSX
 endif
 
 # out/compiler.out is purely from clang/gcc
 1stgen:
-	gcc -Wall -Wextra -DOVERRIDE_STD -g std.c codegen.c alignment.c parse_analyze_toplevel.c parse_analyze_statement.c codegen_expression.c main.c vector.c typecheck_expression.c parse_expression.c error.c type.c parse_type.c map.c print_x86_64.c $(CCFLAGS) lexer.c -o out/compiler.out
+	gcc -Wall -Wextra -DOVERRIDE_STD -g std.c codegen.c alignment.c parse_analyze_toplevel.c parse_analyze_statement.c codegen_expression.c main.c vector.c typecheck_expression.c parse_expression.c error.c type.c parse_type.c map.c print_x86_64.c $(OSFLAG) lexer.c -o out/compiler.out
 
 2ndgen:
 	make 1stgen
-	gcc -E vector.c -DOVERRIDE_STD -U__STDC__ | grep -v "#" | ./out/compiler.out > self_compile_asm/vector.s
-	gcc -E map.c -DOVERRIDE_STD -U__STDC__ | grep -v "#" | ./out/compiler.out > self_compile_asm/map.s
-	gcc -Wall -Wextra -DOVERRIDE_STD std.c codegen.c alignment.c parse_analyze_toplevel.c parse_analyze_statement.c codegen_expression.c main.c self_compile_asm/vector.s typecheck_expression.c parse_expression.c error.c type.c parse_type.c self_compile_asm/map.s print_x86_64.c $(CCFLAGS) lexer.c -o out/compiler.out
+	gcc -E vector.c -DOVERRIDE_STD -U__STDC__ $(OSFLAG) | grep -v "#" | ./out/compiler.out > self_compile_asm/vector.s
+	gcc -E map.c -DOVERRIDE_STD -U__STDC__ $(OSFLAG) | grep -v "#" | ./out/compiler.out > self_compile_asm/map.s
+	gcc -Wall -Wextra -DOVERRIDE_STD std.c codegen.c alignment.c parse_analyze_toplevel.c parse_analyze_statement.c codegen_expression.c main.c self_compile_asm/vector.s typecheck_expression.c parse_expression.c error.c type.c parse_type.c self_compile_asm/map.s print_x86_64.c $(OSFLAG) lexer.c -o out/compiler.out
 
 test_mixed_compiler:
 	make 2ndgen
 	./test_cases.sh
 	./test_compile_error.sh
-	gcc -E vector.c -DOVERRIDE_STD -U__STDC__ | grep -v "#" | ./out/compiler.out > self_compile_asm/vector__with2nd.s
-	gcc -E map.c -DOVERRIDE_STD -U__STDC__ | grep -v "#" | ./out/compiler.out > self_compile_asm/map__with2nd.s
-	gcc -Wall -Wextra -DOVERRIDE_STD std.c codegen.c alignment.c parse_analyze_toplevel.c parse_analyze_statement.c codegen_expression.c main.c self_compile_asm/vector__with2nd.s typecheck_expression.c parse_expression.c error.c type.c parse_type.c self_compile_asm/map__with2nd.s print_x86_64.c $(CCFLAGS) lexer.c -o out/compiler_gen3.out
+	gcc -E vector.c -DOVERRIDE_STD -U__STDC__ $(OSFLAG) | grep -v "#" | ./out/compiler.out > self_compile_asm/vector__with2nd.s
+	gcc -E map.c -DOVERRIDE_STD -U__STDC__ $(OSFLAG) | grep -v "#" | ./out/compiler.out > self_compile_asm/map__with2nd.s
+	gcc -Wall -Wextra -DOVERRIDE_STD std.c codegen.c alignment.c parse_analyze_toplevel.c parse_analyze_statement.c codegen_expression.c main.c self_compile_asm/vector__with2nd.s typecheck_expression.c parse_expression.c error.c type.c parse_type.c self_compile_asm/map__with2nd.s print_x86_64.c $(OSFLAG) lexer.c -o out/compiler_gen3.out
 	cmp out/compiler.out out/compiler_gen3.out || { echo "\n\033[31mBINARY COMPARISON FAIL\033[m"; exit 1; }
 	
 
@@ -43,11 +43,11 @@ supplement:
 	gcc supplement.c -S -o s/supplement.s
 
 verify_typeparse:
-	clang -Wall -Wextra -Wimplicit-fallthrough $(CCFLAGS) vector.c verifier/typeparse_checker.c lexer.c type.c parse_type.c error.c -o out/typeparse_check.out
+	clang -Wall -Wextra -Wimplicit-fallthrough $(OSFLAG) vector.c verifier/typeparse_checker.c lexer.c type.c parse_type.c error.c -o out/typeparse_check.out
 	./out/typeparse_check.out
 
 assembly_sandbox:
-	gcc -Wall -Wextra assembly_sandbox.c print_x86_64.c $(CCFLAGS) -o out/assembly_sandbox.out
+	gcc -Wall -Wextra assembly_sandbox.c print_x86_64.c $(OSFLAG) -o out/assembly_sandbox.out
 	echo -e '' | ./out/assembly_sandbox.out > s/assembly_sandbox.s
 	gcc s/assembly_sandbox.s s/supplement.s -o out/sandbox.out
 	./out/sandbox.out || if [ $$? -ne 174 ]; then { echo "\n\033[31mFAIL\033[m"; exit 1; }; else echo "\n\033[32mPASS\033[m"; fi
@@ -90,8 +90,8 @@ notest:
 
 warn:
 	make format
-	clang -Wall -Wextra -Wimplicit-fallthrough -Weverything -Wno-documentation -Wno-padded -Wno-missing-prototypes -Wno-switch-enum -DOVERRIDE_STD std.c codegen.c alignment.c parse_analyze_toplevel.c parse_analyze_statement.c codegen_expression.c main.c vector.c typecheck_expression.c parse_expression.c error.c type.c parse_type.c map.c print_x86_64.c $(CCFLAGS) lexer.c -o out/compiler.out
-	clang -Wall -Wextra -Wimplicit-fallthrough -Weverything -Wno-documentation -Wno-padded -Wno-missing-prototypes -Wno-switch-enum assembly_sandbox.c print_x86_64.c $(CCFLAGS) -o out/assembly_sandbox.out
+	clang -Wall -Wextra -Wimplicit-fallthrough -Weverything -Wno-documentation -Wno-padded -Wno-missing-prototypes -Wno-switch-enum -DOVERRIDE_STD std.c codegen.c alignment.c parse_analyze_toplevel.c parse_analyze_statement.c codegen_expression.c main.c vector.c typecheck_expression.c parse_expression.c error.c type.c parse_type.c map.c print_x86_64.c $(OSFLAG) lexer.c -o out/compiler.out
+	clang -Wall -Wextra -Wimplicit-fallthrough -Weverything -Wno-documentation -Wno-padded -Wno-missing-prototypes -Wno-switch-enum assembly_sandbox.c print_x86_64.c $(OSFLAG) -o out/assembly_sandbox.out
 
 f:
 	make format
