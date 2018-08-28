@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 int GLOBAL_VAR = 3;
+static int hidden() { return 0; }
 int always87() { return 87; }
 int always8() { return 8; }
 int add(int x, int y) { return x + y; }

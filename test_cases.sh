@@ -8,6 +8,7 @@ run_test() {
 	if [ $res -ne $3 ]; then { echo "got:" $res; echo "expected:" $3; echo -e "\033[31mFAIL\033[m, at test case" $1: $2; exit 1; }; else echo -e "\033[32mPASS\033[m"; fi
 }
 run_test 302 'extern int GLOBAL_VAR; int main(){return 171 + GLOBAL_VAR;}' 174
+run_test 303 'static int hidden() { return 3;} int main(){return 171 + hidden();}' 174
 
 run_test 292 'struct A{char a; int b;}; int main(){struct A a; a.a = 74; struct A b; b = a; return b.a;}' 74
 run_test 293 'struct A{char a; int b;}; int main(){struct A a; a.a = 74; struct A b = a; return b.a;}' 74
