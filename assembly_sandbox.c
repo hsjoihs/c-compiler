@@ -20,12 +20,9 @@ int main()
 	gen_prologue(60, "main");
 	gen_push_address_of_local(-16);
 	gen_push_address_of_local(-32);
-	puts("  movq -32(%rbp), %rax\n"
-	     "  movq %rax, -16(%rbp)\n"
-	     "  movq -24(%rbp), %rax\n"
-	     "  movq %rax, -8(%rbp)\n");
-	gen_discard();
-	gen_discard();
+
+	copy_struct_and_discard(16);
+	
 	gen_push_int(174);
 	gen_epilogue(543);
 	return 0;

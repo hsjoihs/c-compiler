@@ -900,3 +900,57 @@ void gen_compare_ptrs(const char *str)
 	     "  movl %eax, 8(%rsp)\n"
 	     "  addq $8, %rsp");
 }
+
+static void copy_8bytes_of_struct(int offset)
+{
+	printf("  movq (%%rsp), %%rdx\n"
+	       "  movq %d(%%rdx), %%rax\n"
+	       "  movq 8(%%rsp), %%rdx\n"
+	       "  movq %%rax, %d(%%rdx)\n",
+	       offset, offset);
+}
+
+static void copy_4bytes_of_struct(int offset)
+{
+	printf("  movq (%%rsp), %%rdx\n"
+	       "  movl %d(%%rdx), %%eax\n"
+	       "  movq 8(%%rsp), %%rdx\n"
+	       "  movl %%eax, %d(%%rdx)\n",
+	       offset, offset);
+}
+
+static void copy_1byte_of_struct(int offset)
+{
+	printf("  movq (%%rsp), %%rdx\n"
+	       "  movzbl %d(%%rdx), %%eax\n"
+	       "  movq 8(%%rsp), %%rdx\n"
+	       "  movb %%al, %d(%%rdx)\n",
+	       offset, offset);
+}
+
+/*
+struct Foo *q = pop();
+struct Foo *p = pop();
+
+*p = *q;
+*/
+void copy_struct_and_discard(int size) 
+{
+	int next_copy_begins_at = 0;
+	while (1) {
+		if (size - next_copy_begins_at >= 8) {
+			copy_8bytes_of_struct(next_copy_begins_at);
+			next_copy_begins_at += 8;
+		} else if (size - next_copy_begins_at >= 4) {
+			copy_4bytes_of_struct(next_copy_begins_at);
+			next_copy_begins_at += 4;
+		} else if (size - next_copy_begins_at >= 1) {
+			copy_1byte_of_struct(next_copy_begins_at);
+			next_copy_begins_at += 1;
+		} else {
+			break;
+		}
+	}
+	gen_discard();
+	gen_discard();
+}
