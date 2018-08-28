@@ -79,23 +79,18 @@ int main()
 	gen_push_int(172);
 	gen_write_to_local(-48);
 	gen_discard();
+
+	gen_push_from_local_8byte(-56);
+	gen_push_address_of_local(-48);
+	
+	gen_copy_struct_and_discard(48);
+
 	puts(
-	     "  movq -56(%rbp), %rdx\n"
-	     "  movq -48(%rbp), %rax\n"
-	     "  movq %rax, (%rdx)\n"
-	     "  movq -40(%rbp), %rax\n"
-	     "  movq %rax, 8(%rdx)\n"
-	     "  movq -32(%rbp), %rax\n"
-	     "  movq %rax, 16(%rdx)\n"
-	     "  movq -24(%rbp), %rax\n"
-	     "  movq %rax, 24(%rdx)\n"
-	     "  movq -16(%rbp), %rax\n"
-	     "  movq %rax, 32(%rdx)\n"
-	     "  movq -8(%rbp), %rax\n"
-	     "  movq %rax, 40(%rdx)\n"
-	     "  subq $8, %rsp\n"
-	     "  movq -56(%rbp), %rdx\n"
-	     "  movq %rdx, (%rsp)\n");
+		"  subq $16, %rsp\n"
+	    "  movq -56(%rbp), %rdx\n"
+	    "  movq %rdx, (%rsp)\n"
+
+	    "  addq $8, %rsp\n");
 	gen_epilogue_8byte(5463);
 
 	gen_prologue(80, "main");

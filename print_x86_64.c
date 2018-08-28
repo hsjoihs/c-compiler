@@ -938,6 +938,7 @@ struct Foo *p = pop();
 */
 void gen_copy_struct_and_discard(int size)
 {
+	printf("//gen_copy_struct_and_discard(%d)\n",size);
 	int next_copy_begins_at = 0;
 	while (1) {
 		if (size - next_copy_begins_at >= 8) {
