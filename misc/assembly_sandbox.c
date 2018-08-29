@@ -58,7 +58,7 @@ int main()
 	gen_epilogue_8byte(523);
 
 	{
-		gen_prologue(8, "bar");
+		gen_prologue(20, "bar");
 
 		gen_push_int(1);
 		gen_write_to_local(-24);
@@ -71,8 +71,12 @@ int main()
 		    "  movl -16(%rbp), %eax\n"
 		    "  movl %eax, -4(%rbp)\n");
 
-		puts("  movq -12(%rbp), %rax\n"
-		     "  movl -4(%rbp), %edx\n"
+		gen_push_address_of_local(-12);
+		puts(
+			 "  movq (%rsp), %rcx\n"
+			 "  addq $8, %rsp\n"
+			 "  movq (%rcx), %rax\n"
+		     "  movl 8(%rcx), %edx\n"
 		     "  leave\n"
 		     "  ret\n"
 		     );
