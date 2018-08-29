@@ -12,8 +12,9 @@ int get_new_label_name(struct PrinterState *ptr_prs)
 }
 
 static struct Vector /*<SourceLabel>*/
-collect_labels(const struct Statement sta)
+collect_labels(const struct Statement *ptr_sta)
 {
+	struct Statement sta = *ptr_sta;
 	struct Vector /*<SourceLabel>*/ ans = init_vector();
 	concat_vector(&ans, &sta.labels);
 	switch (sta.category) {
@@ -33,7 +34,7 @@ collect_labels(const struct Statement sta)
 		case WHILE_STATEMENT:
 		case DO_WHILE_STATEMENT: {
 			const struct Vector /*<SourceLabel>*/ inner_vec =
-			    collect_labels(*sta.inner_statement);
+			    collect_labels(sta.inner_statement);
 			concat_vector(&ans, &inner_vec);
 			break;
 		}
@@ -45,7 +46,7 @@ collect_labels(const struct Statement sta)
 			for (int counter = 0; counter != statement_vec.length; ++counter) {
 				const struct Statement *ptr_ith = statement_vec.vector[counter];
 				const struct Vector /*<SourceLabel>*/ inner_vec =
-				    collect_labels(*ptr_ith);
+				    collect_labels(ptr_ith);
 				concat_vector(&ans, &inner_vec);
 			}
 			break;
@@ -190,7 +191,7 @@ static void print_statement(struct PrinterState *ptr_prs,
 			ptr_prs->break_label_name = break_label;
 			ptr_prs->is_inside_switch = 1;
 			struct Vector /*<SourceLabel>*/ vec =
-			    collect_labels(*sta.inner_statement);
+			    collect_labels(sta.inner_statement);
 
 			int default_label = -1;
 			ptr_prs->case_default_vec = init_vector();
