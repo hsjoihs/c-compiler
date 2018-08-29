@@ -51,11 +51,10 @@ int main()
 
 	*/
 	gen_prologue(8, "foo");
-	puts("  movl $1, -8(%rbp)\n"
-	     "  subq $8, %rsp\n"
-	     "  movq -8(%rbp), %rax\n"
-	     "  movq %rax, (%rsp)\n");
-	gen_epilogue_8byte(523);
+	puts("  movl $1, -8(%rbp)\n");
+	gen_push_address_of_local(-8);
+	gen_epilogue_returning_small_struct(8, 5623);
+		
 
 	{
 		gen_prologue(20, "bar");
@@ -72,14 +71,8 @@ int main()
 		    "  movl %eax, -4(%rbp)\n");
 
 		gen_push_address_of_local(-12);
-		puts(
-			 "  movq (%rsp), %rcx\n"
-			 "  addq $8, %rsp\n"
-			 "  movq (%rcx), %rax\n"
-		     "  movl 8(%rcx), %edx\n"
-		     "  leave\n"
-		     "  ret\n"
-		     );
+		gen_epilogue_returning_small_struct(12, 875);
+		
 	}
 
 	{

@@ -507,6 +507,40 @@ void gen_epilogue_8byte(int label)
 	       label);
 }
 
+/*
+struct Foo *p = pop();
+return *p;
+*/
+void gen_epilogue_returning_small_struct(int size, int label)
+{
+	printf("//gen_epilogue_returning_small_struct(%d, %d)\n", size, label);
+	printf(".L%d:", label);
+
+	puts("  movq (%rsp), %rcx");
+	switch (size) {
+		case 16:
+			printf("  movq (%%rcx), %%rax\n"
+			       "  movq 8(%%rcx), %%rdx\n");
+			break;
+		case 12:
+			printf("  movq (%%rcx), %%rax\n"
+			       "  movl 8(%%rcx), %%edx\n");
+			break;
+		case 8:
+			printf("  movq (%%rcx), %%rax\n");
+			break;
+		case 4:
+			printf("  movl (%%rcx), %%eax\n");
+			break;
+		default:
+			assert0("hbjnklsdgf" && 0);
+			break;
+	}
+
+	printf("  leave\n"
+	       "  ret\n");
+}
+
 void gen_cltq(void)
 {
 	printf("//gen_cltq()\n");

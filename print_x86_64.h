@@ -73,6 +73,8 @@ void gen_extend_to_4byte(void);
 void gen_compare_ptrs(const char *str);
 void gen_copy_struct_and_discard(int size);
 void gen_prologue_static(int alloc_size, const char *fname);
+void gen_epilogue_returning_small_struct(int size, int label);
+
 
 #ifdef OSX
 #define PREFIX "_"
