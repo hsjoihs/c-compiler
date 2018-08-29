@@ -61,8 +61,9 @@ struct SourceLabelAndAssemblyLabel {
 };
 
 static void print_statement(struct PrinterState *ptr_prs,
-                            const struct Statement sta)
+                            const struct Statement *ptr_sta)
 {
+	struct Statement sta = *ptr_sta;
 	if (sta.category != DECLARATION_STATEMENT) {
 		for (int j = 0; j < sta.labels.length; j++) {
 			const struct SourceLabel *ptr_label = sta.labels.vector[j];
@@ -146,7 +147,7 @@ static void print_statement(struct PrinterState *ptr_prs,
 
 			for (int counter = 0; counter != vec.length; ++counter) {
 				const struct Statement *ptr_ith = vec.vector[counter];
-				print_statement(ptr_prs, *ptr_ith);
+				print_statement(ptr_prs, ptr_ith);
 			}
 
 			return;
@@ -162,7 +163,7 @@ static void print_statement(struct PrinterState *ptr_prs,
 
 			const struct Statement *ptr_inner_s =
 			    sta.statement_vector.vector[0];
-			print_statement(ptr_prs, *ptr_inner_s);
+			print_statement(ptr_prs, ptr_inner_s);
 
 			gen_jump(label2, "if statement");
 			gen_label(label1);
@@ -170,7 +171,7 @@ static void print_statement(struct PrinterState *ptr_prs,
 
 			const struct Statement *ptr_inner_s2 =
 			    sta.statement_vector.vector[1];
-			print_statement(ptr_prs, *ptr_inner_s2);
+			print_statement(ptr_prs, ptr_inner_s2);
 			gen_label(label2);
 
 			return;
@@ -237,7 +238,7 @@ static void print_statement(struct PrinterState *ptr_prs,
 			}
 			gen_jump(default_label, "switch-default");
 
-			print_statement(ptr_prs, *sta.inner_statement);
+			print_statement(ptr_prs, sta.inner_statement);
 			gen_label(break_label);
 
 			ptr_prs->break_label_name = stashed_break_label;
@@ -255,8 +256,7 @@ static void print_statement(struct PrinterState *ptr_prs,
 			gen_if_zero_jmp_nbyte(size_of_basic(expr.details.type), label1, 0);
 			gen_discard();
 
-			struct Statement inner_s = *sta.inner_statement;
-			print_statement(ptr_prs, inner_s);
+			print_statement(ptr_prs, sta.inner_statement);
 
 			gen_jump(label2, "if statement");
 			gen_label(label1);
@@ -276,8 +276,7 @@ static void print_statement(struct PrinterState *ptr_prs,
 			ptr_prs->continue_label_name = cont_label;
 
 			gen_label(label1);
-			struct Statement inner_s = *sta.inner_statement;
-			print_statement(ptr_prs, inner_s);
+			print_statement(ptr_prs, sta.inner_statement);
 
 			gen_label(cont_label);
 
@@ -298,8 +297,6 @@ static void print_statement(struct PrinterState *ptr_prs,
 		case WHILE_STATEMENT: {
 			struct Expr expr = sta.expr1;
 
-			struct Statement inner_s = *sta.inner_statement;
-
 			int stashed_break_label = ptr_prs->break_label_name;
 			int stashed_continue_label = ptr_prs->continue_label_name;
 
@@ -317,7 +314,7 @@ static void print_statement(struct PrinterState *ptr_prs,
 			gen_if_zero_jmp_nbyte(size_of_basic(expr.details.type), break_label,
 			                      -8);
 
-			print_statement(ptr_prs, inner_s);
+			print_statement(ptr_prs, sta.inner_statement);
 
 			gen_label(cont_label);
 			gen_jump(label1, "for(part4)");
@@ -346,8 +343,7 @@ static void print_statement(struct PrinterState *ptr_prs,
 			gen_if_zero_jmp_nbyte(size_of_basic(sta.expr2.details.type),
 			                      break_label, -8);
 
-			struct Statement inner_s = *sta.inner_statement;
-			print_statement(ptr_prs, inner_s);
+			print_statement(ptr_prs, sta.inner_statement);
 			gen_label(cont_label);
 			print_expression(ptr_prs, sta.expr3);
 			gen_discard();
@@ -381,7 +377,7 @@ static void print_toplevel_definition(struct PrinterState *ptr_prs,
 
 	assert(def.category == TOPLEVEL_FUNCTION_DEFINITION);
 
-	struct Statement sta = def.func.sta;
+	const struct Statement sta = def.func.sta;
 	struct Vector /*<LocalVarInfo>*/ offsets_and_types =
 	    def.func.offsets_and_types;
 	struct Type ret_type = def.func.ret_type;
@@ -421,7 +417,7 @@ static void print_toplevel_definition(struct PrinterState *ptr_prs,
 				unsupported("Unsupported width in function parameter");
 		}
 	}
-	print_statement(ptr_prs, sta);
+	print_statement(ptr_prs, &sta);
 
 	if (ret_type.type_category == VOID_) {
 		if (ptr_prs->return_label_name != -1) {
