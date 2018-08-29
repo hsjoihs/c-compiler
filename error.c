@@ -20,6 +20,12 @@ _Noreturn void error_unexpected_token(const struct Token *tokvec,
 	exit(EXIT_FAILURE);
 }
 
+_Noreturn void simple_error(const char *str)
+{
+	fprintf(stderr, "%s", str);
+	exit(EXIT_FAILURE);
+}
+
 void expect_and_consume(const struct Token **ptr_tokvec, enum TokenKind kind,
                         const char *str)
 {

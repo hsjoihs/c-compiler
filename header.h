@@ -355,3 +355,5 @@ char *escape(const char *str);
 
 struct Type parse_type_specifier_and_declarator(const struct Token **ptr_tokvec,
                                                 const char **ptr_to_ident_str);
+
+_Noreturn void simple_error(const char *str);

@@ -66,10 +66,8 @@ static void print_source_labels(const struct PrinterState *ptr_prs,
 		const struct SourceLabel *ptr_label = sta.labels.vector[j];
 		if (ptr_label->category == DEFAULT_LABEL) {
 			if (!ptr_prs->is_inside_switch) {
-				fprintf(
-				    stderr,
+				simple_error(
 				    "`default` was detected, but is not inside `switch`.\n");
-				exit(EXIT_FAILURE);
 			}
 			for (int k = 0; k < ptr_prs->case_default_vec.length; k++) {
 				const struct SourceLabelAndAssemblyLabel *ptr_ll =
@@ -80,9 +78,8 @@ static void print_source_labels(const struct PrinterState *ptr_prs,
 			}
 		} else if (ptr_label->category == CASE_LABEL) {
 			if (!ptr_prs->is_inside_switch) {
-				fprintf(stderr,
-				        "`case` was detected, but is not inside `switch`.\n");
-				exit(EXIT_FAILURE);
+				simple_error(
+				    "`case` was detected, but is not inside `switch`.\n");
 			}
 			for (int k = 0; k < ptr_prs->case_default_vec.length; k++) {
 				const struct SourceLabelAndAssemblyLabel *ptr_ll =
@@ -109,8 +106,8 @@ static void print_statement(struct PrinterState *ptr_prs,
 		}
 		case BREAK_STATEMENT: {
 			if (ptr_prs->break_label_name == -1) {
-				fprintf(stderr, "invalid `break`; no loop, no switch\n");
-				exit(EXIT_FAILURE);
+				simple_error("invalid `break`; no loop, no switch\n");
+
 			} else {
 				gen_jump(ptr_prs->break_label_name, "break");
 			}
@@ -141,8 +138,8 @@ static void print_statement(struct PrinterState *ptr_prs,
 		}
 		case CONTINUE_STATEMENT: {
 			if (ptr_prs->continue_label_name == -1) {
-				fprintf(stderr, "invalid `continue`; no loop\n");
-				exit(EXIT_FAILURE);
+				simple_error("invalid `continue`; no loop\n");
+
 			} else {
 				gen_jump(ptr_prs->continue_label_name, "continue");
 			}
@@ -208,8 +205,7 @@ static void print_statement(struct PrinterState *ptr_prs,
 					if (default_label == -1) {
 						default_label = label;
 					} else {
-						fprintf(stderr, "duplicate `default` detected.\n");
-						exit(EXIT_FAILURE);
+						simple_error("duplicate `default` detected.\n");
 					}
 				}
 				struct SourceLabelAndAssemblyLabel ll;
@@ -369,8 +365,8 @@ static void print_statement(struct PrinterState *ptr_prs,
 			return;
 		}
 	}
-	fprintf(stderr, "fooooooooooo\n");
-	exit(EXIT_FAILURE);
+
+	assert0("nljsdgfs" && 0);
 }
 
 static void print_toplevel_definition(struct PrinterState *ptr_prs,
@@ -441,8 +437,8 @@ static void print_toplevel_definition(struct PrinterState *ptr_prs,
 		int ret_struct_size = def.func.ret_struct_size;
 		if (abi_class == INTEGER_CLASS) {
 			if (ptr_prs->return_label_name == -1) {
-				fprintf(stderr, "warning: the return type is not void, but "
-				                "`return` is not found");
+				simple_error("warning: the return type is not void, but "
+				             "`return` is not found");
 			}
 
 			gen_epilogue_returning_small_struct(ret_struct_size,
@@ -453,8 +449,8 @@ static void print_toplevel_definition(struct PrinterState *ptr_prs,
 		}
 	} else {
 		if (ptr_prs->return_label_name == -1) {
-			fprintf(stderr, "warning: the return type is not void, but "
-			                "`return` is not found");
+			simple_error("warning: the return type is not void, but "
+			             "`return` is not found");
 		}
 		gen_epilogue_nbyte(size_of_basic(ret_type), ptr_prs->return_label_name);
 	}
