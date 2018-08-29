@@ -110,6 +110,16 @@ struct Enumerators {
 	struct Vector /*<const char>*/ *ptr_enumerators; /* nullable */
 };
 
+struct StructTagAndInfo {
+	const char *struct_tag;
+	struct StructInternalInfo struct_info;
+};
+
+struct EnumTagAndInfo {
+	const char *enum_tag;
+	struct Enumerators enum_info;
+};
+
 struct Type {
 	enum TypeCategory type_category;
 	struct Type *derived_from;
@@ -117,15 +127,8 @@ struct Type {
 	struct Vector /*<TypeAndIdent>*/ param_infos;
 	int is_param_infos_valid; /* zero when there is no info of parameters*/
 
-	struct {
-		const char *struct_tag;
-		struct StructInternalInfo struct_info;
-	} s;
-
-	struct {
-		const char *enum_tag;
-		struct Enumerators enum_info;
-	} e;
+	struct StructTagAndInfo s;
+	struct EnumTagAndInfo e;
 };
 
 struct TypeAndIdent {
@@ -245,11 +248,13 @@ struct Type parse_declaration(const struct Token **ptr_tokvec,
                               const char **ptr_to_ident_str,
                               struct UntypedExpr **ptr_ptr_uexpr);
 
+struct TypePair {
+	struct Type type;
+	struct Type true_type;
+};
+
 struct Expr {
-	struct {
-		struct Type type;
-		struct Type true_type;
-	} details;
+	struct TypePair details;
 	enum ExprCategory category;
 	enum SimpleBinOp simple_binary_operator;
 	enum UnaryOp unary_operator;
