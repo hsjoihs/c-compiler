@@ -135,15 +135,15 @@ struct Type *parse_type_specifier(const struct Token **ptr_tokvec)
 		const char *ident = tokvec[-1].ident_str;
 
 		ptr->type_category = STRUCT_;
-		ptr->struct_tag = ident;
+		ptr->s.struct_tag = ident;
 		if (tokvec[0].kind != LEFT_BRACE) {
-			ptr->struct_info.ptr_types_and_idents = 0; /* crucial; no info */
+			ptr->s.struct_info.ptr_types_and_idents = 0; /* crucial; no info */
 			skip_consts_or_noreturns(&tokvec);
 			*ptr_tokvec = tokvec;
 			return ptr;
 		}
 		++tokvec;
-		ptr->struct_info.ptr_types_and_idents = init_vector_();
+		ptr->s.struct_info.ptr_types_and_idents = init_vector_();
 
 		while (1) {
 			if (tokvec[0].kind == RIGHT_BRACE) {
@@ -159,7 +159,7 @@ struct Type *parse_type_specifier(const struct Token **ptr_tokvec)
 			ptr_t_and_i->type = t;
 			ptr_t_and_i->ident_str = ident_str;
 
-			push_vector(ptr->struct_info.ptr_types_and_idents, ptr_t_and_i);
+			push_vector(ptr->s.struct_info.ptr_types_and_idents, ptr_t_and_i);
 		}
 	} else if (tok == RES_ENUM) {
 		++tokvec;
@@ -167,22 +167,22 @@ struct Type *parse_type_specifier(const struct Token **ptr_tokvec)
 		                   "identifier after `enum`");
 		const char *ident = tokvec[-1].ident_str;
 		ptr->type_category = ENUM_;
-		ptr->enum_tag = ident;
+		ptr->e.enum_tag = ident;
 		if (tokvec[0].kind != LEFT_BRACE) {
-			ptr->enum_info.ptr_enumerators = 0; /* crucial; no info */
+			ptr->e.enum_info.ptr_enumerators = 0; /* crucial; no info */
 			skip_consts_or_noreturns(&tokvec);
 			*ptr_tokvec = tokvec;
 			return ptr;
 		}
 		++tokvec;
 
-		ptr->enum_info.ptr_enumerators = init_vector_();
+		ptr->e.enum_info.ptr_enumerators = init_vector_();
 
 		do { /* at least one enumerator is needed */
 			expect_and_consume(&tokvec, IDENT_OR_RESERVED,
 			                   "identifier as a declaration of an enumerator");
 			const char *ident_str = tokvec[-1].ident_str;
-			push_vector(ptr->enum_info.ptr_enumerators, ident_str);
+			push_vector(ptr->e.enum_info.ptr_enumerators, ident_str);
 
 			/* ending without comma */
 			if (tokvec[0].kind == RIGHT_BRACE) {

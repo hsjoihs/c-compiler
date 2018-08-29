@@ -20,14 +20,14 @@ int size_of(const struct AnalyzerState *ptr_ps, struct Type type)
 			if ((0)) { /* is local struct */
 				unsupported("local struct");
 			}
-			const char *tag = type.struct_tag;
+			const char *tag = type.s.struct_tag;
 			const struct StructInternalCompleteInfo *ptr_info =
 			    lookup(ptr_ps->global_struct_tag_map, tag);
 			if (!ptr_info) {
 				fprintf(
 				    stderr,
 				    "tried to take the size of incomplete type `struct %s`\n",
-				    type.struct_tag);
+				    type.s.struct_tag);
 				exit(EXIT_FAILURE);
 			}
 			return ptr_info->s_and_a.size;
@@ -57,14 +57,14 @@ int align_of(const struct AnalyzerState *ptr_ps, struct Type type)
 			if ((0)) { /* is local struct */
 				unsupported("local struct");
 			}
-			const char *tag = type.struct_tag;
+			const char *tag = type.s.struct_tag;
 			const struct StructInternalCompleteInfo *ptr_info =
 			    lookup(ptr_ps->global_struct_tag_map, tag);
 			if (!ptr_info) {
 				fprintf(stderr,
 				        "tried to find the alignment of incomplete type "
 				        "`struct %s`\n",
-				        type.struct_tag);
+				        type.s.struct_tag);
 				exit(EXIT_FAILURE);
 			}
 			return ptr_info->s_and_a.alignment;
@@ -96,7 +96,7 @@ enum SystemVAbiClass system_v_abi_class_of(const struct AnalyzerState *ptr_ps,
 			if ((0)) { /* is local struct */
 				unsupported("local struct");
 			}
-			const char *tag = type.struct_tag;
+			const char *tag = type.s.struct_tag;
 			const struct StructInternalCompleteInfo *ptr_info =
 			    lookup(ptr_ps->global_struct_tag_map, tag);
 			if (!ptr_info) {
@@ -104,7 +104,7 @@ enum SystemVAbiClass system_v_abi_class_of(const struct AnalyzerState *ptr_ps,
 				    stderr,
 				    "tried to find the System V ABI class of incomplete type "
 				    "`struct %s`\n",
-				    type.struct_tag);
+				    type.s.struct_tag);
 				exit(EXIT_FAILURE);
 			}
 
@@ -123,7 +123,7 @@ static void record_global_struct_declaration(struct AnalyzerState *ptr_ps,
                                              struct Type struct_type)
 {
 	assert(struct_type.type_category == STRUCT_);
-	struct StructInternalInfo info = struct_type.struct_info;
+	struct StructInternalInfo info = struct_type.s.struct_info;
 	if (!info.ptr_types_and_idents) { /* null; incomplete type */
 		return;
 	}
@@ -150,7 +150,8 @@ static void record_global_struct_declaration(struct AnalyzerState *ptr_ps,
 	ptr_complete->offset_vec = offset_vec;
 	ptr_complete->s_and_a = outer_s_and_a;
 
-	insert(ptr_ps->global_struct_tag_map, struct_type.struct_tag, ptr_complete);
+	insert(ptr_ps->global_struct_tag_map, struct_type.s.struct_tag,
+	       ptr_complete);
 }
 
 static void record_global_enum_declaration(struct AnalyzerState *ptr_ps,
@@ -158,7 +159,7 @@ static void record_global_enum_declaration(struct AnalyzerState *ptr_ps,
 {
 	assert(type.type_category == ENUM_);
 
-	struct Enumerators info = type.enum_info;
+	struct Enumerators info = type.e.enum_info;
 	if (!info.ptr_enumerators) { /* null; cannot record */
 		return;
 	}
@@ -176,7 +177,7 @@ static void record_global_enum_declaration(struct AnalyzerState *ptr_ps,
 
 	concat_vector(&ptr_ps->global_enumerator_list, ptr_e_and_v_vec);
 
-	insert(ptr_ps->global_enum_tag_map, type.enum_tag, ptr_e_and_v_vec);
+	insert(ptr_ps->global_enum_tag_map, type.e.enum_tag, ptr_e_and_v_vec);
 }
 
 static void

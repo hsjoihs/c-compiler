@@ -56,10 +56,10 @@ void debug_print_type(struct Type type)
 			fprintf(stderr, "char");
 			return;
 		case STRUCT_:
-			fprintf(stderr, "struct %s", type.struct_tag);
+			fprintf(stderr, "struct %s", type.s.struct_tag);
 			return;
 		case ENUM_:
-			fprintf(stderr, "enum %s", type.enum_tag);
+			fprintf(stderr, "enum %s", type.e.enum_tag);
 			return;
 		case ARRAY:
 			fprintf(stderr, "array (length %d) of ", type.array_length);

@@ -120,12 +120,12 @@ struct Type {
 	struct {
 		const char *struct_tag;
 		struct StructInternalInfo struct_info;
-	};
+	} s;
 
 	struct {
 		const char *enum_tag;
 		struct Enumerators enum_info;
-	};
+	} e;
 };
 
 struct TypeAndIdent {

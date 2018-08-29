@@ -85,15 +85,15 @@ static int is_strictly_equal(const struct AnalyzerState *ptr_ps, struct Type t1,
 		if ((0)) { /* both are local */
 			unsupported("locally declared struct");
 		}
-		return strcmp(t1.struct_tag, t2.struct_tag) == 0 &&
-		       lookup(ptr_ps->global_struct_tag_map, t1.struct_tag);
+		return strcmp(t1.s.struct_tag, t2.s.struct_tag) == 0 &&
+		       lookup(ptr_ps->global_struct_tag_map, t1.s.struct_tag);
 	}
 
 	if (t1.type_category == ENUM_ && t2.type_category == ENUM_) {
 		if ((0)) { /* both are local */
 			unsupported("locally declared struct");
 		}
-		return strcmp(t1.enum_tag, t2.enum_tag) == 0;
+		return strcmp(t1.e.enum_tag, t2.e.enum_tag) == 0;
 	}
 
 	return 0;
@@ -536,7 +536,7 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 				exit(EXIT_FAILURE);
 			}
 
-			const char *tag = struct_expr.details.type.struct_tag;
+			const char *tag = struct_expr.details.type.s.struct_tag;
 			const struct StructInternalCompleteInfo *ptr_info =
 			    lookup(ptr_ps->global_struct_tag_map, tag);
 			if (!ptr_info) {
