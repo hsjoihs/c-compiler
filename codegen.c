@@ -4,7 +4,7 @@
 #include "toplevel.h"
 
 static void print_toplevel_definition(struct PrinterState *ptr_prs,
-                                      const struct Toplevel def);
+                                      const struct Toplevel *ptr_def);
 
 int get_new_label_name(struct PrinterState *ptr_prs)
 {
@@ -365,8 +365,9 @@ static void print_statement(struct PrinterState *ptr_prs,
 }
 
 static void print_toplevel_definition(struct PrinterState *ptr_prs,
-                                      const struct Toplevel def)
+                                      const struct Toplevel *ptr_def)
 {
+	struct Toplevel def = *ptr_def;
 	if (def.category == TOPLEVEL_VAR_DEFINITION) {
 		if (def.declarator_name && !def.is_extern_global_var) {
 			gen_global_declaration(def.declarator_name,
@@ -463,7 +464,7 @@ void generate(const struct Vector /*<Toplevel>*/ vec)
 	for (int i = 0; i < vec.length; i++) {
 		const struct Toplevel *ptr = vec.vector[i];
 
-		print_toplevel_definition(&prs, *ptr);
+		print_toplevel_definition(&prs, ptr);
 	}
 
 	for (int i = 0; i < prs.string_constant_pool.length; ++i) {
