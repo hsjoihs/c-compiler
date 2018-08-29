@@ -45,6 +45,7 @@ clean:
 
 supplement:
 	gcc misc/supplement.c -S -o s/supplement.s
+	gcc misc/supplement2.c -S -o s/supplement2.s
 
 verify_typeparse:
 	clang -Wall -Wextra -Wimplicit-fallthrough $(OSFLAG) vector.c verifier/typeparse_checker.c lexer.c type.c parse_type.c error.c -o out/typeparse_check.out

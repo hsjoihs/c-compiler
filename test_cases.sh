@@ -7,6 +7,19 @@ run_test() {
 	res=$?
 	if [ $res -ne $3 ]; then { echo "got:" $res; echo "expected:" $3; echo -e "\033[31mFAIL\033[m, at test case" $1: $2; exit 1; }; else echo -e "\033[32mPASS\033[m"; fi
 }
+
+run_test2() {
+	echo -e $2 | ./out/compiler.out > s/full_compile$1.s
+	gcc s/full_compile$1.s s/supplement2.s -o out/task$1.out
+	./out/task$1.out
+	res=$?
+	if [ $res -ne $3 ]; then { echo "got:" $res; echo "expected:" $3; echo -e "\033[31mFAIL\033[m, at test case" $1: $2; exit 1; }; else echo -e "\033[32mPASS\033[m"; fi
+}
+
+
+run_test2 304 'struct A {int a;}; int g(int a); struct A f (int u){ struct A s; s.a = u; return s;} int main(void){ return g(174); }' 174
+#run_test 304 'struct A {int a; int b;}; struct A f (int u, int v){ struct '
+
 run_test 302 'extern int GLOBAL_VAR; int main(){return 171 + GLOBAL_VAR;}' 174
 run_test 303 'static int hidden() { return 3;} int main(){return 171 + hidden();}' 174
 
