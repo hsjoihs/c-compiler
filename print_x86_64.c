@@ -214,7 +214,7 @@ void gen_push_ret_of_8byte(const char *fname)
 	gen_push_ret_of_(fname, 8);
 }
 
-void gen_push_ret_of_(const char *fname, int byte)
+static void gen_call(const char *fname)
 {
 
 	/* alignment */
@@ -254,6 +254,10 @@ void gen_push_ret_of_(const char *fname, int byte)
 	returned value. Hence, you only need to add 0.
 	*/
 	printf("  addq (%%rsp), %%rsp\n");
+}
+void gen_push_ret_of_(const char *fname, int byte)
+{
+	gen_call(fname);
 	if (byte == 8) {
 		printf("  movq %%rax, (%%rsp)\n");
 	} else if (byte == 4) {
