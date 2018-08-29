@@ -113,12 +113,11 @@ struct Type deref_type(struct Type t)
 
 int is_pointer(struct Type t) { return t.type_category == PTR_; }
 
-struct Type if_array_convert_to_ptr(struct Type t)
+void if_array_convert_to_ptr_(struct Type *ptr_t)
 {
-	if (t.type_category == ARRAY) {
-		t.type_category = PTR_;
+	if (ptr_t->type_category == ARRAY) {
+		ptr_t->type_category = PTR_;
 	}
-	return t;
 }
 
 struct Type ptr_of_type_to_ptr_to_type(struct Type *ptr_type)

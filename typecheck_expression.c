@@ -458,8 +458,10 @@ static struct Expr deref_expr(struct Expr expr)
 {
 	struct Type type = deref_type(expr.details.type);
 
-	struct Expr new_expr =
-	    unary_op_(expr, OP_ASTERISK, if_array_convert_to_ptr(type));
+	struct Type t2 = type;
+	if_array_convert_to_ptr_(&t2);
+
+	struct Expr new_expr = unary_op_(expr, OP_ASTERISK, t2);
 	new_expr.details.true_type = type;
 
 	return new_expr;
@@ -749,8 +751,10 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 				    resolve_name_globally(ptr_ps->global_vars_type_map, name);
 
 				struct Expr expr;
-				expr.details.type = if_array_convert_to_ptr(type);
-				;
+				struct Type t2 = type;
+				if_array_convert_to_ptr_(&t2);
+
+				expr.details.type = t2;
 				expr.details.true_type = type;
 				expr.category = GLOBAL_VAR_;
 				expr.global_var_name = name;
@@ -760,7 +764,10 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 				    resolve_name_locally(ptr_ps->scope_chain, name);
 
 				struct Expr expr;
-				expr.details.type = if_array_convert_to_ptr(info.type);
+				struct Type t2 = info.type;
+				if_array_convert_to_ptr_(&t2);
+
+				expr.details.type = t2;
 				expr.details.true_type = info.type;
 				expr.category = LOCAL_VAR_;
 				expr.local_var_offset = info.offset;

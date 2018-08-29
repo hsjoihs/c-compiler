@@ -285,8 +285,6 @@ struct Expr {
 	int struct_offset;
 };
 
-struct Type if_array_convert_to_ptr(struct Type t);
-
 void read_all_tokens_debug(const char *str);
 
 struct Type ptr_of_type_to_arr_of_type(struct Type *ptr_type, int length);
@@ -356,3 +354,5 @@ struct Type parse_type_specifier_and_declarator(const struct Token **ptr_tokvec,
                                                 const char **ptr_to_ident_str);
 
 _Noreturn void simple_error(const char *str);
+
+void if_array_convert_to_ptr_(struct Type *ptr_t);
