@@ -122,7 +122,11 @@ static void print_statement(struct PrinterState *ptr_prs,
 			return;
 		}
 		case RETURN_STATEMENT: {
-			print_expression(ptr_prs, sta.expr1);
+			if (sta.expr1.details.type.type_category == STRUCT_) {
+				print_address_of_lvalue(ptr_prs, sta.expr1);
+			} else {
+				print_expression(ptr_prs, sta.expr1);
+			}
 
 			/* the first occurrence of return within a function */
 			if (ptr_prs->return_label_name == -1) {
@@ -432,6 +436,9 @@ static void print_toplevel_definition(struct PrinterState *ptr_prs,
 			gen_label(ptr_prs->return_label_name);
 		}
 		printf("  movl $123, %%eax\nleave\nret\n");
+	} else if (ret_type.type_category == STRUCT_) {
+#warning how should we know about the class and size?
+		unsupported("returning a struct");
 	} else {
 		if (ptr_prs->return_label_name == -1) {
 			fprintf(stderr, "warning: the return type is not void, but "

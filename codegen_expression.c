@@ -106,8 +106,7 @@ static void print_simple_binary_op(enum SimpleBinOp kind, struct Type left_type,
 	}
 }
 
-static void print_address_of_lvalue(struct PrinterState *ptr_prs,
-                                    struct Expr expr)
+void print_address_of_lvalue(struct PrinterState *ptr_prs, struct Expr expr)
 {
 	switch (expr.category) {
 		case STRUCT_AND_OFFSET: {
