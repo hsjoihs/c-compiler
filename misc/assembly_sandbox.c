@@ -54,7 +54,6 @@ int main()
 	puts("  movl $1, -8(%rbp)\n");
 	gen_push_address_of_local(-8);
 	gen_epilogue_returning_small_struct(8, 5623);
-		
 
 	{
 		gen_prologue(20, "bar");
@@ -72,7 +71,6 @@ int main()
 
 		gen_push_address_of_local(-12);
 		gen_epilogue_returning_small_struct(12, 875);
-		
 	}
 
 	{
@@ -92,21 +90,36 @@ int main()
 		gen_epilogue_8byte(5463);
 	}
 
-	gen_prologue(80, "main");
-	puts("  movl $0, -4(%rbp)\n"
-	     "  movl $0, %eax\n"
-	     "  call " PREFIX "foo\n"
-	     "  movq %rax, -12(%rbp)\n"
-	     "  movl -12(%rbp), %eax\n"
+	gen_prologue(160, "main");
+	gen_push_int(0);
+	gen_write_to_local(-4);
+	gen_discard();
+
+	gen_call("foo");
+	puts("  movq %rax, -12(%rbp)\n"
+	     "  leaq -12(%rbp), %rdx\n"
+	     "  movq %rdx, (%rsp)\n");
+
+	puts("  movq (%rsp), %rdx\n"
+	     "  movl (%rdx), %eax\n"
 	     "  addl %eax, -4(%rbp)\n"
-	     "  movl $0, %eax\n"
+	     "  addq $8, %rsp\n");
+
+	puts("  movl $0, %eax\n"
 	     "  call " PREFIX "bar\n"
+	     "  subq $8, %rsp\n"
 	     "  movq %rax, %rcx\n"
 	     "  movl %edx, %eax\n"
 	     "  movq %rcx, -24(%rbp)\n"
 	     "  movl %eax, -16(%rbp)\n"
-	     "  movl -24(%rbp), %eax\n"
+	     "  leaq -24(%rbp), %rdx\n"
+	     "  movq %rdx, (%rsp)\n"
+
+	);
+	puts("  movq (%rsp), %rdx\n"
+	     "  movl (%rdx), %eax\n"
 	     "  addl %eax, -4(%rbp)\n"
+	     "  addq $8, %rsp\n"
 	     "  leaq -80(%rbp), %rax\n"
 	     "  movq %rax, %rdi\n"
 	     "  movl $0, %eax\n"
