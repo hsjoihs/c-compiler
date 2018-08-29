@@ -74,6 +74,7 @@ void gen_compare_ptrs(const char *str);
 void gen_copy_struct_and_discard(int size);
 void gen_prologue_static(int alloc_size, const char *fname);
 void gen_epilogue_returning_small_struct(int size, int label);
+void gen_call(const char *fname);
 
 #ifdef OSX
 #define PREFIX "_"

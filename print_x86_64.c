@@ -194,8 +194,6 @@ void gen_swap(void)
 	       "movq %%rax, 8(%%rsp)\n");
 }
 
-static void gen_call(const char *fname);
-
 void gen_push_ret_of_1byte(const char *fname)
 {
 	printf("//gen_push_ret_of_1byte(%c%s%c)\n", 34, fname, 34);
@@ -219,7 +217,7 @@ void gen_push_ret_of_8byte(const char *fname)
 	printf("  movq %%rax, (%%rsp)\n");
 }
 
-static void gen_call(const char *fname)
+void gen_call(const char *fname)
 {
 
 	/* alignment */
