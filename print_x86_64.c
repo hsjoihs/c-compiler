@@ -194,24 +194,29 @@ void gen_swap(void)
 	       "movq %%rax, 8(%%rsp)\n");
 }
 
-void gen_push_ret_of_(const char *fname, int is8byte);
+static void gen_call(const char *fname);
 
 void gen_push_ret_of_1byte(const char *fname)
 {
 	printf("//gen_push_ret_of_1byte(%c%s%c)\n", 34, fname, 34);
-	gen_push_ret_of_(fname, 1);
+	gen_call(fname);
+
+	printf("  movsbl %%al, %%eax\n"
+	       "  movl %%eax, (%%rsp)\n");
 }
 
 void gen_push_ret_of_4byte(const char *fname)
 {
 	printf("//gen_push_ret_of_4byte(%c%s%c)\n", 34, fname, 34);
-	gen_push_ret_of_(fname, 4);
+	gen_call(fname);
+	printf("  movl %%eax, (%%rsp)\n");
 }
 
 void gen_push_ret_of_8byte(const char *fname)
 {
 	printf("//gen_push_ret_of_8byte(%c%s%c)\n", 34, fname, 34);
-	gen_push_ret_of_(fname, 8);
+	gen_call(fname);
+	printf("  movq %%rax, (%%rsp)\n");
 }
 
 static void gen_call(const char *fname)
@@ -254,18 +259,6 @@ static void gen_call(const char *fname)
 	returned value. Hence, you only need to add 0.
 	*/
 	printf("  addq (%%rsp), %%rsp\n");
-}
-void gen_push_ret_of_(const char *fname, int byte)
-{
-	gen_call(fname);
-	if (byte == 8) {
-		printf("  movq %%rax, (%%rsp)\n");
-	} else if (byte == 4) {
-		printf("  movl %%eax, (%%rsp)\n");
-	} else if (byte == 1) {
-		printf("  movsbl %%al, %%eax\n"
-		       "  movl %%eax, (%%rsp)\n");
-	}
 }
 
 void gen_pop_to_reg_4byte(const char *str)
