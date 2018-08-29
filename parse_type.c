@@ -2,7 +2,6 @@
 #include "std.h"
 #include "std_io.h"
 
-struct Vector init_vector(void) { return *init_vector_(); }
 /***************************************
  * pure parsers with respect to types. *
  ***************************************/

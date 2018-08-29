@@ -1,6 +1,8 @@
 #include "vector.h"
 #include "std.h"
 
+struct Vector init_vector(void) { return *init_vector_(); }
+
 struct Vector *init_vector_(void)
 {
 	struct Vector *ptr_res = calloc(1, sizeof(struct Vector));
