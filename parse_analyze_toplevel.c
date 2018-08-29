@@ -301,6 +301,21 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 
 	struct Vector /*<LocalVarInfo>*/ offsets_and_types = init_vector();
 
+	struct Toplevel def;
+	def.category = TOPLEVEL_FUNCTION_DEFINITION;
+	def.declarator_name = declarator_name;
+	def.func.is_static_function = is_static_function;
+	def.func.ret_type = ret_type;
+	if (ret_type.type_category == STRUCT_) {
+		enum SystemVAbiClass abi_class =
+		    system_v_abi_class_of(ptr_ps, ret_type);
+		def.func.abi_class = abi_class;
+		def.func.ret_struct_size = size_of(ptr_ps, ret_type);
+		if (abi_class == MEMORY_CLASS) {
+			unsupported("MEMORY_CLASS");
+		}
+	}
+
 	if (is_param_infos_valid) { /* parameter is not empty */
 		for (int counter = 0; counter < param_infos.length; ++counter) {
 
@@ -332,14 +347,9 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 	*ptr_tokvec = tokvec2;
 	/* parse finished */
 
-	struct Toplevel def;
-	def.category = TOPLEVEL_FUNCTION_DEFINITION;
-	def.declarator_name = declarator_name;
 	def.func.sta = sta;
 	def.func.offsets_and_types = offsets_and_types;
-	def.func.ret_type = ret_type;
 	def.func.capacity = -ptr_ps->newest_offset;
-	def.func.is_static_function = is_static_function;
 	return def;
 }
 

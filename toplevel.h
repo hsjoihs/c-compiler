@@ -7,6 +7,10 @@ struct ToplevelFuncInfo {
 	struct Type ret_type;
 	int capacity;
 	int is_static_function;
+
+	/* valid only when ret_type is a struct */
+	enum SystemVAbiClass abi_class;
+	int ret_struct_size;
 };
 
 enum ToplevelCategory {
