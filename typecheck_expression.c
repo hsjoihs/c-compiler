@@ -637,8 +637,9 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 
 					expr = typecheck_expression(ptr_ps, *uexpr.ptr1);
 
+#warning &array is actually legal
 					struct Type type = expr.details.type;
-					if (is_array(type)) {
+					if (type.type_category == ARRAY) {
 						fprintf(stderr, "array is not an lvalue\n");
 						exit(EXIT_FAILURE);
 					}
@@ -806,8 +807,8 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 			if (isAssign(uexpr.operator_)) {
 				struct Expr expr = typecheck_expression(ptr_ps, *uexpr.ptr1);
 				struct Expr expr2 = typecheck_expression(ptr_ps, *uexpr.ptr2);
-				if (is_array(expr.details.type) ||
-				    is_array(expr.details.true_type)) {
+				if (expr.details.type.type_category == ARRAY ||
+				    expr.details.true_type.type_category == ARRAY) {
 					fprintf(stderr, "array is not an lvalue\n");
 					exit(EXIT_FAILURE);
 				}

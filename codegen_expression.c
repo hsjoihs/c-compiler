@@ -254,7 +254,7 @@ void print_expression(struct PrinterState *ptr_prs, struct Expr expr)
 		}
 
 		case LOCAL_VAR_: {
-			if (is_array(expr.details.true_type)) {
+			if (expr.details.true_type.type_category == ARRAY) {
 				gen_push_address_of_local(expr.local_var_offset);
 				return;
 			}
@@ -267,7 +267,7 @@ void print_expression(struct PrinterState *ptr_prs, struct Expr expr)
 		case GLOBAL_VAR_: {
 			printf("//global `%s` as rvalue\n", expr.global_var_name);
 
-			if (is_array(expr.details.true_type)) {
+			if (expr.details.true_type.type_category == ARRAY) {
 				gen_push_address_of_global(expr.global_var_name);
 				return;
 			}
@@ -383,7 +383,7 @@ void print_expression(struct PrinterState *ptr_prs, struct Expr expr)
 					struct Type type = expr.details.type;
 					struct Type true_type = expr.details.true_type;
 
-					if (is_pointer(type) && is_array(true_type)) {
+					if (is_pointer(type) && true_type.type_category == ARRAY) {
 						/* do not dereference, if it is an array */
 						return;
 					}

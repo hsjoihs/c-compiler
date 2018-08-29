@@ -285,7 +285,6 @@ struct Expr {
 	int struct_offset;
 };
 
-int is_array(struct Type t);
 struct Type if_array_convert_to_ptr(struct Type t);
 
 void read_all_tokens_debug(const char *str);
