@@ -639,15 +639,15 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 
 					expr = typecheck_expression(ptr_ps, *uexpr.ptr1);
 
-#warning &array is actually legal
 					struct Type type = expr.details.type;
-					if (type.type_category == ARRAY) {
-						fprintf(stderr, "array is not an lvalue\n");
-						exit(EXIT_FAILURE);
+
+					if (is_pointer(type) &&
+					    expr.details.true_type.type_category == ARRAY) {
+						type = expr.details.true_type;
 					}
 
 					struct Type *ptr_type = calloc(1, sizeof(struct Type));
-					*ptr_type = expr.details.type;
+					*ptr_type = type;
 
 					struct Expr new_expr = unary_op_(
 					    expr, OP_AND, ptr_of_type_to_ptr_to_type(ptr_type));

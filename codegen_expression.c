@@ -374,7 +374,13 @@ void print_expression(struct PrinterState *ptr_prs, struct Expr expr)
 				}
 
 				case UNARY_OP_AND: {
-					print_address_of_lvalue(ptr_prs, *expr.ptr1);
+					struct Type type = expr.ptr1->details.type;
+					struct Type true_type = expr.ptr1->details.true_type;
+					if (is_pointer(type) && true_type.type_category == ARRAY) {
+						print_expression(ptr_prs, *expr.ptr1);
+					} else {
+						print_address_of_lvalue(ptr_prs, *expr.ptr1);
+					}
 					return;
 				}
 
