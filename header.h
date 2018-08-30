@@ -84,8 +84,6 @@ struct Token {
 	const char *token_begins_here;
 };
 
-struct TypeAndIdent;
-
 enum TypeCategory {
 	INT_ /*= 1*/,
 	PTR_,
@@ -96,6 +94,8 @@ enum TypeCategory {
 	VOID_,
 	ENUM_
 };
+
+struct TypeAndIdent;
 
 struct StructInternalInfo {
 	struct Vector /* <TypeAndIdent> */ *ptr_types_and_idents; /* nullable */

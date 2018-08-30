@@ -2,7 +2,8 @@
 #include "std.h"
 #include "std_io.h"
 
-static void print_token(struct Token tok, const char *next_token_begins);
+static void print_token(const struct Token *ptr_tok,
+                        const char *next_token_begins);
 static struct Token get_token(const char **ptr_to_str);
 
 char *unescape(const char *str)
@@ -101,23 +102,24 @@ void read_all_tokens_debug(const char *str)
 		if (tok.kind == END) {
 			break;
 		}
-		print_token(tok, str);
+		print_token(&tok, str);
 		fprintf(stderr, "\n");
 	} while (1);
 }
 
-static void print_token(struct Token tok, const char *next_token_begins)
+static void print_token(const struct Token *ptr_tok,
+                        const char *next_token_begins)
 {
-	if (tok.kind == END) {
+	if (ptr_tok->kind == END) {
 		fprintf(stderr, "DUMMY: END");
 		return;
 	}
-	if (tok.kind == BEGINNING) {
+	if (ptr_tok->kind == BEGINNING) {
 		fprintf(stderr, "DUMMY: BEGINNING");
 		return;
 	}
-	for (int i = 0; i < next_token_begins - tok.token_begins_here; i++) {
-		char c = tok.token_begins_here[i];
+	for (int i = 0; i < next_token_begins - ptr_tok->token_begins_here; i++) {
+		char c = ptr_tok->token_begins_here[i];
 		if (c == ' ' || c == '\t' || c == '\n' || c == '\v' || c == '\f' ||
 		    c == '\r') {
 			break;
@@ -128,7 +130,7 @@ static void print_token(struct Token tok, const char *next_token_begins)
 
 void print_token_at(const struct Token *tokvec)
 {
-	print_token(tokvec[0], tokvec[1].token_begins_here);
+	print_token(&tokvec[0], tokvec[1].token_begins_here);
 }
 
 static struct Token get_token_raw(const char **ptr_to_str)
