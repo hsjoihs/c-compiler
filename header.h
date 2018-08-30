@@ -84,9 +84,6 @@ struct Token {
 	const char *token_begins_here;
 };
 
-void print_token(struct Token tok, const char *next_token_begins);
-struct Token get_token(const char **ptr_to_str);
-
 struct TypeAndIdent;
 
 enum TypeCategory {
@@ -356,3 +353,5 @@ struct Type parse_type_specifier_and_declarator(const struct Token **ptr_tokvec,
 _Noreturn void simple_error(const char *str);
 
 void if_array_convert_to_ptr_(struct Type *ptr_t);
+
+void print_token_at(const struct Token *tokvec);

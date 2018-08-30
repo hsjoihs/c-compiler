@@ -2,6 +2,9 @@
 #include "std.h"
 #include "std_io.h"
 
+static void print_token(struct Token tok, const char *next_token_begins);
+static struct Token get_token(const char **ptr_to_str);
+
 char *unescape(const char *str)
 {
 	char *ans = calloc(strlen(str) + 1, sizeof(char));
@@ -103,7 +106,7 @@ void read_all_tokens_debug(const char *str)
 	} while (1);
 }
 
-void print_token(struct Token tok, const char *next_token_begins)
+static void print_token(struct Token tok, const char *next_token_begins)
 {
 	if (tok.kind == END) {
 		fprintf(stderr, "DUMMY: END");
@@ -121,6 +124,11 @@ void print_token(struct Token tok, const char *next_token_begins)
 		}
 		fprintf(stderr, "%c", c);
 	}
+}
+
+void print_token_at(const struct Token *tokvec)
+{
+	print_token(tokvec[0], tokvec[1].token_begins_here);
 }
 
 static struct Token get_token_raw(const char **ptr_to_str)
@@ -471,7 +479,7 @@ static struct Token get_token_raw(const char **ptr_to_str)
 	exit(EXIT_FAILURE);
 }
 
-struct Token get_token(const char **ptr_to_str)
+static struct Token get_token(const char **ptr_to_str)
 {
 	struct Token t = get_token_raw(ptr_to_str);
 	if (t.kind != IDENT_OR_RESERVED) {

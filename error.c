@@ -6,16 +6,15 @@ _Noreturn void error_unexpected_token(const struct Token *tokvec,
                                       const char *str)
 {
 	fprintf(stderr, "Unexpected token: `");
-	print_token(tokvec[0], tokvec[1].token_begins_here);
+	print_token_at(tokvec);
 	fprintf(stderr, "` while expecting %s. \n", str);
 	fprintf(stderr, "Next token: `");
-	print_token(tokvec[1], tokvec[2].token_begins_here);
+	print_token_at(tokvec + 1);
 	fprintf(stderr, "`\n");
 	fprintf(stderr, "Previous token: `");
-	print_token(
-	    tokvec[-1],
-	    tokvec[0].token_begins_here); /* it does not fail if tokvec[0] was the
-	        first token, since there always is at least one token (BEGINNING) */
+	print_token_at(tokvec - 1);
+	/* it does not fail if tokvec[0] was the
+	   first token, since there always is at least one token (BEGINNING) */
 	fprintf(stderr, "`\n");
 	exit(EXIT_FAILURE);
 }
