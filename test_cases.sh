@@ -17,6 +17,7 @@ run_test2() {
 }
 
 run_test 305 'int main(void) {int a[5]; a[3] = 174; int (*p)[5] = &a; return (*p)[3];} ' 174
+run_test 306 'int main(void) {char a = 74; char *p = &a; return *p+100;} ' 174
 
 run_test2 304 'struct A {int a;}; int g(int a); struct A f (int u){ struct A s; s.a = u; return s;} int main(void){ return g(174); }' 174
 
