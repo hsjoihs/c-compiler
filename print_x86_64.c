@@ -579,22 +579,6 @@ void gen_div_by_const(int num)
 	printf("  movq %%rax, (%%rsp)\n");
 }
 
-void gen_write_to_global_8byte(const char *ident)
-{
-	printf("//gen_write_to_global_8byte(%c%s%c)\n", 34, ident, 34);
-	printf("  movq (%%rsp), %%rax\n"
-	       "  movq %%rax, " PREFIX "%s(%%rip)\n",
-	       ident);
-}
-
-void gen_write_to_global_4byte(const char *ident)
-{
-	printf("//gen_write_to_global_4byte(%c%s%c)\n", 34, ident, 34);
-	printf("  movl (%%rsp), %%eax\n"
-	       "  movl %%eax, " PREFIX "%s(%%rip)\n",
-	       ident);
-}
-
 void gen_push_from_global_8byte(const char *ident)
 {
 	printf("//gen_push_from_global_8byte(%c%s%c)\n", 34, ident, 34);
