@@ -110,7 +110,7 @@ static void print_statement(struct PrinterState *ptr_prs,
 			return;
 		}
 		case EXPRESSION_STATEMENT: {
-			print_expression(ptr_prs, sta.expr1);
+			print_expression(ptr_prs, &sta.expr1);
 			gen_discard();
 			return;
 		}
@@ -118,7 +118,7 @@ static void print_statement(struct PrinterState *ptr_prs,
 			if (sta.expr1.details.type.type_category == STRUCT_) {
 				print_address_of_lvalue(ptr_prs, &sta.expr1);
 			} else {
-				print_expression(ptr_prs, sta.expr1);
+				print_expression(ptr_prs, &sta.expr1);
 			}
 
 			/* the first occurrence of return within a function */
@@ -155,8 +155,8 @@ static void print_statement(struct PrinterState *ptr_prs,
 		case IF_ELSE_STATEMENT: {
 			int label1 = get_new_label_name(ptr_prs);
 			int label2 = get_new_label_name(ptr_prs);
-			struct Expr expr = sta.expr1;
-			print_expression(ptr_prs, expr);
+			const struct Expr expr = sta.expr1;
+			print_expression(ptr_prs, &expr);
 
 			gen_if_zero_jmp_nbyte(size_of_basic(expr.details.type), label1, 0);
 			gen_discard();
@@ -214,8 +214,8 @@ static void print_statement(struct PrinterState *ptr_prs,
 				push_vector(&ptr_prs->case_default_vec, ptr_ll);
 			}
 
-			struct Expr expr = sta.expr1;
-			print_expression(ptr_prs, expr);
+			const struct Expr expr = sta.expr1;
+			print_expression(ptr_prs, &expr);
 			if (size_of_basic(expr.details.type) == 1) {
 				gen_extend_to_4byte();
 			}
@@ -250,8 +250,8 @@ static void print_statement(struct PrinterState *ptr_prs,
 
 			int label1 = get_new_label_name(ptr_prs);
 			int label2 = get_new_label_name(ptr_prs);
-			struct Expr expr = sta.expr1;
-			print_expression(ptr_prs, expr);
+			const struct Expr expr = sta.expr1;
+			print_expression(ptr_prs, &expr);
 
 			gen_if_zero_jmp_nbyte(size_of_basic(expr.details.type), label1, 0);
 			gen_discard();
@@ -280,8 +280,8 @@ static void print_statement(struct PrinterState *ptr_prs,
 
 			gen_label(cont_label);
 
-			struct Expr expr = sta.expr1;
-			print_expression(ptr_prs, expr);
+			const struct Expr expr = sta.expr1;
+			print_expression(ptr_prs, &expr);
 
 			gen_discard();
 			gen_if_nonzero_jmp_nbyte(size_of_basic(expr.details.type), label1,
@@ -295,7 +295,7 @@ static void print_statement(struct PrinterState *ptr_prs,
 		}
 
 		case WHILE_STATEMENT: {
-			struct Expr expr = sta.expr1;
+			const struct Expr expr = sta.expr1;
 
 			int stashed_break_label = ptr_prs->break_label_name;
 			int stashed_continue_label = ptr_prs->continue_label_name;
@@ -308,7 +308,7 @@ static void print_statement(struct PrinterState *ptr_prs,
 
 			gen_label(label1);
 
-			print_expression(ptr_prs, expr);
+			print_expression(ptr_prs, &expr);
 
 			gen_discard();
 			gen_if_zero_jmp_nbyte(size_of_basic(expr.details.type), break_label,
@@ -334,10 +334,10 @@ static void print_statement(struct PrinterState *ptr_prs,
 			ptr_prs->break_label_name = break_label;
 			ptr_prs->continue_label_name = cont_label;
 
-			print_expression(ptr_prs, sta.expr1); /* expression1 */
+			print_expression(ptr_prs, &sta.expr1); /* expression1 */
 			gen_discard();
 			gen_label(label1);
-			print_expression(ptr_prs, sta.expr2); /* expression2 */
+			print_expression(ptr_prs, &sta.expr2); /* expression2 */
 
 			gen_discard();
 			gen_if_zero_jmp_nbyte(size_of_basic(sta.expr2.details.type),
@@ -345,7 +345,7 @@ static void print_statement(struct PrinterState *ptr_prs,
 
 			print_statement(ptr_prs, sta.inner_statement);
 			gen_label(cont_label);
-			print_expression(ptr_prs, sta.expr3);
+			print_expression(ptr_prs, &sta.expr3);
 			gen_discard();
 			gen_jump(label1, "for(part4)");
 			gen_label(break_label);

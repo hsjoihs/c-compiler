@@ -16,7 +16,7 @@ static void print_simple_binary_op(enum SimpleBinOp kind,
                                    const struct Type *ref_left_type, int size)
 {
 	const struct Type left_type = *ref_left_type;
-	if (is_pointer(left_type)) {
+	if (left_type.type_category == PTR_) {
 		switch (kind) {
 			case SIMPLE_BIN_OP_COMMA:
 				gen_discard2nd_8byte();
@@ -133,7 +133,7 @@ void print_address_of_lvalue(struct PrinterState *ptr_prs,
 		case UNARY_OP_EXPR:
 			switch (expr.unary_operator) {
 				case UNARY_OP_ASTERISK: {
-					print_expression(ptr_prs, *expr.ptr1);
+					print_expression(ptr_prs, expr.ptr1);
 					return;
 				}
 				default:
@@ -147,7 +147,8 @@ void print_address_of_lvalue(struct PrinterState *ptr_prs,
 	}
 }
 
-void print_expression(struct PrinterState *ptr_prs, struct Expr expr);
+void print_expression(struct PrinterState *ptr_prs,
+                      const struct Expr *ref_expr);
 static void print_expression_as_lvalue(struct PrinterState *ptr_prs,
                                        const struct Expr *ref_expr);
 
@@ -195,8 +196,9 @@ static void print_expression_as_lvalue(struct PrinterState *ptr_prs,
 	}
 }
 
-void print_expression(struct PrinterState *ptr_prs, const struct Expr expr)
+void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 {
+	const struct Expr expr = *ref_expr;
 	switch (expr.category) {
 		case STRUCT_ASSIGNMENT_EXPR: {
 			print_address_of_lvalue(ptr_prs, expr.ptr1);
@@ -219,8 +221,8 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr expr)
 			return;
 		}
 		case POINTER_MINUS_POINTER: {
-			print_expression(ptr_prs, *expr.ptr1);
-			print_expression(ptr_prs, *expr.ptr2);
+			print_expression(ptr_prs, expr.ptr1);
+			print_expression(ptr_prs, expr.ptr2);
 			int size = expr.size_info_for_pointer_arith;
 			gen_op_8byte("subq");
 			gen_div_by_const(size);
@@ -229,8 +231,8 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr expr)
 		case POINTER_PLUS_INT:
 		case POINTER_MINUS_INT: {
 			int size = expr.size_info_for_pointer_arith;
-			print_expression(ptr_prs, *expr.ptr1);
-			print_expression(ptr_prs, *expr.ptr2);
+			print_expression(ptr_prs, expr.ptr1);
+			print_expression(ptr_prs, expr.ptr2);
 			print_op_pointer_plusminus_int(expr.category == POINTER_PLUS_INT,
 			                               size);
 			return;
@@ -283,8 +285,8 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr expr)
 		}
 
 		case SIMPLE_BINARY_EXPR: {
-			print_expression(ptr_prs, *expr.ptr1);
-			print_expression(ptr_prs, *expr.ptr2);
+			print_expression(ptr_prs, expr.ptr1);
+			print_expression(ptr_prs, expr.ptr2);
 			print_simple_binary_op(expr.simple_binary_operator,
 			                       &expr.ptr1->details.type,
 			                       expr.size_info_for_pointer_arith);
@@ -295,11 +297,11 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr expr)
 
 			int label1 = get_new_label_name(ptr_prs);
 			int label2 = get_new_label_name(ptr_prs);
-			print_expression(ptr_prs, *expr.ptr1);
+			print_expression(ptr_prs, expr.ptr1);
 
 			gen_if_nonzero_jmp_nbyte(size_of_basic(expr.ptr1->details.type),
 			                         label1, 0);
-			print_expression(ptr_prs, *expr.ptr2);
+			print_expression(ptr_prs, expr.ptr2);
 			gen_discard();
 			gen_if_nonzero_jmp_nbyte(size_of_basic(expr.ptr2->details.type),
 			                         label1, -8);
@@ -310,11 +312,11 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr expr)
 
 			int label1 = get_new_label_name(ptr_prs);
 			int label2 = get_new_label_name(ptr_prs);
-			print_expression(ptr_prs, *expr.ptr1);
+			print_expression(ptr_prs, expr.ptr1);
 
 			gen_if_zero_jmp_nbyte(size_of_basic(expr.ptr1->details.type),
 			                      label1, 0);
-			print_expression(ptr_prs, *expr.ptr2);
+			print_expression(ptr_prs, expr.ptr2);
 			gen_discard();
 			gen_if_zero_jmp_nbyte(size_of_basic(expr.ptr2->details.type),
 			                      label1, -8);
@@ -325,7 +327,7 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr expr)
 		case ASSIGNMENT_EXPR: {
 
 			print_expression_as_lvalue(ptr_prs, expr.ptr1);
-			print_expression(ptr_prs, *expr.ptr2);
+			print_expression(ptr_prs, expr.ptr2);
 
 			print_simple_binary_op(expr.simple_binary_operator,
 			                       &expr.ptr1->details.type,
@@ -343,19 +345,19 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr expr)
 		case UNARY_OP_EXPR:
 			switch (expr.unary_operator) {
 				case UNARY_OP_NOT:
-					print_expression(ptr_prs, *expr.ptr1);
+					print_expression(ptr_prs, expr.ptr1);
 					gen_unary_not();
 					return;
 				case UNARY_OP_TILDA:
-					print_expression(ptr_prs, *expr.ptr1);
+					print_expression(ptr_prs, expr.ptr1);
 					gen_unary("notl");
 					return;
 				case UNARY_OP_PLUS:
-					print_expression(ptr_prs, *expr.ptr1);
+					print_expression(ptr_prs, expr.ptr1);
 					/* do nothing */
 					return;
 				case UNARY_OP_MINUS:
-					print_expression(ptr_prs, *expr.ptr1);
+					print_expression(ptr_prs, expr.ptr1);
 					gen_unary("negl");
 					return;
 
@@ -380,8 +382,9 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr expr)
 				case UNARY_OP_AND: {
 					struct Type type = expr.ptr1->details.type;
 					struct Type true_type = expr.ptr1->details.true_type;
-					if (is_pointer(type) && true_type.type_category == ARRAY) {
-						print_expression(ptr_prs, *expr.ptr1);
+					if (type.type_category == PTR_ &&
+					    true_type.type_category == ARRAY) {
+						print_expression(ptr_prs, expr.ptr1);
 					} else {
 						print_address_of_lvalue(ptr_prs, expr.ptr1);
 					}
@@ -389,11 +392,12 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr expr)
 				}
 
 				case UNARY_OP_ASTERISK: {
-					print_expression(ptr_prs, *expr.ptr1);
+					print_expression(ptr_prs, expr.ptr1);
 					struct Type type = expr.details.type;
 					struct Type true_type = expr.details.true_type;
 
-					if (is_pointer(type) && true_type.type_category == ARRAY) {
+					if (type.type_category == PTR_ &&
+					    true_type.type_category == ARRAY) {
 						/* do not dereference, if it is an array */
 						return;
 					}
@@ -407,13 +411,13 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr expr)
 			int label1 = get_new_label_name(ptr_prs);
 			int label2 = get_new_label_name(ptr_prs);
 
-			print_expression(ptr_prs, *expr.ptr1);
+			print_expression(ptr_prs, expr.ptr1);
 			gen_if_zero_jmp_nbyte(size_of_basic(expr.ptr1->details.type),
 			                      label1, 0);
-			print_expression(ptr_prs, *expr.ptr2);
+			print_expression(ptr_prs, expr.ptr2);
 			gen_jump(label2, "ternary operator");
 			gen_label(label1);
-			print_expression(ptr_prs, *expr.ptr3);
+			print_expression(ptr_prs, expr.ptr3);
 			gen_label(label2);
 			gen_discard2nd_8byte();
 			return;
@@ -425,7 +429,7 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr expr)
 			for (int counter = expr.args.length - 1; counter >= 0; counter--) {
 				const struct Expr *ptr_expr_ = expr.args.vector[counter];
 
-				print_expression(ptr_prs, *ptr_expr_);
+				print_expression(ptr_prs, ptr_expr_);
 			}
 
 			for (int counter = 0; counter < expr.args.length; counter++) {
