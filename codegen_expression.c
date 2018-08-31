@@ -12,9 +12,10 @@ static void print_op_pointer_plusminus_int(int is_plus, int size)
 }
 
 /* size is garbage unless left_type is a pointer */
-static void print_simple_binary_op(enum SimpleBinOp kind, struct Type left_type,
-                                   int size)
+static void print_simple_binary_op(enum SimpleBinOp kind,
+                                   const struct Type *ref_left_type, int size)
 {
+	const struct Type left_type = *ref_left_type;
 	if (is_pointer(left_type)) {
 		switch (kind) {
 			case SIMPLE_BIN_OP_COMMA:
@@ -106,11 +107,13 @@ static void print_simple_binary_op(enum SimpleBinOp kind, struct Type left_type,
 	}
 }
 
-void print_address_of_lvalue(struct PrinterState *ptr_prs, struct Expr expr)
+void print_address_of_lvalue(struct PrinterState *ptr_prs,
+                             const struct Expr *ref_expr)
 {
+	const struct Expr expr = *ref_expr;
 	switch (expr.category) {
 		case STRUCT_AND_OFFSET: {
-			print_address_of_lvalue(ptr_prs, *expr.ptr1);
+			print_address_of_lvalue(ptr_prs, expr.ptr1);
 			int offset = expr.struct_offset;
 			gen_push_int(offset);
 			gen_cltq();
@@ -146,12 +149,13 @@ void print_address_of_lvalue(struct PrinterState *ptr_prs, struct Expr expr)
 
 void print_expression(struct PrinterState *ptr_prs, struct Expr expr);
 static void print_expression_as_lvalue(struct PrinterState *ptr_prs,
-                                       struct Expr expr);
+                                       const struct Expr *ref_expr);
 
 static void print_expression_as_lvalue(struct PrinterState *ptr_prs,
-                                       struct Expr expr)
+                                       const struct Expr *ref_expr)
 {
-	print_address_of_lvalue(ptr_prs, expr);
+	const struct Expr expr = *ref_expr;
+	print_address_of_lvalue(ptr_prs, &expr);
 	switch (expr.category) {
 		case STRUCT_AND_OFFSET: {
 			struct Type type = expr.details.type;
@@ -191,12 +195,12 @@ static void print_expression_as_lvalue(struct PrinterState *ptr_prs,
 	}
 }
 
-void print_expression(struct PrinterState *ptr_prs, struct Expr expr)
+void print_expression(struct PrinterState *ptr_prs, const struct Expr expr)
 {
 	switch (expr.category) {
 		case STRUCT_ASSIGNMENT_EXPR: {
-			print_address_of_lvalue(ptr_prs, *expr.ptr1);
-			print_address_of_lvalue(ptr_prs, *expr.ptr2);
+			print_address_of_lvalue(ptr_prs, expr.ptr1);
+			print_address_of_lvalue(ptr_prs, expr.ptr2);
 			int size = expr.size_info_for_struct_assign;
 			gen_copy_struct_and_discard(size);
 			gen_push_int(143253); /* random garbage */
@@ -210,7 +214,7 @@ void print_expression(struct PrinterState *ptr_prs, struct Expr expr)
 			return;
 		}
 		case STRUCT_AND_OFFSET: {
-			print_expression_as_lvalue(ptr_prs, expr);
+			print_expression_as_lvalue(ptr_prs, &expr);
 			gen_discard2nd_8byte();
 			return;
 		}
@@ -237,17 +241,17 @@ void print_expression(struct PrinterState *ptr_prs, struct Expr expr)
 			                               ? SIMPLE_BIN_OP_PLUS
 			                               : SIMPLE_BIN_OP_MINUS;
 
-			print_expression_as_lvalue(ptr_prs, *expr.ptr1);
+			print_expression_as_lvalue(ptr_prs, expr.ptr1);
 			gen_push_int(1);
 
-			print_simple_binary_op(opkind2, expr.ptr1->details.type,
+			print_simple_binary_op(opkind2, &expr.ptr1->details.type,
 			                       expr.size_info_for_pointer_arith);
 
 			gen_assign_nbyte(size_of_basic(expr.ptr1->details.type));
 
 			gen_push_int(-1);
 
-			print_simple_binary_op(opkind2, expr.ptr1->details.type,
+			print_simple_binary_op(opkind2, &expr.ptr1->details.type,
 			                       expr.size_info_for_pointer_arith);
 
 			return;
@@ -282,7 +286,7 @@ void print_expression(struct PrinterState *ptr_prs, struct Expr expr)
 			print_expression(ptr_prs, *expr.ptr1);
 			print_expression(ptr_prs, *expr.ptr2);
 			print_simple_binary_op(expr.simple_binary_operator,
-			                       expr.ptr1->details.type,
+			                       &expr.ptr1->details.type,
 			                       expr.size_info_for_pointer_arith);
 			return;
 		}
@@ -320,11 +324,11 @@ void print_expression(struct PrinterState *ptr_prs, struct Expr expr)
 
 		case ASSIGNMENT_EXPR: {
 
-			print_expression_as_lvalue(ptr_prs, *expr.ptr1);
+			print_expression_as_lvalue(ptr_prs, expr.ptr1);
 			print_expression(ptr_prs, *expr.ptr2);
 
 			print_simple_binary_op(expr.simple_binary_operator,
-			                       expr.ptr1->details.type,
+			                       &expr.ptr1->details.type,
 			                       expr.size_info_for_pointer_arith);
 
 			struct Type type = expr.ptr1->details.type;
@@ -357,14 +361,14 @@ void print_expression(struct PrinterState *ptr_prs, struct Expr expr)
 
 				case UNARY_OP_PLUS_PLUS:
 				case UNARY_OP_MINUS_MINUS: {
-					print_expression_as_lvalue(ptr_prs, *expr.ptr1);
+					print_expression_as_lvalue(ptr_prs, expr.ptr1);
 
 					gen_push_int(1);
 					print_simple_binary_op(expr.unary_operator ==
 					                               UNARY_OP_PLUS_PLUS
 					                           ? SIMPLE_BIN_OP_PLUS
 					                           : SIMPLE_BIN_OP_MINUS,
-					                       expr.ptr1->details.type,
+					                       &expr.ptr1->details.type,
 					                       expr.size_info_for_pointer_arith);
 
 					struct Type type = expr.ptr1->details.type;
@@ -379,7 +383,7 @@ void print_expression(struct PrinterState *ptr_prs, struct Expr expr)
 					if (is_pointer(type) && true_type.type_category == ARRAY) {
 						print_expression(ptr_prs, *expr.ptr1);
 					} else {
-						print_address_of_lvalue(ptr_prs, *expr.ptr1);
+						print_address_of_lvalue(ptr_prs, expr.ptr1);
 					}
 					return;
 				}

@@ -63,7 +63,7 @@ struct SourceLabelAndAssemblyLabel {
 static void print_statement(struct PrinterState *ptr_prs,
                             const struct Statement *ptr_sta)
 {
-	struct Statement sta = *ptr_sta;
+	const struct Statement sta = *ptr_sta;
 	if (sta.category != DECLARATION_STATEMENT) {
 		for (int j = 0; j < sta.labels.length; j++) {
 			const struct SourceLabel *ptr_label = sta.labels.vector[j];
@@ -116,7 +116,7 @@ static void print_statement(struct PrinterState *ptr_prs,
 		}
 		case RETURN_STATEMENT: {
 			if (sta.expr1.details.type.type_category == STRUCT_) {
-				print_address_of_lvalue(ptr_prs, sta.expr1);
+				print_address_of_lvalue(ptr_prs, &sta.expr1);
 			} else {
 				print_expression(ptr_prs, sta.expr1);
 			}
