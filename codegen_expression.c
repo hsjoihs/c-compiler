@@ -47,8 +47,7 @@ static void print_simple_binary_op(enum SimpleBinOp kind,
 				gen_compare_ptrs("seta");
 				return;
 			default:
-				fprintf(stderr, "unexpected pointer in binary operation\n");
-				exit(EXIT_FAILURE);
+				simple_error("unexpected pointer in binary operation\n");
 		}
 		return;
 	}
@@ -137,13 +136,11 @@ void print_address_of_lvalue(struct PrinterState *ptr_prs,
 					return;
 				}
 				default:
-					fprintf(stderr, "the only unary operator that can create "
-					                "lvalue is `*`\n");
-					exit(EXIT_FAILURE);
+					simple_error("the only unary operator that can create "
+					             "lvalue is `*`\n");
 			}
 		default:
-			fprintf(stderr, "doesn't seem like an lvalue\n");
-			exit(EXIT_FAILURE);
+			simple_error("doesn't seem like an lvalue\n");
 	}
 }
 
@@ -190,13 +187,11 @@ static void print_expression_as_lvalue(struct PrinterState *ptr_prs,
 					return;
 				}
 				default:
-					fprintf(stderr, "the only unary operator that can create "
-					                "lvalue is `*`\n");
-					exit(EXIT_FAILURE);
+					simple_error("the only unary operator that can create "
+					             "lvalue is `*`\n");
 			}
 		default:
-			fprintf(stderr, "doesn't seem like an lvalue\n");
-			exit(EXIT_FAILURE);
+			simple_error("doesn't seem like an lvalue\n");
 	}
 }
 
