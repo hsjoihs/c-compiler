@@ -458,32 +458,6 @@ static enum SimpleBinOp op_before_assign(enum TokenKind kind)
 	}
 }
 
-static struct Expr assignment_expr(const struct AnalyzerState *ptr_ps,
-                                   struct Expr expr, struct Expr expr2,
-                                   enum TokenKind opkind)
-{
-	struct Expr *ptr_expr1 = calloc(1, sizeof(struct Expr));
-	struct Expr *ptr_expr2 = calloc(1, sizeof(struct Expr));
-	*ptr_expr1 = expr;
-	*ptr_expr2 = expr2;
-
-	struct Expr new_expr;
-	new_expr.details = expr.details;
-	new_expr.category = ASSIGNMENT_EXPR;
-	new_expr.simple_binary_operator = op_before_assign(opkind);
-	new_expr.ptr1 = ptr_expr1;
-	new_expr.ptr2 = ptr_expr2;
-	new_expr.ptr3 = 0;
-
-	if (expr.details.type.type_category == PTR_ &&
-	    (opkind == OP_PLUS_EQ || opkind == OP_MINUS_EQ)) {
-		new_expr.size_info_for_pointer_arith =
-		    size_of(ptr_ps, deref_type(&expr.details.type));
-	}
-
-	return new_expr;
-}
-
 struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
                                  struct UntypedExpr uexpr)
 {
@@ -814,7 +788,28 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 					            "mismatch in assignment operator");
 				}
 
-				return assignment_expr(ptr_ps, expr, expr2, uexpr.operator_);
+				struct Expr *ptr_expr1 = calloc(1, sizeof(struct Expr));
+				struct Expr *ptr_expr2 = calloc(1, sizeof(struct Expr));
+				*ptr_expr1 = expr;
+				*ptr_expr2 = expr2;
+
+				struct Expr new_expr;
+				new_expr.details = expr.details;
+				new_expr.category = ASSIGNMENT_EXPR;
+				new_expr.simple_binary_operator =
+				    op_before_assign(uexpr.operator_);
+				new_expr.ptr1 = ptr_expr1;
+				new_expr.ptr2 = ptr_expr2;
+				new_expr.ptr3 = 0;
+
+				if (expr.details.type.type_category == PTR_ &&
+				    (uexpr.operator_ == OP_PLUS_EQ ||
+				     uexpr.operator_ == OP_MINUS_EQ)) {
+					new_expr.size_info_for_pointer_arith =
+					    size_of(ptr_ps, deref_type(&expr.details.type));
+				}
+
+				return new_expr;
 			}
 			switch (uexpr.operator_) {
 				case OP_PLUS: {
