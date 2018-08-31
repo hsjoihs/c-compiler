@@ -165,7 +165,7 @@ struct Statement parse_statement(struct AnalyzerState *ptr_ps,
 			struct Expr expr =
 			    typecheck_expression(ptr_ps, parse_expression(&tokvec));
 
-			if (is_pointer(ptr_ps->func_ret_type) &&
+			if (ptr_ps->func_ret_type.type_category == PTR_ &&
 			    expr.category == INT_VALUE && expr.int_value == 0) {
 				expr.category = NULLPTR;
 				expr.details.type = ptr_ps->func_ret_type;

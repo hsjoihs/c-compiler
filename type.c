@@ -115,8 +115,6 @@ struct Type deref_type(struct Type t)
 	}
 }
 
-int is_pointer(struct Type t) { return t.type_category == PTR_; }
-
 void if_array_convert_to_ptr_(struct Type *ptr_t)
 {
 	if (ptr_t->type_category == ARRAY) {

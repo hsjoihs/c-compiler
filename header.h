@@ -147,7 +147,7 @@ int size_of_basic(const struct Type *ref_type, const char *msg);
 struct Type INT_TYPE(void);
 
 struct Type deref_type(struct Type t);
-int is_pointer(struct Type t);
+
 struct Type ptr_of_type_to_ptr_to_type(struct Type *ptr_type);
 
 void expect_and_consume(const struct Token **ptr_tokvec, enum TokenKind kind,

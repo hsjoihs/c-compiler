@@ -105,7 +105,10 @@ static int is_integral(struct Type t1)
 	       t1.type_category == ENUM_;
 }
 
-int is_scalar(struct Type t1) { return is_pointer(t1) || is_integral(t1); }
+int is_scalar(struct Type t1)
+{
+	return t1.type_category == PTR_ || is_integral(t1);
+}
 
 static int is_compatible(const struct AnalyzerState *ptr_ps, struct Type t1,
                          struct Type t2)
@@ -268,12 +271,12 @@ static struct Expr combine_by_add(const struct AnalyzerState *ptr_ps,
 	if (is_compatible(ptr_ps, type1, INT_TYPE())) {
 		if (is_compatible(ptr_ps, type2, INT_TYPE())) {
 			return simple_binary_op(expr, expr2, OP_PLUS, INT_TYPE());
-		} else if (is_pointer(type2)) {
+		} else if (type2.type_category == PTR_) {
 			/* swapped */
 			return pointer_plusorminus_int(ptr_ps, expr2, expr, OP_PLUS);
 		}
 
-	} else if (is_pointer(type1)) {
+	} else if (type1.type_category == PTR_) {
 
 		expect_type(ptr_ps, expr2.details.type, INT_TYPE(),
 		            "cannot add a pointer to a pointer");
@@ -312,13 +315,13 @@ static struct Expr combine_by_sub(const struct AnalyzerState *ptr_ps,
 	if (is_compatible(ptr_ps, type1, INT_TYPE())) {
 		if (is_compatible(ptr_ps, type2, INT_TYPE())) {
 			return simple_binary_op(expr, expr2, OP_MINUS, INT_TYPE());
-		} else if (is_pointer(type2)) {
+		} else if (type2.type_category == PTR_) {
 
 			fprintf(stderr, "cannot subtract a pointer from an integer.\n");
 			exit(EXIT_FAILURE);
 		}
 
-	} else if (is_pointer(type1)) {
+	} else if (type1.type_category == PTR_) {
 		if (is_compatible(ptr_ps, type2, INT_TYPE())) {
 
 			/* pointer minus int */
@@ -516,7 +519,7 @@ static struct Expr assignment_expr(const struct AnalyzerState *ptr_ps,
 	new_expr.ptr2 = ptr_expr2;
 	new_expr.ptr3 = 0;
 
-	if (is_pointer(expr.details.type) &&
+	if (expr.details.type.type_category == PTR_ &&
 	    (opkind == OP_PLUS_EQ || opkind == OP_MINUS_EQ)) {
 		new_expr.size_info_for_pointer_arith =
 		    size_of(ptr_ps, deref_type(expr.details.type));
@@ -627,7 +630,7 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 
 					struct Expr new_expr =
 					    unary_op_(expr, opkind, expr.details.type);
-					if (is_pointer(expr.details.type)) {
+					if (expr.details.type.type_category == PTR_) {
 						new_expr.size_info_for_pointer_arith =
 						    size_of(ptr_ps, deref_type(expr.details.type));
 					}
@@ -641,7 +644,7 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 
 					struct Type type = expr.details.type;
 
-					if (is_pointer(type) &&
+					if (type.type_category == PTR_ &&
 					    expr.details.true_type.type_category == ARRAY) {
 						type = expr.details.true_type;
 					}
@@ -720,7 +723,7 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 			new_expr.ptr1 = ptr_expr1;
 			new_expr.ptr2 = 0;
 			new_expr.ptr3 = 0;
-			if (is_pointer(expr.details.type)) {
+			if (expr.details.type.type_category == PTR_) {
 				new_expr.size_info_for_pointer_arith =
 				    size_of(ptr_ps, deref_type(expr.details.type));
 			}
@@ -831,7 +834,7 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 
 					return assign_struct(ptr_ps, expr, expr2);
 
-				} else if (is_pointer(expr.details.type)) {
+				} else if (expr.details.type.type_category == PTR_) {
 					if (uexpr.operator_ == OP_EQ) {
 						if (expr2.category == INT_VALUE &&
 						    expr2.int_value == 0) {
@@ -918,11 +921,11 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 					struct Expr expr2 =
 					    typecheck_expression(ptr_ps, *uexpr.ptr2);
 
-					if (is_pointer(expr.details.type) &&
+					if (expr.details.type.type_category == PTR_ &&
 					    expr2.category == INT_VALUE && expr2.int_value == 0) {
 						expr2.category = NULLPTR;
 						expr2.details.type = expr.details.type;
-					} else if (is_pointer(expr2.details.type) &&
+					} else if (expr2.details.type.type_category == PTR_ &&
 					           expr.category == INT_VALUE &&
 					           expr.int_value == 0) {
 						expr.category = NULLPTR;
