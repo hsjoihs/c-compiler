@@ -20,7 +20,8 @@ static void skip_consts_or_noreturns(const struct Token **ptr_tokvec)
 	return;
 }
 
-typedef struct Type TypeNode; /* the link list is incomplete and should not be
+#define TypeNode struct Type
+/* the link list is incomplete and should not be
                                  brought outside */
 
 static struct Type from_type3_to_type(const void **type3)
