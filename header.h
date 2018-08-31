@@ -157,7 +157,7 @@ _Noreturn void error_unexpected_token(const struct Token *tokvec,
 
 struct Token *read_all_tokens(const char *str);
 
-void debug_print_type(struct Type type);
+void debug_print_type(const struct Type *ref_type);
 
 int can_start_a_type(const struct Token *tokvec);
 

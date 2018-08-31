@@ -42,12 +42,13 @@ int size_of_basic(const struct Type *ref_type, const char *msg)
 	}
 }
 
-void debug_print_type(struct Type type)
+void debug_print_type(const struct Type *ref_type)
 {
+	struct Type type = *ref_type;
 	switch (type.type_category) {
 		case PTR_:
 			fprintf(stderr, "pointer to ");
-			debug_print_type(*type.derived_from);
+			debug_print_type(type.derived_from);
 			return;
 		case VOID_:
 			fprintf(stderr, "void");
@@ -66,7 +67,7 @@ void debug_print_type(struct Type type)
 			return;
 		case ARRAY:
 			fprintf(stderr, "array (length %d) of ", type.array_length);
-			debug_print_type(*type.derived_from);
+			debug_print_type(type.derived_from);
 			return;
 		case FN:
 			fprintf(stderr, "function (");
@@ -80,7 +81,7 @@ void debug_print_type(struct Type type)
 					    type.param_infos.vector[0];
 					fprintf(stderr, "%s: ",
 					        vec_0->ident_str ? vec_0->ident_str : "@anon");
-					debug_print_type(vec_0->type);
+					debug_print_type(&vec_0->type);
 				} else {
 					fprintf(stderr, "params: \n");
 					for (int i = 0; i < type.param_infos.length; i++) {
@@ -90,13 +91,13 @@ void debug_print_type(struct Type type)
 						        ptr_paraminfo->ident_str
 						            ? ptr_paraminfo->ident_str
 						            : "@anon");
-						debug_print_type(ptr_paraminfo->type);
+						debug_print_type(&ptr_paraminfo->type);
 						fprintf(stderr, "\n");
 					}
 				}
 			}
 			fprintf(stderr, ") returning ");
-			debug_print_type(*type.derived_from);
+			debug_print_type(type.derived_from);
 	}
 }
 
@@ -108,7 +109,7 @@ struct Type deref_type(struct Type t)
 
 		default:
 			fprintf(stderr, "Unmatched type: expected a pointer, but got `");
-			debug_print_type(t);
+			debug_print_type(&t);
 			fprintf(stderr, "`.\n");
 			exit(EXIT_FAILURE);
 	}

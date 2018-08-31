@@ -18,7 +18,7 @@ void check_declaration(const char *str)
 	struct Type type = parse_struct_declaration(&tokvec, &ident_str);
 
 	fprintf(stderr, "%s: ", ident_str);
-	debug_print_type(type);
+	debug_print_type(&type);
 	fprintf(stderr, "\n\n");
 	return;
 }
@@ -33,7 +33,7 @@ void check_typename(const char *str)
 	struct Type type = parse_type_name(&tokvec);
 
 	fprintf(stderr, "typename: ");
-	debug_print_type(type);
+	debug_print_type(&type);
 	fprintf(stderr, "\n\n");
 	return;
 }

@@ -48,9 +48,9 @@ void expect_type(const struct AnalyzerState *ptr_ps, struct Type actual_type,
 
 	if (!is_compatible(ptr_ps, actual_type, expected_type)) {
 		fprintf(stderr, "Unmatched type: expected `");
-		debug_print_type(expected_type);
+		debug_print_type(&expected_type);
 		fprintf(stderr, "`, but got `");
-		debug_print_type(actual_type);
+		debug_print_type(&actual_type);
 		fprintf(stderr, "`.\n");
 		fprintf(stderr, "context: %s\n", message);
 		exit(EXIT_FAILURE);
