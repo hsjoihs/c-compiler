@@ -173,8 +173,8 @@ static void print_expression_as_lvalue(struct PrinterState *ptr_prs,
 			struct Type type = expr.details.type;
 
 			printf("//load from global `%s`\n", name);
-			gen_push_from_global_nbyte(
-			    size_of_basic(&type, "global var as lvalue"), name);
+			gen_peek_deref_push_nbyte(
+			    size_of_basic(&type, "global var as lvalue"));
 
 			return;
 		}
