@@ -579,33 +579,6 @@ void gen_div_by_const(int num)
 	printf("  movq %%rax, (%%rsp)\n");
 }
 
-void gen_push_from_global_8byte(const char *ident)
-{
-	printf("//gen_push_from_global_8byte(%c%s%c)\n", 34, ident, 34);
-	printf("  subq $8, %%rsp\n"
-	       "  movq " PREFIX "%s(%%rip), %%rax\n"
-	       "  movq %%rax, (%%rsp)\n",
-	       ident);
-}
-
-void gen_push_from_global_4byte(const char *ident)
-{
-	printf("//gen_push_from_global_4byte(%c%s%c)\n", 34, ident, 34);
-	printf("  subq $8, %%rsp\n"
-	       "  movl " PREFIX "%s(%%rip), %%eax\n"
-	       "  movl %%eax, (%%rsp)\n",
-	       ident);
-}
-
-void gen_push_from_global_1byte(const char *ident)
-{
-	printf("//gen_push_from_global_4byte(%c%s%c)\n", 34, ident, 34);
-	printf("  subq $8, %%rsp\n"
-	       "  movsbl " PREFIX "%s(%%rip), %%eax\n"
-	       "  movb %%al, (%%rsp)\n",
-	       ident);
-}
-
 void gen_global_declaration(const char *ident, int size)
 {
 	printf("//gen_global_declaration(%c%s%c, %d)\n", 34, ident, 34, size);
@@ -746,23 +719,6 @@ void gen_peek_deref_push_nbyte(int n)
 			break;
 		case 8:
 			gen_peek_deref_push_8byte();
-			break;
-		default:
-			assert0("Unsupported width; cannot happen" && 0);
-	}
-}
-
-void gen_push_from_global_nbyte(int n, const char *name)
-{
-	switch (n) {
-		case 1:
-			gen_push_from_global_1byte(name);
-			break;
-		case 4:
-			gen_push_from_global_4byte(name);
-			break;
-		case 8:
-			gen_push_from_global_8byte(name);
 			break;
 		default:
 			assert0("Unsupported width; cannot happen" && 0);

@@ -279,9 +279,9 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 				return;
 			}
 
-			gen_push_from_global_nbyte(
-			    size_of_basic(&expr.details.type, "global var as rvalue"),
-			    expr.global_var_name);
+			gen_push_address_of_global(expr.global_var_name);
+			gen_peek_and_dereference_nbyte(
+			    size_of_basic(&expr.details.type, "global var as rvalue"));
 
 			return;
 		}
