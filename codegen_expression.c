@@ -160,12 +160,14 @@ static void print_expression_as_lvalue(struct PrinterState *ptr_prs,
 	switch (expr.category) {
 		case STRUCT_AND_OFFSET: {
 			struct Type type = expr.details.type;
-			gen_peek_deref_push_nbyte(size_of_basic(type));
+			gen_peek_deref_push_nbyte(
+			    size_of_basic(&type, "foo.bar as lvalue"));
 			return;
 		}
 		case LOCAL_VAR_: {
-			gen_push_from_local_nbyte(size_of_basic(expr.details.type),
-			                          expr.local_var_offset);
+			gen_push_from_local_nbyte(
+			    size_of_basic(&expr.details.type, "local var as lvalue"),
+			    expr.local_var_offset);
 
 			return;
 		}
@@ -174,7 +176,8 @@ static void print_expression_as_lvalue(struct PrinterState *ptr_prs,
 			struct Type type = expr.details.type;
 
 			printf("//load from global `%s`\n", name);
-			gen_push_from_global_nbyte(size_of_basic(type), name);
+			gen_push_from_global_nbyte(
+			    size_of_basic(&type, "global var as lvalue"), name);
 
 			return;
 		}
@@ -182,7 +185,8 @@ static void print_expression_as_lvalue(struct PrinterState *ptr_prs,
 			switch (expr.unary_operator) {
 				case UNARY_OP_ASTERISK: {
 					struct Type type = expr.details.type;
-					gen_peek_deref_push_nbyte(size_of_basic(type));
+					gen_peek_deref_push_nbyte(
+					    size_of_basic(&type, "*expr as lvalue"));
 					return;
 				}
 				default:
@@ -249,7 +253,8 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 			print_simple_binary_op(opkind2, &expr.ptr1->details.type,
 			                       expr.size_info_for_pointer_arith);
 
-			gen_assign_nbyte(size_of_basic(expr.ptr1->details.type));
+			gen_assign_nbyte(
+			    size_of_basic(&expr.ptr1->details.type, "postfix inc/dec"));
 
 			gen_push_int(-1);
 
@@ -264,8 +269,9 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 				gen_push_address_of_local(expr.local_var_offset);
 				return;
 			}
-			gen_push_from_local_nbyte(size_of_basic(expr.details.type),
-			                          expr.local_var_offset);
+			gen_push_from_local_nbyte(
+			    size_of_basic(&expr.details.type, "local var as rvalue"),
+			    expr.local_var_offset);
 
 			return;
 		}
@@ -278,8 +284,9 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 				return;
 			}
 
-			gen_push_from_global_nbyte(size_of_basic(expr.details.type),
-			                           expr.global_var_name);
+			gen_push_from_global_nbyte(
+			    size_of_basic(&expr.details.type, "global var as rvalue"),
+			    expr.global_var_name);
 
 			return;
 		}
@@ -299,11 +306,13 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 			int label2 = get_new_label_name(ptr_prs);
 			print_expression(ptr_prs, expr.ptr1);
 
-			gen_if_nonzero_jmp_nbyte(size_of_basic(expr.ptr1->details.type),
+			gen_if_nonzero_jmp_nbyte(size_of_basic(&expr.ptr1->details.type,
+			                                       "operand of logical or"),
 			                         label1, 0);
 			print_expression(ptr_prs, expr.ptr2);
 			gen_discard();
-			gen_if_nonzero_jmp_nbyte(size_of_basic(expr.ptr2->details.type),
+			gen_if_nonzero_jmp_nbyte(size_of_basic(&expr.ptr2->details.type,
+			                                       "operand of logical or"),
 			                         label1, -8);
 			gen_logical_OR_part2(label1, label2);
 			return;
@@ -314,11 +323,13 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 			int label2 = get_new_label_name(ptr_prs);
 			print_expression(ptr_prs, expr.ptr1);
 
-			gen_if_zero_jmp_nbyte(size_of_basic(expr.ptr1->details.type),
+			gen_if_zero_jmp_nbyte(size_of_basic(&expr.ptr1->details.type,
+			                                    "operand of logical and"),
 			                      label1, 0);
 			print_expression(ptr_prs, expr.ptr2);
 			gen_discard();
-			gen_if_zero_jmp_nbyte(size_of_basic(expr.ptr2->details.type),
+			gen_if_zero_jmp_nbyte(size_of_basic(&expr.ptr2->details.type,
+			                                    "operand of logical and"),
 			                      label1, -8);
 			gen_logical_AND_part2(label1, label2);
 			return;
@@ -335,7 +346,7 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 
 			struct Type type = expr.ptr1->details.type;
 
-			gen_assign_nbyte(size_of_basic(type));
+			gen_assign_nbyte(size_of_basic(&type, "operand of assignment"));
 
 			return;
 		}
@@ -375,7 +386,7 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 
 					struct Type type = expr.ptr1->details.type;
 
-					gen_assign_nbyte(size_of_basic(type));
+					gen_assign_nbyte(size_of_basic(&type, "prefix inc/dec"));
 					return;
 				}
 
@@ -401,7 +412,8 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 						/* do not dereference, if it is an array */
 						return;
 					}
-					gen_peek_and_dereference_nbyte(size_of_basic(type));
+					gen_peek_and_dereference_nbyte(
+					    size_of_basic(&type, "*expr as rvalue"));
 
 					return;
 				}
@@ -412,8 +424,10 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 			int label2 = get_new_label_name(ptr_prs);
 
 			print_expression(ptr_prs, expr.ptr1);
-			gen_if_zero_jmp_nbyte(size_of_basic(expr.ptr1->details.type),
-			                      label1, 0);
+			gen_if_zero_jmp_nbyte(
+			    size_of_basic(&expr.ptr1->details.type,
+			                  "condition of conditional expression"),
+			    label1, 0);
 			print_expression(ptr_prs, expr.ptr2);
 			gen_jump(label2, "ternary operator");
 			gen_label(label1);
@@ -435,7 +449,7 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 			for (int counter = 0; counter < expr.args.length; counter++) {
 				const struct Expr *ptr_expr_ = expr.args.vector[counter];
 
-				switch (size_of_basic(ptr_expr_->details.type)) {
+				switch (size_of_basic(&ptr_expr_->details.type, "argument")) {
 					case 1:
 					case 4:
 						gen_pop_to_reg_4byte(
@@ -452,7 +466,7 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 
 			int size;
 			if (ret_type.type_category != VOID_) {
-				size = size_of_basic(ret_type);
+				size = size_of_basic(&ret_type, "return value");
 			} else {
 				size = 4; /* for convenience */
 			}

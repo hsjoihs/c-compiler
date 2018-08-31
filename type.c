@@ -17,8 +17,9 @@ CHAR_TYPE() {
 	return t;
 }
 
-int size_of_basic(struct Type type)
+int size_of_basic(const struct Type *ref_type, const char *msg)
 {
+	struct Type type = *ref_type;
 	switch (type.type_category) {
 		case INT_:
 		case ENUM_:
@@ -31,10 +32,12 @@ int size_of_basic(struct Type type)
 		case FN:
 		case STRUCT_:
 			fprintf(stderr,
-			        "array, function or struct type is not a basic type\n");
+			        "array, function or struct type is not a basic type.\n");
+			fprintf(stderr, "context: %s\n", msg);
 			exit(EXIT_FAILURE);
 		case VOID_:
 			fprintf(stderr, "size of `void` is never known\n");
+			fprintf(stderr, "context: %s\n", msg);
 			exit(EXIT_FAILURE);
 	}
 }

@@ -158,7 +158,9 @@ static void print_statement(struct PrinterState *ptr_prs,
 			const struct Expr expr = sta.expr1;
 			print_expression(ptr_prs, &expr);
 
-			gen_if_zero_jmp_nbyte(size_of_basic(expr.details.type), label1, 0);
+			gen_if_zero_jmp_nbyte(
+			    size_of_basic(&expr.details.type, "condition of `if`"), label1,
+			    0);
 			gen_discard();
 
 			const struct Statement *ptr_inner_s =
@@ -216,7 +218,8 @@ static void print_statement(struct PrinterState *ptr_prs,
 
 			const struct Expr expr = sta.expr1;
 			print_expression(ptr_prs, &expr);
-			if (size_of_basic(expr.details.type) == 1) {
+			if (size_of_basic(&expr.details.type, "expression of switch") ==
+			    1) {
 				gen_extend_to_4byte();
 			}
 
@@ -253,7 +256,9 @@ static void print_statement(struct PrinterState *ptr_prs,
 			const struct Expr expr = sta.expr1;
 			print_expression(ptr_prs, &expr);
 
-			gen_if_zero_jmp_nbyte(size_of_basic(expr.details.type), label1, 0);
+			gen_if_zero_jmp_nbyte(
+			    size_of_basic(&expr.details.type, "condition of `if`"), label1,
+			    0);
 			gen_discard();
 
 			print_statement(ptr_prs, sta.inner_statement);
@@ -284,8 +289,9 @@ static void print_statement(struct PrinterState *ptr_prs,
 			print_expression(ptr_prs, &expr);
 
 			gen_discard();
-			gen_if_nonzero_jmp_nbyte(size_of_basic(expr.details.type), label1,
-			                         -8);
+			gen_if_nonzero_jmp_nbyte(
+			    size_of_basic(&expr.details.type, "condition of do-while"),
+			    label1, -8);
 			gen_label(break_label);
 
 			ptr_prs->break_label_name = stashed_break_label;
@@ -311,8 +317,9 @@ static void print_statement(struct PrinterState *ptr_prs,
 			print_expression(ptr_prs, &expr);
 
 			gen_discard();
-			gen_if_zero_jmp_nbyte(size_of_basic(expr.details.type), break_label,
-			                      -8);
+			gen_if_zero_jmp_nbyte(
+			    size_of_basic(&expr.details.type, "condition of `while`"),
+			    break_label, -8);
 
 			print_statement(ptr_prs, sta.inner_statement);
 
@@ -340,8 +347,9 @@ static void print_statement(struct PrinterState *ptr_prs,
 			print_expression(ptr_prs, &sta.expr2); /* expression2 */
 
 			gen_discard();
-			gen_if_zero_jmp_nbyte(size_of_basic(sta.expr2.details.type),
-			                      break_label, -8);
+			gen_if_zero_jmp_nbyte(
+			    size_of_basic(&sta.expr2.details.type, "condition of `for`"),
+			    break_label, -8);
 
 			print_statement(ptr_prs, sta.inner_statement);
 			gen_label(cont_label);
@@ -399,8 +407,8 @@ static void print_toplevel_definition(struct PrinterState *ptr_prs,
 		const struct LocalVarInfo *ptr_info = offsets_and_types.vector[counter];
 
 		int offset = ptr_info->offset;
-		struct Type type = ptr_info->type;
-		switch (size_of_basic(type)) {
+		const struct Type type = ptr_info->type;
+		switch (size_of_basic(&type, "argument to be passed to function")) {
 			case 1:
 				gen_write_register_to_local_1byte(
 				    /* yes, the register is 4byte */
@@ -444,7 +452,8 @@ static void print_toplevel_definition(struct PrinterState *ptr_prs,
 			simple_error("warning: the return type is not void, but "
 			             "`return` is not found");
 		}
-		gen_epilogue_nbyte(size_of_basic(ret_type), ptr_prs->return_label_name);
+		gen_epilogue_nbyte(size_of_basic(&ret_type, "return value"),
+		                   ptr_prs->return_label_name);
 	}
 }
 
