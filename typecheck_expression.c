@@ -306,50 +306,6 @@ static struct Expr assign_struct(const struct AnalyzerState *ptr_ps,
 	return new_expr;
 }
 
-static struct Expr combine_by_sub(const struct AnalyzerState *ptr_ps,
-                                  struct Expr expr, struct Expr expr2)
-{
-	struct Type type1 = expr.details.type;
-	struct Type type2 = expr2.details.type;
-
-	if (is_compatible(ptr_ps, type1, INT_TYPE())) {
-		if (is_compatible(ptr_ps, type2, INT_TYPE())) {
-			return simple_binary_op(expr, expr2, OP_MINUS, INT_TYPE());
-		} else if (type2.type_category == PTR_) {
-
-			fprintf(stderr, "cannot subtract a pointer from an integer.\n");
-			exit(EXIT_FAILURE);
-		}
-
-	} else if (type1.type_category == PTR_) {
-		if (is_compatible(ptr_ps, type2, INT_TYPE())) {
-
-			/* pointer minus int */
-			return pointer_plusorminus_int(ptr_ps, expr, expr2, OP_MINUS);
-		} else {
-			/* pointer minus pointer */
-
-			struct Expr *ptr_expr1 = calloc(1, sizeof(struct Expr));
-			struct Expr *ptr_expr2 = calloc(1, sizeof(struct Expr));
-			*ptr_expr1 = expr;
-			*ptr_expr2 = expr2;
-
-			struct Expr new_expr;
-			new_expr.details.type = INT_TYPE();
-			new_expr.category = POINTER_MINUS_POINTER;
-			new_expr.ptr1 = ptr_expr1;
-			new_expr.ptr2 = ptr_expr2;
-			new_expr.ptr3 = 0;
-			new_expr.size_info_for_pointer_arith =
-			    size_of(ptr_ps, deref_type(&expr.details.type));
-
-			return new_expr;
-		}
-	}
-	fprintf(stderr, "fail\n");
-	exit(EXIT_FAILURE);
-}
-
 static int is_local_var(struct ScopeChain t, const char *str)
 {
 	if (isElem(t.var_table, str)) {
@@ -873,7 +829,51 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 					    typecheck_expression(ptr_ps, *uexpr.ptr1);
 					struct Expr expr2 =
 					    typecheck_expression(ptr_ps, *uexpr.ptr2);
-					return combine_by_sub(ptr_ps, expr, expr2);
+
+					struct Type type1 = expr.details.type;
+					struct Type type2 = expr2.details.type;
+
+					if (is_compatible(ptr_ps, type1, INT_TYPE())) {
+						if (is_compatible(ptr_ps, type2, INT_TYPE())) {
+							return simple_binary_op(expr, expr2, OP_MINUS,
+							                        INT_TYPE());
+						} else if (type2.type_category == PTR_) {
+
+							fprintf(stderr, "cannot subtract a pointer "
+							                "from an integer.\n");
+							exit(EXIT_FAILURE);
+						}
+
+					} else if (type1.type_category == PTR_) {
+						if (is_compatible(ptr_ps, type2, INT_TYPE())) {
+
+							/* pointer minus int */
+							return pointer_plusorminus_int(ptr_ps, expr, expr2,
+							                               OP_MINUS);
+						} else {
+							/* pointer minus pointer */
+
+							struct Expr *ptr_expr1 =
+							    calloc(1, sizeof(struct Expr));
+							struct Expr *ptr_expr2 =
+							    calloc(1, sizeof(struct Expr));
+							*ptr_expr1 = expr;
+							*ptr_expr2 = expr2;
+
+							struct Expr new_expr;
+							new_expr.details.type = INT_TYPE();
+							new_expr.category = POINTER_MINUS_POINTER;
+							new_expr.ptr1 = ptr_expr1;
+							new_expr.ptr2 = ptr_expr2;
+							new_expr.ptr3 = 0;
+							new_expr.size_info_for_pointer_arith =
+							    size_of(ptr_ps, deref_type(&expr.details.type));
+
+							return new_expr;
+						}
+					}
+					fprintf(stderr, "fail\n");
+					exit(EXIT_FAILURE);
 				}
 				case OP_AND_AND: {
 					struct Expr first_expr =
