@@ -257,7 +257,7 @@ static struct Expr pointer_plusorminus_int(const struct AnalyzerState *ptr_ps,
 	new_expr.ptr2 = ptr_expr2;
 	new_expr.ptr3 = 0;
 	new_expr.size_info_for_pointer_arith =
-	    size_of(ptr_ps, deref_type(expr.details.type));
+	    size_of(ptr_ps, deref_type(&expr.details.type));
 
 	return new_expr;
 }
@@ -341,7 +341,7 @@ static struct Expr combine_by_sub(const struct AnalyzerState *ptr_ps,
 			new_expr.ptr2 = ptr_expr2;
 			new_expr.ptr3 = 0;
 			new_expr.size_info_for_pointer_arith =
-			    size_of(ptr_ps, deref_type(expr.details.type));
+			    size_of(ptr_ps, deref_type(&expr.details.type));
 
 			return new_expr;
 		}
@@ -459,7 +459,7 @@ static struct Expr unary_op_(struct Expr expr, enum TokenKind kind,
 
 static struct Expr deref_expr(struct Expr expr)
 {
-	struct Type type = deref_type(expr.details.type);
+	struct Type type = deref_type(&expr.details.type);
 
 	struct Type t2 = type;
 	if_array_convert_to_ptr_(&t2);
@@ -522,7 +522,7 @@ static struct Expr assignment_expr(const struct AnalyzerState *ptr_ps,
 	if (expr.details.type.type_category == PTR_ &&
 	    (opkind == OP_PLUS_EQ || opkind == OP_MINUS_EQ)) {
 		new_expr.size_info_for_pointer_arith =
-		    size_of(ptr_ps, deref_type(expr.details.type));
+		    size_of(ptr_ps, deref_type(&expr.details.type));
 	}
 
 	return new_expr;
@@ -632,7 +632,7 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 					    unary_op_(expr, opkind, expr.details.type);
 					if (expr.details.type.type_category == PTR_) {
 						new_expr.size_info_for_pointer_arith =
-						    size_of(ptr_ps, deref_type(expr.details.type));
+						    size_of(ptr_ps, deref_type(&expr.details.type));
 					}
 					return new_expr;
 				}
@@ -725,7 +725,7 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 			new_expr.ptr3 = 0;
 			if (expr.details.type.type_category == PTR_) {
 				new_expr.size_info_for_pointer_arith =
-				    size_of(ptr_ps, deref_type(expr.details.type));
+				    size_of(ptr_ps, deref_type(&expr.details.type));
 			}
 
 			return new_expr;

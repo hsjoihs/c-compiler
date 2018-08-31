@@ -19,8 +19,7 @@ CHAR_TYPE() {
 
 int size_of_basic(const struct Type *ref_type, const char *msg)
 {
-	struct Type type = *ref_type;
-	switch (type.type_category) {
+	switch (ref_type->type_category) {
 		case INT_:
 		case ENUM_:
 			return 4;
@@ -101,15 +100,15 @@ void debug_print_type(const struct Type *ref_type)
 	}
 }
 
-struct Type deref_type(struct Type t)
+struct Type deref_type(const struct Type *ref_t)
 {
-	switch (t.type_category) {
+	switch (ref_t->type_category) {
 		case PTR_:
-			return *t.derived_from;
+			return *ref_t->derived_from;
 
 		default:
 			fprintf(stderr, "Unmatched type: expected a pointer, but got `");
-			debug_print_type(&t);
+			debug_print_type(ref_t);
 			fprintf(stderr, "`.\n");
 			exit(EXIT_FAILURE);
 	}
