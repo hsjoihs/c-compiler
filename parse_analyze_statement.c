@@ -366,7 +366,7 @@ static struct Expr *declare_var_and_return_initializer(
 		left_uexpr.var_name = str;
 
 		struct UntypedExpr uexpr =
-		    binary_op_untyped(left_uexpr, *ptr_uexpr, OP_EQ);
+		    binary_op_untyped(&left_uexpr, ptr_uexpr, OP_EQ);
 		struct Expr expr = typecheck_expression(ptr_ps, uexpr);
 		ptr_expr = calloc(1, sizeof(struct Expr));
 		*ptr_expr = expr;

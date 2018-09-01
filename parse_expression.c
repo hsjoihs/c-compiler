@@ -17,14 +17,14 @@ parse_postfix_expression(const struct Token **ptr_tokvec);
 static struct UntypedExpr
 parse_primary_expression(const struct Token **ptr_tokvec);
 
-struct UntypedExpr binary_op_untyped(struct UntypedExpr expr,
-                                     struct UntypedExpr expr2,
+struct UntypedExpr binary_op_untyped(const struct UntypedExpr *ref_expr,
+                                     const struct UntypedExpr *ref_expr2,
                                      enum TokenKind kind)
 {
 	struct UntypedExpr *ptr_expr1 = calloc(1, sizeof(struct UntypedExpr));
 	struct UntypedExpr *ptr_expr2 = calloc(1, sizeof(struct UntypedExpr));
-	*ptr_expr1 = expr;
-	*ptr_expr2 = expr2;
+	*ptr_expr1 = *ref_expr;
+	*ptr_expr2 = *ref_expr2;
 
 	struct UntypedExpr new_expr;
 	new_expr.category = BINARY_EXPR;
@@ -50,8 +50,8 @@ parse_inclusive_OR_expression(const struct Token **ptr_tokvec)
 		}
 		++tokvec;
 
-		struct UntypedExpr expr2 = parse_exclusive_OR_expression(&tokvec);
-		expr = binary_op_untyped(expr, expr2, kind);
+		const struct UntypedExpr expr2 = parse_exclusive_OR_expression(&tokvec);
+		expr = binary_op_untyped(&expr, &expr2, kind);
 	}
 	*ptr_tokvec = tokvec;
 	return expr;
@@ -71,8 +71,8 @@ parse_exclusive_OR_expression(const struct Token **ptr_tokvec)
 		}
 		++tokvec;
 
-		struct UntypedExpr expr2 = parse_AND_expression(&tokvec);
-		expr = binary_op_untyped(expr, expr2, kind);
+		const struct UntypedExpr expr2 = parse_AND_expression(&tokvec);
+		expr = binary_op_untyped(&expr, &expr2, kind);
 	}
 	*ptr_tokvec = tokvec;
 
@@ -93,7 +93,7 @@ static struct UntypedExpr parse_AND_expression(const struct Token **ptr_tokvec)
 		++tokvec;
 
 		struct UntypedExpr expr2 = parse_equality_expression(&tokvec);
-		expr = binary_op_untyped(expr, expr2, kind);
+		expr = binary_op_untyped(&expr, &expr2, kind);
 	}
 	*ptr_tokvec = tokvec;
 
@@ -120,7 +120,7 @@ parse_multiplicative_expression(const struct Token **ptr_tokvec)
 
 		struct UntypedExpr expr2 = parse_cast_expression(&tokvec);
 
-		expr = binary_op_untyped(expr, expr2, kind);
+		expr = binary_op_untyped(&expr, &expr2, kind);
 	}
 	*ptr_tokvec = tokvec;
 	return expr;
@@ -140,7 +140,7 @@ parse_additive_expression(const struct Token **ptr_tokvec)
 		++tokvec;
 
 		struct UntypedExpr expr2 = parse_multiplicative_expression(&tokvec);
-		expr = binary_op_untyped(expr, expr2, kind);
+		expr = binary_op_untyped(&expr, &expr2, kind);
 	}
 	*ptr_tokvec = tokvec;
 	return expr;
@@ -160,7 +160,7 @@ parse_shift_expression(const struct Token **ptr_tokvec)
 		++tokvec;
 
 		struct UntypedExpr expr2 = parse_additive_expression(&tokvec);
-		expr = binary_op_untyped(expr, expr2, kind);
+		expr = binary_op_untyped(&expr, &expr2, kind);
 	}
 	*ptr_tokvec = tokvec;
 	return expr;
@@ -182,7 +182,7 @@ parse_relational_expression(const struct Token **ptr_tokvec)
 		++tokvec;
 
 		struct UntypedExpr expr2 = parse_shift_expression(&tokvec);
-		expr = binary_op_untyped(expr, expr2, kind);
+		expr = binary_op_untyped(&expr, &expr2, kind);
 	}
 	*ptr_tokvec = tokvec;
 	return expr;
@@ -202,7 +202,7 @@ parse_equality_expression(const struct Token **ptr_tokvec)
 		++tokvec;
 
 		struct UntypedExpr expr2 = parse_relational_expression(&tokvec);
-		expr = binary_op_untyped(expr, expr2, kind);
+		expr = binary_op_untyped(&expr, &expr2, kind);
 	}
 	*ptr_tokvec = tokvec;
 	return expr;
@@ -228,7 +228,7 @@ parse_logical_AND_expression(const struct Token **ptr_tokvec)
 		struct UntypedExpr expr2 = parse_inclusive_OR_expression(&tokvec);
 		++counter;
 
-		first_expr = binary_op_untyped(first_expr, expr2, OP_AND_AND);
+		first_expr = binary_op_untyped(&first_expr, &expr2, OP_AND_AND);
 	}
 
 	*ptr_tokvec = tokvec;
@@ -251,7 +251,7 @@ parse_logical_OR_expression(const struct Token **ptr_tokvec)
 		++tokvec;
 		struct UntypedExpr expr2 = parse_logical_AND_expression(&tokvec);
 
-		expr = binary_op_untyped(expr, expr2, OP_OR_OR);
+		expr = binary_op_untyped(&expr, &expr2, OP_OR_OR);
 	}
 
 	*ptr_tokvec = tokvec;
@@ -388,10 +388,10 @@ parse_postfix_expression(const struct Token **ptr_tokvec)
 	while (1) {
 		if (tokvec[0].kind == LEFT_BRACKET) {
 			++tokvec;
-			struct UntypedExpr expr2 = parse_expression(&tokvec);
+			const struct UntypedExpr expr2 = parse_expression(&tokvec);
 			expect_and_consume(&tokvec, RIGHT_BRACKET, "right bracket ]");
 
-			expr = unary_op_untyped(binary_op_untyped(expr, expr2, OP_PLUS),
+			expr = unary_op_untyped(binary_op_untyped(&expr, &expr2, OP_PLUS),
 			                        OP_ASTERISK);
 		} else if (tokvec[0].kind == OP_PLUS_PLUS ||
 		           tokvec[0].kind == OP_MINUS_MINUS) {
@@ -510,10 +510,10 @@ struct UntypedExpr parse_assignment_expression(const struct Token **ptr_tokvec)
 	enum TokenKind opkind = tokvec[0].kind;
 	++tokvec;
 
-	struct UntypedExpr expr2 = parse_assignment_expression(&tokvec);
+	const struct UntypedExpr expr2 = parse_assignment_expression(&tokvec);
 
 	*ptr_tokvec = tokvec;
-	return binary_op_untyped(expr, expr2, opkind);
+	return binary_op_untyped(&expr, &expr2, opkind);
 }
 
 static struct UntypedExpr
@@ -569,9 +569,9 @@ struct UntypedExpr parse_expression(const struct Token **ptr_tokvec)
 		}
 		++tokvec;
 
-		struct UntypedExpr expr2 = parse_assignment_expression(&tokvec);
+		const struct UntypedExpr expr2 = parse_assignment_expression(&tokvec);
 
-		expr = binary_op_untyped(expr, expr2, kind);
+		expr = binary_op_untyped(&expr, &expr2, kind);
 	}
 	*ptr_tokvec = tokvec;
 	return expr;
