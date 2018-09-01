@@ -40,8 +40,9 @@ int size_of(const struct AnalyzerState *ptr_ps, const struct Type *ref_type)
 	}
 }
 
-int align_of(const struct AnalyzerState *ptr_ps, struct Type type)
+int align_of(const struct AnalyzerState *ptr_ps, const struct Type *ref_type)
 {
+	const struct Type type = *ref_type;
 	switch (type.type_category) {
 		case INT_:
 			return 4;
@@ -50,7 +51,7 @@ int align_of(const struct AnalyzerState *ptr_ps, struct Type type)
 		case CHAR_:
 			return 1;
 		case ARRAY:
-			return align_of(ptr_ps, *type.derived_from);
+			return align_of(ptr_ps, type.derived_from);
 		case FN:
 			fprintf(stderr, "function type does not have size or alignment\n");
 			exit(EXIT_FAILURE);
@@ -109,7 +110,7 @@ enum SystemVAbiClass system_v_abi_class_of(const struct AnalyzerState *ptr_ps,
 				exit(EXIT_FAILURE);
 			}
 
-			if (align_of(ptr_ps, type) == 1) {
+			if (align_of(ptr_ps, &type) == 1) {
 				unsupported("passing/returning a struct with alignment 1");
 			}
 
@@ -138,7 +139,7 @@ static void record_global_struct_declaration(struct AnalyzerState *ptr_ps,
 	for (; i < types_and_idents.length; i++) {
 		const struct TypeAndIdent *ptr_vec_i = types_and_idents.vector[i];
 		inner_type_vec[i].size = size_of(ptr_ps, &ptr_vec_i->type);
-		inner_type_vec[i].alignment = align_of(ptr_ps, ptr_vec_i->type);
+		inner_type_vec[i].alignment = align_of(ptr_ps, &ptr_vec_i->type);
 	}
 
 	int *offset_vec;
