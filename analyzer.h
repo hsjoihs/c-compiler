@@ -53,6 +53,6 @@ int typecheck_constant_integral_expression(struct AnalyzerState *ptr_ps,
 
 enum SystemVAbiClass { INTEGER_CLASS, MEMORY_CLASS };
 enum SystemVAbiClass system_v_abi_class_of(const struct AnalyzerState *ptr_ps,
-                                           struct Type type);
+                                           const struct Type *ref_type);
 
 void expect_scalar(struct Type type, const char *context);

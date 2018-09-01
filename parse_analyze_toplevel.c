@@ -79,8 +79,9 @@ int align_of(const struct AnalyzerState *ptr_ps, const struct Type *ref_type)
 }
 
 enum SystemVAbiClass system_v_abi_class_of(const struct AnalyzerState *ptr_ps,
-                                           const struct Type type)
+                                           const struct Type *ref_type)
 {
+	const struct Type type = *ref_type;
 	switch (type.type_category) {
 		case INT_:
 		case PTR_:
@@ -311,7 +312,7 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 	def.func.ret_type = ret_type;
 	if (ret_type.type_category == STRUCT_) {
 		enum SystemVAbiClass abi_class =
-		    system_v_abi_class_of(ptr_ps, ret_type);
+		    system_v_abi_class_of(ptr_ps, &ret_type);
 		def.func.abi_class = abi_class;
 		def.func.ret_struct_size = size_of(ptr_ps, &ret_type);
 		if (abi_class == MEMORY_CLASS) {
