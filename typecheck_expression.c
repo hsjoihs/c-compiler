@@ -286,26 +286,6 @@ static struct Expr combine_by_add(const struct AnalyzerState *ptr_ps,
 	exit(EXIT_FAILURE);
 }
 
-static struct Expr assign_struct(const struct AnalyzerState *ptr_ps,
-                                 struct Expr expr, struct Expr expr2)
-{
-	struct Expr *ptr_expr1 = calloc(1, sizeof(struct Expr));
-	struct Expr *ptr_expr2 = calloc(1, sizeof(struct Expr));
-	*ptr_expr1 = expr;
-	*ptr_expr2 = expr2;
-
-	struct Expr new_expr;
-	new_expr.details = expr.details;
-	new_expr.category = STRUCT_ASSIGNMENT_EXPR;
-	new_expr.ptr1 = ptr_expr1;
-	new_expr.ptr2 = ptr_expr2;
-	new_expr.ptr3 = 0;
-
-	new_expr.size_info_for_struct_assign = size_of(ptr_ps, expr.details.type);
-
-	return new_expr;
-}
-
 static int is_local_var(const struct ScopeChain *ref_t, const char *str)
 {
 	if (isElem(ref_t->var_table, str)) {
@@ -755,7 +735,22 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 					expect_type(ptr_ps, expr.details.type, expr2.details.type,
 					            "mismatch in assignment operator");
 
-					return assign_struct(ptr_ps, expr, expr2);
+					struct Expr *ptr_expr1 = calloc(1, sizeof(struct Expr));
+					struct Expr *ptr_expr2 = calloc(1, sizeof(struct Expr));
+					*ptr_expr1 = expr;
+					*ptr_expr2 = expr2;
+
+					struct Expr new_expr;
+					new_expr.details = expr.details;
+					new_expr.category = STRUCT_ASSIGNMENT_EXPR;
+					new_expr.ptr1 = ptr_expr1;
+					new_expr.ptr2 = ptr_expr2;
+					new_expr.ptr3 = 0;
+
+					new_expr.size_info_for_struct_assign =
+					    size_of(ptr_ps, expr.details.type);
+
+					return new_expr;
 
 				} else if (expr.details.type.type_category == PTR_) {
 					if (uexpr.operator_ == OP_EQ) {
