@@ -268,8 +268,8 @@ static struct Expr combine_by_add(const struct AnalyzerState *ptr_ps,
 	struct Type type1 = expr.details.type;
 	struct Type type2 = expr2.details.type;
 
-	if (is_compatible(ptr_ps, type1, INT_TYPE())) {
-		if (is_compatible(ptr_ps, type2, INT_TYPE())) {
+	if (is_integral(type1)) {
+		if (is_integral(type2)) {
 			return simple_binary_op(expr, expr2, OP_PLUS, INT_TYPE());
 		} else if (type2.type_category == PTR_) {
 			/* swapped */
@@ -816,8 +816,8 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 					struct Type type1 = expr.details.type;
 					struct Type type2 = expr2.details.type;
 
-					if (is_compatible(ptr_ps, type1, INT_TYPE())) {
-						if (is_compatible(ptr_ps, type2, INT_TYPE())) {
+					if (is_integral(type1)) {
+						if (is_integral(type2)) {
 							return simple_binary_op(expr, expr2, OP_MINUS,
 							                        INT_TYPE());
 						} else if (type2.type_category == PTR_) {
@@ -828,7 +828,7 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 						}
 
 					} else if (type1.type_category == PTR_) {
-						if (is_compatible(ptr_ps, type2, INT_TYPE())) {
+						if (is_integral(type2)) {
 
 							/* pointer minus int */
 							return pointer_plusorminus_int(ptr_ps, expr, expr2,
