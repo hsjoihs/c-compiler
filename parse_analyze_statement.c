@@ -130,8 +130,9 @@ struct Statement parse_statement(struct AnalyzerState *ptr_ps,
 		expect_and_consume(&tokvec, RIGHT_PAREN,
 		                   "right parenthesis of `switch`");
 
-		expect_integral(expr.details.type,
-		            "controlling expression of `switch` must be integer type");
+		expect_integral(
+		    &expr.details.type,
+		    "controlling expression of `switch` must be integer type");
 
 		struct Statement *ptr_inner_s = calloc(1, sizeof(struct Statement));
 		*ptr_inner_s = parse_statement(ptr_ps, &tokvec);

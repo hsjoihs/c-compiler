@@ -125,13 +125,13 @@ void expect_scalar(const struct Type *ref_type, const char *context)
 	}
 }
 
-void expect_integral(const struct Type actual_type, const char *message)
+void expect_integral(const struct Type *ref_actual_type, const char *message)
 {
 
-	if (!is_integral(&actual_type)) {
+	if (!is_integral(ref_actual_type)) {
 		fprintf(stderr, "Unmatched type: expected an integral type, but got a "
 		                "non-integral type `");
-		debug_print_type(&actual_type);
+		debug_print_type(ref_actual_type);
 		fprintf(stderr, "`.\n");
 		fprintf(stderr, "context: %s\n", message);
 		exit(EXIT_FAILURE);
@@ -517,7 +517,7 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 					enum TokenKind kind = uexpr.operator_;
 					struct Expr expr = typecheck_expression(ptr_ps, uexpr.ptr1);
 					expect_integral(
-					    expr.details.type,
+					    &expr.details.type,
 					    "operand of logical not, bitnot, unary plus or "
 					    "unary minus");
 
@@ -780,7 +780,7 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 						            "mismatch in assignment operator");
 					} else if ((uexpr.operator_ == OP_PLUS_EQ ||
 					            uexpr.operator_ == OP_MINUS_EQ)) {
-						expect_integral(expr2.details.type,
+						expect_integral(&expr2.details.type,
 						                "right side of += or -= to a pointer");
 					} else {
 						fprintf(stderr, "invalid compound assignment operator "
@@ -842,7 +842,7 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 						}
 					} else if (type1.type_category == PTR_) {
 						expect_integral(
-						    expr2.details.type,
+						    &expr2.details.type,
 						    "cannot add a pointer/struct to a pointer");
 						return pointer_plusorminus_int(ptr_ps, &expr, &expr2,
 						                               OP_PLUS);
@@ -927,9 +927,9 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 				case OP_ASTERISK:
 				case OP_SLASH:
 				case OP_PERCENT: {
-					expect_integral(expr.details.type,
+					expect_integral(&expr.details.type,
 					                "left operand of an operator");
-					expect_integral(expr2.details.type,
+					expect_integral(&expr2.details.type,
 					                "right operand of an operator");
 					return simple_binary_op(&expr, &expr2, uexpr.operator_,
 					                        &expr2.details.type);
