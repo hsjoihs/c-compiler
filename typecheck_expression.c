@@ -436,11 +436,12 @@ static enum SimpleBinOp op_before_assign(enum TokenKind kind)
 }
 
 struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
-                                 struct UntypedExpr uexpr)
+                                 const struct UntypedExpr *ref_uexpr)
 {
+	const struct UntypedExpr uexpr = *ref_uexpr;
 	switch (uexpr.category) {
 		case DOT_EXPR: {
-			struct Expr struct_expr = typecheck_expression(ptr_ps, *uexpr.ptr1);
+			struct Expr struct_expr = typecheck_expression(ptr_ps, uexpr.ptr1);
 			const char *ident_after_dot = uexpr.ident_after_dot;
 			if (struct_expr.details.type.type_category != STRUCT_) {
 				fprintf(stderr, "member is requested but the left operand is "
@@ -514,8 +515,7 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 				case OP_PLUS:
 				case OP_MINUS: {
 					enum TokenKind kind = uexpr.operator_;
-					struct Expr expr =
-					    typecheck_expression(ptr_ps, *uexpr.ptr1);
+					struct Expr expr = typecheck_expression(ptr_ps, uexpr.ptr1);
 					expect_type(ptr_ps, expr.details.type, INT_TYPE(),
 					            "operand of logical not, bitnot, unary plus or "
 					            "unary minus");
@@ -532,8 +532,7 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 				case OP_MINUS_MINUS: {
 					enum TokenKind opkind = uexpr.operator_;
 
-					struct Expr expr =
-					    typecheck_expression(ptr_ps, *uexpr.ptr1);
+					struct Expr expr = typecheck_expression(ptr_ps, uexpr.ptr1);
 
 					struct Expr new_expr =
 					    unary_op_(expr, opkind, expr.details.type);
@@ -548,7 +547,7 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 
 				case OP_AND: {
 					const struct Expr expr =
-					    typecheck_expression(ptr_ps, *uexpr.ptr1);
+					    typecheck_expression(ptr_ps, uexpr.ptr1);
 
 					struct Type type = expr.details.type;
 
@@ -567,7 +566,7 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 				}
 				case OP_ASTERISK: {
 					const struct Expr expr =
-					    typecheck_expression(ptr_ps, *uexpr.ptr1);
+					    typecheck_expression(ptr_ps, uexpr.ptr1);
 
 					const struct Type type = deref_type(&expr.details.type);
 
@@ -612,7 +611,7 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 				    uexpr.arg_exprs_vec.vector[counter];
 
 				struct Expr *ptr_arg = calloc(1, sizeof(struct Expr));
-				*ptr_arg = typecheck_expression(ptr_ps, *ptr);
+				*ptr_arg = typecheck_expression(ptr_ps, ptr);
 				push_vector(&expr.args, ptr_arg);
 				if (counter > 5) {
 					unsupported("calling with 7 or more arguments");
@@ -625,7 +624,7 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 			return expr;
 		}
 		case POSTFIX_EXPR: {
-			struct Expr expr = typecheck_expression(ptr_ps, *uexpr.ptr1);
+			struct Expr expr = typecheck_expression(ptr_ps, uexpr.ptr1);
 			struct Expr *ptr_expr1 = calloc(1, sizeof(struct Expr));
 			*ptr_expr1 = expr;
 
@@ -708,10 +707,9 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 			return expr;
 		}
 		case CONDITIONAL: {
-			struct Expr expr = typecheck_expression(ptr_ps, *uexpr.ptr1);
-			struct Expr true_branch = typecheck_expression(ptr_ps, *uexpr.ptr2);
-			struct Expr false_branch =
-			    typecheck_expression(ptr_ps, *uexpr.ptr3);
+			struct Expr expr = typecheck_expression(ptr_ps, uexpr.ptr1);
+			struct Expr true_branch = typecheck_expression(ptr_ps, uexpr.ptr2);
+			struct Expr false_branch = typecheck_expression(ptr_ps, uexpr.ptr3);
 			expect_type(
 			    ptr_ps, false_branch.details.type, true_branch.details.type,
 			    "mismatch of type in the false branch and the true branch");
@@ -732,8 +730,8 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 		}
 		case BINARY_EXPR: {
 			if (isAssign(uexpr.operator_)) {
-				struct Expr expr = typecheck_expression(ptr_ps, *uexpr.ptr1);
-				struct Expr expr2 = typecheck_expression(ptr_ps, *uexpr.ptr2);
+				struct Expr expr = typecheck_expression(ptr_ps, uexpr.ptr1);
+				struct Expr expr2 = typecheck_expression(ptr_ps, uexpr.ptr2);
 				if (expr.details.type.type_category == ARRAY ||
 				    expr.details.true_type.type_category == ARRAY) {
 					fprintf(stderr, "array is not an lvalue\n");
@@ -815,8 +813,8 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 				return new_expr;
 			}
 
-			struct Expr expr = typecheck_expression(ptr_ps, *uexpr.ptr1);
-			struct Expr expr2 = typecheck_expression(ptr_ps, *uexpr.ptr2);
+			struct Expr expr = typecheck_expression(ptr_ps, uexpr.ptr1);
+			struct Expr expr2 = typecheck_expression(ptr_ps, uexpr.ptr2);
 
 			switch (uexpr.operator_) {
 				case OP_PLUS: {

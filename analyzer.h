@@ -27,7 +27,7 @@ struct AnalyzerState {
 };
 
 struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
-                                 struct UntypedExpr uexpr);
+                                 const struct UntypedExpr *ref_uexpr);
 
 struct Statement parse_statement(struct AnalyzerState *ptr_ps,
                                  const struct Token **ptr_tokvec);

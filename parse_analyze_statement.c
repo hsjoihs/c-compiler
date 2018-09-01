@@ -83,8 +83,9 @@ struct Statement parse_statement(struct AnalyzerState *ptr_ps,
 		++tokvec;
 		expect_and_consume(&tokvec, LEFT_PAREN,
 		                   "left parenthesis immediately after `if`");
-		struct Expr expr =
-		    typecheck_expression(ptr_ps, parse_expression(&tokvec));
+
+		const struct UntypedExpr u = parse_expression(&tokvec);
+		struct Expr expr = typecheck_expression(ptr_ps, &u);
 		expect_scalar(expr.details.type, "`if` statement");
 
 		expect_and_consume(&tokvec, RIGHT_PAREN, "right parenthesis of `if`");
@@ -121,8 +122,10 @@ struct Statement parse_statement(struct AnalyzerState *ptr_ps,
 		++tokvec;
 		expect_and_consume(&tokvec, LEFT_PAREN,
 		                   "left parenthesis immediately after `switch`");
-		struct Expr expr =
-		    typecheck_expression(ptr_ps, parse_expression(&tokvec));
+
+		const struct UntypedExpr u = parse_expression(&tokvec);
+
+		struct Expr expr = typecheck_expression(ptr_ps, &u);
 		expect_and_consume(&tokvec, RIGHT_PAREN,
 		                   "right parenthesis of `switch`");
 
@@ -152,8 +155,8 @@ struct Statement parse_statement(struct AnalyzerState *ptr_ps,
 			++tokvec;
 			s.expr1.category = VOID_EXPR;
 		} else {
-			struct Expr expr =
-			    typecheck_expression(ptr_ps, parse_expression(&tokvec));
+			const struct UntypedExpr u = parse_expression(&tokvec);
+			struct Expr expr = typecheck_expression(ptr_ps, &u);
 
 			if (ptr_ps->func_ret_type.type_category == PTR_ &&
 			    expr.category == INT_VALUE && expr.int_value == 0) {
@@ -180,8 +183,9 @@ struct Statement parse_statement(struct AnalyzerState *ptr_ps,
 		expect_and_consume(&tokvec, RES_WHILE, "`while` of do-while");
 		expect_and_consume(&tokvec, LEFT_PAREN, "left parenthesis of do-while");
 
-		struct Expr expr =
-		    typecheck_expression(ptr_ps, parse_expression(&tokvec));
+		const struct UntypedExpr u = parse_expression(&tokvec);
+
+		struct Expr expr = typecheck_expression(ptr_ps, &u);
 		expect_scalar(expr.details.type, "`do-while` statement");
 
 		expect_and_consume(&tokvec, RIGHT_PAREN,
@@ -205,8 +209,9 @@ struct Statement parse_statement(struct AnalyzerState *ptr_ps,
 
 		expect_and_consume(&tokvec, LEFT_PAREN, "left parenthesis of while");
 
-		struct Expr expr =
-		    typecheck_expression(ptr_ps, parse_expression(&tokvec));
+		const struct UntypedExpr u = parse_expression(&tokvec);
+
+		struct Expr expr = typecheck_expression(ptr_ps, &u);
 		expect_scalar(expr.details.type, "`while` statement");
 
 		expect_and_consume(&tokvec, RIGHT_PAREN, "left parenthesis of while");
@@ -288,14 +293,16 @@ struct Statement parse_statement(struct AnalyzerState *ptr_ps,
 				expr1 = integer_1();
 			}
 		} else {
-			expr1 = typecheck_expression(ptr_ps, parse_expression(&tokvec));
+			const struct UntypedExpr u = parse_expression(&tokvec);
+			expr1 = typecheck_expression(ptr_ps, &u);
 			expect_and_consume(&tokvec, SEMICOLON, "first semicolon of `for`");
 		}
 
 		if (tokvec[0].kind == SEMICOLON) { /* expression2 is missing */
 			expr2 = integer_1();
 		} else {
-			expr2 = typecheck_expression(ptr_ps, parse_expression(&tokvec));
+			const struct UntypedExpr u = parse_expression(&tokvec);
+			expr2 = typecheck_expression(ptr_ps, &u);
 		}
 		expect_scalar(expr2.details.type, "`for` statement");
 		expect_and_consume(&tokvec, SEMICOLON, "second semicolon of `for`");
@@ -303,7 +310,8 @@ struct Statement parse_statement(struct AnalyzerState *ptr_ps,
 		if (tokvec[0].kind == RIGHT_PAREN) { /* expression3 is missing */
 			expr3 = integer_1();
 		} else {
-			expr3 = typecheck_expression(ptr_ps, parse_expression(&tokvec));
+			const struct UntypedExpr u = parse_expression(&tokvec);
+			expr3 = typecheck_expression(ptr_ps, &u);
 		}
 		expect_and_consume(&tokvec, RIGHT_PAREN, "right parenthesis of `for`");
 		struct Statement s;
@@ -328,8 +336,8 @@ struct Statement parse_statement(struct AnalyzerState *ptr_ps,
 		return statement;
 	}
 
-	struct UntypedExpr uexpr = parse_expression(&tokvec);
-	struct Expr expr = typecheck_expression(ptr_ps, uexpr);
+	const struct UntypedExpr uexpr = parse_expression(&tokvec);
+	struct Expr expr = typecheck_expression(ptr_ps, &uexpr);
 
 	expect_and_consume(&tokvec, SEMICOLON, "semicolon after an expression");
 
@@ -367,7 +375,7 @@ static struct Expr *declare_var_and_return_initializer(
 
 		struct UntypedExpr uexpr =
 		    binary_op_untyped(&left_uexpr, ptr_uexpr, OP_EQ);
-		struct Expr expr = typecheck_expression(ptr_ps, uexpr);
+		struct Expr expr = typecheck_expression(ptr_ps, &uexpr);
 		ptr_expr = calloc(1, sizeof(struct Expr));
 		*ptr_expr = expr;
 	}

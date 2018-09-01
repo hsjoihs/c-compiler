@@ -2,8 +2,6 @@
 #include "std.h"
 #include "std_io.h"
 
-int is_strictly_equal(struct Type t1, struct Type t2);
-
 struct Type INT_TYPE() {
 	struct Type t;
 	t.type_category = INT_;
