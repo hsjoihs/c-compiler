@@ -867,9 +867,13 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 					exit(EXIT_FAILURE);
 				}
 				case OP_AND_AND: {
+					expect_scalar(expr.details.type, "operand of logical AND");
+					expect_scalar(expr2.details.type, "operand of logical AND");
 					return binary_op(expr, expr2, LOGICAL_AND_EXPR, INT_TYPE());
 				}
 				case OP_OR_OR: {
+					expect_scalar(expr.details.type, "operand of logical OR");
+					expect_scalar(expr2.details.type, "operand of logical OR");
 					return binary_op(expr, expr2, LOGICAL_OR_EXPR, INT_TYPE());
 				}
 				case OP_OR:
