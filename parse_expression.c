@@ -336,7 +336,8 @@ parse_unary_expression(const struct Token **ptr_tokvec)
 	}
 }
 
-static struct UntypedExpr dot(struct UntypedExpr expr, const char *name);
+static struct UntypedExpr dot(const struct UntypedExpr *ref_expr,
+                              const char *name);
 
 static struct UntypedExpr
 parse_postfix_expression(const struct Token **ptr_tokvec)
@@ -418,7 +419,7 @@ parse_postfix_expression(const struct Token **ptr_tokvec)
 			                   "identifier after a dot operator");
 			const char *name = tokvec[-1].ident_str;
 
-			expr = dot(expr, name);
+			expr = dot(&expr, name);
 		} else if (tokvec[0].kind == ARROW) {
 			++tokvec;
 
@@ -426,7 +427,8 @@ parse_postfix_expression(const struct Token **ptr_tokvec)
 			                   "identifier after an arrow operator");
 			const char *name = tokvec[-1].ident_str;
 
-			expr = dot(unary_op_untyped(&expr, OP_ASTERISK), name);
+			const struct UntypedExpr e = unary_op_untyped(&expr, OP_ASTERISK);
+			expr = dot(&e, name);
 		} else {
 			break;
 		}
@@ -435,10 +437,11 @@ parse_postfix_expression(const struct Token **ptr_tokvec)
 	return expr;
 }
 
-static struct UntypedExpr dot(struct UntypedExpr expr, const char *name)
+static struct UntypedExpr dot(const struct UntypedExpr *ref_expr,
+                              const char *name)
 {
 	struct UntypedExpr *ptr_expr1 = calloc(1, sizeof(struct UntypedExpr));
-	*ptr_expr1 = expr;
+	*ptr_expr1 = *ref_expr;
 
 	struct UntypedExpr new_expr;
 	new_expr.category = DOT_EXPR;
