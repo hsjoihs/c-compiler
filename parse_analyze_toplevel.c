@@ -123,8 +123,9 @@ enum SystemVAbiClass system_v_abi_class_of(const struct AnalyzerState *ptr_ps,
 }
 
 static void record_global_struct_declaration(struct AnalyzerState *ptr_ps,
-                                             struct Type struct_type)
+                                             const struct Type *ref_struct_type)
 {
+	const struct Type struct_type = *ref_struct_type;
 	assert(struct_type.type_category == STRUCT_);
 	struct StructInternalInfo info = struct_type.s.struct_info;
 	if (!info.ptr_types_and_idents) { /* null; incomplete type */
@@ -158,8 +159,9 @@ static void record_global_struct_declaration(struct AnalyzerState *ptr_ps,
 }
 
 static void record_global_enum_declaration(struct AnalyzerState *ptr_ps,
-                                           struct Type type)
+                                           const struct Type *ref_type)
 {
+	const struct Type type = *ref_type;
 	assert(type.type_category == ENUM_);
 
 	struct Enumerators info = type.e.enum_info;
@@ -185,24 +187,24 @@ static void record_global_enum_declaration(struct AnalyzerState *ptr_ps,
 
 static void
 record_if_global_struct_or_enum_declaration(struct AnalyzerState *ptr_ps,
-                                            struct Type type)
+                                            const struct Type *ref_type)
 {
-	switch (type.type_category) {
+	switch (ref_type->type_category) {
 		case ARRAY:
 		case FN:
 		case PTR_:
 			record_if_global_struct_or_enum_declaration(ptr_ps,
-			                                            *type.derived_from);
+			                                            ref_type->derived_from);
 			return;
 		case VOID_:
 		case INT_:
 		case CHAR_:
 			return;
 		case STRUCT_:
-			record_global_struct_declaration(ptr_ps, type);
+			record_global_struct_declaration(ptr_ps, ref_type);
 			return;
 		case ENUM_:
-			record_global_enum_declaration(ptr_ps, type);
+			record_global_enum_declaration(ptr_ps, ref_type);
 			return;
 	}
 }
@@ -237,7 +239,7 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 		/* d.size_of_declarator_type need not be set; it is not a real variable
 		 */
 
-		record_if_global_struct_or_enum_declaration(ptr_ps, d.declarator_type);
+		record_if_global_struct_or_enum_declaration(ptr_ps, &d.declarator_type);
 		d.declarator_name = 0;
 		return d;
 	}
@@ -245,7 +247,7 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 	const char *declarator_name;
 	struct Type declarator_type =
 	    parse_type_specifier_and_declarator(&tokvec2, &declarator_name);
-	record_if_global_struct_or_enum_declaration(ptr_ps, declarator_type);
+	record_if_global_struct_or_enum_declaration(ptr_ps, &declarator_type);
 
 	if (declarator_type.type_category != FN) {
 
