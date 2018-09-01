@@ -2,8 +2,9 @@
 #include "std_io.h"
 #include "toplevel.h"
 
-int size_of(const struct AnalyzerState *ptr_ps, struct Type type)
+int size_of(const struct AnalyzerState *ptr_ps, const struct Type *ref_type)
 {
+	const struct Type type = *ref_type;
 	switch (type.type_category) {
 		case INT_:
 			return 4;
@@ -12,7 +13,7 @@ int size_of(const struct AnalyzerState *ptr_ps, struct Type type)
 		case CHAR_:
 			return 1;
 		case ARRAY:
-			return type.array_length * size_of(ptr_ps, *type.derived_from);
+			return type.array_length * size_of(ptr_ps, type.derived_from);
 		case FN:
 			fprintf(stderr, "function type does not have size\n");
 			exit(EXIT_FAILURE);
@@ -77,7 +78,7 @@ int align_of(const struct AnalyzerState *ptr_ps, struct Type type)
 }
 
 enum SystemVAbiClass system_v_abi_class_of(const struct AnalyzerState *ptr_ps,
-                                           struct Type type)
+                                           const struct Type type)
 {
 	switch (type.type_category) {
 		case INT_:
@@ -112,7 +113,7 @@ enum SystemVAbiClass system_v_abi_class_of(const struct AnalyzerState *ptr_ps,
 				unsupported("passing/returning a struct with alignment 1");
 			}
 
-			if (size_of(ptr_ps, type) > 2 * 8) {
+			if (size_of(ptr_ps, &type) > 2 * 8) {
 				return MEMORY_CLASS;
 			}
 			return INTEGER_CLASS;
@@ -136,7 +137,7 @@ static void record_global_struct_declaration(struct AnalyzerState *ptr_ps,
 	int i = 0;
 	for (; i < types_and_idents.length; i++) {
 		const struct TypeAndIdent *ptr_vec_i = types_and_idents.vector[i];
-		inner_type_vec[i].size = size_of(ptr_ps, ptr_vec_i->type);
+		inner_type_vec[i].size = size_of(ptr_ps, &ptr_vec_i->type);
 		inner_type_vec[i].alignment = align_of(ptr_ps, ptr_vec_i->type);
 	}
 
@@ -259,7 +260,7 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 		d.category = TOPLEVEL_VAR_DEFINITION;
 		d.declarator_name = declarator_name;
 		d.declarator_type = declarator_type;
-		d.size_of_declarator_type = size_of(ptr_ps, declarator_type);
+		d.size_of_declarator_type = size_of(ptr_ps, &declarator_type);
 		d.is_extern_global_var = is_extern_global_var;
 		return d;
 	}
@@ -311,7 +312,7 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 		enum SystemVAbiClass abi_class =
 		    system_v_abi_class_of(ptr_ps, ret_type);
 		def.func.abi_class = abi_class;
-		def.func.ret_struct_size = size_of(ptr_ps, ret_type);
+		def.func.ret_struct_size = size_of(ptr_ps, &ret_type);
 		if (abi_class == MEMORY_CLASS) {
 			unsupported("return type is a struct that has MEMORY_CLASS");
 		}

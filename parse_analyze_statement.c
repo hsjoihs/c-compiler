@@ -20,7 +20,7 @@ int add_local_var_to_scope(struct AnalyzerState *ptr_ps,
                            const struct Type vartype, const char *str)
 {
 	ptr_ps->newest_offset -=
-	    size_of(ptr_ps, vartype) < 4 ? 4 : size_of(ptr_ps, vartype);
+	    size_of(ptr_ps, &vartype) < 4 ? 4 : size_of(ptr_ps, &vartype);
 
 	struct LocalVarInfo *ptr_varinfo = calloc(1, sizeof(struct LocalVarInfo));
 	ptr_varinfo->offset = ptr_ps->newest_offset;

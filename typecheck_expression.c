@@ -268,8 +268,8 @@ static struct Expr pointer_plusorminus_int(const struct AnalyzerState *ptr_ps,
 	new_expr.ptr1 = ptr_expr1;
 	new_expr.ptr2 = ptr_expr2;
 	new_expr.ptr3 = 0;
-	new_expr.size_info_for_pointer_arith =
-	    size_of(ptr_ps, deref_type(&expr.details.type));
+	const struct Type deref = deref_type(&expr.details.type);
+	new_expr.size_info_for_pointer_arith = size_of(ptr_ps, &deref);
 
 	return new_expr;
 }
@@ -495,7 +495,7 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 			struct Expr expr;
 			expr.details.type = INT_TYPE();
 			expr.int_value =
-			    size_of(ptr_ps, uexpr.operand_of_sizeof_or_alignof);
+			    size_of(ptr_ps, &uexpr.operand_of_sizeof_or_alignof);
 			expr.category = INT_VALUE;
 			return expr;
 		}
@@ -538,8 +538,10 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 					struct Expr new_expr =
 					    unary_op_(expr, opkind, expr.details.type);
 					if (expr.details.type.type_category == PTR_) {
+						const struct Type deref =
+						    deref_type(&expr.details.type);
 						new_expr.size_info_for_pointer_arith =
-						    size_of(ptr_ps, deref_type(&expr.details.type));
+						    size_of(ptr_ps, &deref);
 					}
 					return new_expr;
 				}
@@ -638,8 +640,8 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 			new_expr.ptr2 = 0;
 			new_expr.ptr3 = 0;
 			if (expr.details.type.type_category == PTR_) {
-				new_expr.size_info_for_pointer_arith =
-				    size_of(ptr_ps, deref_type(&expr.details.type));
+				const struct Type deref = deref_type(&expr.details.type);
+				new_expr.size_info_for_pointer_arith = size_of(ptr_ps, &deref);
 			}
 
 			return new_expr;
@@ -760,7 +762,7 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 					new_expr.ptr3 = 0;
 
 					new_expr.size_info_for_struct_assign =
-					    size_of(ptr_ps, expr.details.type);
+					    size_of(ptr_ps, &expr.details.type);
 
 					return new_expr;
 
@@ -805,8 +807,9 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 				if (expr.details.type.type_category == PTR_ &&
 				    (uexpr.operator_ == OP_PLUS_EQ ||
 				     uexpr.operator_ == OP_MINUS_EQ)) {
+					const struct Type deref = deref_type(&expr.details.type);
 					new_expr.size_info_for_pointer_arith =
-					    size_of(ptr_ps, deref_type(&expr.details.type));
+					    size_of(ptr_ps, &deref);
 				}
 
 				return new_expr;
@@ -857,8 +860,10 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 							new_expr.ptr1 = ptr_expr1;
 							new_expr.ptr2 = ptr_expr2;
 							new_expr.ptr3 = 0;
+							const struct Type deref =
+							    deref_type(&expr.details.type);
 							new_expr.size_info_for_pointer_arith =
-							    size_of(ptr_ps, deref_type(&expr.details.type));
+							    size_of(ptr_ps, &deref);
 
 							return new_expr;
 						}
