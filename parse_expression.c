@@ -258,11 +258,11 @@ parse_logical_OR_expression(const struct Token **ptr_tokvec)
 	return expr;
 }
 
-static struct UntypedExpr unary_op_untyped(struct UntypedExpr expr,
+static struct UntypedExpr unary_op_untyped(const struct UntypedExpr *ref_expr,
                                            enum TokenKind kind)
 {
 	struct UntypedExpr *ptr_expr1 = calloc(1, sizeof(struct UntypedExpr));
-	*ptr_expr1 = expr;
+	*ptr_expr1 = *ref_expr;
 
 	struct UntypedExpr new_expr;
 	new_expr.category = UNARY_EXPR;
@@ -285,9 +285,9 @@ parse_unary_expression(const struct Token **ptr_tokvec)
 		enum TokenKind kind = tokvec[0].kind;
 		++tokvec;
 
-		struct UntypedExpr expr = parse_cast_expression(&tokvec);
+		const struct UntypedExpr expr = parse_cast_expression(&tokvec);
 
-		struct UntypedExpr new_expr = unary_op_untyped(expr, kind);
+		const struct UntypedExpr new_expr = unary_op_untyped(&expr, kind);
 
 		*ptr_tokvec = tokvec;
 		return new_expr;
@@ -296,9 +296,9 @@ parse_unary_expression(const struct Token **ptr_tokvec)
 		enum TokenKind opkind = tokvec[0].kind;
 		++tokvec;
 
-		struct UntypedExpr expr = parse_unary_expression(&tokvec);
+		const struct UntypedExpr expr = parse_unary_expression(&tokvec);
 
-		struct UntypedExpr new_expr = unary_op_untyped(expr, opkind);
+		const struct UntypedExpr new_expr = unary_op_untyped(&expr, opkind);
 		*ptr_tokvec = tokvec;
 		return new_expr;
 	} else if (tokvec[0].kind == RES_SIZEOF && tokvec[1].kind == LEFT_PAREN &&
@@ -391,8 +391,9 @@ parse_postfix_expression(const struct Token **ptr_tokvec)
 			const struct UntypedExpr expr2 = parse_expression(&tokvec);
 			expect_and_consume(&tokvec, RIGHT_BRACKET, "right bracket ]");
 
-			expr = unary_op_untyped(binary_op_untyped(&expr, &expr2, OP_PLUS),
-			                        OP_ASTERISK);
+			const struct UntypedExpr e =
+			    binary_op_untyped(&expr, &expr2, OP_PLUS);
+			expr = unary_op_untyped(&e, OP_ASTERISK);
 		} else if (tokvec[0].kind == OP_PLUS_PLUS ||
 		           tokvec[0].kind == OP_MINUS_MINUS) {
 			enum TokenKind opkind = tokvec[0].kind;
@@ -425,7 +426,7 @@ parse_postfix_expression(const struct Token **ptr_tokvec)
 			                   "identifier after an arrow operator");
 			const char *name = tokvec[-1].ident_str;
 
-			expr = dot(unary_op_untyped(expr, OP_ASTERISK), name);
+			expr = dot(unary_op_untyped(&expr, OP_ASTERISK), name);
 		} else {
 			break;
 		}
