@@ -110,18 +110,17 @@ static int is_integral(const struct Type *ref_t1)
 	       ref_t1->type_category == ENUM_;
 }
 
-static int is_scalar(struct Type t1)
+static int is_scalar(const struct Type *ref_t1)
 {
-	return t1.type_category == PTR_ || is_integral(&t1);
+	return ref_t1->type_category == PTR_ || is_integral(ref_t1);
 }
 
 void expect_scalar(struct Type type, const char *context)
 {
-	if (!is_scalar(type)) {
-		fprintf(stderr,
-		        "Expected a scalar type, but got a non-scalar type.\n"
-		        "context: %s\n",
-		        context);
+	if (!is_scalar(&type)) {
+		fprintf(stderr, "Expected a scalar type, but got a non-scalar type `");
+		debug_print_type(&type);
+		fprintf(stderr, "`.\ncontext: %s\n", context);
 		exit(EXIT_FAILURE);
 	}
 }
