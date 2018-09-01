@@ -3,7 +3,7 @@
 #include "std_io.h"
 
 static const struct EnumeratorAndValue *
-get_global_enumerator(struct Vector /*<EnumeratorAndValue>*/ list,
+get_global_enumerator(const struct Vector /*<EnumeratorAndValue>*/ *ref_list,
                       const char *name);
 
 static int is_local_var(const struct ScopeChain *t, const char *str);
@@ -22,7 +22,7 @@ int typecheck_constant_integral_expression(struct AnalyzerState *ptr_ps,
 				break;
 			}
 			const struct EnumeratorAndValue *ptr_enum_and_value =
-			    get_global_enumerator(ptr_ps->global_enumerator_list, name);
+			    get_global_enumerator(&ptr_ps->global_enumerator_list, name);
 			if (ptr_enum_and_value) {
 				return ptr_enum_and_value->value;
 
@@ -335,11 +335,11 @@ static struct Type resolve_name_globally(struct Map2 *m, const char *str)
 }
 
 static const struct EnumeratorAndValue *
-get_global_enumerator(struct Vector /*<EnumeratorAndValue>*/ list,
+get_global_enumerator(const struct Vector /*<EnumeratorAndValue>*/ *ref_list,
                       const char *name)
 {
-	for (int i = 0; i < list.length; i++) {
-		const struct EnumeratorAndValue *ptr_vec_i = list.vector[i];
+	for (int i = 0; i < ref_list->length; i++) {
+		const struct EnumeratorAndValue *ptr_vec_i = ref_list->vector[i];
 		if (strcmp(ptr_vec_i->ident, name) == 0) {
 			return ptr_vec_i;
 		}
@@ -645,7 +645,8 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 
 			if (!is_local_var(&ptr_ps->scope_chain, name)) {
 				const struct EnumeratorAndValue *ptr_enum_and_value =
-				    get_global_enumerator(ptr_ps->global_enumerator_list, name);
+				    get_global_enumerator(&ptr_ps->global_enumerator_list,
+				                          name);
 				if (ptr_enum_and_value) {
 					struct Expr expr;
 					expr.details.type = INT_TYPE();
@@ -799,19 +800,15 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 
 				return new_expr;
 			}
+
+			struct Expr expr = typecheck_expression(ptr_ps, *uexpr.ptr1);
+			struct Expr expr2 = typecheck_expression(ptr_ps, *uexpr.ptr2);
+
 			switch (uexpr.operator_) {
 				case OP_PLUS: {
-					struct Expr expr =
-					    typecheck_expression(ptr_ps, *uexpr.ptr1);
-					struct Expr expr2 =
-					    typecheck_expression(ptr_ps, *uexpr.ptr2);
 					return combine_by_add(ptr_ps, expr, expr2);
 				}
 				case OP_MINUS: {
-					struct Expr expr =
-					    typecheck_expression(ptr_ps, *uexpr.ptr1);
-					struct Expr expr2 =
-					    typecheck_expression(ptr_ps, *uexpr.ptr2);
 
 					struct Type type1 = expr.details.type;
 					struct Type type2 = expr2.details.type;
@@ -859,19 +856,9 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 					exit(EXIT_FAILURE);
 				}
 				case OP_AND_AND: {
-					struct Expr first_expr =
-					    typecheck_expression(ptr_ps, *uexpr.ptr1);
-					struct Expr expr2 =
-					    typecheck_expression(ptr_ps, *uexpr.ptr2);
-
-					return binary_op(first_expr, expr2, LOGICAL_AND_EXPR,
-					                 INT_TYPE());
+					return binary_op(expr, expr2, LOGICAL_AND_EXPR, INT_TYPE());
 				}
 				case OP_OR_OR: {
-					struct Expr expr =
-					    typecheck_expression(ptr_ps, *uexpr.ptr1);
-					struct Expr expr2 =
-					    typecheck_expression(ptr_ps, *uexpr.ptr2);
 					return binary_op(expr, expr2, LOGICAL_OR_EXPR, INT_TYPE());
 				}
 				case OP_OR:
@@ -882,10 +869,6 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 				case OP_ASTERISK:
 				case OP_SLASH:
 				case OP_PERCENT: {
-					struct Expr expr =
-					    typecheck_expression(ptr_ps, *uexpr.ptr1);
-					struct Expr expr2 =
-					    typecheck_expression(ptr_ps, *uexpr.ptr2);
 					expect_type(ptr_ps, expr.details.type, INT_TYPE(),
 					            "left operand of an operator");
 					expect_type(ptr_ps, expr2.details.type, INT_TYPE(),
@@ -899,11 +882,6 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 				case OP_LT_EQ:
 				case OP_NOT_EQ:
 				case OP_EQ_EQ: {
-					struct Expr expr =
-					    typecheck_expression(ptr_ps, *uexpr.ptr1);
-					struct Expr expr2 =
-					    typecheck_expression(ptr_ps, *uexpr.ptr2);
-
 					if (expr.details.type.type_category == PTR_ &&
 					    expr2.category == INT_VALUE && expr2.int_value == 0) {
 						expr2.category = NULLPTR;
@@ -922,10 +900,6 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 					                        INT_TYPE());
 				}
 				case OP_COMMA: {
-					struct Expr expr =
-					    typecheck_expression(ptr_ps, *uexpr.ptr1);
-					struct Expr expr2 =
-					    typecheck_expression(ptr_ps, *uexpr.ptr2);
 					return simple_binary_op(expr, expr2, uexpr.operator_,
 					                        expr2.details.type);
 				}
