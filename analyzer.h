@@ -48,7 +48,7 @@ void expect_type(const struct AnalyzerState *ptr_ps, struct Type actual_type,
                  struct Type expected_type, const char *message);
 
 int typecheck_constant_integral_expression(struct AnalyzerState *ptr_ps,
-                                           struct UntypedExpr uexpr,
+                                           const struct UntypedExpr *ptr_uexpr,
                                            const char *context);
 
 enum SystemVAbiClass { INTEGER_CLASS, MEMORY_CLASS };

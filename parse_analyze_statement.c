@@ -42,8 +42,9 @@ struct Statement parse_labeled_statement(struct AnalyzerState *ptr_ps,
 		l.category = DEFAULT_LABEL;
 	} else if (kind == RES_CASE) {
 		++tokvec;
-		int case_int = typecheck_constant_integral_expression(
-		    ptr_ps, parse_constant_expression(&tokvec), "case");
+		const struct UntypedExpr u = parse_constant_expression(&tokvec);
+		int case_int =
+		    typecheck_constant_integral_expression(ptr_ps, &u, "case");
 		l.category = CASE_LABEL;
 		l.case_int = case_int;
 	} else {

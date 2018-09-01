@@ -9,9 +9,10 @@ get_global_enumerator(const struct Vector /*<EnumeratorAndValue>*/ *ref_list,
 static int is_local_var(const struct ScopeChain *t, const char *str);
 
 int typecheck_constant_integral_expression(struct AnalyzerState *ptr_ps,
-                                           struct UntypedExpr uexpr,
+                                           const struct UntypedExpr *ref_uexpr,
                                            const char *context)
 {
+	const struct UntypedExpr uexpr = *ref_uexpr;
 	switch (uexpr.category) {
 		case INT_LITERAL_:
 			return uexpr.int_value;
