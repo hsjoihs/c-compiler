@@ -285,31 +285,6 @@ static struct Expr pointer_plusorminus_int(const struct AnalyzerState *ptr_ps,
 	return new_expr;
 }
 
-static struct Expr combine_by_add(const struct AnalyzerState *ptr_ps,
-                                  struct Expr expr, struct Expr expr2)
-{
-	struct Type type1 = expr.details.type;
-	struct Type type2 = expr2.details.type;
-
-	if (is_integral(&type1)) {
-		if (is_integral(&type2)) {
-			const struct Type t = INT_TYPE();
-			return simple_binary_op(&expr, &expr2, OP_PLUS, &t);
-		} else if (type2.type_category == PTR_) {
-			/* swapped */
-			return pointer_plusorminus_int(ptr_ps, &expr2, &expr, OP_PLUS);
-		}
-
-	} else if (type1.type_category == PTR_) {
-
-		expect_type(ptr_ps, expr2.details.type, INT_TYPE(),
-		            "cannot add a pointer to a pointer");
-		return pointer_plusorminus_int(ptr_ps, &expr, &expr2, OP_PLUS);
-	}
-	fprintf(stderr, "fail\n");
-	exit(EXIT_FAILURE);
-}
-
 static int is_local_var(const struct ScopeChain *ref_t, const char *str)
 {
 	if (isElem(ref_t->var_table, str)) {
@@ -830,7 +805,35 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 
 			switch (uexpr.operator_) {
 				case OP_PLUS: {
-					return combine_by_add(ptr_ps, expr, expr2);
+					const struct Type type1 = expr.details.type;
+					const struct Type type2 = expr2.details.type;
+
+					if (is_integral(&type1)) {
+						if (is_integral(&type2)) {
+							const struct Type t = INT_TYPE();
+							return simple_binary_op(&expr, &expr2, OP_PLUS, &t);
+						} else if (type2.type_category == PTR_) {
+							/* swapped */
+							return pointer_plusorminus_int(ptr_ps, &expr2,
+							                               &expr, OP_PLUS);
+						} else {
+							fprintf(stderr, "invalid type `");
+							debug_print_type(&type2);
+							fprintf(stderr,
+							        "`as the right operand of binary +\n");
+							exit(EXIT_FAILURE);
+						}
+					} else if (type1.type_category == PTR_) {
+						expect_type(ptr_ps, expr2.details.type, INT_TYPE(),
+						            "cannot add a pointer to a pointer");
+						return pointer_plusorminus_int(ptr_ps, &expr, &expr2,
+						                               OP_PLUS);
+					} else {
+						fprintf(stderr, "invalid type `");
+						debug_print_type(&type1);
+						fprintf(stderr, "`as the left operand of binary +\n");
+						exit(EXIT_FAILURE);
+					}
 				}
 				case OP_MINUS: {
 
@@ -878,9 +881,12 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 
 							return new_expr;
 						}
+					} else {
+						fprintf(stderr, "invalid type `");
+						debug_print_type(&type1);
+						fprintf(stderr, "`as the left operand of binary -\n");
+						exit(EXIT_FAILURE);
 					}
-					fprintf(stderr, "fail\n");
-					exit(EXIT_FAILURE);
 				}
 				case OP_AND_AND: {
 					expect_scalar(&expr.details.type, "operand of logical AND");
