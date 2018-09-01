@@ -373,14 +373,14 @@ static enum UnaryOp to_unaryop(enum TokenKind t)
 	}
 }
 
-static struct Expr unary_op_(struct Expr expr, enum TokenKind kind,
-                             struct Type type)
+static struct Expr unary_op_(const struct Expr *ref_expr, enum TokenKind kind,
+                             const struct Type *ref_type)
 {
 	struct Expr *ptr_expr1 = calloc(1, sizeof(struct Expr));
-	*ptr_expr1 = expr;
+	*ptr_expr1 = *ref_expr;
 
 	struct Expr new_expr;
-	new_expr.details.type = type;
+	new_expr.details.type = *ref_type;
 	new_expr.category = UNARY_OP_EXPR;
 	new_expr.unary_operator = to_unaryop(kind);
 	new_expr.ptr1 = ptr_expr1;
@@ -508,9 +508,10 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 					            "unary minus");
 
 					struct Expr new_expr =
-					    unary_op_(expr, kind, expr.details.type);
-					/* new_expr.details.true_type = expr.details.true_type; */
-					/* should not propagate */
+					    unary_op_(&expr, kind, &expr.details.type);
+
+					new_expr.details.true_type = expr.details.type;
+					/* once acted upon, the expression loses true_type */
 
 					return new_expr;
 				}
@@ -522,7 +523,7 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 					struct Expr expr = typecheck_expression(ptr_ps, uexpr.ptr1);
 
 					struct Expr new_expr =
-					    unary_op_(expr, opkind, expr.details.type);
+					    unary_op_(&expr, opkind, &expr.details.type);
 					if (expr.details.type.type_category == PTR_) {
 						const struct Type deref =
 						    deref_type(&expr.details.type);
@@ -546,8 +547,10 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 					struct Type *ptr_type = calloc(1, sizeof(struct Type));
 					*ptr_type = type;
 
-					struct Expr new_expr = unary_op_(
-					    expr, OP_AND, ptr_of_type_to_ptr_to_type(ptr_type));
+					const struct Type ptr_to_type =
+					    ptr_of_type_to_ptr_to_type(ptr_type);
+					struct Expr new_expr =
+					    unary_op_(&expr, OP_AND, &ptr_to_type);
 
 					return new_expr;
 				}
@@ -560,7 +563,7 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 					struct Type t2 = type;
 					if_array_convert_to_ptr_(&t2);
 
-					struct Expr new_expr = unary_op_(expr, OP_ASTERISK, t2);
+					struct Expr new_expr = unary_op_(&expr, OP_ASTERISK, &t2);
 					new_expr.details.true_type = type;
 
 					return new_expr;
