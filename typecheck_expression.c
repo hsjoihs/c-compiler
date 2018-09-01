@@ -223,7 +223,8 @@ static enum SimpleBinOp to_simplebinop(enum TokenKind t)
 	}
 }
 
-static struct Expr binary_op(const struct Expr *ref_expr, const struct Expr *ref_expr2,
+static struct Expr binary_op(const struct Expr *ref_expr,
+                             const struct Expr *ref_expr2,
                              enum ExprCategory cat, const struct Type *ref_type)
 {
 	struct Expr *ptr_expr1 = calloc(1, sizeof(struct Expr));
@@ -241,8 +242,10 @@ static struct Expr binary_op(const struct Expr *ref_expr, const struct Expr *ref
 	return new_expr;
 }
 
-static struct Expr simple_binary_op(const struct Expr *ref_expr, const struct Expr *ref_expr2,
-                                    enum TokenKind kind, const struct Type *ref_type)
+static struct Expr simple_binary_op(const struct Expr *ref_expr,
+                                    const struct Expr *ref_expr2,
+                                    enum TokenKind kind,
+                                    const struct Type *ref_type)
 {
 	struct Expr *ptr_expr1 = calloc(1, sizeof(struct Expr));
 	struct Expr *ptr_expr2 = calloc(1, sizeof(struct Expr));
@@ -261,21 +264,22 @@ static struct Expr simple_binary_op(const struct Expr *ref_expr, const struct Ex
 }
 
 static struct Expr pointer_plusorminus_int(const struct AnalyzerState *ptr_ps,
-                                           struct Expr expr, struct Expr expr2,
+                                           const struct Expr *ref_expr,
+                                           const struct Expr *ref_expr2,
                                            enum TokenKind kind)
 {
 	struct Expr *ptr_expr1 = calloc(1, sizeof(struct Expr));
 	struct Expr *ptr_expr2 = calloc(1, sizeof(struct Expr));
-	*ptr_expr1 = expr;
-	*ptr_expr2 = expr2;
+	*ptr_expr1 = *ref_expr;
+	*ptr_expr2 = *ref_expr2;
 
 	struct Expr new_expr;
-	new_expr.details = expr.details;
+	new_expr.details = ref_expr->details;
 	new_expr.category = kind == OP_PLUS ? POINTER_PLUS_INT : POINTER_MINUS_INT;
 	new_expr.ptr1 = ptr_expr1;
 	new_expr.ptr2 = ptr_expr2;
 	new_expr.ptr3 = 0;
-	const struct Type deref = deref_type(&expr.details.type);
+	const struct Type deref = deref_type(&ref_expr->details.type);
 	new_expr.size_info_for_pointer_arith = size_of(ptr_ps, &deref);
 
 	return new_expr;
@@ -293,14 +297,14 @@ static struct Expr combine_by_add(const struct AnalyzerState *ptr_ps,
 			return simple_binary_op(&expr, &expr2, OP_PLUS, &t);
 		} else if (type2.type_category == PTR_) {
 			/* swapped */
-			return pointer_plusorminus_int(ptr_ps, expr2, expr, OP_PLUS);
+			return pointer_plusorminus_int(ptr_ps, &expr2, &expr, OP_PLUS);
 		}
 
 	} else if (type1.type_category == PTR_) {
 
 		expect_type(ptr_ps, expr2.details.type, INT_TYPE(),
 		            "cannot add a pointer to a pointer");
-		return pointer_plusorminus_int(ptr_ps, expr, expr2, OP_PLUS);
+		return pointer_plusorminus_int(ptr_ps, &expr, &expr2, OP_PLUS);
 	}
 	fprintf(stderr, "fail\n");
 	exit(EXIT_FAILURE);
@@ -849,8 +853,8 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 						if (is_integral(&type2)) {
 
 							/* pointer minus int */
-							return pointer_plusorminus_int(ptr_ps, expr, expr2,
-							                               OP_MINUS);
+							return pointer_plusorminus_int(ptr_ps, &expr,
+							                               &expr2, OP_MINUS);
 						} else {
 							/* pointer minus pointer */
 
@@ -927,8 +931,7 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 					            "mismatch in operands of an "
 					            "equality/comparison operator");
 					const struct Type t = INT_TYPE();
-					return simple_binary_op(&expr, &expr2, uexpr.operator_,
-					                        &t);
+					return simple_binary_op(&expr, &expr2, uexpr.operator_, &t);
 				}
 				case OP_COMMA: {
 					return simple_binary_op(&expr, &expr2, uexpr.operator_,
