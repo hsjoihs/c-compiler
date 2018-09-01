@@ -328,14 +328,14 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 			struct TypeAndIdent param_info = *ptr_param_info;
 			const char *ident_str;
 
-			struct Type type = param_info.type;
+			const struct Type type = param_info.type;
 			ident_str = param_info.ident_str;
 
 			if (counter > 5) {
 				unsupported("7-or-more parameters");
 			}
 
-			int offset = add_local_var_to_scope(ptr_ps, type, ident_str);
+			int offset = add_local_var_to_scope(ptr_ps, &type, ident_str);
 
 			struct LocalVarInfo info;
 			info.offset = offset;

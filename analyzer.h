@@ -39,7 +39,7 @@ struct Statement parse_compound_statement(struct AnalyzerState *ptr_ps,
  * Returns the offset of the newly added variable.
  */
 int add_local_var_to_scope(struct AnalyzerState *ptr_ps,
-                           const struct Type vartype, const char *str);
+                           const struct Type *ref_vartype, const char *str);
 
 int size_of(const struct AnalyzerState *ptr_ps, const struct Type *ref_type);
 int align_of(const struct AnalyzerState *ptr_ps, const struct Type *ref_type);

@@ -17,14 +17,14 @@ static struct Expr integer_1(void)
  * Returns the offset of the newly added variable.
  */
 int add_local_var_to_scope(struct AnalyzerState *ptr_ps,
-                           const struct Type vartype, const char *str)
+                           const struct Type *ref_vartype, const char *str)
 {
 	ptr_ps->newest_offset -=
-	    size_of(ptr_ps, &vartype) < 4 ? 4 : size_of(ptr_ps, &vartype);
+	    size_of(ptr_ps, ref_vartype) < 4 ? 4 : size_of(ptr_ps, ref_vartype);
 
 	struct LocalVarInfo *ptr_varinfo = calloc(1, sizeof(struct LocalVarInfo));
 	ptr_varinfo->offset = ptr_ps->newest_offset;
-	ptr_varinfo->type = vartype;
+	ptr_varinfo->type = *ref_vartype;
 	insert(ptr_ps->scope_chain.var_table, str, ptr_varinfo);
 
 	return ptr_varinfo->offset;
@@ -348,7 +348,7 @@ static struct Expr *declare_var_and_return_initializer(
     struct Statement *ptr_statement)
 {
 	const struct Type vartype = *ref_vartype;
-	add_local_var_to_scope(ptr_ps, vartype, str);
+	add_local_var_to_scope(ptr_ps, ref_vartype, str);
 
 	struct Statement s;
 	s.category = DECLARATION_STATEMENT;
