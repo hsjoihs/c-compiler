@@ -534,9 +534,8 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 				}
 
 				case OP_AND: {
-					struct Expr expr;
-
-					expr = typecheck_expression(ptr_ps, *uexpr.ptr1);
+					const struct Expr expr =
+					    typecheck_expression(ptr_ps, *uexpr.ptr1);
 
 					struct Type type = expr.details.type;
 
