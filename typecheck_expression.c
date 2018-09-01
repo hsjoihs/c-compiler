@@ -40,14 +40,15 @@ int typecheck_constant_integral_expression(struct AnalyzerState *ptr_ps,
 	exit(EXIT_FAILURE);
 }
 
-static int is_compatible(const struct AnalyzerState *ptr_ps, struct Type t1,
-                         struct Type t2);
+static int is_compatible(const struct AnalyzerState *ptr_ps,
+                         const struct Type *ref_t1, const struct Type *ref_t2);
 
-void expect_type(const struct AnalyzerState *ptr_ps, struct Type actual_type,
-                 struct Type expected_type, const char *message)
+void expect_type(const struct AnalyzerState *ptr_ps,
+                 const struct Type actual_type, const struct Type expected_type,
+                 const char *message)
 {
 
-	if (!is_compatible(ptr_ps, actual_type, expected_type)) {
+	if (!is_compatible(ptr_ps, &actual_type, &expected_type)) {
 		fprintf(stderr, "Unmatched type: expected `");
 		debug_print_type(&expected_type);
 		fprintf(stderr, "`, but got `");
@@ -58,9 +59,12 @@ void expect_type(const struct AnalyzerState *ptr_ps, struct Type actual_type,
 	}
 }
 
-static int is_strictly_equal(const struct AnalyzerState *ptr_ps, struct Type t1,
-                             struct Type t2)
+static int is_strictly_equal(const struct AnalyzerState *ptr_ps,
+                             const struct Type *ref_t1,
+                             const struct Type *ref_t2)
 {
+	const struct Type t1 = *ref_t1;
+	const struct Type t2 = *ref_t2;
 	if (t1.type_category == INT_ && t2.type_category == INT_) {
 		return 1;
 	}
@@ -74,11 +78,11 @@ static int is_strictly_equal(const struct AnalyzerState *ptr_ps, struct Type t1,
 	}
 
 	if (t1.type_category == PTR_ && t2.type_category == PTR_) {
-		return is_strictly_equal(ptr_ps, *t1.derived_from, *t2.derived_from);
+		return is_strictly_equal(ptr_ps, t1.derived_from, t2.derived_from);
 	}
 
 	if (t1.type_category == ARRAY && t2.type_category == ARRAY) {
-		return is_strictly_equal(ptr_ps, *t1.derived_from, *t2.derived_from) &&
+		return is_strictly_equal(ptr_ps, t1.derived_from, t2.derived_from) &&
 		       (t1.array_length == t2.array_length);
 	}
 
@@ -123,15 +127,18 @@ void expect_scalar(struct Type type, const char *context)
 }
 
 static int is_compatible(const struct AnalyzerState *ptr_ps,
-                         const struct Type t1, const struct Type t2)
+                         const struct Type *ref_t1, const struct Type *ref_t2)
 {
-	if (is_strictly_equal(ptr_ps, t1, t2)) {
+	if (is_strictly_equal(ptr_ps, ref_t1, ref_t2)) {
 		return 1;
 	}
 
-	if (is_integral(&t1) && is_integral(&t2)) {
+	if (is_integral(ref_t1) && is_integral(ref_t2)) {
 		return 1;
 	}
+
+	const struct Type t1 = *ref_t1;
+	const struct Type t2 = *ref_t2;
 
 	if (t1.type_category == PTR_ && t2.type_category == PTR_) {
 		return t1.derived_from->type_category == VOID_ ||
@@ -141,15 +148,15 @@ static int is_compatible(const struct AnalyzerState *ptr_ps,
 	if (t1.type_category == PTR_ && t2.type_category == ARRAY) {
 		struct Type t3 = t2; /* copy of t2 */
 		t3.type_category = PTR_;
-		return is_compatible(ptr_ps, t1, t3);
+		return is_compatible(ptr_ps, &t1, &t3);
 	}
 
 	if (t1.type_category == ARRAY && t2.type_category == PTR_) {
-		return is_compatible(ptr_ps, t2, t1);
+		return is_compatible(ptr_ps, &t2, &t1);
 	}
 
 	if (t1.type_category == FN && t2.type_category == FN) {
-		if (!is_strictly_equal(ptr_ps, *t1.derived_from, *t2.derived_from)) {
+		if (!is_strictly_equal(ptr_ps, t1.derived_from, t2.derived_from)) {
 			return 0;
 		}
 
@@ -165,7 +172,7 @@ static int is_compatible(const struct AnalyzerState *ptr_ps,
 			const struct TypeAndIdent *ptr_ti1 = t1.param_infos.vector[i];
 			const struct TypeAndIdent *ptr_ti2 = t2.param_infos.vector[i];
 
-			if (!is_strictly_equal(ptr_ps, ptr_ti1->type, ptr_ti2->type)) {
+			if (!is_strictly_equal(ptr_ps, &ptr_ti1->type, &ptr_ti2->type)) {
 				return 0;
 			}
 		}
