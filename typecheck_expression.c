@@ -125,6 +125,19 @@ void expect_scalar(const struct Type *ref_type, const char *context)
 	}
 }
 
+void expect_integral(const struct Type actual_type, const char *message)
+{
+
+	if (!is_integral(&actual_type)) {
+		fprintf(stderr, "Unmatched type: expected an integral type, but got a "
+		                "non-integral type `");
+		debug_print_type(&actual_type);
+		fprintf(stderr, "`.\n");
+		fprintf(stderr, "context: %s\n", message);
+		exit(EXIT_FAILURE);
+	}
+}
+
 static int is_compatible(const struct AnalyzerState *ptr_ps,
                          const struct Type *ref_t1, const struct Type *ref_t2)
 {
@@ -503,9 +516,10 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 				case OP_MINUS: {
 					enum TokenKind kind = uexpr.operator_;
 					struct Expr expr = typecheck_expression(ptr_ps, uexpr.ptr1);
-					expect_type(ptr_ps, expr.details.type, INT_TYPE(),
-					            "operand of logical not, bitnot, unary plus or "
-					            "unary minus");
+					expect_integral(
+					    expr.details.type,
+					    "operand of logical not, bitnot, unary plus or "
+					    "unary minus");
 
 					struct Expr new_expr =
 					    unary_op_(&expr, kind, &expr.details.type);
@@ -766,8 +780,8 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 						            "mismatch in assignment operator");
 					} else if ((uexpr.operator_ == OP_PLUS_EQ ||
 					            uexpr.operator_ == OP_MINUS_EQ)) {
-						expect_type(ptr_ps, expr2.details.type, INT_TYPE(),
-						            "right side of += or -= to a pointer");
+						expect_integral(expr2.details.type,
+						                "right side of += or -= to a pointer");
 					} else {
 						fprintf(stderr, "invalid compound assignment operator "
 						                "used on a pointer\n");
@@ -827,8 +841,9 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 							exit(EXIT_FAILURE);
 						}
 					} else if (type1.type_category == PTR_) {
-						expect_type(ptr_ps, expr2.details.type, INT_TYPE(),
-						            "cannot add a pointer to a pointer");
+						expect_integral(
+						    expr2.details.type,
+						    "cannot add a pointer/struct to a pointer");
 						return pointer_plusorminus_int(ptr_ps, &expr, &expr2,
 						                               OP_PLUS);
 					} else {
@@ -912,10 +927,10 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 				case OP_ASTERISK:
 				case OP_SLASH:
 				case OP_PERCENT: {
-					expect_type(ptr_ps, expr.details.type, INT_TYPE(),
-					            "left operand of an operator");
-					expect_type(ptr_ps, expr2.details.type, INT_TYPE(),
-					            "right operand of an operator");
+					expect_integral(expr.details.type,
+					                "left operand of an operator");
+					expect_integral(expr2.details.type,
+					                "right operand of an operator");
 					return simple_binary_op(&expr, &expr2, uexpr.operator_,
 					                        &expr2.details.type);
 				}
