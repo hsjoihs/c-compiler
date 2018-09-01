@@ -55,4 +55,4 @@ enum SystemVAbiClass { INTEGER_CLASS, MEMORY_CLASS };
 enum SystemVAbiClass system_v_abi_class_of(const struct AnalyzerState *ptr_ps,
                                            const struct Type *ref_type);
 
-void expect_scalar(struct Type type, const char *context);
+void expect_scalar(const struct Type *ref_type, const char *context);
