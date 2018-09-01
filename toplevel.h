@@ -33,5 +33,5 @@ struct Toplevel {
 	int is_extern_global_var;
 };
 
-void generate(const struct Vector /*<Toplevel>*/ vec);
+void generate(const struct Vector /*<Toplevel>*/ *ref_vec);
 struct Vector /*<Toplevel>*/ parse(const struct Token *tokvec);

@@ -457,7 +457,7 @@ static void print_toplevel_definition(struct PrinterState *ptr_prs,
 	}
 }
 
-void generate(const struct Vector /*<Toplevel>*/ vec)
+void generate(const struct Vector /*<Toplevel>*/ *ref_vec)
 {
 	struct PrinterState prs;
 	prs.final_label_name = 1;
@@ -466,8 +466,8 @@ void generate(const struct Vector /*<Toplevel>*/ vec)
 	prs.pool_largest_id = 0;
 	prs.is_inside_switch = 0;
 
-	for (int i = 0; i < vec.length; i++) {
-		const struct Toplevel *ptr = vec.vector[i];
+	for (int i = 0; i < ref_vec->length; i++) {
+		const struct Toplevel *ptr = ref_vec->vector[i];
 
 		print_toplevel_definition(&prs, ptr);
 	}

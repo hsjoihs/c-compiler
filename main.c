@@ -30,9 +30,9 @@ int main(int argc, char const **argv)
 
 	++tokvec; /* skip the dummy token BEGINNING */
 
-	struct Vector /*<Toplevel>*/ vec = parse(tokvec);
+	const struct Vector /*<Toplevel>*/ vec = parse(tokvec);
 
-	generate(vec);
+	generate(&vec);
 
 	return 0;
 }

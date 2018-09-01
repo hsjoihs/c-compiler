@@ -63,8 +63,9 @@ struct Statement parse_labeled_statement(struct AnalyzerState *ptr_ps,
 }
 
 static struct Expr *declare_var_and_return_initializer(
-    struct AnalyzerState *ptr_ps, const struct Type vartype, const char *str,
-    const struct UntypedExpr *ptr_uexpr, struct Statement *ptr_statement);
+    struct AnalyzerState *ptr_ps, const struct Type *ref_vartype,
+    const char *str, const struct UntypedExpr *ptr_uexpr,
+    struct Statement *ptr_statement);
 
 struct Statement parse_statement(struct AnalyzerState *ptr_ps,
                                  const struct Token **ptr_tokvec)
@@ -275,10 +276,11 @@ struct Statement parse_statement(struct AnalyzerState *ptr_ps,
 		} else if (can_start_a_type(tokvec)) {
 			const char *str;
 			struct UntypedExpr *ptr_uexpr;
-			struct Type vartype = parse_declaration(&tokvec, &str, &ptr_uexpr);
+			const struct Type vartype =
+			    parse_declaration(&tokvec, &str, &ptr_uexpr);
 
 			struct Expr *ptr_expr = declare_var_and_return_initializer(
-			    ptr_ps, vartype, str, ptr_uexpr, &statement);
+			    ptr_ps, &vartype, str, ptr_uexpr, &statement);
 
 			if (ptr_expr) {
 				expr1 = *ptr_expr;
@@ -341,9 +343,11 @@ struct Statement parse_statement(struct AnalyzerState *ptr_ps,
 }
 
 static struct Expr *declare_var_and_return_initializer(
-    struct AnalyzerState *ptr_ps, const struct Type vartype, const char *str,
-    const struct UntypedExpr *ptr_uexpr, struct Statement *ptr_statement)
+    struct AnalyzerState *ptr_ps, const struct Type *ref_vartype,
+    const char *str, const struct UntypedExpr *ptr_uexpr,
+    struct Statement *ptr_statement)
 {
+	const struct Type vartype = *ref_vartype;
 	add_local_var_to_scope(ptr_ps, vartype, str);
 
 	struct Statement s;
@@ -417,11 +421,10 @@ struct Statement parse_compound_statement(struct AnalyzerState *ptr_ps,
 					continue;
 				}
 
-				struct Type vartype;
-
 				const char *str;
 				struct UntypedExpr *ptr_uexpr;
-				vartype = parse_declaration(&tokvec, &str, &ptr_uexpr);
+				const struct Type vartype =
+				    parse_declaration(&tokvec, &str, &ptr_uexpr);
 
 				/* while function prototypes are also allowed here in C, I will
 				 * not implement it here */
@@ -431,7 +434,7 @@ struct Statement parse_compound_statement(struct AnalyzerState *ptr_ps,
 				}
 
 				struct Expr *ptr_expr = declare_var_and_return_initializer(
-				    ptr_ps, vartype, str, ptr_uexpr, &statement);
+				    ptr_ps, &vartype, str, ptr_uexpr, &statement);
 
 				if (ptr_expr) {
 					struct Statement assignment;
