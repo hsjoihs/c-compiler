@@ -18,7 +18,7 @@ int size_of(const struct AnalyzerState *ptr_ps, struct Type type)
 			exit(EXIT_FAILURE);
 		case STRUCT_:
 			if ((0)) { /* is local struct */
-				unsupported("local struct");
+				unsupported("struct type declared locally");
 			}
 			const char *tag = type.s.struct_tag;
 			const struct StructInternalCompleteInfo *ptr_info =
@@ -55,7 +55,7 @@ int align_of(const struct AnalyzerState *ptr_ps, struct Type type)
 			exit(EXIT_FAILURE);
 		case STRUCT_:
 			if ((0)) { /* is local struct */
-				unsupported("local struct");
+				unsupported("struct type declared locally");
 			}
 			const char *tag = type.s.struct_tag;
 			const struct StructInternalCompleteInfo *ptr_info =
@@ -94,7 +94,7 @@ enum SystemVAbiClass system_v_abi_class_of(const struct AnalyzerState *ptr_ps,
 			exit(EXIT_FAILURE);
 		case STRUCT_:
 			if ((0)) { /* is local struct */
-				unsupported("local struct");
+				unsupported("struct type declared locally");
 			}
 			const char *tag = type.s.struct_tag;
 			const struct StructInternalCompleteInfo *ptr_info =
@@ -313,7 +313,7 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 		def.func.abi_class = abi_class;
 		def.func.ret_struct_size = size_of(ptr_ps, ret_type);
 		if (abi_class == MEMORY_CLASS) {
-			unsupported("MEMORY_CLASS");
+			unsupported("return type is a struct that has MEMORY_CLASS");
 		}
 	}
 

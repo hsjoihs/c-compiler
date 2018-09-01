@@ -83,7 +83,7 @@ static int is_strictly_equal(const struct AnalyzerState *ptr_ps, struct Type t1,
 
 	if (t1.type_category == STRUCT_ && t2.type_category == STRUCT_) {
 		if ((0)) { /* both are local */
-			unsupported("locally declared struct");
+			unsupported("struct type declared locally");
 		}
 		return strcmp(t1.s.struct_tag, t2.s.struct_tag) == 0 &&
 		       lookup(ptr_ps->global_struct_tag_map, t1.s.struct_tag);
@@ -91,7 +91,7 @@ static int is_strictly_equal(const struct AnalyzerState *ptr_ps, struct Type t1,
 
 	if (t1.type_category == ENUM_ && t2.type_category == ENUM_) {
 		if ((0)) { /* both are local */
-			unsupported("locally declared struct");
+			unsupported("enum type declared locally");
 		}
 		return strcmp(t1.e.enum_tag, t2.e.enum_tag) == 0;
 	}

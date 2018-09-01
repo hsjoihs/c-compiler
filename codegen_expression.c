@@ -455,7 +455,7 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 						    get_reg_name_from_arg_pos_8byte(counter));
 						break;
 					default:
-						unsupported("Unsupported width");
+						unsupported("Unsupported width in function argument");
 				}
 			}
 
