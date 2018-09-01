@@ -62,17 +62,6 @@ struct Statement parse_labeled_statement(struct AnalyzerState *ptr_ps,
 	return s;
 }
 
-static void expect_scalar(struct Type type, const char *context)
-{
-	if (!is_scalar(type)) {
-		fprintf(stderr,
-		        "Expected a scalar type, but got a non-scalar type.\n"
-		        "context: %s\n",
-		        context);
-		exit(EXIT_FAILURE);
-	}
-}
-
 static struct Expr *declare_var_and_return_initializer(
     struct AnalyzerState *ptr_ps, const struct Type vartype, const char *str,
     const struct UntypedExpr *ptr_uexpr, struct Statement *ptr_statement);

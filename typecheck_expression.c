@@ -105,9 +105,20 @@ static int is_integral(const struct Type *ref_t1)
 	       ref_t1->type_category == ENUM_;
 }
 
-int is_scalar(struct Type t1)
+static int is_scalar(struct Type t1)
 {
 	return t1.type_category == PTR_ || is_integral(&t1);
+}
+
+void expect_scalar(struct Type type, const char *context)
+{
+	if (!is_scalar(type)) {
+		fprintf(stderr,
+		        "Expected a scalar type, but got a non-scalar type.\n"
+		        "context: %s\n",
+		        context);
+		exit(EXIT_FAILURE);
+	}
 }
 
 static int is_compatible(const struct AnalyzerState *ptr_ps,
