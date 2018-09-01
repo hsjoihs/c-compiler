@@ -99,25 +99,25 @@ static int is_strictly_equal(const struct AnalyzerState *ptr_ps, struct Type t1,
 	return 0;
 }
 
-static int is_integral(struct Type t1)
+static int is_integral(const struct Type *ref_t1)
 {
-	return t1.type_category == INT_ || t1.type_category == CHAR_ ||
-	       t1.type_category == ENUM_;
+	return ref_t1->type_category == INT_ || ref_t1->type_category == CHAR_ ||
+	       ref_t1->type_category == ENUM_;
 }
 
 int is_scalar(struct Type t1)
 {
-	return t1.type_category == PTR_ || is_integral(t1);
+	return t1.type_category == PTR_ || is_integral(&t1);
 }
 
-static int is_compatible(const struct AnalyzerState *ptr_ps, struct Type t1,
-                         struct Type t2)
+static int is_compatible(const struct AnalyzerState *ptr_ps,
+                         const struct Type t1, const struct Type t2)
 {
 	if (is_strictly_equal(ptr_ps, t1, t2)) {
 		return 1;
 	}
 
-	if (is_integral(t1) && is_integral(t2)) {
+	if (is_integral(&t1) && is_integral(&t2)) {
 		return 1;
 	}
 
@@ -127,8 +127,9 @@ static int is_compatible(const struct AnalyzerState *ptr_ps, struct Type t1,
 	}
 
 	if (t1.type_category == PTR_ && t2.type_category == ARRAY) {
-		t2.type_category = PTR_; /* t2 is copied; no problem */
-		return is_compatible(ptr_ps, t1, t2);
+		struct Type t3 = t2; /* copy of t2 */
+		t3.type_category = PTR_;
+		return is_compatible(ptr_ps, t1, t3);
 	}
 
 	if (t1.type_category == ARRAY && t2.type_category == PTR_) {
@@ -268,8 +269,8 @@ static struct Expr combine_by_add(const struct AnalyzerState *ptr_ps,
 	struct Type type1 = expr.details.type;
 	struct Type type2 = expr2.details.type;
 
-	if (is_integral(type1)) {
-		if (is_integral(type2)) {
+	if (is_integral(&type1)) {
+		if (is_integral(&type2)) {
 			return simple_binary_op(expr, expr2, OP_PLUS, INT_TYPE());
 		} else if (type2.type_category == PTR_) {
 			/* swapped */
@@ -816,8 +817,8 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 					struct Type type1 = expr.details.type;
 					struct Type type2 = expr2.details.type;
 
-					if (is_integral(type1)) {
-						if (is_integral(type2)) {
+					if (is_integral(&type1)) {
+						if (is_integral(&type2)) {
 							return simple_binary_op(expr, expr2, OP_MINUS,
 							                        INT_TYPE());
 						} else if (type2.type_category == PTR_) {
@@ -828,7 +829,7 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 						}
 
 					} else if (type1.type_category == PTR_) {
-						if (is_integral(type2)) {
+						if (is_integral(&type2)) {
 
 							/* pointer minus int */
 							return pointer_plusorminus_int(ptr_ps, expr, expr2,
