@@ -16,6 +16,9 @@ run_test2() {
 	if [ $res -ne $3 ]; then { echo "got:" $res; echo "expected:" $3; echo -e "\033[31mFAIL\033[m, at test case" $1: $2; exit 1; }; else echo -e "\033[32mPASS\033[m"; fi
 }
 
+
+run_test 310 'struct A{int a;}; int main(){struct A arr[5]; void *p = arr; int *q = p; q[3] = 174; return arr[3].a;}' 174
+
 run_test 307 'struct A{int a; int *b; int c;}; struct B{char d; struct A e;}; int main(){struct A a; a.a = 174; struct B b; b.e = a; return b.e.a;}' 174
 run_test 308 'struct A{int a; int *b; int c;}; struct B{char d; struct A e;}; int main(){struct A a; a.a = 174; struct B b; b.e = a; return (b.e).a;}' 174
 run_test 309 'struct A{int a; int *b; int c;}; struct B{char d; struct A e;}; int main(){struct A a; a.a = 174; struct B b; b.e.a = 174; a = b.e; return a.a;}' 174
