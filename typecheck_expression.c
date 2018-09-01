@@ -223,16 +223,16 @@ static enum SimpleBinOp to_simplebinop(enum TokenKind t)
 	}
 }
 
-static struct Expr binary_op(struct Expr expr, struct Expr expr2,
-                             enum ExprCategory cat, struct Type type)
+static struct Expr binary_op(const struct Expr *ref_expr, const struct Expr *ref_expr2,
+                             enum ExprCategory cat, const struct Type *ref_type)
 {
 	struct Expr *ptr_expr1 = calloc(1, sizeof(struct Expr));
 	struct Expr *ptr_expr2 = calloc(1, sizeof(struct Expr));
-	*ptr_expr1 = expr;
-	*ptr_expr2 = expr2;
+	*ptr_expr1 = *ref_expr;
+	*ptr_expr2 = *ref_expr2;
 
 	struct Expr new_expr;
-	new_expr.details.type = type;
+	new_expr.details.type = *ref_type;
 	new_expr.category = cat;
 	new_expr.ptr1 = ptr_expr1;
 	new_expr.ptr2 = ptr_expr2;
@@ -241,16 +241,16 @@ static struct Expr binary_op(struct Expr expr, struct Expr expr2,
 	return new_expr;
 }
 
-static struct Expr simple_binary_op(struct Expr expr, struct Expr expr2,
-                                    enum TokenKind kind, struct Type type)
+static struct Expr simple_binary_op(const struct Expr *ref_expr, const struct Expr *ref_expr2,
+                                    enum TokenKind kind, const struct Type *ref_type)
 {
 	struct Expr *ptr_expr1 = calloc(1, sizeof(struct Expr));
 	struct Expr *ptr_expr2 = calloc(1, sizeof(struct Expr));
-	*ptr_expr1 = expr;
-	*ptr_expr2 = expr2;
+	*ptr_expr1 = *ref_expr;
+	*ptr_expr2 = *ref_expr2;
 
 	struct Expr new_expr;
-	new_expr.details.type = type;
+	new_expr.details.type = *ref_type;
 	new_expr.category = SIMPLE_BINARY_EXPR;
 	new_expr.simple_binary_operator = to_simplebinop(kind);
 	new_expr.ptr1 = ptr_expr1;
@@ -289,7 +289,8 @@ static struct Expr combine_by_add(const struct AnalyzerState *ptr_ps,
 
 	if (is_integral(&type1)) {
 		if (is_integral(&type2)) {
-			return simple_binary_op(expr, expr2, OP_PLUS, INT_TYPE());
+			const struct Type t = INT_TYPE();
+			return simple_binary_op(&expr, &expr2, OP_PLUS, &t);
 		} else if (type2.type_category == PTR_) {
 			/* swapped */
 			return pointer_plusorminus_int(ptr_ps, expr2, expr, OP_PLUS);
@@ -834,8 +835,9 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 
 					if (is_integral(&type1)) {
 						if (is_integral(&type2)) {
-							return simple_binary_op(expr, expr2, OP_MINUS,
-							                        INT_TYPE());
+							const struct Type t = INT_TYPE();
+							return simple_binary_op(&expr, &expr2, OP_MINUS,
+							                        &t);
 						} else if (type2.type_category == PTR_) {
 
 							fprintf(stderr, "cannot subtract a pointer "
@@ -880,12 +882,14 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 					expect_scalar(&expr.details.type, "operand of logical AND");
 					expect_scalar(&expr2.details.type,
 					              "operand of logical AND");
-					return binary_op(expr, expr2, LOGICAL_AND_EXPR, INT_TYPE());
+					const struct Type t = INT_TYPE();
+					return binary_op(&expr, &expr2, LOGICAL_AND_EXPR, &t);
 				}
 				case OP_OR_OR: {
 					expect_scalar(&expr.details.type, "operand of logical OR");
 					expect_scalar(&expr2.details.type, "operand of logical OR");
-					return binary_op(expr, expr2, LOGICAL_OR_EXPR, INT_TYPE());
+					const struct Type t = INT_TYPE();
+					return binary_op(&expr, &expr2, LOGICAL_OR_EXPR, &t);
 				}
 				case OP_OR:
 				case OP_AND:
@@ -899,8 +903,8 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 					            "left operand of an operator");
 					expect_type(ptr_ps, expr2.details.type, INT_TYPE(),
 					            "right operand of an operator");
-					return simple_binary_op(expr, expr2, uexpr.operator_,
-					                        expr2.details.type);
+					return simple_binary_op(&expr, &expr2, uexpr.operator_,
+					                        &expr2.details.type);
 				}
 				case OP_GT:
 				case OP_GT_EQ:
@@ -922,12 +926,13 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 					expect_type(ptr_ps, expr.details.type, expr2.details.type,
 					            "mismatch in operands of an "
 					            "equality/comparison operator");
-					return simple_binary_op(expr, expr2, uexpr.operator_,
-					                        INT_TYPE());
+					const struct Type t = INT_TYPE();
+					return simple_binary_op(&expr, &expr2, uexpr.operator_,
+					                        &t);
 				}
 				case OP_COMMA: {
-					return simple_binary_op(expr, expr2, uexpr.operator_,
-					                        expr2.details.type);
+					return simple_binary_op(&expr, &expr2, uexpr.operator_,
+					                        &expr2.details.type);
 				}
 				default: {
 					fprintf(stderr,
