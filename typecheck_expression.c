@@ -612,6 +612,7 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 			expr.args = init_vector();
 
 			if (ret_type.type_category == STRUCT_) {
+				expr.size_info_for_struct_assign = size_of(ptr_ps, &ret_type);
 				char *str = calloc(20, sizeof(char));
 				sprintf(str, "@anon%d", -ptr_ps->newest_offset);
 

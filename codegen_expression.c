@@ -112,7 +112,11 @@ void print_address_of_lvalue(struct PrinterState *ptr_prs,
 	const struct Expr expr = *ref_expr;
 	switch (expr.category) {
 		case FUNCCALL_EXPR_RETURNING_INTEGER_CLASS: {
-			unsupported("FUNCCALL_EXPR_RETURNING_STRUCT");
+			int size = expr.size_info_for_struct_assign;
+			gen_call_and_assign_small_struct_to_local(
+			    expr.global_var_name, expr.local_var_offset, size);
+			gen_push_address_of_local(expr.local_var_offset);
+			return;
 		}
 		case FUNCCALL_EXPR_RETURNING_MEMORY_CLASS: {
 			unsupported("FUNCCALL_EXPR_RETURNING_STRUCT");
