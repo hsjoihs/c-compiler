@@ -282,7 +282,6 @@ void gen_call_and_assign_small_struct_to_local(const char *fname, int offset,
 			break;
 		default:
 			assert0("forbidden struct size as a funccall" && 0);
-			break;
 	}
 	gen_discard();
 }
@@ -557,7 +556,6 @@ void gen_epilogue_returning_small_struct(int size, int label)
 			break;
 		default:
 			assert0("hbjnklsdgf" && 0);
-			break;
 	}
 
 	printf("  leave\n"

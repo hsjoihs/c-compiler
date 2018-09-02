@@ -49,7 +49,6 @@ static void print_simple_binary_op(enum SimpleBinOp kind,
 			default:
 				simple_error("unexpected pointer in binary operation\n");
 		}
-		return;
 	}
 	switch (kind) {
 		case SIMPLE_BIN_OP_PLUS:
