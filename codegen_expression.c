@@ -111,6 +111,9 @@ void print_address_of_lvalue(struct PrinterState *ptr_prs,
 {
 	const struct Expr expr = *ref_expr;
 	switch (expr.category) {
+		case FUNCCALL_EXPR_RETURNING_STRUCT: {
+			unsupported("FUNCCALL_EXPR_RETURNING_STRUCT");
+		}
 		case STRUCT_AND_OFFSET: {
 			print_address_of_lvalue(ptr_prs, expr.ptr1,
 			                        "struct whose member is to be accessed");
@@ -160,6 +163,9 @@ static void print_expression_as_lvalue(struct PrinterState *ptr_prs,
 	const struct Expr expr = *ref_expr;
 	print_address_of_lvalue(ptr_prs, &expr, "as lvalue");
 	switch (expr.category) {
+		case FUNCCALL_EXPR_RETURNING_STRUCT: {
+			unsupported("FUNCCALL_EXPR_RETURNING_STRUCT");
+		}
 		case STRUCT_AND_OFFSET: {
 			struct Type type = expr.details.type;
 			gen_peek_deref_push_nbyte(
@@ -204,6 +210,9 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 {
 	const struct Expr expr = *ref_expr;
 	switch (expr.category) {
+		case FUNCCALL_EXPR_RETURNING_STRUCT: {
+			unsupported("FUNCCALL_EXPR_RETURNING_STRUCT");
+		}
 		case STRUCT_ASSIGNMENT_EXPR: {
 			print_address_of_lvalue(ptr_prs, expr.ptr1,
 			                        "left hand of struct assignment");
