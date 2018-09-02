@@ -259,6 +259,33 @@ void gen_call(const char *fname)
 	printf("  addq (%%rsp), %%rsp\n");
 }
 
+void gen_call_and_assign_small_struct_to_local(const char *fname, int offset,
+                                               int size)
+{
+	printf("//gen_call_and_assign_small_struct_to_local(%s, %d, %d)\n", fname,
+	       offset, size);
+	gen_call(fname);
+	switch (size) {
+		case 16:
+			printf("  movq %%rax, %d(%%rbp)\n", offset);
+			printf("  movq %%rdx, %d(%%rbp)\n", offset + 8);
+			break;
+		case 12:
+			printf("  movq %%rax, %d(%%rbp)\n", offset);
+			printf("  movl %%edx, %d(%%rbp)\n", offset + 8);
+			break;
+		case 8:
+			printf("  movq %%rax, %d(%%rbp)\n", offset);
+			break;
+		case 4:
+			printf("  movl %%eax, %d(%%rbp)\n", offset);
+			break;
+		default:
+			assert0("forbidden struct size as a funccall" && 0);
+			break;
+	}
+}
+
 void gen_pop_to_reg_4byte(const char *str)
 {
 	printf("//gen_pop_to_reg_4byte(%s)\n", str);

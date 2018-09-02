@@ -95,29 +95,15 @@ int main()
 	gen_write_to_local(-4);
 	gen_discard();
 
-	gen_call("foo");
-	puts("  movq %rax, -12(%rbp)\n"
-	     "  leaq -12(%rbp), %rdx\n"
-	     "  movq %rdx, (%rsp)\n");
-
-	puts("  movq (%rsp), %rdx\n"
-	     "  movl (%rdx), %eax\n"
+	gen_call_and_assign_small_struct_to_local("foo", -12, 8);
+	puts("  movl -12(%rbp), %eax\n"
 	     "  addl %eax, -4(%rbp)\n"
 	     "  addq $8, %rsp\n");
 
-	puts("  movl $0, %eax\n"
-	     "  call " PREFIX "bar\n"
-	     "  subq $8, %rsp\n"
-	     "  movq %rax, %rcx\n"
-	     "  movl %edx, %eax\n"
-	     "  movq %rcx, -24(%rbp)\n"
-	     "  movl %eax, -16(%rbp)\n"
-	     "  leaq -24(%rbp), %rdx\n"
-	     "  movq %rdx, (%rsp)\n"
-
-	);
-	puts("  movq (%rsp), %rdx\n"
-	     "  movl (%rdx), %eax\n"
+	gen_call_and_assign_small_struct_to_local("bar", -24, 12);
+	
+	puts(
+	     "  movl -24(%rbp), %eax\n"
 	     "  addl %eax, -4(%rbp)\n"
 	     "  addq $8, %rsp\n"
 	     "  leaq -80(%rbp), %rax\n"
