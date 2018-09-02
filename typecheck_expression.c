@@ -631,17 +631,13 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 				int offset = add_local_var_to_scope(ptr_ps, &ret_type, str);
 
 				expr.category = FUNCCALL_EXPR_RETURNING_STRUCT;
-				expr.details.type = ret_type;
-				expr.global_var_name = ident_str;
 				expr.local_var_offset = offset;
-				return expr;
-
 			} else {
 				expr.category = FUNCCALL_EXPR;
-				expr.details.type = ret_type;
-				expr.global_var_name = ident_str;
-				return expr;
 			}
+			expr.details.type = ret_type;
+			expr.global_var_name = ident_str;
+			return expr;
 		}
 		case POSTFIX_EXPR: {
 			struct Expr expr = typecheck_expression(ptr_ps, uexpr.ptr1);
