@@ -71,6 +71,7 @@ void gen_epilogue_returning_small_struct(int size, int label);
 void gen_call(const char *fname);
 void gen_call_and_assign_small_struct_to_local(const char *fname, int offset,
                                                int size);
+void gen_logical_not_of_pointer(void);
 
 #ifdef OSX
 #define PREFIX "_"

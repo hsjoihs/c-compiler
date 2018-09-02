@@ -954,3 +954,12 @@ void gen_copy_struct_and_discard(int size)
 	gen_discard();
 	gen_discard();
 }
+
+void gen_logical_not_of_pointer(void)
+{
+	printf("//gen_logical_not_of_pointer()\n");
+	puts("  cmpq $0, (%rsp)\n"
+	     "  sete %al\n"
+	     "  movzbl %al, %eax\n"
+	     "  movl %eax, (%rsp)");
+}
