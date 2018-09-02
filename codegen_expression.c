@@ -107,12 +107,13 @@ static void print_simple_binary_op(enum SimpleBinOp kind,
 }
 
 void print_address_of_lvalue(struct PrinterState *ptr_prs,
-                             const struct Expr *ref_expr)
+                             const struct Expr *ref_expr, const char *msg)
 {
 	const struct Expr expr = *ref_expr;
 	switch (expr.category) {
 		case STRUCT_AND_OFFSET: {
-			print_address_of_lvalue(ptr_prs, expr.ptr1);
+			print_address_of_lvalue(ptr_prs, expr.ptr1,
+			                        "struct whose member is to be accessed");
 			int offset = expr.struct_offset;
 			gen_push_int(offset);
 			gen_cltq();
@@ -139,7 +140,11 @@ void print_address_of_lvalue(struct PrinterState *ptr_prs,
 					simple_error("the only unary operator that can create "
 					             "lvalue is `*`\n");
 			}
+		case VOID_EXPR:
+			fprintf(stderr, "context: %s\n", msg);
+			simple_error("doesn't seem like an lvalue; it is a void expr.\n");
 		default:
+			fprintf(stderr, "context: %s\n", msg);
 			simple_error("doesn't seem like an lvalue\n");
 	}
 }
@@ -153,7 +158,7 @@ static void print_expression_as_lvalue(struct PrinterState *ptr_prs,
                                        const struct Expr *ref_expr)
 {
 	const struct Expr expr = *ref_expr;
-	print_address_of_lvalue(ptr_prs, &expr);
+	print_address_of_lvalue(ptr_prs, &expr, "as lvalue");
 	switch (expr.category) {
 		case STRUCT_AND_OFFSET: {
 			struct Type type = expr.details.type;
@@ -200,8 +205,10 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 	const struct Expr expr = *ref_expr;
 	switch (expr.category) {
 		case STRUCT_ASSIGNMENT_EXPR: {
-			print_address_of_lvalue(ptr_prs, expr.ptr1);
-			print_address_of_lvalue(ptr_prs, expr.ptr2);
+			print_address_of_lvalue(ptr_prs, expr.ptr1,
+			                        "left hand of struct assignment");
+			print_address_of_lvalue(ptr_prs, expr.ptr2,
+			                        "right hand of struct assignment");
 			int size = expr.size_info_for_struct_assign;
 			gen_copy_struct_and_discard(size);
 			gen_push_int(143253); /* random garbage */
@@ -392,7 +399,9 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 					    true_type.type_category == ARRAY) {
 						print_expression(ptr_prs, expr.ptr1);
 					} else {
-						print_address_of_lvalue(ptr_prs, expr.ptr1);
+						print_address_of_lvalue(
+						    ptr_prs, expr.ptr1,
+						    "address requested by & operator");
 					}
 					return;
 				}

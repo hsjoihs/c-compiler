@@ -15,4 +15,4 @@ void print_expression(struct PrinterState *ptr_prs,
                       const struct Expr *ref_expr);
 
 void print_address_of_lvalue(struct PrinterState *ptr_prs,
-                             const struct Expr *ref_expr);
+                             const struct Expr *ref_expr, const char *msg);
