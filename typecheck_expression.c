@@ -44,15 +44,15 @@ static int is_compatible(const struct AnalyzerState *ptr_ps,
                          const struct Type *ref_t1, const struct Type *ref_t2);
 
 void expect_type(const struct AnalyzerState *ptr_ps,
-                 const struct Type actual_type, const struct Type expected_type,
-                 const char *message)
+                 const struct Type *ref_actual_type,
+                 const struct Type *ref_expected_type, const char *message)
 {
 
-	if (!is_compatible(ptr_ps, &actual_type, &expected_type)) {
+	if (!is_compatible(ptr_ps, ref_actual_type, ref_expected_type)) {
 		fprintf(stderr, "Unmatched type: expected `");
-		debug_print_type(&expected_type);
+		debug_print_type(ref_expected_type);
 		fprintf(stderr, "`, but got `");
-		debug_print_type(&actual_type);
+		debug_print_type(ref_actual_type);
 		fprintf(stderr, "`.\n");
 		fprintf(stderr, "context: %s\n", message);
 		exit(EXIT_FAILURE);
@@ -715,7 +715,7 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 			struct Expr true_branch = typecheck_expression(ptr_ps, uexpr.ptr2);
 			struct Expr false_branch = typecheck_expression(ptr_ps, uexpr.ptr3);
 			expect_type(
-			    ptr_ps, false_branch.details.type, true_branch.details.type,
+			    ptr_ps, &false_branch.details.type, &true_branch.details.type,
 			    "mismatch of type in the false branch and the true branch");
 			struct Expr *ptr_expr1 = calloc(1, sizeof(struct Expr));
 			struct Expr *ptr_expr2 = calloc(1, sizeof(struct Expr));
@@ -748,7 +748,7 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 						                "used on a struct\n");
 						exit(EXIT_FAILURE);
 					}
-					expect_type(ptr_ps, expr.details.type, expr2.details.type,
+					expect_type(ptr_ps, &expr.details.type, &expr2.details.type,
 					            "mismatch in assignment operator");
 
 					struct Expr *ptr_expr1 = calloc(1, sizeof(struct Expr));
@@ -775,8 +775,8 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 							expr2.category = NULLPTR;
 							expr2.details.type = expr.details.type;
 						}
-						expect_type(ptr_ps, expr.details.type,
-						            expr2.details.type,
+						expect_type(ptr_ps, &expr.details.type,
+						            &expr2.details.type,
 						            "mismatch in assignment operator");
 					} else if ((uexpr.operator_ == OP_PLUS_EQ ||
 					            uexpr.operator_ == OP_MINUS_EQ)) {
@@ -788,7 +788,7 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 						exit(EXIT_FAILURE);
 					}
 				} else {
-					expect_type(ptr_ps, expr.details.type, expr2.details.type,
+					expect_type(ptr_ps, &expr.details.type, &expr2.details.type,
 					            "mismatch in assignment operator");
 				}
 
@@ -951,7 +951,7 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 						expr.details.type = expr2.details.type;
 					}
 
-					expect_type(ptr_ps, expr.details.type, expr2.details.type,
+					expect_type(ptr_ps, &expr.details.type, &expr2.details.type,
 					            "mismatch in operands of an "
 					            "equality/comparison operator");
 					const struct Type t = INT_TYPE();

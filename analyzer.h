@@ -44,8 +44,9 @@ int add_local_var_to_scope(struct AnalyzerState *ptr_ps,
 int size_of(const struct AnalyzerState *ptr_ps, const struct Type *ref_type);
 int align_of(const struct AnalyzerState *ptr_ps, const struct Type *ref_type);
 
-void expect_type(const struct AnalyzerState *ptr_ps, struct Type actual_type,
-                 struct Type expected_type, const char *message);
+void expect_type(const struct AnalyzerState *ptr_ps,
+                 const struct Type *ref_actual_type,
+                 const struct Type *ref_expected_type, const char *message);
 
 int typecheck_constant_integral_expression(struct AnalyzerState *ptr_ps,
                                            const struct UntypedExpr *ptr_uexpr,

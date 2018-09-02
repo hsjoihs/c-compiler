@@ -288,7 +288,7 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 	if (!ptr_old_func_info) {
 		insert(ptr_ps->func_info_map, declarator_name, ptr_func_info);
 	} else {
-		expect_type(ptr_ps, declarator_type, *ptr_old_func_info,
+		expect_type(ptr_ps, &declarator_type, ptr_old_func_info,
 		            "conflicting function definition");
 		if (!(ptr_old_func_info->is_param_infos_valid) &&
 		    declarator_type.is_param_infos_valid) {

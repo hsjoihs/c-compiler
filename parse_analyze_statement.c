@@ -166,7 +166,7 @@ struct Statement parse_statement(struct AnalyzerState *ptr_ps,
 				expr.details.type = ptr_ps->func_ret_type;
 			}
 
-			expect_type(ptr_ps, expr.details.type, ptr_ps->func_ret_type,
+			expect_type(ptr_ps, &expr.details.type, &ptr_ps->func_ret_type,
 			            "mismatched type in the return value");
 			expect_and_consume(&tokvec, SEMICOLON,
 			                   "semicolon (after `return expr`)");
