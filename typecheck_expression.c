@@ -22,14 +22,15 @@ int typecheck_constant_integral_expression(struct AnalyzerState *ptr_ps,
 			if (is_local_var(&ptr_ps->scope_chain, name)) {
 				break;
 			}
+
 			const struct EnumeratorAndValue *ptr_enum_and_value =
 			    get_global_enumerator(&ptr_ps->global_enumerator_list, name);
-			if (ptr_enum_and_value) {
-				return ptr_enum_and_value->value;
 
-			} else {
+			if (!ptr_enum_and_value) {
 				break;
 			}
+
+			return ptr_enum_and_value->value;
 		}
 		default:
 			break;
