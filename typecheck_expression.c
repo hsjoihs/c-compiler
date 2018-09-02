@@ -512,7 +512,16 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 		}
 		case UNARY_EXPR: {
 			switch (uexpr.operator_) {
-				case OP_NOT:
+				case OP_NOT: {
+					enum TokenKind kind = uexpr.operator_;
+					struct Expr expr = typecheck_expression(ptr_ps, uexpr.ptr1);
+					expect_scalar(&expr.details.type, "operand of logical not");
+
+					struct Type t = INT_TYPE();
+					struct Expr new_expr = unary_op_(&expr, kind, &t);
+
+					return new_expr;
+				}
 				case OP_TILDA:
 				case OP_PLUS:
 				case OP_MINUS: {
@@ -520,14 +529,11 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 					struct Expr expr = typecheck_expression(ptr_ps, uexpr.ptr1);
 					expect_integral(
 					    &expr.details.type,
-					    "operand of logical not, bitnot, unary plus or "
-					    "unary minus");
+					    "operand of bitnot, unary plus or unary minus");
 
-					struct Expr new_expr =
-					    unary_op_(&expr, kind, &expr.details.type);
-
-					new_expr.details.true_type = expr.details.type;
-					/* once acted upon, the expression loses true_type */
+					/* integral promotion */
+					struct Type t = INT_TYPE();
+					struct Expr new_expr = unary_op_(&expr, kind, &t);
 
 					return new_expr;
 				}

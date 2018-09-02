@@ -379,10 +379,16 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 			return;
 		case UNARY_OP_EXPR:
 			switch (expr.unary_operator) {
-				case UNARY_OP_NOT:
+				case UNARY_OP_NOT: {
 					print_expression(ptr_prs, expr.ptr1);
-					gen_unary_not();
+					if (size_of_basic(&expr.ptr1->details.type,
+					                  "operand of logical not") == 8) {
+						gen_logical_not_of_pointer();
+					} else {
+						gen_unary_not();
+					}
 					return;
+				}
 				case UNARY_OP_TILDA:
 					print_expression(ptr_prs, expr.ptr1);
 					gen_unary("notl");
