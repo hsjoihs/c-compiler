@@ -60,6 +60,20 @@ struct SourceLabelAndAssemblyLabel {
 	struct SourceLabel source_label;
 };
 
+static int is_label_compatible(const struct SourceLabel *ptr_label1,
+                               const struct SourceLabel *ptr_label2)
+{
+	if (ptr_label1->category == DEFAULT_LABEL &&
+	    ptr_label2->category == DEFAULT_LABEL) {
+		return 1;
+	} else if (ptr_label1->category == CASE_LABEL &&
+	           ptr_label2->category == CASE_LABEL &&
+	           ptr_label1->case_int == ptr_label2->case_int) {
+		return 1;
+	}
+	return 0;
+}
+
 static void print_statement(struct PrinterState *ptr_prs,
                             const struct Statement *ptr_sta)
 {
@@ -75,7 +89,7 @@ static void print_statement(struct PrinterState *ptr_prs,
 				for (int k = 0; k < ptr_prs->case_default_vec.length; k++) {
 					const struct SourceLabelAndAssemblyLabel *ptr_ll =
 					    ptr_prs->case_default_vec.vector[k];
-					if (ptr_ll->source_label.category == DEFAULT_LABEL) {
+					if (is_label_compatible(&ptr_ll->source_label, ptr_label)) {
 						gen_label(ptr_ll->assembly_label);
 					}
 				}
@@ -87,8 +101,7 @@ static void print_statement(struct PrinterState *ptr_prs,
 				for (int k = 0; k < ptr_prs->case_default_vec.length; k++) {
 					const struct SourceLabelAndAssemblyLabel *ptr_ll =
 					    ptr_prs->case_default_vec.vector[k];
-					if (ptr_ll->source_label.category == CASE_LABEL &&
-					    ptr_label->case_int == ptr_ll->source_label.case_int) {
+					if (is_label_compatible(&ptr_ll->source_label, ptr_label)) {
 						gen_label(ptr_ll->assembly_label);
 					}
 				}
