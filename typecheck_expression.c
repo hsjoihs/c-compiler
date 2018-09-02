@@ -624,10 +624,14 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 				}
 			}
 
-			expr.category = FUNCCALL_EXPR;
-			expr.details.type = ret_type;
-			expr.global_var_name = ident_str;
-			return expr;
+			if (ret_type.type_category == STRUCT_) {
+				unsupported("calling a function that returns a struct");
+			} else {
+				expr.category = FUNCCALL_EXPR;
+				expr.details.type = ret_type;
+				expr.global_var_name = ident_str;
+				return expr;
+			}
 		}
 		case POSTFIX_EXPR: {
 			struct Expr expr = typecheck_expression(ptr_ps, uexpr.ptr1);
