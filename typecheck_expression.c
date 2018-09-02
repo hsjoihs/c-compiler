@@ -334,7 +334,8 @@ int isAssign(enum TokenKind opkind)
 	        opkind == OP_HAT_EQ || opkind == OP_OR_EQ);
 }
 
-static struct Type resolve_name_globally(struct Map2 *m, const char *str)
+static struct Type resolve_name_globally(struct Map2 /*<Type>*/ *m,
+                                         const char *str)
 {
 	if (isElem(m, str)) {
 		struct Type *ptr_type = lookup(m, str);
