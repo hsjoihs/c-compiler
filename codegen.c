@@ -108,7 +108,6 @@ static void print_statement(struct PrinterState *ptr_prs,
 		case BREAK_STATEMENT: {
 			if (ptr_prs->break_label_name == -1) {
 				simple_error("invalid `break`; no loop, no switch\n");
-
 			} else {
 				gen_jump(ptr_prs->break_label_name, "break");
 			}
@@ -143,7 +142,6 @@ static void print_statement(struct PrinterState *ptr_prs,
 		case CONTINUE_STATEMENT: {
 			if (ptr_prs->continue_label_name == -1) {
 				simple_error("invalid `continue`; no loop\n");
-
 			} else {
 				gen_jump(ptr_prs->continue_label_name, "continue");
 			}
@@ -451,7 +449,6 @@ static void print_toplevel_definition(struct PrinterState *ptr_prs,
 
 			gen_epilogue_returning_small_struct(ret_struct_size,
 			                                    ptr_prs->return_label_name);
-
 		} else {
 			unsupported("returning a MEMORY_CLASS struct");
 		}
@@ -476,7 +473,6 @@ void generate(const struct Vector /*<Toplevel>*/ *ref_vec)
 
 	for (int i = 0; i < ref_vec->length; i++) {
 		const struct Toplevel *ptr = ref_vec->vector[i];
-
 		print_toplevel_definition(&prs, ptr);
 	}
 
