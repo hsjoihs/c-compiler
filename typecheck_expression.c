@@ -611,6 +611,46 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 			struct Expr expr;
 			expr.args = init_vector();
 
+			if (ret_type.type_category == STRUCT_) {
+				char *str = calloc(20, sizeof(char));
+				sprintf(str, "@anon%d", -ptr_ps->newest_offset);
+
+				int offset = add_local_var_to_scope(ptr_ps, &ret_type, str);
+
+				enum SystemVAbiClass abi_class =
+				    system_v_abi_class_of(ptr_ps, &ret_type);
+
+				expr.local_var_offset = offset;
+
+				if (abi_class == INTEGER_CLASS) {
+					expr.category = FUNCCALL_EXPR_RETURNING_INTEGER_CLASS;
+				} else {
+					expr.category = FUNCCALL_EXPR_RETURNING_MEMORY_CLASS;
+
+					struct Expr *ptr_arg = calloc(1, sizeof(struct Expr));
+
+					/* push pointer to anon as the first argument */
+					{
+						struct Expr anon_var_expr;
+						anon_var_expr.details.type = ret_type;
+						anon_var_expr.details.true_type = ret_type;
+						anon_var_expr.category = LOCAL_VAR_;
+						anon_var_expr.local_var_offset = offset;
+
+						struct Type *ptr_type = calloc(1, sizeof(struct Type));
+						*ptr_type = ret_type;
+
+						const struct Type ptr_to_type =
+						    ptr_of_type_to_ptr_to_type(ptr_type);
+						*ptr_arg =
+						    unary_op_(&anon_var_expr, OP_AND, &ptr_to_type);
+					}
+					push_vector(&expr.args, ptr_arg);
+				}
+			} else {
+				expr.category = FUNCCALL_EXPR;
+			}
+
 			for (int counter = 0; counter < uexpr.arg_exprs_vec.length;
 			     counter++) {
 				const struct UntypedExpr *ptr =
@@ -624,17 +664,6 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 				}
 			}
 
-			if (ret_type.type_category == STRUCT_) {
-				char *str = calloc(20, sizeof(char));
-				sprintf(str, "@anon%d", -ptr_ps->newest_offset);
-
-				int offset = add_local_var_to_scope(ptr_ps, &ret_type, str);
-
-				expr.category = FUNCCALL_EXPR_RETURNING_STRUCT;
-				expr.local_var_offset = offset;
-			} else {
-				expr.category = FUNCCALL_EXPR;
-			}
 			expr.details.type = ret_type;
 			expr.global_var_name = ident_str;
 			return expr;
