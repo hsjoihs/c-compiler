@@ -26,7 +26,7 @@ struct AnalyzerState {
 	struct Vector /*<EnumeratorAndValue>*/ global_enumerator_list;
 };
 
-struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
+struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
                                  const struct UntypedExpr *ref_uexpr);
 
 struct Statement parse_statement(struct AnalyzerState *ptr_ps,

@@ -15,9 +15,11 @@ extern struct __FILE *stdin;
 typedef struct __FILE FILE;
 int fprintf(FILE *restrict, const char *restrict, ...);
 int printf(const char *restrict, ...);
+int sprintf(char *restrict s, const char *restrict format, ...);
 #else
 int fprintf();
 int printf();
+int sprintf();
 #endif
 
 char *fgets(char *buf, int a, struct __FILE *fp);

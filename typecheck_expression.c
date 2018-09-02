@@ -437,7 +437,7 @@ static enum SimpleBinOp op_before_assign(enum TokenKind kind)
 	}
 }
 
-struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
+struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
                                  const struct UntypedExpr *ref_uexpr)
 {
 	const struct UntypedExpr uexpr = *ref_uexpr;
@@ -625,6 +625,11 @@ struct Expr typecheck_expression(const struct AnalyzerState *ptr_ps,
 			}
 
 			if (ret_type.type_category == STRUCT_) {
+				char *str = calloc(20, sizeof(char));
+				sprintf(str, "@anon%d", -ptr_ps->newest_offset);
+
+				add_local_var_to_scope(ptr_ps, &ret_type, str);
+
 				unsupported("calling a function that returns a struct");
 			} else {
 				expr.category = FUNCCALL_EXPR;
