@@ -9,22 +9,24 @@
 #endif
 
 #ifdef OVERRIDE_STD
-void assert();
-_Noreturn void assert0();
-void *calloc();
-void *realloc();
-_Noreturn void exit();
 
 #ifdef __STDC__
 #define size_t2 unsigned long
 #else
 #define size_t2 int
 #endif
-size_t2 strlen();
-int strcmp();
-char *strcpy();
-char *strcat();
-char *strchr();
+
+void assert();
+_Noreturn void assert0(int i);
+void *calloc(size_t2 nmemb, size_t2 size);
+void *realloc(void *ptr, size_t2 size);
+_Noreturn void exit(int status);
+
+size_t2 strlen(const char *s);
+int strcmp(const char *s1, const char *s2);
+char *strcpy(char *s1, const char *s2);
+char *strcat(char *s1, const char *s2);
+char *strchr(const char *s, int c);
 
 #define EXIT_FAILURE 1
 #endif
