@@ -115,7 +115,9 @@ static void print_statement(struct PrinterState *ptr_prs,
 			return;
 		}
 		case RETURN_STATEMENT: {
-			if (sta.expr1.details.type.type_category == STRUCT_) {
+
+			if (sta.expr1.category != VOID_EXPR &&
+			    sta.expr1.details.type.type_category == STRUCT_) {
 				print_address_of_lvalue(ptr_prs, &sta.expr1,
 				                        "returning a struct");
 			} else {
