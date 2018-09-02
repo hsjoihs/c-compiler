@@ -628,9 +628,14 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 				char *str = calloc(20, sizeof(char));
 				sprintf(str, "@anon%d", -ptr_ps->newest_offset);
 
-				add_local_var_to_scope(ptr_ps, &ret_type, str);
+				int offset = add_local_var_to_scope(ptr_ps, &ret_type, str);
 
-				unsupported("calling a function that returns a struct");
+				expr.category = FUNCCALL_EXPR_RETURNING_STRUCT;
+				expr.details.type = ret_type;
+				expr.global_var_name = ident_str;
+				expr.local_var_offset = offset;
+				return expr;
+
 			} else {
 				expr.category = FUNCCALL_EXPR;
 				expr.details.type = ret_type;

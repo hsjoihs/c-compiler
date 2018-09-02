@@ -186,6 +186,7 @@ enum ExprCategory {
 	NULLPTR,
 	VOID_EXPR,
 	STRUCT_ASSIGNMENT_EXPR,
+	FUNCCALL_EXPR_RETURNING_STRUCT,
 };
 
 enum UntypedExprCategory {
