@@ -156,6 +156,8 @@ struct Statement parse_statement(struct AnalyzerState *ptr_ps,
 		if (tokvec[0].kind == SEMICOLON) {
 			++tokvec;
 			s.expr1.category = VOID_EXPR;
+			s.expr1.details.type.type_category = VOID_;
+			s.expr1.details.true_type.type_category = VOID_;
 		} else {
 			const struct UntypedExpr u = parse_expression(&tokvec);
 			struct Expr expr = typecheck_expression(ptr_ps, &u);
