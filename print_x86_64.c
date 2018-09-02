@@ -284,6 +284,7 @@ void gen_call_and_assign_small_struct_to_local(const char *fname, int offset,
 			assert0("forbidden struct size as a funccall" && 0);
 			break;
 	}
+	gen_discard();
 }
 
 void gen_pop_to_reg_4byte(const char *str)
