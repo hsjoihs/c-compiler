@@ -26,13 +26,7 @@ int main(int argc, char const **argv)
 		return 0;
 	}
 
-	const struct Token *tokvec = read_all_tokens(str);
-
-	++tokvec; /* skip the dummy token BEGINNING */
-
-	const struct Vector /*<Toplevel>*/ vec = parse(tokvec);
-
-	generate(&vec);
+	main2(str);
 
 	return 0;
 }

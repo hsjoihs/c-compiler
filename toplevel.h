@@ -44,3 +44,4 @@ void print_statement(struct PrinterState *ptr_prs,
                      const struct Statement *ptr_sta);
 void codegen_switch(struct PrinterState *ptr_prs,
                     const struct Statement *ptr_sta);
+void main2(const char *str);
