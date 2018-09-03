@@ -4,6 +4,9 @@
 #include "std.h"
 #include "std_io.h"
 
+static void pass_args(struct PrinterState *ptr_prs,
+                      const struct Vector /*<Expr>*/ *ref_args);
+
 static void print_op_pointer_plusminus_int(int is_plus, int size)
 {
 	gen_cltq();
@@ -111,6 +114,9 @@ void print_address_of_lvalue(struct PrinterState *ptr_prs,
 	const struct Expr expr = *ref_expr;
 	switch (expr.category) {
 		case FUNCCALL_EXPR_RETURNING_INTEGER_CLASS: {
+
+			pass_args(ptr_prs, &expr.args);
+
 			int size = expr.size_info_for_struct_assign;
 			gen_call_and_assign_small_struct_to_local(
 			    expr.global_var_name, expr.local_var_offset, size);
@@ -214,9 +220,6 @@ static void print_expression_as_lvalue(struct PrinterState *ptr_prs,
 			simple_error("doesn't seem like an lvalue\n");
 	}
 }
-
-static void pass_args(struct PrinterState *ptr_prs,
-                      const struct Vector /*<Expr>*/ *ref_args);
 
 void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 {
