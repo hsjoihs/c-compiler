@@ -215,6 +215,9 @@ static void print_expression_as_lvalue(struct PrinterState *ptr_prs,
 	}
 }
 
+static void pass_args(struct PrinterState *ptr_prs,
+                      const struct Vector /*<Expr>*/ *ref_args);
+
 void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 {
 	const struct Expr expr = *ref_expr;
@@ -471,29 +474,7 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 			const char *ident_str = expr.global_var_name;
 			struct Type ret_type = expr.details.type;
 
-			for (int counter = expr.args.length - 1; counter >= 0; counter--) {
-				const struct Expr *ptr_expr_ = expr.args.vector[counter];
-
-				print_expression(ptr_prs, ptr_expr_);
-			}
-
-			for (int counter = 0; counter < expr.args.length; counter++) {
-				const struct Expr *ptr_expr_ = expr.args.vector[counter];
-
-				switch (size_of_basic(&ptr_expr_->details.type, "argument")) {
-					case 1:
-					case 4:
-						gen_pop_to_reg_4byte(
-						    get_reg_name_from_arg_pos_4byte(counter));
-						break;
-					case 8:
-						gen_pop_to_reg_8byte(
-						    get_reg_name_from_arg_pos_8byte(counter));
-						break;
-					default:
-						unsupported("Unsupported width in function argument");
-				}
-			}
+			pass_args(ptr_prs, &expr.args);
 
 			int size;
 			if (ret_type.type_category != VOID_) {
@@ -510,6 +491,32 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 			const char *str = expr.literal_string;
 			push_vector(&ptr_prs->string_constant_pool, str);
 			gen_push_address_of_str(ptr_prs->string_constant_pool.length - 1);
+		}
+	}
+}
+
+static void pass_args(struct PrinterState *ptr_prs,
+                      const struct Vector /*<Expr>*/ *ref_args)
+{
+	for (int counter = ref_args->length - 1; counter >= 0; counter--) {
+		const struct Expr *ptr_expr_ = ref_args->vector[counter];
+
+		print_expression(ptr_prs, ptr_expr_);
+	}
+
+	for (int counter = 0; counter < ref_args->length; counter++) {
+		const struct Expr *ptr_expr_ = ref_args->vector[counter];
+
+		switch (size_of_basic(&ptr_expr_->details.type, "argument")) {
+			case 1:
+			case 4:
+				gen_pop_to_reg_4byte(get_reg_name_from_arg_pos_4byte(counter));
+				break;
+			case 8:
+				gen_pop_to_reg_8byte(get_reg_name_from_arg_pos_8byte(counter));
+				break;
+			default:
+				unsupported("Unsupported width in function argument");
 		}
 	}
 }
