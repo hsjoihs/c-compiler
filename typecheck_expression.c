@@ -79,6 +79,15 @@ static int is_strictly_equal(const struct AnalyzerState *ptr_ps,
 	}
 
 	if (t1.type_category == PTR_ && t2.type_category == PTR_) {
+
+		/* pointer to incomplete types */
+		if (t1.derived_from->type_category == STRUCT_ &&
+		    t2.derived_from->type_category == STRUCT_ &&
+		    strcmp(t1.derived_from->s.struct_tag,
+		           t2.derived_from->s.struct_tag) == 0) {
+			return 1;
+		}
+
 		return is_strictly_equal(ptr_ps, t1.derived_from, t2.derived_from);
 	}
 
