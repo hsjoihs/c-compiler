@@ -67,3 +67,10 @@ int add6(int a, int b, int c, int d, int e, int f)
 {
 	return a + b + c + d + e + f;
 }
+
+
+struct Q{int a; int b; int *p;};
+
+struct Q q(void) {struct Q u; u.a = 100; u.b = 74; u.p = 0; return u;}
+
+int r(struct Q *p) {return p->a + p->b;}
