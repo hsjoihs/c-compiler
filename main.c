@@ -26,7 +26,11 @@ int main(int argc, char const **argv)
 		return 0;
 	}
 
-	main2(str);
+	const struct Token *tokvec = read_all_tokens(str);
+
+	++tokvec; /* skip the dummy token BEGINNING */
+
+	main2(tokvec);
 
 	return 0;
 }
