@@ -34,10 +34,6 @@ collect_labels(const struct Statement *ptr_sta)
 		case COMPOUND_STATEMENT:
 		case IF_ELSE_STATEMENT: {
 			struct Vector /*<Statement>*/ statement_vec = sta.statement_vector;
-			fprintf(stderr, "%d\n", sta.statement_vector.length);
-			fprintf(stderr, "%d\n", statement_vec.length);
-			fprintf(stderr, "%d\n", sta.statement_vector._allocated_length);
-			fprintf(stderr, "%d\n", statement_vec._allocated_length);
 			for (int counter = 0; counter != statement_vec.length; ++counter) {
 				const struct Statement *ptr_ith = statement_vec.vector[counter];
 				const struct Vector /*<SourceLabel>*/ inner_vec =
