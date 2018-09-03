@@ -27,7 +27,8 @@ static void skip_consts_or_noreturns(const struct Token **ptr_tokvec)
 static struct Type from_type3_to_type(const void **type3)
 {
 	struct Type type;
-	TypeNode elem = *(const TypeNode *)type3[0];
+	const TypeNode *ptr_elem = type3[0];
+	TypeNode elem = *ptr_elem;
 	type = elem;
 	switch (elem.type_category) {
 		case INT_:
