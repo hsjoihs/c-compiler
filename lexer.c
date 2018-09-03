@@ -477,7 +477,8 @@ static struct Token get_token_raw(const char **ptr_to_str)
 		return t;
 	}
 
-	fprintf(stderr, "Found unexpected character: '%c' (%d)\n", *str, (int)*str);
+	int charcode = *str;
+	fprintf(stderr, "Found unexpected character: '%c' (%d)\n", *str, charcode);
 	exit(EXIT_FAILURE);
 }
 
