@@ -22,6 +22,8 @@ run_test 318 'struct A{int a; int b; int *p;}; struct A q(void); int g (struct A
 run_test 319 'struct A{int a; int b; int *p;}; struct A q(void); int r(struct A *p); int main(void){struct A u = q(); struct A *p = &u; if (u.p) {return 3;} else {return r(p);}}' 174
 run_test 320 'struct A{int a; int b; int *p;}; struct A f(int j) {struct A u; u.a = 100; u.b = 72 + j; u.p = 0; return u;} int g (struct A *p) {return p->a + p->b;} int main(void){struct A u = f(2); struct A *p = &u; if (u.p) {return 3;} else {return g(p);}}' 174
 
+run_test 321 'struct A{int a; int b; int *p; int *q; int *r; int *s;}; struct A test_(int *s); int main(void){int k; k = 100; struct A u = test_(&k); return u.a + *(u.s);}' 174
+
 
 run_test 203 'int ptrdiff(); int main(){int *p; p = 0; return ptrdiff(p+1, p);}' 4
 run_test 204 'int main(){int *p; p = 0; if(p) {return 4; } return 174;}' 174

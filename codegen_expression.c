@@ -124,7 +124,15 @@ void print_address_of_lvalue(struct PrinterState *ptr_prs,
 			return;
 		}
 		case FUNCCALL_EXPR_RETURNING_MEMORY_CLASS: {
-			unsupported("FUNCCALL_EXPR_RETURNING_STRUCT");
+
+			pass_args(ptr_prs, &expr.args);
+
+			/* call a function that returns a void */
+			gen_push_ret_of_nbyte(4, expr.global_var_name);
+			gen_discard();
+
+			gen_push_address_of_local(expr.local_var_offset);
+			return;
 		}
 		case STRUCT_AND_OFFSET: {
 			print_address_of_lvalue(ptr_prs, expr.ptr1,

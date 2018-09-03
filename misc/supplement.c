@@ -74,3 +74,14 @@ struct Q{int a; int b; int *p;};
 struct Q q(void) {struct Q u; u.a = 100; u.b = 74; u.p = 0; return u;}
 
 int r(struct Q *p) {return p->a + p->b;}
+
+
+struct Test{int a; int b; int *p; int *q; int *r; int *s;};
+
+struct Test test_(int *s)
+{
+	struct Test u;
+	u.a = 74;
+	u.s = s;
+	return u;
+}
