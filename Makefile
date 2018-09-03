@@ -21,7 +21,8 @@ endif
 	./compile.sh std $(OSFLAG)
 	./compile.sh error $(OSFLAG)
 	./compile.sh codegen $(OSFLAG)
-	gcc -Wall -Wextra -DOVERRIDE_STD self_compile_asm/std.s self_compile_asm/codegen.s self_compile_asm/alignment.s parse_analyze_toplevel.c parse_analyze_statement.c self_compile_asm/codegen_expression.s main.c main2.c self_compile_asm/vector.s typecheck_expression.c parse_expression.c self_compile_asm/error.s type.c parse_type.c self_compile_asm/map.s self_compile_asm/print_x86_64.s codegen_switch.c $(OSFLAG) lexer.c -o out/compiler.out
+	./compile.sh main $(OSFLAG)
+	gcc -Wall -Wextra -DOVERRIDE_STD self_compile_asm/std.s self_compile_asm/codegen.s self_compile_asm/alignment.s parse_analyze_toplevel.c parse_analyze_statement.c self_compile_asm/codegen_expression.s self_compile_asm/main.s main2.c self_compile_asm/vector.s typecheck_expression.c parse_expression.c self_compile_asm/error.s type.c parse_type.c self_compile_asm/map.s self_compile_asm/print_x86_64.s codegen_switch.c $(OSFLAG) lexer.c -o out/compiler.out
 	cp -p out/compiler.out out/compiler_2ndgen.out
 
 test_mixed_compiler:
@@ -36,7 +37,8 @@ test_mixed_compiler:
 	./compile.sh std $(OSFLAG) __with2nd
 	./compile.sh error $(OSFLAG) __with2nd
 	./compile.sh codegen $(OSFLAG) __with2nd
-	gcc -Wall -Wextra -DOVERRIDE_STD self_compile_asm/std__with2nd.s self_compile_asm/codegen__with2nd.s self_compile_asm/alignment__with2nd.s parse_analyze_toplevel.c parse_analyze_statement.c self_compile_asm/codegen_expression__with2nd.s main.c main2.c self_compile_asm/vector__with2nd.s typecheck_expression.c parse_expression.c self_compile_asm/error__with2nd.s type.c parse_type.c self_compile_asm/map__with2nd.s self_compile_asm/print_x86_64__with2nd.s codegen_switch.c $(OSFLAG) lexer.c -o out/compiler_gen3.out
+	./compile.sh main $(OSFLAG) __with2nd
+	gcc -Wall -Wextra -DOVERRIDE_STD self_compile_asm/std__with2nd.s self_compile_asm/codegen__with2nd.s self_compile_asm/alignment__with2nd.s parse_analyze_toplevel.c parse_analyze_statement.c self_compile_asm/codegen_expression__with2nd.s self_compile_asm/main__with2nd.s main2.c self_compile_asm/vector__with2nd.s typecheck_expression.c parse_expression.c self_compile_asm/error__with2nd.s type.c parse_type.c self_compile_asm/map__with2nd.s self_compile_asm/print_x86_64__with2nd.s codegen_switch.c $(OSFLAG) lexer.c -o out/compiler_gen3.out
 	diff self_compile_asm/vector.s self_compile_asm/vector__with2nd.s
 	diff self_compile_asm/map.s self_compile_asm/map__with2nd.s
 	diff self_compile_asm/print_x86_64.s self_compile_asm/print_x86_64__with2nd.s
