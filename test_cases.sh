@@ -16,6 +16,44 @@ run_test2() {
 	if [ $res -ne $3 ]; then { echo "got:" $res; echo "expected:" $3; echo -e "\033[31mFAIL\033[m, at test case" $1: $2; exit 1; }; else echo -e "\033[32mPASS\033[m"; fi
 }
 
+run_test 203 'int ptrdiff(); int main(){int *p; p = 0; return ptrdiff(p+1, p);}' 4
+run_test 204 'int main(){int *p; p = 0; if(p) {return 4; } return 174;}' 174
+run_test 205 'int main(){int *p; int a; p = &a; if(p) {return 4; } return 174;}' 4
+run_test 206 'int main(){int *p; int a; p = &a; return p && &p;}' 1
+run_test 207 'int main(){int *p; int a; p = &a; return p || &p;}' 1
+run_test 208 'int main(){int *p; int a; p = &a; return p?174:1;}' 174
+run_test 209 'int main(){int *p; p = 0; return p?174:1;}' 1
+run_test 210 'int main(void){return 174;}' 174
+run_test 211 'int main(void){void *p; p = 0; p = p; return 174;}' 174
+run_test 212 'struct A{int a; int b;}; int main(){ struct A *p; void *q1; void *q2; q1 = p; q2 = p+1; char *r1; char *r2; r1 = q1; r2 = q2; return r2-r1;}' 8
+run_test 213 'void f(int *p){*p = 174; return;} int main(void){ int a; f(&a); return a;}' 174
+run_test 214 'int main(void){ foo: return 174;}' 174
+run_test 215 'int main(void){ foo: bar: return 174;}' 174
+run_test 216 'int main(void){ foo: {baz: hoge: 1;} bar: return 174;}' 174
+run_test 217 'int main(void){ int a; a = 174; switch(1){a = 2; 1;} return a;}' 174
+run_test 218 'int main(void){ int a; a = 174; switch(1){a = 2; break; a = 3;} return a;}' 174
+run_test 219 'int main(void){ int a; a = 1; int b; b = 0; switch(1){ b = 15; default: a = 174; break; a = 3;} return a+b ;}' 174
+run_test 220 'int main(void){ switch(1){ if(0){ default: return 174; } } return 3; }' 174
+run_test 221 'int main(void){ int a; a = 1; switch(1){ default: a = 173; switch(0){ default: return a+1; } return 5; } return 3; }' 174
+run_test 222 'int main(void){ int a; a = 1; switch(1){ case 1: a = 174; } return a; }' 174
+run_test 223 'int main(void){ int a; a = 174; switch(2){ case 1: a = 1; } return a; }' 174
+run_test 224 'int f(int a){switch(a){case 1: return 3; case 2: return 5; default: return 8;}} int main(void){ return (f(1)-3) || (f(2)-5) || (f(3)-8) || (f(100)-8);}' 0
+run_test 225 'int main(){return _Alignof(int);}' 4
+run_test 226 'int main(){return _Alignof(int*);}' 8
+run_test 227 'struct A{int a; int b;}; int main(){ return _Alignof(struct A);}' 4
+run_test 228 'struct A{int a; char c; char d; int b;}; int main(){ return _Alignof(struct A);}' 4
+run_test 229 'struct A{int a; int *b; int c;}; int main(){return _Alignof(struct A [5]);}' 8
+run_test 230 'void f(int *p){*p = 174;} int main(void){ int a; f(&a); return a;}' 174
+run_test 231 'int main(void){ char a; a = 0; switch(a){case 0: a = 174; break; case 256: a = 3; break; default: a = 5; break;}  return a;}' 174
+run_test 232 'enum A{B, C}; int main(void){ enum A b; return 174; }' 174
+run_test 233 'enum A{B, C,}; int main(void){ enum A b; return 174; }' 174
+run_test 234 'enum A{B, C,}; int main(void){ enum A b; b = 5; return 174; }' 174
+run_test 235 'enum A{B, C,}; int main(void){ enum A b; b = B; return 174+b; }' 174
+run_test 236 'enum A{B, C,D}; int main(void){ enum A b; b = D; return 172+b; }' 174
+run_test 237 'enum A{B, C,D}; int f(enum A b){switch(b){case B: return 1; case C: return 5; case D: return 8;}} int main(void){ return (f(B) - 1) || (f(C) - 5) || (f(D) - 8);}' 0
+run_test 238 'int main(){int a[5]; if(a){return 174;} return 0;}' 174
+
+
 run_test 313 'int main(void){int p = 0; return (!p)*174; }' 174
 run_test 314 'int main(void){int *p = 0; return (!p)*174; }' 174
 run_test 315 'int main(void){int q; int *p = &q; return (1+!p)*174;}' 174
@@ -113,45 +151,6 @@ run_test 243 'int main(){int a[5][6];int (*p)[6];p = a;int *q;q = *(p+1); *(2+q)
 run_test 244 'int changeBoard(int (*board)[30], int i, int j, int d, int N){int k;for (k = 0; k < N; k++) {*(*(board + i) + k) += d;*(*(board + k) + j) += d;}if (i > j) {for (k = 0; k < N - (i - j); k++) {*(*(board + k + (i - j)) + k) += d;}} else {for (k = 0; k < N - (j - i); k++) {*(*(board + k) + k + (j - i)) += d;}}if (i + j < N) {for (k = 0; k <= i + j; k++) {*(*(board + i + j - k) + k) += d;}} else {for (k = i + j - N + 1; k < N; k++) {*(*(board + i + j - k) + k) += d;}}return 0;}int setQueen(int (*board)[30], int num_placed, int *ptr_sol_num, int N){int j;if (num_placed == N) {(*ptr_sol_num)+=1;return 0;}for (j = 0; j < N; j++) {if (*(*(board+num_placed)+j) == 0) {changeBoard(board, num_placed, j, +1, N);setQueen(board, num_placed + 1, ptr_sol_num, N);changeBoard(board, num_placed, j, -1, N);}}return 0;}int board_[30][30];int main(){int sol_num;sol_num = 0;setQueen(board_, 0, &sol_num, 8);return sol_num;}' 92
 run_test 245 'int changeBoard(int (*board)[30], int i, int j, int d, int N){int k;for (k = 0; k < N; k++) {board[i][k] += d;board[k][j] += d;}if (i > j) {for (k = 0; k < N - (i - j); k++) {board [k + (i - j)][k] += d;}} else {for (k = 0; k < N - (j - i); k++) {board[k][k + (j - i)] += d;}}if (i + j < N) {for (k = 0; k <= i + j; k++) {board[i + j - k][k] += d;}} else {for (k = i + j - N + 1; k < N; k++) {board[i + j - k][k] += d;}}return 0;}int setQueen(int (*board)[30], int num_placed, int *ptr_sol_num, int N){int j;if (num_placed == N) {(*ptr_sol_num)+=1;return 0;}for (j = 0; j < N; j++) {if (board[num_placed][j] == 0) {changeBoard(board, num_placed, j, +1, N);setQueen(board, num_placed + 1, ptr_sol_num, N);changeBoard(board, num_placed, j, -1, N);}}return 0;}int board_[30][30];int main(){int sol_num;sol_num = 0;setQueen(board_, 0, &sol_num, 8);return sol_num;}' 92
 run_test 246 'int main(){int a[5][6];int (*p)[6];p = a;int *q;q = p[1]; 2[q]=174; return 1[a][2];}' 174
-
-
-
-run_test 203 'int ptrdiff(); int main(){int *p; p = 0; return ptrdiff(p+1, p);}' 4
-run_test 204 'int main(){int *p; p = 0; if(p) {return 4; } return 174;}' 174
-run_test 205 'int main(){int *p; int a; p = &a; if(p) {return 4; } return 174;}' 4
-run_test 206 'int main(){int *p; int a; p = &a; return p && &p;}' 1
-run_test 207 'int main(){int *p; int a; p = &a; return p || &p;}' 1
-run_test 208 'int main(){int *p; int a; p = &a; return p?174:1;}' 174
-run_test 209 'int main(){int *p; p = 0; return p?174:1;}' 1
-run_test 210 'int main(void){return 174;}' 174
-run_test 211 'int main(void){void *p; p = 0; p = p; return 174;}' 174
-run_test 212 'struct A{int a; int b;}; int main(){ struct A *p; void *q1; void *q2; q1 = p; q2 = p+1; char *r1; char *r2; r1 = q1; r2 = q2; return r2-r1;}' 8
-run_test 213 'void f(int *p){*p = 174; return;} int main(void){ int a; f(&a); return a;}' 174
-run_test 214 'int main(void){ foo: return 174;}' 174
-run_test 215 'int main(void){ foo: bar: return 174;}' 174
-run_test 216 'int main(void){ foo: {baz: hoge: 1;} bar: return 174;}' 174
-run_test 217 'int main(void){ int a; a = 174; switch(1){a = 2; 1;} return a;}' 174
-run_test 218 'int main(void){ int a; a = 174; switch(1){a = 2; break; a = 3;} return a;}' 174
-run_test 219 'int main(void){ int a; a = 1; int b; b = 0; switch(1){ b = 15; default: a = 174; break; a = 3;} return a+b ;}' 174
-run_test 220 'int main(void){ switch(1){ if(0){ default: return 174; } } return 3; }' 174
-run_test 221 'int main(void){ int a; a = 1; switch(1){ default: a = 173; switch(0){ default: return a+1; } return 5; } return 3; }' 174
-run_test 222 'int main(void){ int a; a = 1; switch(1){ case 1: a = 174; } return a; }' 174
-run_test 223 'int main(void){ int a; a = 174; switch(2){ case 1: a = 1; } return a; }' 174
-run_test 224 'int f(int a){switch(a){case 1: return 3; case 2: return 5; default: return 8;}} int main(void){ return (f(1)-3) || (f(2)-5) || (f(3)-8) || (f(100)-8);}' 0
-run_test 225 'int main(){return _Alignof(int);}' 4
-run_test 226 'int main(){return _Alignof(int*);}' 8
-run_test 227 'struct A{int a; int b;}; int main(){ return _Alignof(struct A);}' 4
-run_test 228 'struct A{int a; char c; char d; int b;}; int main(){ return _Alignof(struct A);}' 4
-run_test 229 'struct A{int a; int *b; int c;}; int main(){return _Alignof(struct A [5]);}' 8
-run_test 230 'void f(int *p){*p = 174;} int main(void){ int a; f(&a); return a;}' 174
-run_test 231 'int main(void){ char a; a = 0; switch(a){case 0: a = 174; break; case 256: a = 3; break; default: a = 5; break;}  return a;}' 174
-run_test 232 'enum A{B, C}; int main(void){ enum A b; return 174; }' 174
-run_test 233 'enum A{B, C,}; int main(void){ enum A b; return 174; }' 174
-run_test 234 'enum A{B, C,}; int main(void){ enum A b; b = 5; return 174; }' 174
-run_test 235 'enum A{B, C,}; int main(void){ enum A b; b = B; return 174+b; }' 174
-run_test 236 'enum A{B, C,D}; int main(void){ enum A b; b = D; return 172+b; }' 174
-run_test 237 'enum A{B, C,D}; int f(enum A b){switch(b){case B: return 1; case C: return 5; case D: return 8;}} int main(void){ return (f(B) - 1) || (f(C) - 5) || (f(D) - 8);}' 0
-run_test 238 'int main(){int a[5]; if(a){return 174;} return 0;}' 174
 
 
 run_test 190 'int main(){return sizeof(int);}' 4
