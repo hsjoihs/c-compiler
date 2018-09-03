@@ -35,3 +35,12 @@ struct Toplevel {
 
 void generate(const struct Vector /*<Toplevel>*/ *ref_vec);
 struct Vector /*<Toplevel>*/ parse(const struct Token *tokvec);
+
+struct SourceLabelAndAssemblyLabel {
+	int assembly_label;
+	struct SourceLabel source_label;
+};
+void print_statement(struct PrinterState *ptr_prs,
+                     const struct Statement *ptr_sta);
+void codegen_switch(struct PrinterState *ptr_prs,
+                    const struct Statement *ptr_sta);
