@@ -11,6 +11,9 @@ struct ToplevelFuncInfo {
 	/* valid only when ret_type is a struct */
 	enum SystemVAbiClass abi_class;
 	int ret_struct_size;
+
+	/* valid only when ret_type is a struct of MEMORY_CLASS */
+	int hidden_var_offset;
 };
 
 enum ToplevelCategory {

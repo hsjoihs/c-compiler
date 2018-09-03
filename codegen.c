@@ -325,16 +325,21 @@ static void print_toplevel_definition(struct PrinterState *ptr_prs,
 	} else if (ret_type.type_category == STRUCT_) {
 		enum SystemVAbiClass abi_class = def.func.abi_class;
 		int ret_struct_size = def.func.ret_struct_size;
-		if (abi_class == INTEGER_CLASS) {
-			if (ptr_prs->return_label_name == -1) {
-				simple_error("warning: the return type is not void, but "
-				             "`return` is not found");
-			}
 
+		if (ptr_prs->return_label_name == -1) {
+			simple_error("warning: the return type is not void, but "
+			             "`return` is not found");
+		}
+
+		if (abi_class == INTEGER_CLASS) {
 			gen_epilogue_returning_small_struct(ret_struct_size,
 			                                    ptr_prs->return_label_name);
 		} else {
-			unsupported("returning a MEMORY_CLASS struct");
+			gen_label(ptr_prs->return_label_name);
+			gen_push_from_local_nbyte(8, def.func.hidden_var_offset);
+			gen_swap();
+			gen_copy_struct_and_discard(ret_struct_size);
+			printf("  movl $123, %%eax\nleave\nret\n");
 		}
 	} else {
 		if (ptr_prs->return_label_name == -1) {

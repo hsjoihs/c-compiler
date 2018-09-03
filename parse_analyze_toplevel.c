@@ -209,7 +209,7 @@ record_if_global_struct_or_enum_declaration(struct AnalyzerState *ptr_ps,
 	}
 }
 
-void push_offset_and_type(
+int push_offset_and_type(
     struct AnalyzerState *ptr_ps, const struct Type *ref_type,
     struct Vector /*<LocalVarInfo>*/ *ptr_offsets_and_types,
     const char *ident_str);
@@ -323,7 +323,12 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 		def.func.abi_class = abi_class;
 		def.func.ret_struct_size = size_of(ptr_ps, &ret_type);
 		if (abi_class == MEMORY_CLASS) {
-			unsupported("return type is a struct that has MEMORY_CLASS");
+			struct Type *ptr = calloc(1, sizeof(struct Type));
+			*ptr = ret_type;
+			const struct Type type = ptr_of_type_to_ptr_to_type(ptr);
+			int hidden_var_offset = push_offset_and_type(
+			    ptr_ps, &type, &offsets_and_types, "@hidden");
+			def.func.hidden_var_offset = hidden_var_offset;
 		}
 	}
 
@@ -335,7 +340,8 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 			struct TypeAndIdent param_info = *ptr_param_info;
 			const struct Type type = param_info.type;
 
-			if (counter > 5) {
+			if (counter > 5) { /* silently fails when there is 6 params and 1
+				                  implicit param*/
 				unsupported("7-or-more parameters");
 			}
 
@@ -354,7 +360,7 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 	return def;
 }
 
-void push_offset_and_type(
+int push_offset_and_type(
     struct AnalyzerState *ptr_ps, const struct Type *ref_type,
     struct Vector /*<LocalVarInfo>*/ *ptr_offsets_and_types,
     const char *ident_str)
@@ -369,6 +375,8 @@ void push_offset_and_type(
 	struct LocalVarInfo *ptr1 = calloc(1, sizeof(struct LocalVarInfo));
 	*ptr1 = info;
 	push_vector(ptr_offsets_and_types, ptr1);
+
+	return offset;
 }
 
 struct Vector /*<Toplevel>*/ parse(const struct Token *tokvec)
