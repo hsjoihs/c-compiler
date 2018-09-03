@@ -124,7 +124,7 @@ void gen_peek_deref_push_4byte(void)
   */
 void gen_peek_and_dereference_8byte(void)
 {
-	printf("//gen_peek_and_dereference()\n");
+	printf("//gen_peek_and_dereference_8byte()\n");
 	puts("  movq (%rsp), %rax \n"
 	     "  movq (%rax), %rax\n"
 	     "  movq  %rax, (%rsp)");
