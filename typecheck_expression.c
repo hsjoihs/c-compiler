@@ -257,6 +257,7 @@ static struct Expr binary_op(const struct Expr *ref_expr,
 
 	struct Expr new_expr;
 	new_expr.details.type = *ref_type;
+	new_expr.details.true_type = *ref_type;
 	new_expr.category = cat;
 	new_expr.ptr1 = ptr_expr1;
 	new_expr.ptr2 = ptr_expr2;
@@ -277,6 +278,7 @@ static struct Expr simple_binary_op(const struct Expr *ref_expr,
 
 	struct Expr new_expr;
 	new_expr.details.type = *ref_type;
+	new_expr.details.true_type = *ref_type;
 	new_expr.category = SIMPLE_BINARY_EXPR;
 	new_expr.simple_binary_operator = to_simplebinop(kind);
 	new_expr.ptr1 = ptr_expr1;
@@ -723,6 +725,7 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 				if (ptr_enum_and_value) {
 					struct Expr expr;
 					expr.details.type = INT_TYPE();
+					expr.details.true_type = INT_TYPE();
 					expr.category = INT_VALUE;
 					expr.int_value = ptr_enum_and_value->value;
 					return expr;
@@ -830,7 +833,7 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 						if (expr2.category == INT_VALUE &&
 						    expr2.int_value == 0) {
 							expr2.category = NULLPTR;
-							expr2.details.type = expr.details.type;
+							expr2.details = expr.details;
 						}
 						expect_type(ptr_ps, &expr.details.type,
 						            &expr2.details.type,
@@ -945,6 +948,7 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 
 							struct Expr new_expr;
 							new_expr.details.type = INT_TYPE();
+							new_expr.details.true_type = INT_TYPE();
 							new_expr.category = POINTER_MINUS_POINTER;
 							new_expr.ptr1 = ptr_expr1;
 							new_expr.ptr2 = ptr_expr2;
@@ -1000,12 +1004,12 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 					if (expr.details.type.type_category == PTR_ &&
 					    expr2.category == INT_VALUE && expr2.int_value == 0) {
 						expr2.category = NULLPTR;
-						expr2.details.type = expr.details.type;
+						expr2.details = expr.details;
 					} else if (expr2.details.type.type_category == PTR_ &&
 					           expr.category == INT_VALUE &&
 					           expr.int_value == 0) {
 						expr.category = NULLPTR;
-						expr.details.type = expr2.details.type;
+						expr.details = expr2.details;
 					}
 
 					expect_type(ptr_ps, &expr.details.type, &expr2.details.type,
