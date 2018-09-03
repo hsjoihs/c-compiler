@@ -209,6 +209,11 @@ record_if_global_struct_or_enum_declaration(struct AnalyzerState *ptr_ps,
 	}
 }
 
+void push_offset_and_type(
+    struct AnalyzerState *ptr_ps, const struct Type *ref_type,
+    struct Vector /*<LocalVarInfo>*/ *ptr_offsets_and_types,
+    const char *ident_str);
+
 static struct Toplevel
 parse_toplevel_definition(struct AnalyzerState *ptr_ps,
                           const struct Token **ptr_tokvec)
@@ -328,24 +333,14 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 			const struct TypeAndIdent *ptr_param_info =
 			    param_infos.vector[counter];
 			struct TypeAndIdent param_info = *ptr_param_info;
-			const char *ident_str;
-
 			const struct Type type = param_info.type;
-			ident_str = param_info.ident_str;
 
 			if (counter > 5) {
 				unsupported("7-or-more parameters");
 			}
 
-			int offset = add_local_var_to_scope(ptr_ps, &type, ident_str);
-
-			struct LocalVarInfo info;
-			info.offset = offset;
-			info.type = type;
-
-			struct LocalVarInfo *ptr1 = calloc(1, sizeof(struct LocalVarInfo));
-			*ptr1 = info;
-			push_vector(&offsets_and_types, ptr1);
+			push_offset_and_type(ptr_ps, &type, &offsets_and_types,
+			                     param_info.ident_str);
 		}
 	}
 
@@ -357,6 +352,23 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 	def.func.offsets_and_types = offsets_and_types;
 	def.func.capacity = -ptr_ps->newest_offset;
 	return def;
+}
+
+void push_offset_and_type(
+    struct AnalyzerState *ptr_ps, const struct Type *ref_type,
+    struct Vector /*<LocalVarInfo>*/ *ptr_offsets_and_types,
+    const char *ident_str)
+{
+
+	int offset = add_local_var_to_scope(ptr_ps, ref_type, ident_str);
+
+	struct LocalVarInfo info;
+	info.offset = offset;
+	info.type = *ref_type;
+
+	struct LocalVarInfo *ptr1 = calloc(1, sizeof(struct LocalVarInfo));
+	*ptr1 = info;
+	push_vector(ptr_offsets_and_types, ptr1);
 }
 
 struct Vector /*<Toplevel>*/ parse(const struct Token *tokvec)
