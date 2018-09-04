@@ -392,9 +392,8 @@ struct Vector /*<Toplevel>*/ parse(const struct Token *tokvec)
 			expect_and_consume(&tokvec, END, "the end of file");
 			break;
 		} else {
-			struct Toplevel def = parse_toplevel_definition(&ps, &tokvec);
 			struct Toplevel *ptr = calloc(1, sizeof(struct Toplevel));
-			*ptr = def;
+			*ptr = parse_toplevel_definition(&ps, &tokvec);
 			push_vector(&vec, ptr);
 		}
 	}
