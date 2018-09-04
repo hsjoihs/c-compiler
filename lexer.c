@@ -35,6 +35,9 @@ char *unescape(const char *str)
 				case 'r':
 					ans[j] = 13;
 					break;
+				case '"':
+					ans[j] = '"';
+					break;
 			}
 			i += 2;
 			j++;
@@ -80,6 +83,11 @@ char *escape(const char *str)
 			case 13:
 				ans[j] = 92;
 				ans[j + 1] = 'r';
+				j += 2;
+				break;
+			case '"':
+				ans[j] = 92;
+				ans[j + 1] = '"';
 				j += 2;
 				break;
 			default:
@@ -171,7 +179,8 @@ static struct Token get_token_raw(const char **ptr_to_str)
 				continue;
 			}
 			if (str[i] == 92 && str[i + 1] == 34) {
-				unsupported("escape sequence of double quote");
+				i += 2;
+				continue;
 			}
 			if (str[i] == 34) {
 				break;
