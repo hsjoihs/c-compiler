@@ -751,13 +751,11 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 		}
 		case STRING_LITERAL_: {
 			const struct Type char_type = CHAR_TYPE();
-			struct Type *ptr_char = calloc(1, sizeof(struct Type));
-			*ptr_char = char_type;
 
 			struct Expr expr;
 			expr.details.type = ptr_to_type(&char_type);
-			expr.details.true_type = ptr_of_type_to_arr_of_type(
-			    ptr_char, strlen(uexpr.literal_string) + 1);
+			expr.details.true_type =
+			    arr_of_type(&char_type, strlen(uexpr.literal_string) + 1);
 			expr.category = STRING_LITERAL;
 			expr.literal_string = uexpr.literal_string;
 

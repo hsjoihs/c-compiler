@@ -357,3 +357,5 @@ void if_array_convert_to_ptr_(struct Type *ptr_t);
 void print_token_at(const struct Token *tokvec);
 
 struct Type ptr_to_type(const struct Type *ref_type);
+
+struct Type arr_of_type(const struct Type *ref_type, int length);
