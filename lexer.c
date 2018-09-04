@@ -166,11 +166,11 @@ static struct Token get_token_raw(const char **ptr_to_str)
 		int i = 0;
 		++str;
 		while (1) {
-			if (str[i] == "\\"[0] && str[i + 1] == "\\"[0]) {
+			if (str[i] == 92 && str[i + 1] == 92) {
 				i += 2;
 				continue;
 			}
-			if (str[i] == "\\"[0] && str[i + 1] == 34) {
+			if (str[i] == 92 && str[i + 1] == 34) {
 				unsupported("escape sequence of double quote");
 			}
 			if (str[i] == 34) {
