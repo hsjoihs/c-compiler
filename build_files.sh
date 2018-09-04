@@ -14,3 +14,4 @@ build nqueen7
 build nqueen8
 build escape
 build duff
+build char_literal
