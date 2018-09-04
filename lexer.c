@@ -200,10 +200,10 @@ static struct Token get_token_raw(const char **ptr_to_str)
 		return t;
 	}
 
-	if (*str == "'"[0]) {
+	if (*str == 39) {
 		if (*str == 92) {
 			unsupported("escape sequence in character literal");
-		} else if (str[2] == "'"[0]) {
+		} else if (str[2] == 39) {
 			t.kind = LIT_DEC_INTEGER;
 			t.int_value = str[1];
 			str += 3;
