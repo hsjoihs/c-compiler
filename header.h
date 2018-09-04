@@ -148,8 +148,6 @@ struct Type INT_TYPE(void);
 
 struct Type deref_type(const struct Type *ref_t);
 
-struct Type ptr_of_type_to_ptr_to_type(struct Type *ptr_type);
-
 void expect_and_consume(const struct Token **ptr_tokvec, enum TokenKind kind,
                         const char *str);
 _Noreturn void error_unexpected_token(const struct Token *tokvec,
@@ -357,3 +355,5 @@ _Noreturn void simple_error(const char *str);
 void if_array_convert_to_ptr_(struct Type *ptr_t);
 
 void print_token_at(const struct Token *tokvec);
+
+struct Type ptr_to_type(const struct Type *ref_type);

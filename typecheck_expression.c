@@ -577,13 +577,9 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 						type = expr.details.true_type;
 					}
 
-					struct Type *ptr_type = calloc(1, sizeof(struct Type));
-					*ptr_type = type;
-
-					const struct Type ptr_to_type =
-					    ptr_of_type_to_ptr_to_type(ptr_type);
+					const struct Type ptr_to_type_ = ptr_to_type(&type);
 					struct Expr new_expr =
-					    unary_op_(&expr, OP_AND, &ptr_to_type);
+					    unary_op_(&expr, OP_AND, &ptr_to_type_);
 
 					return new_expr;
 				}
@@ -655,13 +651,9 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 						anon_var_expr.category = LOCAL_VAR_;
 						anon_var_expr.local_var_offset = offset;
 
-						struct Type *ptr_type = calloc(1, sizeof(struct Type));
-						*ptr_type = ret_type;
-
-						const struct Type ptr_to_type =
-						    ptr_of_type_to_ptr_to_type(ptr_type);
+						const struct Type ptr_to_type_ = ptr_to_type(&ret_type);
 						*ptr_arg =
-						    unary_op_(&anon_var_expr, OP_AND, &ptr_to_type);
+						    unary_op_(&anon_var_expr, OP_AND, &ptr_to_type_);
 					}
 					push_vector(&expr.args, ptr_arg);
 				}
@@ -758,11 +750,12 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 			}
 		}
 		case STRING_LITERAL_: {
+			const struct Type char_type = CHAR_TYPE();
 			struct Type *ptr_char = calloc(1, sizeof(struct Type));
-			*ptr_char = CHAR_TYPE();
+			*ptr_char = char_type;
 
 			struct Expr expr;
-			expr.details.type = ptr_of_type_to_ptr_to_type(ptr_char);
+			expr.details.type = ptr_to_type(&char_type);
 			expr.details.true_type = ptr_of_type_to_arr_of_type(
 			    ptr_char, strlen(uexpr.literal_string) + 1);
 			expr.category = STRING_LITERAL;

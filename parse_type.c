@@ -83,9 +83,7 @@ parse_parameter_declaration(const struct Token **ptr_tokvec)
 
 	if (type.type_category == FN) {
 		/* shall be adjusted to `pointer to func`, according to the spec */
-		struct Type *ptr_type = calloc(1, sizeof(struct Type));
-		*ptr_type = type;
-		ptr_param_info->type = ptr_of_type_to_ptr_to_type(ptr_type);
+		ptr_param_info->type = ptr_to_type(&type);
 	} else {
 		/* convert to pointer */
 		if (type.type_category == ARRAY) {

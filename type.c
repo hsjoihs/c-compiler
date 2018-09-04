@@ -119,8 +119,10 @@ void if_array_convert_to_ptr_(struct Type *ptr_t)
 	}
 }
 
-struct Type ptr_of_type_to_ptr_to_type(struct Type *ptr_type)
+struct Type ptr_to_type(const struct Type *ref_type)
 {
+	struct Type *ptr_type = calloc(1, sizeof(struct Type));
+	*ptr_type = *ref_type;
 	struct Type type;
 	type.type_category = PTR_;
 	type.derived_from = ptr_type;

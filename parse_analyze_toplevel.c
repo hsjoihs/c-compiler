@@ -323,9 +323,7 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 		def.func.abi_class = abi_class;
 		def.func.ret_struct_size = size_of(ptr_ps, &ret_type);
 		if (abi_class == MEMORY_CLASS) {
-			struct Type *ptr = calloc(1, sizeof(struct Type));
-			*ptr = ret_type;
-			const struct Type type = ptr_of_type_to_ptr_to_type(ptr);
+			const struct Type type = ptr_to_type(&ret_type);
 			int hidden_var_offset = push_offset_and_type(
 			    ptr_ps, &type, &offsets_and_types, "@hidden");
 			def.func.hidden_var_offset = hidden_var_offset;
