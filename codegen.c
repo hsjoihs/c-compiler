@@ -26,12 +26,11 @@ static int is_label_compatible(const struct SourceLabel *ptr_label1,
 }
 
 void print_statement(struct PrinterState *ptr_prs,
-                     const struct Statement *ptr_sta)
+                     const struct Statement *ref_sta)
 {
-	const struct Statement sta = *ptr_sta;
-	if (sta.category != DECLARATION_STATEMENT) {
-		for (int j = 0; j < sta.labels.length; j++) {
-			const struct SourceLabel *ptr_label = sta.labels.vector[j];
+	if (ref_sta->category != DECLARATION_STATEMENT) {
+		for (int j = 0; j < ref_sta->labels.length; j++) {
+			const struct SourceLabel *ptr_label = ref_sta->labels.vector[j];
 
 			if (ptr_label->category == IDENT_LABEL) {
 				continue;
@@ -51,7 +50,7 @@ void print_statement(struct PrinterState *ptr_prs,
 			}
 		}
 	}
-	switch (sta.category) {
+	switch (ref_sta->category) {
 		case DECLARATION_STATEMENT: {
 			/* do nothing */
 			return;
@@ -65,18 +64,18 @@ void print_statement(struct PrinterState *ptr_prs,
 			return;
 		}
 		case EXPRESSION_STATEMENT: {
-			print_expression(ptr_prs, &sta.expr1);
+			print_expression(ptr_prs, &ref_sta->expr1);
 			gen_discard();
 			return;
 		}
 		case RETURN_STATEMENT: {
 
-			if (sta.expr1.category != VOID_EXPR &&
-			    sta.expr1.details.type.type_category == STRUCT_) {
-				print_address_of_lvalue(ptr_prs, &sta.expr1,
+			if (ref_sta->expr1.category != VOID_EXPR &&
+			    ref_sta->expr1.details.type.type_category == STRUCT_) {
+				print_address_of_lvalue(ptr_prs, &ref_sta->expr1,
 				                        "returning a struct");
 			} else {
-				print_expression(ptr_prs, &sta.expr1);
+				print_expression(ptr_prs, &ref_sta->expr1);
 			}
 
 			/* the first occurrence of return within a function */
@@ -100,7 +99,7 @@ void print_statement(struct PrinterState *ptr_prs,
 		}
 		case COMPOUND_STATEMENT: {
 
-			struct Vector /*<Statement>*/ vec = sta.statement_vector;
+			struct Vector /*<Statement>*/ vec = ref_sta->statement_vector;
 
 			for (int counter = 0; counter != vec.length; ++counter) {
 				const struct Statement *ptr_ith = vec.vector[counter];
@@ -112,7 +111,7 @@ void print_statement(struct PrinterState *ptr_prs,
 		case IF_ELSE_STATEMENT: {
 			int label1 = get_new_label_name(ptr_prs);
 			int label2 = get_new_label_name(ptr_prs);
-			const struct Expr expr = sta.expr1;
+			const struct Expr expr = ref_sta->expr1;
 			print_expression(ptr_prs, &expr);
 
 			gen_if_zero_jmp_nbyte(
@@ -121,7 +120,7 @@ void print_statement(struct PrinterState *ptr_prs,
 			gen_discard();
 
 			const struct Statement *ptr_inner_s =
-			    sta.statement_vector.vector[0];
+			    ref_sta->statement_vector.vector[0];
 			print_statement(ptr_prs, ptr_inner_s);
 
 			gen_jump(label2, "if statement");
@@ -129,21 +128,21 @@ void print_statement(struct PrinterState *ptr_prs,
 			gen_discard();
 
 			const struct Statement *ptr_inner_s2 =
-			    sta.statement_vector.vector[1];
+			    ref_sta->statement_vector.vector[1];
 			print_statement(ptr_prs, ptr_inner_s2);
 			gen_label(label2);
 
 			return;
 		}
 		case SWITCH_STATEMENT: {
-			codegen_switch(ptr_prs, ptr_sta);
+			codegen_switch(ptr_prs, ref_sta);
 			return;
 		}
 		case IF_STATEMENT: {
 
 			int label1 = get_new_label_name(ptr_prs);
 			int label2 = get_new_label_name(ptr_prs);
-			const struct Expr expr = sta.expr1;
+			const struct Expr expr = ref_sta->expr1;
 			print_expression(ptr_prs, &expr);
 
 			gen_if_zero_jmp_nbyte(
@@ -151,7 +150,7 @@ void print_statement(struct PrinterState *ptr_prs,
 			    0);
 			gen_discard();
 
-			print_statement(ptr_prs, sta.inner_statement);
+			print_statement(ptr_prs, ref_sta->inner_statement);
 
 			gen_jump(label2, "if statement");
 			gen_label(label1);
@@ -171,11 +170,11 @@ void print_statement(struct PrinterState *ptr_prs,
 			ptr_prs->continue_label_name = cont_label;
 
 			gen_label(label1);
-			print_statement(ptr_prs, sta.inner_statement);
+			print_statement(ptr_prs, ref_sta->inner_statement);
 
 			gen_label(cont_label);
 
-			const struct Expr expr = sta.expr1;
+			const struct Expr expr = ref_sta->expr1;
 			print_expression(ptr_prs, &expr);
 
 			gen_discard();
@@ -191,7 +190,7 @@ void print_statement(struct PrinterState *ptr_prs,
 		}
 
 		case WHILE_STATEMENT: {
-			const struct Expr expr = sta.expr1;
+			const struct Expr expr = ref_sta->expr1;
 
 			int stashed_break_label = ptr_prs->break_label_name;
 			int stashed_continue_label = ptr_prs->continue_label_name;
@@ -211,7 +210,7 @@ void print_statement(struct PrinterState *ptr_prs,
 			    size_of_basic(&expr.details.type, "condition of `while`"),
 			    break_label, -8);
 
-			print_statement(ptr_prs, sta.inner_statement);
+			print_statement(ptr_prs, ref_sta->inner_statement);
 
 			gen_label(cont_label);
 			gen_jump(label1, "for(part4)");
@@ -231,19 +230,19 @@ void print_statement(struct PrinterState *ptr_prs,
 			ptr_prs->break_label_name = break_label;
 			ptr_prs->continue_label_name = cont_label;
 
-			print_expression(ptr_prs, &sta.expr1); /* expression1 */
+			print_expression(ptr_prs, &ref_sta->expr1); /* expression1 */
 			gen_discard();
 			gen_label(label1);
-			print_expression(ptr_prs, &sta.expr2); /* expression2 */
+			print_expression(ptr_prs, &ref_sta->expr2); /* expression2 */
 
 			gen_discard();
-			gen_if_zero_jmp_nbyte(
-			    size_of_basic(&sta.expr2.details.type, "condition of `for`"),
-			    break_label, -8);
+			gen_if_zero_jmp_nbyte(size_of_basic(&ref_sta->expr2.details.type,
+			                                    "condition of `for`"),
+			                      break_label, -8);
 
-			print_statement(ptr_prs, sta.inner_statement);
+			print_statement(ptr_prs, ref_sta->inner_statement);
 			gen_label(cont_label);
-			print_expression(ptr_prs, &sta.expr3);
+			print_expression(ptr_prs, &ref_sta->expr3);
 			gen_discard();
 			gen_jump(label1, "for(part4)");
 			gen_label(break_label);
