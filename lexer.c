@@ -149,7 +149,7 @@ static struct Token get_token_raw(const char **ptr_to_str)
 	t.literal_str = 0;
 	t.token_begins_here = str;
 
-	if (*str == 0) { /* "\0"[0] is 0 in C */
+	if (*str == 0) {
 		t.kind = END;
 		return t;
 	}
@@ -220,7 +220,7 @@ static struct Token get_token_raw(const char **ptr_to_str)
 				t.kind = OP_PLUS_EQ;
 				*ptr_to_str += 2;
 				return t;
-			case 43: /* '+' */
+			case '+':
 				t.kind = OP_PLUS_PLUS;
 				*ptr_to_str += 2;
 				return t;
@@ -329,7 +329,7 @@ static struct Token get_token_raw(const char **ptr_to_str)
 		return t;
 	} else if (*str == '<') {
 		switch (str[1]) {
-			case 60: /* '<' */
+			case '<':
 				switch (str[2]) {
 					case '=':
 						t.kind = OP_LSHIFT_EQ;
@@ -351,7 +351,7 @@ static struct Token get_token_raw(const char **ptr_to_str)
 		}
 	} else if (*str == '>') {
 		switch (str[1]) {
-			case 62: /* '>' */
+			case '>':
 				switch (str[2]) {
 					case '=':
 						t.kind = OP_RSHIFT_EQ;
