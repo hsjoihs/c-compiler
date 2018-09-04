@@ -196,7 +196,7 @@ void gen_swap(void)
 
 void gen_push_ret_of_1byte(const char *fname)
 {
-	printf("//gen_push_ret_of_1byte(%c%s%c)\n", 34, fname, 34);
+	printf("//gen_push_ret_of_1byte(\"%s\")\n", fname);
 	gen_call(fname);
 
 	printf("  movsbl %%al, %%eax\n"
@@ -205,14 +205,14 @@ void gen_push_ret_of_1byte(const char *fname)
 
 void gen_push_ret_of_4byte(const char *fname)
 {
-	printf("//gen_push_ret_of_4byte(%c%s%c)\n", 34, fname, 34);
+	printf("//gen_push_ret_of_4byte(\"%s\")\n", fname);
 	gen_call(fname);
 	printf("  movl %%eax, (%%rsp)\n");
 }
 
 void gen_push_ret_of_8byte(const char *fname)
 {
-	printf("//gen_push_ret_of_8byte(%c%s%c)\n", 34, fname, 34);
+	printf("//gen_push_ret_of_8byte(\"%s\")\n", fname);
 	gen_call(fname);
 	printf("  movq %%rax, (%%rsp)\n");
 }
@@ -302,7 +302,7 @@ void gen_pop_to_reg_8byte(const char *str)
 
 void gen_op_ints(const char *str)
 {
-	printf("//gen_op_ints(%c%s%c)\n", 34, str, 34);
+	printf("//gen_op_ints(\"%s\")\n", str);
 	printf("  movl (%%rsp), %%eax\n"
 	       "  %s %%eax, 8(%%rsp)\n"
 	       "  addq $8, %%rsp\n",
@@ -311,7 +311,7 @@ void gen_op_ints(const char *str)
 
 void gen_op_8byte(const char *str)
 {
-	printf("//gen_op_8byte(%c%s%c)\n", 34, str, 34);
+	printf("//gen_op_8byte(\"%s\")\n", str);
 	printf("  movq (%%rsp), %%rax\n"
 	       "  %s %%rax, 8(%%rsp)\n"
 	       "  addq $8, %%rsp\n",
@@ -379,7 +379,7 @@ setge: greater than or eq
 */
 void gen_compare_ints(const char *str)
 {
-	printf("//gen_compare_ints(%c%s%c)\n", 34, str, 34);
+	printf("//gen_compare_ints(\"%s\")\n", str);
 	printf("  movl 8(%%rsp), %%eax\n"
 	       "  cmpl (%%rsp), %%eax\n"
 	       "  %s %%al\n"
@@ -404,7 +404,7 @@ negl: integer negation
 */
 void gen_unary(const char *str)
 {
-	printf("//gen_unary(%c%s%c)\n", 34, str, 34);
+	printf("//gen_unary(\"%s\")\n", str);
 	printf("  %s (%%rsp)\n", str);
 }
 
@@ -500,7 +500,7 @@ sarl: right shift
 */
 void gen_shift_ints(const char *str)
 {
-	printf("//gen_shift_ints(%c%s%c)\n", 34, str, 34);
+	printf("//gen_shift_ints(\"%s\")\n", str);
 	printf("  movl (%%rsp), %%eax\n"
 	       "  movl %%eax, %%ecx\n"
 	       "  %s %%cl, 8(%%rsp)\n"
@@ -607,14 +607,14 @@ void gen_div_by_const(int num)
 
 void gen_global_declaration(const char *ident, int size)
 {
-	printf("//gen_global_declaration(%c%s%c, %d)\n", 34, ident, 34, size);
+	printf("//gen_global_declaration(\"%s\", %d)\n", ident, size);
 	printf(".comm " PREFIX "%s,%d\n", ident, size);
 }
 
 /* confirmed in both environments */
 void gen_push_address_of_global(const char *ident)
 {
-	printf("//gen_push_address_of_global(%c%s%c);\n", 34, ident, 34);
+	printf("//gen_push_address_of_global(\"%s\");\n", ident);
 	printf("  subq $8, %%rsp\n");
 #ifdef OSX
 	printf("  movq " PREFIX "%s@GOTPCREL(%%rip), %%rax\n", ident);
@@ -677,10 +677,10 @@ void gen_assign_1byte(void)
 
 void gen_str(int strnum, const char *str)
 {
-	printf("//gen_str(%d, %c%s%c)\n", strnum, 34, str, 34);
+	printf("//gen_str(%d, \"%s\")\n", strnum, str);
 	printf("L_str%d:\n"
-	       ".asciz %c%s%c\n",
-	       strnum, 34, str, 34);
+	       ".asciz \"%s\"\n",
+	       strnum, str);
 }
 
 void gen_push_address_of_str(int strnum)
@@ -889,7 +889,7 @@ void gen_extend_to_4byte(void)
 */
 void gen_compare_ptrs(const char *str)
 {
-	printf("//gen_compare_ptrs(%c%s%c)\n", 34, str, 34);
+	printf("//gen_compare_ptrs(\"%s\")\n", str);
 	puts("  movq 8(%rsp), %rax\n"
 	     "  cmpq (%rsp), %rax");
 	printf("  %s %%al\n", str);
