@@ -57,29 +57,29 @@ char *escape(const char *str)
 				break;
 			case 9:
 				ans[j] = 92;
-				ans[j + 1] = "t"[0];
+				ans[j + 1] = 't';
 				j += 2;
 				break;
 			case 10:
 				ans[j] = 92;
-				ans[j + 1] = "n"[0];
+				ans[j + 1] = 'n';
 				j += 2;
 				break;
 			case 11: /* somehow \v fails */
 				ans[j] = 92;
-				ans[j + 1] = "0"[0];
-				ans[j + 2] = "1"[0];
-				ans[j + 3] = "3"[0];
+				ans[j + 1] = '0';
+				ans[j + 2] = '1';
+				ans[j + 3] = '3';
 				j += 4;
 				break;
 			case 12:
 				ans[j] = 92;
-				ans[j + 1] = "f"[0];
+				ans[j + 1] = 'f';
 				j += 2;
 				break;
 			case 13:
 				ans[j] = 92;
-				ans[j + 1] = "r"[0];
+				ans[j + 1] = 'r';
 				j += 2;
 				break;
 			default:
@@ -120,7 +120,7 @@ static void print_token(const struct Token *ptr_tok,
 	}
 	for (int i = 0; i < next_token_begins - ptr_tok->token_begins_here; i++) {
 		char c = ptr_tok->token_begins_here[i];
-		if (c == " "[0] || c == "\t"[0] || c == "\n"[0] || c == "\v"[0] ||
+		if (c == ' ' || c == "\t"[0] || c == "\n"[0] || c == "\v"[0] ||
 		    c == "\f"[0] || c == "\r"[0]) {
 			break;
 		}
@@ -146,15 +146,15 @@ static struct Token get_token_raw(const char **ptr_to_str)
 		return t;
 	}
 
-	if (*str == " "[0] || *str == "\t"[0] || *str == "\n"[0] ||
-	    *str == "\v"[0] || *str == "\f"[0] || *str == "\r"[0]) {
+	if (*str == ' ' || *str == "\t"[0] || *str == "\n"[0] || *str == "\v"[0] ||
+	    *str == "\f"[0] || *str == "\r"[0]) {
 		++*ptr_to_str;
 		return get_token(ptr_to_str);
 	}
 
-	if (*str == "/"[0] && str[1] == "*"[0]) {
+	if (*str == '/' && str[1] == '*') {
 		str += 2;
-		while (*str != "*"[0] || str[1] != "/"[0]) {
+		while (*str != '*' || str[1] != '/') {
 			++str;
 		}
 		str += 2;
@@ -205,7 +205,7 @@ static struct Token get_token_raw(const char **ptr_to_str)
 		}
 	}
 
-	if (*str == "+"[0]) {
+	if (*str == '+') {
 		switch (str[1]) {
 			case 61: /* '=' */
 				t.kind = OP_PLUS_EQ;
@@ -221,7 +221,7 @@ static struct Token get_token_raw(const char **ptr_to_str)
 				return t;
 		}
 
-	} else if (*str == "-"[0]) {
+	} else if (*str == '-') {
 		switch (str[1]) {
 			case 61: /* '=' */
 				t.kind = OP_MINUS_EQ;
@@ -241,7 +241,7 @@ static struct Token get_token_raw(const char **ptr_to_str)
 				return t;
 		}
 
-	} else if (*str == "*"[0]) {
+	} else if (*str == '*') {
 		switch (str[1]) {
 			case 61: /* '=' */
 				t.kind = OP_ASTERISK_EQ;
@@ -253,15 +253,15 @@ static struct Token get_token_raw(const char **ptr_to_str)
 				return t;
 		}
 
-	} else if (*str == "("[0]) {
+	} else if (*str == '(') {
 		t.kind = LEFT_PAREN;
 		++*ptr_to_str;
 		return t;
-	} else if (*str == ")"[0]) {
+	} else if (*str == ')') {
 		t.kind = RIGHT_PAREN;
 		++*ptr_to_str;
 		return t;
-	} else if (*str == "/"[0]) {
+	} else if (*str == '/') {
 		switch (str[1]) {
 			case 61: /* '=' */
 				t.kind = OP_SLASH_EQ;
@@ -272,7 +272,7 @@ static struct Token get_token_raw(const char **ptr_to_str)
 				++*ptr_to_str;
 				return t;
 		}
-	} else if (*str == "%"[0]) {
+	} else if (*str == '%') {
 		switch (str[1]) {
 			case 61: /* '=' */
 				t.kind = OP_PERCENT_EQ;
@@ -283,11 +283,11 @@ static struct Token get_token_raw(const char **ptr_to_str)
 				++*ptr_to_str;
 				return t;
 		}
-	} else if (*str == ","[0]) {
+	} else if (*str == ',') {
 		t.kind = OP_COMMA;
 		++*ptr_to_str;
 		return t;
-	} else if (*str == "^"[0]) {
+	} else if (*str == '^') {
 		switch (str[1]) {
 			case 61: /* '=' */
 				t.kind = OP_HAT_EQ;
@@ -298,27 +298,27 @@ static struct Token get_token_raw(const char **ptr_to_str)
 				++*ptr_to_str;
 				return t;
 		}
-	} else if (*str == ";"[0]) {
+	} else if (*str == ';') {
 		t.kind = SEMICOLON;
 		++*ptr_to_str;
 		return t;
-	} else if (*str == "?"[0]) {
+	} else if (*str == '?') {
 		t.kind = QUESTION;
 		++*ptr_to_str;
 		return t;
-	} else if (*str == ":"[0]) {
+	} else if (*str == ':') {
 		t.kind = COLON;
 		++*ptr_to_str;
 		return t;
-	} else if (*str == "{"[0]) {
+	} else if (*str == '{') {
 		t.kind = LEFT_BRACE;
 		++*ptr_to_str;
 		return t;
-	} else if (*str == "}"[0]) {
+	} else if (*str == '}') {
 		t.kind = RIGHT_BRACE;
 		++*ptr_to_str;
 		return t;
-	} else if (*str == "<"[0]) {
+	} else if (*str == '<') {
 		switch (str[1]) {
 			case 60: /* '<' */
 				switch (str[2]) {
@@ -340,7 +340,7 @@ static struct Token get_token_raw(const char **ptr_to_str)
 				++*ptr_to_str;
 				return t;
 		}
-	} else if (*str == ">"[0]) {
+	} else if (*str == '>') {
 		switch (str[1]) {
 			case 62: /* '>' */
 				switch (str[2]) {
@@ -362,7 +362,7 @@ static struct Token get_token_raw(const char **ptr_to_str)
 				++*ptr_to_str;
 				return t;
 		}
-	} else if (*str == "&"[0]) {
+	} else if (*str == '&') {
 		switch (str[1]) {
 			case 38: /* '&' */
 				t.kind = OP_AND_AND;
@@ -377,7 +377,7 @@ static struct Token get_token_raw(const char **ptr_to_str)
 				++*ptr_to_str;
 				return t;
 		}
-	} else if (*str == "|"[0]) {
+	} else if (*str == '|') {
 		switch (str[1]) {
 			case 124: /* '|' */
 				t.kind = OP_OR_OR;
@@ -392,7 +392,7 @@ static struct Token get_token_raw(const char **ptr_to_str)
 				++*ptr_to_str;
 				return t;
 		}
-	} else if (*str == "="[0]) {
+	} else if (*str == '=') {
 		switch (str[1]) {
 			case 61: /* '=' */
 				t.kind = OP_EQ_EQ;
@@ -403,7 +403,7 @@ static struct Token get_token_raw(const char **ptr_to_str)
 				++*ptr_to_str;
 				return t;
 		}
-	} else if (*str == "!"[0]) {
+	} else if (*str == '!') {
 		switch (str[1]) {
 			case 61: /* '=' */
 				t.kind = OP_NOT_EQ;
@@ -414,25 +414,25 @@ static struct Token get_token_raw(const char **ptr_to_str)
 				++*ptr_to_str;
 				return t;
 		}
-	} else if (*str == "~"[0]) {
+	} else if (*str == '~') {
 		t.kind = OP_TILDA;
 		++*ptr_to_str;
 		return t;
-	} else if (*str == "["[0]) {
+	} else if (*str == '[') {
 		t.kind = LEFT_BRACKET;
 		++*ptr_to_str;
 		return t;
-	} else if (*str == "]"[0]) {
+	} else if (*str == ']') {
 		t.kind = RIGHT_BRACKET;
 		++*ptr_to_str;
 		return t;
-	} else if (*str == "."[0]) {
+	} else if (*str == '.') {
 		t.kind = DOT;
 		++*ptr_to_str;
 		return t;
 	}
 
-	if (*str == "0"[0]) {
+	if (*str == '0') {
 		t.kind = LIT_DEC_INTEGER;
 		t.int_value = 0;
 
@@ -442,15 +442,15 @@ static struct Token get_token_raw(const char **ptr_to_str)
 		return t;
 	}
 
-	if (*str >= "1"[0] && *str <= "9"[0]) {
+	if (*str >= '1' && *str <= '9') {
 		t.kind = LIT_DEC_INTEGER;
 		t.int_value = 0;
 		do {
-			if (*str >= "0"[0] &&
-			    *str <= "9"[0]) { /* portable, since it is guaranteed that
-				                  "0"[0] - "9"[0] are consecutive */
+			if (*str >= '0' &&
+			    *str <= '9') { /* portable, since it is guaranteed that
+				                  '0' - '9' are consecutive */
 				t.int_value *= 10;
-				t.int_value += *str - "0"[0]; /* portable */
+				t.int_value += *str - '0'; /* portable */
 				++str;
 			} else {
 				*ptr_to_str = str;
