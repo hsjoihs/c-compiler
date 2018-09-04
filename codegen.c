@@ -258,27 +258,26 @@ void print_statement(struct PrinterState *ptr_prs,
 }
 
 static void print_toplevel_definition(struct PrinterState *ptr_prs,
-                                      const struct Toplevel *ptr_def)
+                                      const struct Toplevel *ref_def)
 {
-	struct Toplevel def = *ptr_def;
-	if (def.category == TOPLEVEL_VAR_DEFINITION) {
-		if (def.declarator_name && !def.is_extern_global_var) {
-			gen_global_declaration(def.declarator_name,
-			                       def.size_of_declarator_type);
+	if (ref_def->category == TOPLEVEL_VAR_DEFINITION) {
+		if (ref_def->declarator_name && !ref_def->is_extern_global_var) {
+			gen_global_declaration(ref_def->declarator_name,
+			                       ref_def->size_of_declarator_type);
 		}
 		return;
 	}
-	if (def.category == TOPLEVEL_FUNCTION_DECLARATION) {
+	if (ref_def->category == TOPLEVEL_FUNCTION_DECLARATION) {
 		return;
 	}
 
-	assert(def.category == TOPLEVEL_FUNCTION_DEFINITION);
+	assert(ref_def->category == TOPLEVEL_FUNCTION_DEFINITION);
 
-	const struct Statement sta = def.func.sta;
+	const struct Statement sta = ref_def->func.sta;
 	struct Vector /*<LocalVarInfo>*/ offsets_and_types =
-	    def.func.offsets_and_types;
-	struct Type ret_type = def.func.ret_type;
-	const char *declarator_name = def.declarator_name;
+	    ref_def->func.offsets_and_types;
+	struct Type ret_type = ref_def->func.ret_type;
+	const char *declarator_name = ref_def->declarator_name;
 
 	ptr_prs->return_label_name = -1;   /* -1 means invalid */
 	ptr_prs->break_label_name = -1;    /* -1 means invalid */
@@ -287,10 +286,10 @@ static void print_toplevel_definition(struct PrinterState *ptr_prs,
 	int label2;
 	label1 = get_new_label_name(ptr_prs);
 	label2 = get_new_label_name(ptr_prs);
-	if (def.func.is_static_function) {
-		gen_prologue_static(def.func.capacity, declarator_name);
+	if (ref_def->func.is_static_function) {
+		gen_prologue_static(ref_def->func.capacity, declarator_name);
 	} else {
-		gen_prologue(def.func.capacity, declarator_name);
+		gen_prologue(ref_def->func.capacity, declarator_name);
 	}
 	for (int counter = 0; counter < offsets_and_types.length; ++counter) {
 		const struct LocalVarInfo *ptr_info = offsets_and_types.vector[counter];
@@ -329,15 +328,15 @@ static void print_toplevel_definition(struct PrinterState *ptr_prs,
 		             "`return` is not found");
 	}
 	if (ret_type.type_category == STRUCT_) {
-		enum SystemVAbiClass abi_class = def.func.abi_class;
-		int ret_struct_size = def.func.ret_struct_size;
+		enum SystemVAbiClass abi_class = ref_def->func.abi_class;
+		int ret_struct_size = ref_def->func.ret_struct_size;
 
 		if (abi_class == INTEGER_CLASS) {
 			gen_epilogue_returning_small_struct(ret_struct_size,
 			                                    ptr_prs->return_label_name);
 		} else {
 			gen_label(ptr_prs->return_label_name);
-			gen_push_from_local_nbyte(8, def.func.hidden_var_offset);
+			gen_push_from_local_nbyte(8, ref_def->func.hidden_var_offset);
 			gen_swap();
 			gen_copy_struct_and_discard(ret_struct_size);
 			printf("  movl $123, %%eax\nleave\nret\n");
