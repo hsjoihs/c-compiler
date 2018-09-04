@@ -20,19 +20,19 @@ char *unescape(const char *str)
 				case 92:
 					ans[j] = 92;
 					break;
-				case 116: /* 't' */
+				case 't':
 					ans[j] = 9;
 					break;
-				case 110: /* 'n' */
+				case 'n':
 					ans[j] = 10;
 					break;
-				case 118: /* 'v' */
+				case 'v':
 					ans[j] = 11;
 					break;
-				case 102: /* 'f' */
+				case 'f':
 					ans[j] = 12;
 					break;
-				case 114: /* 'f' */
+				case 'r':
 					ans[j] = 13;
 					break;
 			}
@@ -207,7 +207,7 @@ static struct Token get_token_raw(const char **ptr_to_str)
 
 	if (*str == '+') {
 		switch (str[1]) {
-			case 61: /* '=' */
+			case '=':
 				t.kind = OP_PLUS_EQ;
 				*ptr_to_str += 2;
 				return t;
@@ -223,15 +223,15 @@ static struct Token get_token_raw(const char **ptr_to_str)
 
 	} else if (*str == '-') {
 		switch (str[1]) {
-			case 61: /* '=' */
+			case '=':
 				t.kind = OP_MINUS_EQ;
 				*ptr_to_str += 2;
 				return t;
-			case 45: /* '-' */
+			case '-':
 				t.kind = OP_MINUS_MINUS;
 				*ptr_to_str += 2;
 				return t;
-			case 62: /* '>' */
+			case '>':
 				t.kind = ARROW;
 				*ptr_to_str += 2;
 				return t;
@@ -243,7 +243,7 @@ static struct Token get_token_raw(const char **ptr_to_str)
 
 	} else if (*str == '*') {
 		switch (str[1]) {
-			case 61: /* '=' */
+			case '=':
 				t.kind = OP_ASTERISK_EQ;
 				*ptr_to_str += 2;
 				return t;
@@ -263,7 +263,7 @@ static struct Token get_token_raw(const char **ptr_to_str)
 		return t;
 	} else if (*str == '/') {
 		switch (str[1]) {
-			case 61: /* '=' */
+			case '=':
 				t.kind = OP_SLASH_EQ;
 				*ptr_to_str += 2;
 				return t;
@@ -274,7 +274,7 @@ static struct Token get_token_raw(const char **ptr_to_str)
 		}
 	} else if (*str == '%') {
 		switch (str[1]) {
-			case 61: /* '=' */
+			case '=':
 				t.kind = OP_PERCENT_EQ;
 				*ptr_to_str += 2;
 				return t;
@@ -289,7 +289,7 @@ static struct Token get_token_raw(const char **ptr_to_str)
 		return t;
 	} else if (*str == '^') {
 		switch (str[1]) {
-			case 61: /* '=' */
+			case '=':
 				t.kind = OP_HAT_EQ;
 				*ptr_to_str += 2;
 				return t;
@@ -322,7 +322,7 @@ static struct Token get_token_raw(const char **ptr_to_str)
 		switch (str[1]) {
 			case 60: /* '<' */
 				switch (str[2]) {
-					case 61: /* '=' */
+					case '=':
 						t.kind = OP_LSHIFT_EQ;
 						*ptr_to_str += 3;
 						return t;
@@ -331,7 +331,7 @@ static struct Token get_token_raw(const char **ptr_to_str)
 						*ptr_to_str += 2;
 						return t;
 				}
-			case 61: /* '=' */
+			case '=':
 				t.kind = OP_LT_EQ;
 				*ptr_to_str += 2;
 				return t;
@@ -344,7 +344,7 @@ static struct Token get_token_raw(const char **ptr_to_str)
 		switch (str[1]) {
 			case 62: /* '>' */
 				switch (str[2]) {
-					case 61: /* '=' */
+					case '=':
 						t.kind = OP_RSHIFT_EQ;
 						*ptr_to_str += 3;
 						return t;
@@ -353,7 +353,7 @@ static struct Token get_token_raw(const char **ptr_to_str)
 						*ptr_to_str += 2;
 						return t;
 				}
-			case 61: /* '=' */
+			case '=':
 				t.kind = OP_GT_EQ;
 				*ptr_to_str += 2;
 				return t;
@@ -364,11 +364,11 @@ static struct Token get_token_raw(const char **ptr_to_str)
 		}
 	} else if (*str == '&') {
 		switch (str[1]) {
-			case 38: /* '&' */
+			case '&':
 				t.kind = OP_AND_AND;
 				*ptr_to_str += 2;
 				return t;
-			case 61: /* '=' */
+			case '=':
 				t.kind = OP_AND_EQ;
 				*ptr_to_str += 2;
 				return t;
@@ -379,11 +379,11 @@ static struct Token get_token_raw(const char **ptr_to_str)
 		}
 	} else if (*str == '|') {
 		switch (str[1]) {
-			case 124: /* '|' */
+			case '|':
 				t.kind = OP_OR_OR;
 				*ptr_to_str += 2;
 				return t;
-			case 61: /* '=' */
+			case '=':
 				t.kind = OP_OR_EQ;
 				*ptr_to_str += 2;
 				return t;
@@ -394,7 +394,7 @@ static struct Token get_token_raw(const char **ptr_to_str)
 		}
 	} else if (*str == '=') {
 		switch (str[1]) {
-			case 61: /* '=' */
+			case '=':
 				t.kind = OP_EQ_EQ;
 				*ptr_to_str += 2;
 				return t;
@@ -405,7 +405,7 @@ static struct Token get_token_raw(const char **ptr_to_str)
 		}
 	} else if (*str == '!') {
 		switch (str[1]) {
-			case 61: /* '=' */
+			case '=':
 				t.kind = OP_NOT_EQ;
 				*ptr_to_str += 2;
 				return t;
