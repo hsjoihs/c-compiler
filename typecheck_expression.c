@@ -464,6 +464,15 @@ static enum SimpleBinOp op_before_assign(enum TokenKind kind)
 	}
 }
 
+static void cast_to_null_pointer_if_possible(struct Expr *ref_e,
+                                             const struct TypePair *ref_details)
+{
+	if (ref_e->category == INT_VALUE && ref_e->int_value == 0) {
+		ref_e->category = NULLPTR;
+		ref_e->details = *ref_details;
+	}
+}
+
 struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
                                  const struct UntypedExpr *ref_uexpr)
 {
@@ -831,10 +840,10 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 
 				if (uexpr.operator_ == OP_EQ) {
 					struct Expr expr2_new = expr2;
-					if (expr.details.type.type_category == PTR_ &&
-					    expr2.category == INT_VALUE && expr2.int_value == 0) {
-						expr2_new.category = NULLPTR;
-						expr2_new.details = expr.details;
+
+					if (expr.details.type.type_category == PTR_) {
+						cast_to_null_pointer_if_possible(&expr2_new,
+						                                 &expr.details);
 					}
 
 					expect_type(ptr_ps, &expr.details.type,
