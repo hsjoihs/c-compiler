@@ -884,32 +884,21 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 							expr2.category = NULLPTR;
 							expr2.details = expr.details;
 						}
-						expect_type(ptr_ps, &expr.details.type,
-						            &expr2.details.type,
-						            "mismatch in assignment operator");
-
-					} else {
-						expect_type(ptr_ps, &expr.details.type,
-						            &expr2.details.type,
-						            "mismatch in assignment operator");
 					}
+					expect_type(ptr_ps, &expr.details.type, &expr2.details.type,
+					            "mismatch in assignment operator");
+
+					*ptr_expr2 = expr2;
+					new_expr.ptr2 = ptr_expr2;
 
 					if (expr.details.type.type_category == STRUCT_) {
-						expect_type(ptr_ps, &expr.details.type,
-						            &expr2.details.type,
-						            "mismatch in assignment operator");
-						*ptr_expr2 = expr2;
 						new_expr.category = STRUCT_ASSIGNMENT_EXPR;
-						new_expr.ptr2 = ptr_expr2;
 						new_expr.size_info_for_struct_assign =
 						    size_of(ptr_ps, &expr.details.type);
-						return new_expr;
 					} else {
-						*ptr_expr2 = expr2;
 						new_expr.category = ASSIGNMENT_EXPR;
-						new_expr.ptr2 = ptr_expr2;
-						return new_expr;
 					}
+					return new_expr;
 				}
 			}
 
