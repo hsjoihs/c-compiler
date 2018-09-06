@@ -404,6 +404,21 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 
 			return;
 		}
+		case COMPOUND_ASSIGNMENT_EXPR: {
+
+			print_expression_as_lvalue(ptr_prs, expr.ptr1);
+			print_expression(ptr_prs, expr.ptr2);
+
+			print_simple_binary_op(expr.simple_binary_operator,
+			                       &expr.ptr1->details.type,
+			                       expr.size_info_for_pointer_arith);
+
+			struct Type type = expr.ptr1->details.type;
+
+			gen_assign_nbyte(size_of_basic(&type, "operand of assignment"));
+
+			return;
+		}
 		case INT_VALUE:
 			gen_push_int(expr.int_value);
 			return;
