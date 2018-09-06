@@ -820,7 +820,36 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 					exit(EXIT_FAILURE);
 				}
 
-				if (uexpr.operator_ != OP_EQ) {
+				if (uexpr.operator_ == OP_EQ) {
+					struct Expr new_expr;
+					new_expr.details = expr.details;
+					struct Expr *ptr_expr1 = calloc(1, sizeof(struct Expr));
+					struct Expr *ptr_expr2 = calloc(1, sizeof(struct Expr));
+					*ptr_expr1 = expr;
+					new_expr.ptr1 = ptr_expr1;
+					new_expr.ptr3 = 0;
+
+					if (expr.details.type.type_category == PTR_ &&
+					    expr2.category == INT_VALUE && expr2.int_value == 0) {
+						expr2.category = NULLPTR;
+						expr2.details = expr.details;
+					}
+
+					expect_type(ptr_ps, &expr.details.type, &expr2.details.type,
+					            "mismatch in assignment operator");
+
+					*ptr_expr2 = expr2;
+					new_expr.ptr2 = ptr_expr2;
+
+					if (expr.details.type.type_category == STRUCT_) {
+						new_expr.category = STRUCT_ASSIGNMENT_EXPR;
+						new_expr.size_info_for_struct_assign =
+						    size_of(ptr_ps, &expr.details.type);
+					} else {
+						new_expr.category = ASSIGNMENT_EXPR;
+					}
+					return new_expr;
+				} else { /* uexpr.operator_ != OP_EQ */
 					if (expr.details.type.type_category == STRUCT_) {
 						fprintf(stderr, "invalid compound assignment operator "
 						                "used on a struct\n");
@@ -868,35 +897,6 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 						    size_of(ptr_ps, &deref);
 					}
 
-					return new_expr;
-				} else { /* uexpr.operator_ == OP_EQ */
-					struct Expr new_expr;
-					new_expr.details = expr.details;
-					struct Expr *ptr_expr1 = calloc(1, sizeof(struct Expr));
-					struct Expr *ptr_expr2 = calloc(1, sizeof(struct Expr));
-					*ptr_expr1 = expr;
-					new_expr.ptr1 = ptr_expr1;
-					new_expr.ptr3 = 0;
-
-					if (expr.details.type.type_category == PTR_ &&
-					    expr2.category == INT_VALUE && expr2.int_value == 0) {
-						expr2.category = NULLPTR;
-						expr2.details = expr.details;
-					}
-
-					expect_type(ptr_ps, &expr.details.type, &expr2.details.type,
-					            "mismatch in assignment operator");
-
-					*ptr_expr2 = expr2;
-					new_expr.ptr2 = ptr_expr2;
-
-					if (expr.details.type.type_category == STRUCT_) {
-						new_expr.category = STRUCT_ASSIGNMENT_EXPR;
-						new_expr.size_info_for_struct_assign =
-						    size_of(ptr_ps, &expr.details.type);
-					} else {
-						new_expr.category = ASSIGNMENT_EXPR;
-					}
 					return new_expr;
 				}
 			}
