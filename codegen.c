@@ -69,7 +69,6 @@ void print_statement(struct PrinterState *ptr_prs,
 			return;
 		}
 		case RETURN_STATEMENT: {
-
 			if (ref_sta->expr1.category != VOID_EXPR &&
 			    ref_sta->expr1.details.type.type_category == STRUCT_) {
 				print_address_of_lvalue(ptr_prs, &ref_sta->expr1,
@@ -98,14 +97,12 @@ void print_statement(struct PrinterState *ptr_prs,
 			return;
 		}
 		case COMPOUND_STATEMENT: {
-
 			struct Vector /*<Statement>*/ vec = ref_sta->statement_vector;
 
 			for (int counter = 0; counter != vec.length; ++counter) {
 				const struct Statement *ptr_ith = vec.vector[counter];
 				print_statement(ptr_prs, ptr_ith);
 			}
-
 			return;
 		}
 		case IF_ELSE_STATEMENT: {
@@ -342,7 +339,6 @@ static void print_toplevel_definition(struct PrinterState *ptr_prs,
 			printf("  movl $123, %%eax\nleave\nret\n");
 		}
 	} else {
-
 		gen_epilogue_nbyte(size_of_basic(&ret_type, "return value"),
 		                   ptr_prs->return_label_name);
 	}
