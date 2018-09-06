@@ -878,23 +878,7 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 					new_expr.ptr1 = ptr_expr1;
 					new_expr.ptr3 = 0;
 
-					if (expr.details.type.type_category == STRUCT_) {
-
-						expect_type(ptr_ps, &expr.details.type,
-						            &expr2.details.type,
-						            "mismatch in assignment operator");
-
-						*ptr_expr2 = expr2;
-
-						new_expr.category = STRUCT_ASSIGNMENT_EXPR;
-						new_expr.ptr2 = ptr_expr2;
-
-						new_expr.size_info_for_struct_assign =
-						    size_of(ptr_ps, &expr.details.type);
-
-						return new_expr;
-
-					} else if (expr.details.type.type_category == PTR_) {
+					if (expr.details.type.type_category == PTR_) {
 						if (expr2.category == INT_VALUE &&
 						    expr2.int_value == 0) {
 							expr2.category = NULLPTR;
@@ -910,12 +894,22 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 						            "mismatch in assignment operator");
 					}
 
-					*ptr_expr2 = expr2;
-
-					new_expr.category = ASSIGNMENT_EXPR;
-					new_expr.ptr2 = ptr_expr2;
-
-					return new_expr;
+					if (expr.details.type.type_category == STRUCT_) {
+						expect_type(ptr_ps, &expr.details.type,
+						            &expr2.details.type,
+						            "mismatch in assignment operator");
+						*ptr_expr2 = expr2;
+						new_expr.category = STRUCT_ASSIGNMENT_EXPR;
+						new_expr.ptr2 = ptr_expr2;
+						new_expr.size_info_for_struct_assign =
+						    size_of(ptr_ps, &expr.details.type);
+						return new_expr;
+					} else {
+						*ptr_expr2 = expr2;
+						new_expr.category = ASSIGNMENT_EXPR;
+						new_expr.ptr2 = ptr_expr2;
+						return new_expr;
+					}
 				}
 			}
 
