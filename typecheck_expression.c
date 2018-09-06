@@ -872,6 +872,11 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 				} else { /* uexpr.operator_ == OP_EQ */
 					struct Expr new_expr;
 					new_expr.details = expr.details;
+					struct Expr *ptr_expr1 = calloc(1, sizeof(struct Expr));
+					struct Expr *ptr_expr2 = calloc(1, sizeof(struct Expr));
+					*ptr_expr1 = expr;
+					new_expr.ptr1 = ptr_expr1;
+					new_expr.ptr3 = 0;
 
 					if (expr.details.type.type_category == STRUCT_) {
 
@@ -879,15 +884,10 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 						            &expr2.details.type,
 						            "mismatch in assignment operator");
 
-						struct Expr *ptr_expr1 = calloc(1, sizeof(struct Expr));
-						struct Expr *ptr_expr2 = calloc(1, sizeof(struct Expr));
-						*ptr_expr1 = expr;
 						*ptr_expr2 = expr2;
 
 						new_expr.category = STRUCT_ASSIGNMENT_EXPR;
-						new_expr.ptr1 = ptr_expr1;
 						new_expr.ptr2 = ptr_expr2;
-						new_expr.ptr3 = 0;
 
 						new_expr.size_info_for_struct_assign =
 						    size_of(ptr_ps, &expr.details.type);
@@ -910,15 +910,10 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 						            "mismatch in assignment operator");
 					}
 
-					struct Expr *ptr_expr1 = calloc(1, sizeof(struct Expr));
-					struct Expr *ptr_expr2 = calloc(1, sizeof(struct Expr));
-					*ptr_expr1 = expr;
 					*ptr_expr2 = expr2;
 
 					new_expr.category = ASSIGNMENT_EXPR;
-					new_expr.ptr1 = ptr_expr1;
 					new_expr.ptr2 = ptr_expr2;
-					new_expr.ptr3 = 0;
 
 					return new_expr;
 				}
