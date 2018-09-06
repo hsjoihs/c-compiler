@@ -820,15 +820,15 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 					exit(EXIT_FAILURE);
 				}
 
-				if (uexpr.operator_ == OP_EQ) {
-					struct Expr new_expr;
-					new_expr.details = expr.details;
-					struct Expr *ptr_expr1 = calloc(1, sizeof(struct Expr));
-					struct Expr *ptr_expr2 = calloc(1, sizeof(struct Expr));
-					*ptr_expr1 = expr;
-					new_expr.ptr1 = ptr_expr1;
-					new_expr.ptr3 = 0;
+				struct Expr new_expr;
+				new_expr.details = expr.details;
+				struct Expr *ptr_expr1 = calloc(1, sizeof(struct Expr));
+				struct Expr *ptr_expr2 = calloc(1, sizeof(struct Expr));
+				*ptr_expr1 = expr;
+				new_expr.ptr1 = ptr_expr1;
+				new_expr.ptr3 = 0;
 
+				if (uexpr.operator_ == OP_EQ) {
 					if (expr.details.type.type_category == PTR_ &&
 					    expr2.category == INT_VALUE && expr2.int_value == 0) {
 						expr2.category = NULLPTR;
@@ -873,21 +873,13 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 					            "mismatch in assignment operator");
 				}
 
-				struct Expr *ptr_expr1 = calloc(1, sizeof(struct Expr));
-				struct Expr *ptr_expr2 = calloc(1, sizeof(struct Expr));
-				*ptr_expr1 = expr;
 				*ptr_expr2 = expr2;
-
-				struct Expr new_expr;
-				new_expr.details = expr.details;
 
 				new_expr.category = COMPOUND_ASSIGNMENT_EXPR;
 				new_expr.simple_binary_operator =
 				    op_before_assign(uexpr.operator_);
 
-				new_expr.ptr1 = ptr_expr1;
 				new_expr.ptr2 = ptr_expr2;
-				new_expr.ptr3 = 0;
 
 				if (expr.details.type.type_category == PTR_ &&
 				    (uexpr.operator_ == OP_PLUS_EQ ||
