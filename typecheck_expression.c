@@ -858,20 +858,36 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 					exit(EXIT_FAILURE);
 				}
 
-				if (expr.details.type.type_category == PTR_) {
-					if ((uexpr.operator_ == OP_PLUS_EQ ||
-					     uexpr.operator_ == OP_MINUS_EQ)) {
-						expect_integral(&expr2.details.type,
-						                "right side of += or -= to a pointer");
-					} else {
-						fprintf(stderr, "invalid compound assignment operator "
-						                "used on a pointer\n");
-						exit(EXIT_FAILURE);
-					}
-				} else {
-					expect_type(ptr_ps, &expr.details.type, &expr2.details.type,
-					            "mismatch in assignment operator");
+				if (expr.details.type.type_category == PTR_ &&
+				    (uexpr.operator_ == OP_PLUS_EQ ||
+				     uexpr.operator_ == OP_MINUS_EQ)) {
+
+					expect_integral(&expr2.details.type,
+					                "right side of += or -= to a pointer");
+
+					*ptr_expr2 = expr2;
+
+					new_expr.category = COMPOUND_ASSIGNMENT_EXPR;
+					new_expr.simple_binary_operator =
+					    op_before_assign(uexpr.operator_);
+
+					new_expr.ptr2 = ptr_expr2;
+
+					const struct Type deref = deref_type(&expr.details.type);
+					new_expr.size_info_for_pointer_arith =
+					    size_of(ptr_ps, &deref);
+
+					return new_expr;
 				}
+
+				if (expr.details.type.type_category == PTR_) {
+					fprintf(stderr, "invalid compound assignment operator "
+					                "used on a pointer\n");
+					exit(EXIT_FAILURE);
+				}
+
+				expect_type(ptr_ps, &expr.details.type, &expr2.details.type,
+				            "mismatch in assignment operator");
 
 				*ptr_expr2 = expr2;
 
