@@ -849,12 +849,16 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 						new_expr.category = ASSIGNMENT_EXPR;
 					}
 					return new_expr;
-				} else { /* uexpr.operator_ != OP_EQ */
+				}
+
+				{ /* uexpr.operator_ != OP_EQ */
 					if (expr.details.type.type_category == STRUCT_) {
 						fprintf(stderr, "invalid compound assignment operator "
 						                "used on a struct\n");
 						exit(EXIT_FAILURE);
-					} else if (expr.details.type.type_category == PTR_) {
+					}
+
+					if (expr.details.type.type_category == PTR_) {
 						if ((uexpr.operator_ == OP_PLUS_EQ ||
 						     uexpr.operator_ == OP_MINUS_EQ)) {
 							expect_integral(
