@@ -109,6 +109,20 @@ static void print_simple_binary_op(enum SimpleBinOp kind,
 	}
 }
 
+static void print_comma_op(const struct Type *ref_left_type, int size)
+{
+	const struct Type left_type = *ref_left_type;
+	assert(left_type.type_category != STRUCT_);
+	if (left_type.type_category == PTR_) {
+
+		gen_discard2nd_8byte();
+		return;
+	}
+
+	gen_discard2nd_8byte();
+	return;
+}
+
 void print_address_of_lvalue(struct PrinterState *ptr_prs,
                              const struct Expr *ref_expr, const char *msg)
 {
@@ -335,6 +349,14 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 			print_simple_binary_op(expr.simple_binary_operator,
 			                       &expr.ptr1->details.type,
 			                       expr.size_info_for_pointer_arith);
+			return;
+		}
+
+		case COMMA_EXPR: {
+			print_expression(ptr_prs, expr.ptr1);
+			print_expression(ptr_prs, expr.ptr2);
+			print_comma_op(&expr.ptr1->details.type,
+			               expr.size_info_for_pointer_arith);
 			return;
 		}
 

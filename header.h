@@ -165,6 +165,7 @@ _Noreturn void unsupported(const char *str);
 
 enum ExprCategory {
 	SIMPLE_BINARY_EXPR /*= 1*/,
+	COMMA_EXPR,
 	POINTER_PLUS_INT,
 	POINTER_MINUS_INT,
 	POINTER_MINUS_POINTER,

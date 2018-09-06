@@ -300,7 +300,7 @@ static struct Expr comma_op(const struct Expr *ref_expr,
 	struct Expr new_expr;
 	new_expr.details.type = *ref_type;
 	new_expr.details.true_type = *ref_type;
-	new_expr.category = SIMPLE_BINARY_EXPR;
+	new_expr.category = COMMA_EXPR;
 	new_expr.simple_binary_operator = to_simplebinop(OP_COMMA);
 	new_expr.ptr1 = ptr_expr1;
 	new_expr.ptr2 = ptr_expr2;
