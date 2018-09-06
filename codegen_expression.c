@@ -22,9 +22,6 @@ static void print_simple_binary_op(enum SimpleBinOp kind,
 	assert(left_type.type_category != STRUCT_);
 	if (left_type.type_category == PTR_) {
 		switch (kind) {
-			case SIMPLE_BIN_OP_COMMA:
-				gen_discard2nd_8byte();
-				return;
 			case SIMPLE_BIN_OP_PLUS:
 				print_op_pointer_plusminus_int(1, size);
 				return;
@@ -69,9 +66,6 @@ static void print_simple_binary_op(enum SimpleBinOp kind,
 			return;
 		case SIMPLE_BIN_OP_PERCENT:
 			gen_rem_ints();
-			return;
-		case SIMPLE_BIN_OP_COMMA:
-			gen_discard2nd_8byte();
 			return;
 		case SIMPLE_BIN_OP_LT:
 			gen_compare_ints("setl");

@@ -217,8 +217,6 @@ static enum SimpleBinOp to_simplebinop(enum TokenKind t)
 			return SIMPLE_BIN_OP_SLASH;
 		case OP_PERCENT:
 			return SIMPLE_BIN_OP_PERCENT;
-		case OP_COMMA:
-			return SIMPLE_BIN_OP_COMMA;
 		case OP_LT:
 			return SIMPLE_BIN_OP_LT;
 		case OP_LT_EQ:
@@ -301,7 +299,6 @@ static struct Expr comma_op(const struct Expr *ref_expr,
 	new_expr.details.type = *ref_type;
 	new_expr.details.true_type = *ref_type;
 	new_expr.category = COMMA_EXPR;
-	new_expr.simple_binary_operator = to_simplebinop(OP_COMMA);
 	new_expr.ptr1 = ptr_expr1;
 	new_expr.ptr2 = ptr_expr2;
 	new_expr.ptr3 = 0;
@@ -440,8 +437,6 @@ static struct Expr unary_op_(const struct Expr *ref_expr, enum TokenKind kind,
 static enum SimpleBinOp op_before_assign(enum TokenKind kind)
 {
 	switch (kind) {
-		case OP_EQ:
-			return SIMPLE_BIN_OP_COMMA;
 		case OP_PLUS_EQ:
 			return SIMPLE_BIN_OP_PLUS;
 		case OP_MINUS_EQ:
