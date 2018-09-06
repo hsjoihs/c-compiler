@@ -197,9 +197,8 @@ static void print_expression_as_lvalue(struct PrinterState *ptr_prs,
 			unsupported("FUNCCALL_EXPR_RETURNING_STRUCT");
 		}
 		case STRUCT_AND_OFFSET: {
-			struct Type type = expr.details.type;
 			gen_peek_deref_push_nbyte(
-			    size_of_basic(&type, "foo.bar as lvalue"));
+			    size_of_basic(&expr.details.type, "foo.bar as lvalue"));
 			return;
 		}
 		case LOCAL_VAR_: {
@@ -210,21 +209,17 @@ static void print_expression_as_lvalue(struct PrinterState *ptr_prs,
 			return;
 		}
 		case GLOBAL_VAR_: {
-			const char *name = expr.global_var_name;
-			struct Type type = expr.details.type;
-
-			printf("//load from global `%s`\n", name);
+			printf("//load from global `%s`\n", expr.global_var_name);
 			gen_peek_deref_push_nbyte(
-			    size_of_basic(&type, "global var as lvalue"));
+			    size_of_basic(&expr.details.type, "global var as lvalue"));
 
 			return;
 		}
 		case UNARY_OP_EXPR:
 			switch (expr.unary_operator) {
 				case UNARY_OP_ASTERISK: {
-					struct Type type = expr.details.type;
 					gen_peek_deref_push_nbyte(
-					    size_of_basic(&type, "*expr as lvalue"));
+					    size_of_basic(&expr.details.type, "*expr as lvalue"));
 					return;
 				}
 				default:
