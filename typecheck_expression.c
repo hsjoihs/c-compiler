@@ -805,7 +805,8 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 		}
 		case BINARY_EXPR: {
 			if (isAssign(uexpr.operator_)) {
-				struct Expr expr = typecheck_expression(ptr_ps, uexpr.ptr1);
+				const struct Expr expr =
+				    typecheck_expression(ptr_ps, uexpr.ptr1);
 				struct Expr expr2 = typecheck_expression(ptr_ps, uexpr.ptr2);
 				if (expr.details.type.type_category == ARRAY) {
 					fprintf(stderr, "array is not an lvalue\n");
@@ -814,7 +815,8 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 				if ((expr.details.type.type_category == PTR_ &&
 				     expr.details.true_type.type_category == ARRAY)) {
 					fprintf(stderr, "array is not an lvalue_\n");
-					fprintf(stderr, "left hand uexpr category: %d\n", uexpr.ptr1->category);
+					fprintf(stderr, "left hand uexpr category: %d\n",
+					        uexpr.ptr1->category);
 					exit(EXIT_FAILURE);
 				}
 
@@ -868,6 +870,9 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 
 					return new_expr;
 				} else { /* uexpr.operator_ == OP_EQ */
+					struct Expr new_expr;
+					new_expr.details = expr.details;
+
 					if (expr.details.type.type_category == STRUCT_) {
 
 						expect_type(ptr_ps, &expr.details.type,
@@ -879,8 +884,6 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 						*ptr_expr1 = expr;
 						*ptr_expr2 = expr2;
 
-						struct Expr new_expr;
-						new_expr.details = expr.details;
 						new_expr.category = STRUCT_ASSIGNMENT_EXPR;
 						new_expr.ptr1 = ptr_expr1;
 						new_expr.ptr2 = ptr_expr2;
@@ -912,8 +915,6 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 					*ptr_expr1 = expr;
 					*ptr_expr2 = expr2;
 
-					struct Expr new_expr;
-					new_expr.details = expr.details;
 					new_expr.category = ASSIGNMENT_EXPR;
 					new_expr.ptr1 = ptr_expr1;
 					new_expr.ptr2 = ptr_expr2;
