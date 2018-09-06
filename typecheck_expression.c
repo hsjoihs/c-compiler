@@ -834,256 +834,234 @@ struct Expr typecheck_binary_expression(const struct AnalyzerState *ptr_ps,
 {
 	const struct Expr expr = *ref_expr;
 	const struct Expr expr2 = *ref_expr2;
-	{
-		{
-			if (isAssign(op)) {
-				if (expr.details.type.type_category == ARRAY ||
-				    (expr.details.type.type_category == PTR_ &&
-				     expr.details.true_type.type_category == ARRAY)) {
-					fprintf(stderr, "array is not an lvalue\n");
+
+	if (isAssign(op)) {
+		if (expr.details.type.type_category == ARRAY ||
+		    (expr.details.type.type_category == PTR_ &&
+		     expr.details.true_type.type_category == ARRAY)) {
+			fprintf(stderr, "array is not an lvalue\n");
+			exit(EXIT_FAILURE);
+		}
+
+		struct Expr new_expr;
+		new_expr.details = expr.details;
+		struct Expr *ptr_expr1 = calloc(1, sizeof(struct Expr));
+		struct Expr *ptr_expr2 = calloc(1, sizeof(struct Expr));
+		*ptr_expr1 = expr;
+		new_expr.ptr1 = ptr_expr1;
+		new_expr.ptr3 = 0;
+
+		if (op == OP_EQ) {
+			struct Expr expr2_new = expr2;
+
+			if (expr.details.type.type_category == PTR_) {
+				cast_to_null_pointer_if_possible(&expr2_new, &expr.details);
+			}
+
+			expect_type(ptr_ps, &expr.details.type, &expr2_new.details.type,
+			            "mismatch in assignment operator");
+
+			*ptr_expr2 = expr2_new;
+			new_expr.ptr2 = ptr_expr2;
+
+			if (expr.details.type.type_category == STRUCT_) {
+				new_expr.category = STRUCT_ASSIGNMENT_EXPR;
+				new_expr.size_info_for_struct_assign =
+				    size_of(ptr_ps, &expr.details.type);
+			} else {
+				new_expr.category = ASSIGNMENT_EXPR;
+			}
+			return new_expr;
+		}
+
+		/* op != OP_EQ */
+		if (expr.details.type.type_category == STRUCT_) {
+			fprintf(stderr, "invalid compound assignment operator "
+			                "used on a struct\n");
+			exit(EXIT_FAILURE);
+		}
+
+		if (expr.details.type.type_category == PTR_ &&
+		    (op == OP_PLUS_EQ || op == OP_MINUS_EQ)) {
+
+			expect_integral(&expr2.details.type,
+			                "right side of += or -= to a pointer");
+
+			*ptr_expr2 = expr2;
+
+			new_expr.category = COMPOUND_ASSIGNMENT_EXPR;
+			new_expr.simple_binary_operator = op_before_assign(op);
+
+			new_expr.ptr2 = ptr_expr2;
+
+			const struct Type deref = deref_type(&expr.details.type);
+			new_expr.size_info_for_pointer_arith = size_of(ptr_ps, &deref);
+
+			return new_expr;
+		}
+
+		if (expr.details.type.type_category == PTR_) {
+			fprintf(stderr, "invalid compound assignment operator "
+			                "used on a pointer\n");
+			exit(EXIT_FAILURE);
+		}
+
+		expect_type(ptr_ps, &expr.details.type, &expr2.details.type,
+		            "mismatch in assignment operator");
+
+		*ptr_expr2 = expr2;
+
+		new_expr.category = COMPOUND_ASSIGNMENT_EXPR;
+		new_expr.simple_binary_operator = op_before_assign(op);
+
+		new_expr.ptr2 = ptr_expr2;
+
+		if (expr.details.type.type_category == PTR_ &&
+		    (op == OP_PLUS_EQ || op == OP_MINUS_EQ)) {
+			const struct Type deref = deref_type(&expr.details.type);
+			new_expr.size_info_for_pointer_arith = size_of(ptr_ps, &deref);
+		}
+
+		return new_expr;
+	}
+
+	switch (op) {
+		case OP_PLUS: {
+			const struct Type type1 = expr.details.type;
+			const struct Type type2 = expr2.details.type;
+
+			if (is_integral(&type1)) {
+				if (is_integral(&type2)) {
+					const struct Type t = INT_TYPE();
+					return simple_binary_op(&expr, &expr2, OP_PLUS, &t);
+				} else if (type2.type_category == PTR_) {
+					/* swapped */
+					return pointer_plusorminus_int(ptr_ps, &expr2, &expr,
+					                               OP_PLUS);
+				} else {
+					fprintf(stderr, "invalid type `");
+					debug_print_type(&type2);
+					fprintf(stderr, "`as the right operand of binary +\n");
+					exit(EXIT_FAILURE);
+				}
+			} else if (type1.type_category == PTR_) {
+				expect_integral(&expr2.details.type,
+				                "cannot add a pointer/struct to a pointer");
+				return pointer_plusorminus_int(ptr_ps, &expr, &expr2, OP_PLUS);
+			} else {
+				fprintf(stderr, "invalid type `");
+				debug_print_type(&type1);
+				fprintf(stderr, "`as the left operand of binary +\n");
+				exit(EXIT_FAILURE);
+			}
+		}
+		case OP_MINUS: {
+
+			struct Type type1 = expr.details.type;
+			struct Type type2 = expr2.details.type;
+
+			if (is_integral(&type1)) {
+				if (is_integral(&type2)) {
+					const struct Type t = INT_TYPE();
+					return simple_binary_op(&expr, &expr2, OP_MINUS, &t);
+				} else if (type2.type_category == PTR_) {
+
+					fprintf(stderr, "cannot subtract a pointer "
+					                "from an integer.\n");
 					exit(EXIT_FAILURE);
 				}
 
-				struct Expr new_expr;
-				new_expr.details = expr.details;
-				struct Expr *ptr_expr1 = calloc(1, sizeof(struct Expr));
-				struct Expr *ptr_expr2 = calloc(1, sizeof(struct Expr));
-				*ptr_expr1 = expr;
-				new_expr.ptr1 = ptr_expr1;
-				new_expr.ptr3 = 0;
+			} else if (type1.type_category == PTR_) {
+				if (is_integral(&type2)) {
 
-				if (op == OP_EQ) {
-					struct Expr expr2_new = expr2;
+					/* pointer minus int */
+					return pointer_plusorminus_int(ptr_ps, &expr, &expr2,
+					                               OP_MINUS);
+				} else {
+					/* pointer minus pointer */
 
-					if (expr.details.type.type_category == PTR_) {
-						cast_to_null_pointer_if_possible(&expr2_new,
-						                                 &expr.details);
-					}
-
-					expect_type(ptr_ps, &expr.details.type,
-					            &expr2_new.details.type,
-					            "mismatch in assignment operator");
-
-					*ptr_expr2 = expr2_new;
-					new_expr.ptr2 = ptr_expr2;
-
-					if (expr.details.type.type_category == STRUCT_) {
-						new_expr.category = STRUCT_ASSIGNMENT_EXPR;
-						new_expr.size_info_for_struct_assign =
-						    size_of(ptr_ps, &expr.details.type);
-					} else {
-						new_expr.category = ASSIGNMENT_EXPR;
-					}
-					return new_expr;
-				}
-
-				/* op != OP_EQ */
-				if (expr.details.type.type_category == STRUCT_) {
-					fprintf(stderr, "invalid compound assignment operator "
-					                "used on a struct\n");
-					exit(EXIT_FAILURE);
-				}
-
-				if (expr.details.type.type_category == PTR_ &&
-				    (op == OP_PLUS_EQ || op == OP_MINUS_EQ)) {
-
-					expect_integral(&expr2.details.type,
-					                "right side of += or -= to a pointer");
-
+					struct Expr *ptr_expr1 = calloc(1, sizeof(struct Expr));
+					struct Expr *ptr_expr2 = calloc(1, sizeof(struct Expr));
+					*ptr_expr1 = expr;
 					*ptr_expr2 = expr2;
 
-					new_expr.category = COMPOUND_ASSIGNMENT_EXPR;
-					new_expr.simple_binary_operator = op_before_assign(op);
-
+					struct Expr new_expr;
+					new_expr.details.type = INT_TYPE();
+					new_expr.details.true_type = INT_TYPE();
+					new_expr.category = POINTER_MINUS_POINTER;
+					new_expr.ptr1 = ptr_expr1;
 					new_expr.ptr2 = ptr_expr2;
-
+					new_expr.ptr3 = 0;
 					const struct Type deref = deref_type(&expr.details.type);
 					new_expr.size_info_for_pointer_arith =
 					    size_of(ptr_ps, &deref);
 
 					return new_expr;
 				}
+			} else {
+				fprintf(stderr, "invalid type `");
+				debug_print_type(&type1);
+				fprintf(stderr, "`as the left operand of binary -\n");
+				exit(EXIT_FAILURE);
+			}
+		}
+		case OP_AND_AND: {
+			expect_scalar(&expr.details.type, "operand of logical AND");
+			expect_scalar(&expr2.details.type, "operand of logical AND");
+			const struct Type t = INT_TYPE();
+			return binary_op(&expr, &expr2, LOGICAL_AND_EXPR, &t);
+		}
+		case OP_OR_OR: {
+			expect_scalar(&expr.details.type, "operand of logical OR");
+			expect_scalar(&expr2.details.type, "operand of logical OR");
+			const struct Type t = INT_TYPE();
+			return binary_op(&expr, &expr2, LOGICAL_OR_EXPR, &t);
+		}
+		case OP_OR:
+		case OP_AND:
+		case OP_LSHIFT:
+		case OP_RSHIFT:
+		case OP_HAT:
+		case OP_ASTERISK:
+		case OP_SLASH:
+		case OP_PERCENT: {
+			expect_integral(&expr.details.type, "left operand of an operator");
+			expect_integral(&expr2.details.type,
+			                "right operand of an operator");
+			return simple_binary_op(&expr, &expr2, op, &expr2.details.type);
+		}
+		case OP_GT:
+		case OP_GT_EQ:
+		case OP_LT:
+		case OP_LT_EQ:
+		case OP_NOT_EQ:
+		case OP_EQ_EQ: {
+			struct Expr expr_new = expr;
+			struct Expr expr2_new = expr2;
 
-				if (expr.details.type.type_category == PTR_) {
-					fprintf(stderr, "invalid compound assignment operator "
-					                "used on a pointer\n");
-					exit(EXIT_FAILURE);
-				}
+			if (expr.details.type.type_category == PTR_) {
+				cast_to_null_pointer_if_possible(&expr2_new, &expr.details);
+			} else if (expr2.details.type.type_category == PTR_) {
 
-				expect_type(ptr_ps, &expr.details.type, &expr2.details.type,
-				            "mismatch in assignment operator");
-
-				*ptr_expr2 = expr2;
-
-				new_expr.category = COMPOUND_ASSIGNMENT_EXPR;
-				new_expr.simple_binary_operator = op_before_assign(op);
-
-				new_expr.ptr2 = ptr_expr2;
-
-				if (expr.details.type.type_category == PTR_ &&
-				    (op == OP_PLUS_EQ || op == OP_MINUS_EQ)) {
-					const struct Type deref = deref_type(&expr.details.type);
-					new_expr.size_info_for_pointer_arith =
-					    size_of(ptr_ps, &deref);
-				}
-
-				return new_expr;
+				cast_to_null_pointer_if_possible(&expr_new, &expr2.details);
 			}
 
-			switch (op) {
-				case OP_PLUS: {
-					const struct Type type1 = expr.details.type;
-					const struct Type type2 = expr2.details.type;
-
-					if (is_integral(&type1)) {
-						if (is_integral(&type2)) {
-							const struct Type t = INT_TYPE();
-							return simple_binary_op(&expr, &expr2, OP_PLUS, &t);
-						} else if (type2.type_category == PTR_) {
-							/* swapped */
-							return pointer_plusorminus_int(ptr_ps, &expr2,
-							                               &expr, OP_PLUS);
-						} else {
-							fprintf(stderr, "invalid type `");
-							debug_print_type(&type2);
-							fprintf(stderr,
-							        "`as the right operand of binary +\n");
-							exit(EXIT_FAILURE);
-						}
-					} else if (type1.type_category == PTR_) {
-						expect_integral(
-						    &expr2.details.type,
-						    "cannot add a pointer/struct to a pointer");
-						return pointer_plusorminus_int(ptr_ps, &expr, &expr2,
-						                               OP_PLUS);
-					} else {
-						fprintf(stderr, "invalid type `");
-						debug_print_type(&type1);
-						fprintf(stderr, "`as the left operand of binary +\n");
-						exit(EXIT_FAILURE);
-					}
-				}
-				case OP_MINUS: {
-
-					struct Type type1 = expr.details.type;
-					struct Type type2 = expr2.details.type;
-
-					if (is_integral(&type1)) {
-						if (is_integral(&type2)) {
-							const struct Type t = INT_TYPE();
-							return simple_binary_op(&expr, &expr2, OP_MINUS,
-							                        &t);
-						} else if (type2.type_category == PTR_) {
-
-							fprintf(stderr, "cannot subtract a pointer "
-							                "from an integer.\n");
-							exit(EXIT_FAILURE);
-						}
-
-					} else if (type1.type_category == PTR_) {
-						if (is_integral(&type2)) {
-
-							/* pointer minus int */
-							return pointer_plusorminus_int(ptr_ps, &expr,
-							                               &expr2, OP_MINUS);
-						} else {
-							/* pointer minus pointer */
-
-							struct Expr *ptr_expr1 =
-							    calloc(1, sizeof(struct Expr));
-							struct Expr *ptr_expr2 =
-							    calloc(1, sizeof(struct Expr));
-							*ptr_expr1 = expr;
-							*ptr_expr2 = expr2;
-
-							struct Expr new_expr;
-							new_expr.details.type = INT_TYPE();
-							new_expr.details.true_type = INT_TYPE();
-							new_expr.category = POINTER_MINUS_POINTER;
-							new_expr.ptr1 = ptr_expr1;
-							new_expr.ptr2 = ptr_expr2;
-							new_expr.ptr3 = 0;
-							const struct Type deref =
-							    deref_type(&expr.details.type);
-							new_expr.size_info_for_pointer_arith =
-							    size_of(ptr_ps, &deref);
-
-							return new_expr;
-						}
-					} else {
-						fprintf(stderr, "invalid type `");
-						debug_print_type(&type1);
-						fprintf(stderr, "`as the left operand of binary -\n");
-						exit(EXIT_FAILURE);
-					}
-				}
-				case OP_AND_AND: {
-					expect_scalar(&expr.details.type, "operand of logical AND");
-					expect_scalar(&expr2.details.type,
-					              "operand of logical AND");
-					const struct Type t = INT_TYPE();
-					return binary_op(&expr, &expr2, LOGICAL_AND_EXPR, &t);
-				}
-				case OP_OR_OR: {
-					expect_scalar(&expr.details.type, "operand of logical OR");
-					expect_scalar(&expr2.details.type, "operand of logical OR");
-					const struct Type t = INT_TYPE();
-					return binary_op(&expr, &expr2, LOGICAL_OR_EXPR, &t);
-				}
-				case OP_OR:
-				case OP_AND:
-				case OP_LSHIFT:
-				case OP_RSHIFT:
-				case OP_HAT:
-				case OP_ASTERISK:
-				case OP_SLASH:
-				case OP_PERCENT: {
-					expect_integral(&expr.details.type,
-					                "left operand of an operator");
-					expect_integral(&expr2.details.type,
-					                "right operand of an operator");
-					return simple_binary_op(&expr, &expr2, op,
-					                        &expr2.details.type);
-				}
-				case OP_GT:
-				case OP_GT_EQ:
-				case OP_LT:
-				case OP_LT_EQ:
-				case OP_NOT_EQ:
-				case OP_EQ_EQ: {
-					struct Expr expr_new = expr;
-					struct Expr expr2_new = expr2;
-
-					if (expr.details.type.type_category == PTR_) {
-						cast_to_null_pointer_if_possible(&expr2_new,
-						                                 &expr.details);
-					} else if (expr2.details.type.type_category == PTR_) {
-
-						cast_to_null_pointer_if_possible(&expr_new,
-						                                 &expr2.details);
-					}
-
-					expect_type(ptr_ps, &expr_new.details.type,
-					            &expr2_new.details.type,
-					            "mismatch in operands of an "
-					            "equality/comparison operator");
-					const struct Type t = INT_TYPE();
-					return simple_binary_op(&expr_new, &expr2_new, op, &t);
-				}
-				case OP_COMMA: {
-					if (expr2.details.type.type_category == STRUCT_) {
-						unsupported(
-						    "struct as the right operand of comma operator");
-					}
-					return comma_op(&expr, &expr2, &expr2.details.type);
-				}
-				default: {
-					fprintf(stderr,
-					        "FAILURE::::::: INVALID TOKEN %d in binary expr\n",
-					        op);
-					exit(EXIT_FAILURE);
-				}
+			expect_type(ptr_ps, &expr_new.details.type, &expr2_new.details.type,
+			            "mismatch in operands of an "
+			            "equality/comparison operator");
+			const struct Type t = INT_TYPE();
+			return simple_binary_op(&expr_new, &expr2_new, op, &t);
+		}
+		case OP_COMMA: {
+			if (expr2.details.type.type_category == STRUCT_) {
+				unsupported("struct as the right operand of comma operator");
 			}
+			return comma_op(&expr, &expr2, &expr2.details.type);
+		}
+		default: {
+			fprintf(stderr, "FAILURE::::::: INVALID TOKEN %d in binary expr\n",
+			        op);
+			exit(EXIT_FAILURE);
 		}
 	}
 }
