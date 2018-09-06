@@ -19,6 +19,7 @@ static void print_simple_binary_op(enum SimpleBinOp kind,
                                    const struct Type *ref_left_type, int size)
 {
 	const struct Type left_type = *ref_left_type;
+	assert(left_type.type_category != STRUCT_);
 	if (left_type.type_category == PTR_) {
 		switch (kind) {
 			case SIMPLE_BIN_OP_COMMA:
