@@ -920,8 +920,8 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 				return new_expr;
 			}
 
-			struct Expr expr = typecheck_expression(ptr_ps, uexpr.ptr1);
-			struct Expr expr2 = typecheck_expression(ptr_ps, uexpr.ptr2);
+			const struct Expr expr = typecheck_expression(ptr_ps, uexpr.ptr1);
+			const struct Expr expr2 = typecheck_expression(ptr_ps, uexpr.ptr2);
 
 			switch (uexpr.operator_) {
 				case OP_PLUS: {
