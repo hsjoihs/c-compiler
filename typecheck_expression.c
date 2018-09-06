@@ -473,6 +473,11 @@ static void cast_to_null_pointer_if_possible(struct Expr *ref_e,
 	}
 }
 
+struct Expr typecheck_binary_expression(const struct AnalyzerState *ptr_ps,
+                                        const struct Expr *ref_expr,
+                                        const struct Expr *ref_expr2,
+                                        enum TokenKind op);
+
 struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
                                  const struct UntypedExpr *ref_uexpr)
 {
@@ -815,7 +820,23 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 		case BINARY_EXPR: {
 			const struct Expr expr = typecheck_expression(ptr_ps, uexpr.ptr1);
 			const struct Expr expr2 = typecheck_expression(ptr_ps, uexpr.ptr2);
-			if (isAssign(uexpr.operator_)) {
+			return typecheck_binary_expression(ptr_ps, &expr, &expr2,
+			                                   uexpr.operator_);
+		}
+	}
+	assert("should not pass here" && 0);
+}
+
+struct Expr typecheck_binary_expression(const struct AnalyzerState *ptr_ps,
+                                        const struct Expr *ref_expr,
+                                        const struct Expr *ref_expr2,
+                                        enum TokenKind op)
+{
+	const struct Expr expr = *ref_expr;
+	const struct Expr expr2 = *ref_expr2;
+	{
+		{
+			if (isAssign(op)) {
 				if (expr.details.type.type_category == ARRAY ||
 				    (expr.details.type.type_category == PTR_ &&
 				     expr.details.true_type.type_category == ARRAY)) {
@@ -831,7 +852,7 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 				new_expr.ptr1 = ptr_expr1;
 				new_expr.ptr3 = 0;
 
-				if (uexpr.operator_ == OP_EQ) {
+				if (op == OP_EQ) {
 					struct Expr expr2_new = expr2;
 
 					if (expr.details.type.type_category == PTR_) {
@@ -856,7 +877,7 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 					return new_expr;
 				}
 
-				/* uexpr.operator_ != OP_EQ */
+				/* op != OP_EQ */
 				if (expr.details.type.type_category == STRUCT_) {
 					fprintf(stderr, "invalid compound assignment operator "
 					                "used on a struct\n");
@@ -864,8 +885,7 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 				}
 
 				if (expr.details.type.type_category == PTR_ &&
-				    (uexpr.operator_ == OP_PLUS_EQ ||
-				     uexpr.operator_ == OP_MINUS_EQ)) {
+				    (op == OP_PLUS_EQ || op == OP_MINUS_EQ)) {
 
 					expect_integral(&expr2.details.type,
 					                "right side of += or -= to a pointer");
@@ -873,8 +893,7 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 					*ptr_expr2 = expr2;
 
 					new_expr.category = COMPOUND_ASSIGNMENT_EXPR;
-					new_expr.simple_binary_operator =
-					    op_before_assign(uexpr.operator_);
+					new_expr.simple_binary_operator = op_before_assign(op);
 
 					new_expr.ptr2 = ptr_expr2;
 
@@ -897,14 +916,12 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 				*ptr_expr2 = expr2;
 
 				new_expr.category = COMPOUND_ASSIGNMENT_EXPR;
-				new_expr.simple_binary_operator =
-				    op_before_assign(uexpr.operator_);
+				new_expr.simple_binary_operator = op_before_assign(op);
 
 				new_expr.ptr2 = ptr_expr2;
 
 				if (expr.details.type.type_category == PTR_ &&
-				    (uexpr.operator_ == OP_PLUS_EQ ||
-				     uexpr.operator_ == OP_MINUS_EQ)) {
+				    (op == OP_PLUS_EQ || op == OP_MINUS_EQ)) {
 					const struct Type deref = deref_type(&expr.details.type);
 					new_expr.size_info_for_pointer_arith =
 					    size_of(ptr_ps, &deref);
@@ -913,7 +930,7 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 				return new_expr;
 			}
 
-			switch (uexpr.operator_) {
+			switch (op) {
 				case OP_PLUS: {
 					const struct Type type1 = expr.details.type;
 					const struct Type type2 = expr2.details.type;
@@ -1025,7 +1042,7 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 					                "left operand of an operator");
 					expect_integral(&expr2.details.type,
 					                "right operand of an operator");
-					return simple_binary_op(&expr, &expr2, uexpr.operator_,
+					return simple_binary_op(&expr, &expr2, op,
 					                        &expr2.details.type);
 				}
 				case OP_GT:
@@ -1051,8 +1068,7 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 					            "mismatch in operands of an "
 					            "equality/comparison operator");
 					const struct Type t = INT_TYPE();
-					return simple_binary_op(&expr_new, &expr2_new,
-					                        uexpr.operator_, &t);
+					return simple_binary_op(&expr_new, &expr2_new, op, &t);
 				}
 				case OP_COMMA: {
 					if (expr2.details.type.type_category == STRUCT_) {
@@ -1064,11 +1080,10 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 				default: {
 					fprintf(stderr,
 					        "FAILURE::::::: INVALID TOKEN %d in binary expr\n",
-					        uexpr.operator_);
+					        op);
 					exit(EXIT_FAILURE);
 				}
 			}
 		}
 	}
-	assert("should not pass here" && 0);
 }
