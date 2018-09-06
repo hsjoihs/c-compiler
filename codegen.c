@@ -71,8 +71,8 @@ void print_statement(struct PrinterState *ptr_prs,
 		case RETURN_STATEMENT: {
 			if (ref_sta->expr1.category != VOID_EXPR &&
 			    ref_sta->expr1.details.type.type_category == STRUCT_) {
-				print_address_of_lvalue(ptr_prs, &ref_sta->expr1,
-				                        "returning a struct");
+				print_address_of_lvalue_or_struct(ptr_prs, &ref_sta->expr1,
+				                                  "returning a struct");
 			} else {
 				print_expression(ptr_prs, &ref_sta->expr1);
 			}
