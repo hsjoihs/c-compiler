@@ -288,6 +288,27 @@ static struct Expr simple_binary_op(const struct Expr *ref_expr,
 	return new_expr;
 }
 
+static struct Expr comma_op(const struct Expr *ref_expr,
+                            const struct Expr *ref_expr2,
+                            const struct Type *ref_type)
+{
+	struct Expr *ptr_expr1 = calloc(1, sizeof(struct Expr));
+	struct Expr *ptr_expr2 = calloc(1, sizeof(struct Expr));
+	*ptr_expr1 = *ref_expr;
+	*ptr_expr2 = *ref_expr2;
+
+	struct Expr new_expr;
+	new_expr.details.type = *ref_type;
+	new_expr.details.true_type = *ref_type;
+	new_expr.category = SIMPLE_BINARY_EXPR;
+	new_expr.simple_binary_operator = to_simplebinop(OP_COMMA);
+	new_expr.ptr1 = ptr_expr1;
+	new_expr.ptr2 = ptr_expr2;
+	new_expr.ptr3 = 0;
+
+	return new_expr;
+}
+
 static struct Expr pointer_plusorminus_int(const struct AnalyzerState *ptr_ps,
                                            const struct Expr *ref_expr,
                                            const struct Expr *ref_expr2,
@@ -1014,8 +1035,7 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 						unsupported(
 						    "struct as the left operand of comma operator");
 					}
-					return simple_binary_op(&expr, &expr2, uexpr.operator_,
-					                        &expr2.details.type);
+					return comma_op(&expr, &expr2, &expr2.details.type);
 				}
 				default: {
 					fprintf(stderr,
