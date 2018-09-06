@@ -816,15 +816,10 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 			const struct Expr expr = typecheck_expression(ptr_ps, uexpr.ptr1);
 			const struct Expr expr2 = typecheck_expression(ptr_ps, uexpr.ptr2);
 			if (isAssign(uexpr.operator_)) {
-				if (expr.details.type.type_category == ARRAY) {
-					fprintf(stderr, "array is not an lvalue\n");
-					exit(EXIT_FAILURE);
-				}
-				if ((expr.details.type.type_category == PTR_ &&
+				if (expr.details.type.type_category == ARRAY ||
+				    (expr.details.type.type_category == PTR_ &&
 				     expr.details.true_type.type_category == ARRAY)) {
-					fprintf(stderr, "array is not an lvalue_\n");
-					fprintf(stderr, "left hand uexpr category: %d\n",
-					        uexpr.ptr1->category);
+					fprintf(stderr, "array is not an lvalue\n");
 					exit(EXIT_FAILURE);
 				}
 
