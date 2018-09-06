@@ -1044,22 +1044,25 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 				case OP_LT_EQ:
 				case OP_NOT_EQ:
 				case OP_EQ_EQ: {
-					if (expr.details.type.type_category == PTR_ &&
-					    expr2.category == INT_VALUE && expr2.int_value == 0) {
-						expr2.category = NULLPTR;
-						expr2.details = expr.details;
-					} else if (expr2.details.type.type_category == PTR_ &&
-					           expr.category == INT_VALUE &&
-					           expr.int_value == 0) {
-						expr.category = NULLPTR;
-						expr.details = expr2.details;
+					struct Expr expr_new = expr;
+					struct Expr expr2_new = expr2;
+
+					if (expr.details.type.type_category == PTR_) {
+						cast_to_null_pointer_if_possible(&expr2_new,
+						                                 &expr.details);
+					} else if (expr2.details.type.type_category == PTR_) {
+
+						cast_to_null_pointer_if_possible(&expr_new,
+						                                 &expr2.details);
 					}
 
-					expect_type(ptr_ps, &expr.details.type, &expr2.details.type,
+					expect_type(ptr_ps, &expr_new.details.type,
+					            &expr2_new.details.type,
 					            "mismatch in operands of an "
 					            "equality/comparison operator");
 					const struct Type t = INT_TYPE();
-					return simple_binary_op(&expr, &expr2, uexpr.operator_, &t);
+					return simple_binary_op(&expr_new, &expr2_new,
+					                        uexpr.operator_, &t);
 				}
 				case OP_COMMA: {
 					if (expr2.details.type.type_category == STRUCT_) {
