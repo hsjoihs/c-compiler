@@ -807,7 +807,8 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 			if (isAssign(uexpr.operator_)) {
 				const struct Expr expr =
 				    typecheck_expression(ptr_ps, uexpr.ptr1);
-				struct Expr expr2 = typecheck_expression(ptr_ps, uexpr.ptr2);
+				const struct Expr expr2 =
+				    typecheck_expression(ptr_ps, uexpr.ptr2);
 				if (expr.details.type.type_category == ARRAY) {
 					fprintf(stderr, "array is not an lvalue\n");
 					exit(EXIT_FAILURE);
@@ -829,16 +830,18 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 				new_expr.ptr3 = 0;
 
 				if (uexpr.operator_ == OP_EQ) {
+					struct Expr expr2_new = expr2;
 					if (expr.details.type.type_category == PTR_ &&
 					    expr2.category == INT_VALUE && expr2.int_value == 0) {
-						expr2.category = NULLPTR;
-						expr2.details = expr.details;
+						expr2_new.category = NULLPTR;
+						expr2_new.details = expr.details;
 					}
 
-					expect_type(ptr_ps, &expr.details.type, &expr2.details.type,
+					expect_type(ptr_ps, &expr.details.type,
+					            &expr2_new.details.type,
 					            "mismatch in assignment operator");
 
-					*ptr_expr2 = expr2;
+					*ptr_expr2 = expr2_new;
 					new_expr.ptr2 = ptr_expr2;
 
 					if (expr.details.type.type_category == STRUCT_) {
