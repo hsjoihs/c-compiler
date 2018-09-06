@@ -498,7 +498,11 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 				const struct TypeAndIdent *ptr_vec_i = vec.vector[i];
 				if (strcmp(ptr_vec_i->ident_str, ident_after_dot) == 0) {
 					nth_member = i;
-					expr.details.type = ptr_vec_i->type;
+
+					struct Type t2 = ptr_vec_i->type;
+					if_array_convert_to_ptr_(&t2);
+					expr.details.type = t2;
+					expr.details.true_type = ptr_vec_i->type;
 					break;
 				}
 			}
@@ -810,6 +814,7 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 				if ((expr.details.type.type_category == PTR_ &&
 				     expr.details.true_type.type_category == ARRAY)) {
 					fprintf(stderr, "array is not an lvalue_\n");
+					fprintf(stderr, "left hand uexpr category: %d\n", uexpr.ptr1->category);
 					exit(EXIT_FAILURE);
 				}
 
