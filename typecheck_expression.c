@@ -813,11 +813,9 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 			return new_expr;
 		}
 		case BINARY_EXPR: {
+			const struct Expr expr = typecheck_expression(ptr_ps, uexpr.ptr1);
+			const struct Expr expr2 = typecheck_expression(ptr_ps, uexpr.ptr2);
 			if (isAssign(uexpr.operator_)) {
-				const struct Expr expr =
-				    typecheck_expression(ptr_ps, uexpr.ptr1);
-				const struct Expr expr2 =
-				    typecheck_expression(ptr_ps, uexpr.ptr2);
 				if (expr.details.type.type_category == ARRAY) {
 					fprintf(stderr, "array is not an lvalue\n");
 					exit(EXIT_FAILURE);
@@ -919,9 +917,6 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 
 				return new_expr;
 			}
-
-			const struct Expr expr = typecheck_expression(ptr_ps, uexpr.ptr1);
-			const struct Expr expr2 = typecheck_expression(ptr_ps, uexpr.ptr2);
 
 			switch (uexpr.operator_) {
 				case OP_PLUS: {
