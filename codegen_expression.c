@@ -242,6 +242,7 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 			int size = expr.size_info_for_struct_assign;
 			gen_copy_struct_and_discard(size);
 			gen_push_int(143253); /* random garbage */
+			return;
 		}
 		case VOID_EXPR: {
 			gen_push_int(123); /* random garbage */
