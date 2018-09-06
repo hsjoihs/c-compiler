@@ -31,22 +31,22 @@ static struct Type from_type3_to_type(const void **type3)
 	TypeNode elem = *ptr_elem;
 	type = elem;
 	switch (elem.type_category) {
-		case INT_:
-		case CHAR_:
-		case STRUCT_:
-		case VOID_:
-		case ENUM_:
-			return type;
+	case INT_:
+	case CHAR_:
+	case STRUCT_:
+	case VOID_:
+	case ENUM_:
+		return type;
 
-		case PTR_:
-		case ARRAY:
-		case FN: {
-			struct Type *ptr_to_current_type = calloc(1, sizeof(struct Type));
-			*ptr_to_current_type = from_type3_to_type(type3 + 1);
+	case PTR_:
+	case ARRAY:
+	case FN: {
+		struct Type *ptr_to_current_type = calloc(1, sizeof(struct Type));
+		*ptr_to_current_type = from_type3_to_type(type3 + 1);
 
-			type.derived_from = ptr_to_current_type;
-			return type;
-		}
+		type.derived_from = ptr_to_current_type;
+		return type;
+	}
 	}
 	assert("unmatched case" && 0);
 }

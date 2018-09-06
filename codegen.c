@@ -51,204 +51,202 @@ void print_statement(struct PrinterState *ptr_prs,
 		}
 	}
 	switch (ref_sta->category) {
-		case DECLARATION_STATEMENT: {
-			/* do nothing */
-			return;
+	case DECLARATION_STATEMENT: {
+		/* do nothing */
+		return;
+	}
+	case BREAK_STATEMENT: {
+		if (ptr_prs->break_label_name == -1) {
+			simple_error("invalid `break`; no loop, no switch\n");
+		} else {
+			gen_jump(ptr_prs->break_label_name, "break");
 		}
-		case BREAK_STATEMENT: {
-			if (ptr_prs->break_label_name == -1) {
-				simple_error("invalid `break`; no loop, no switch\n");
-			} else {
-				gen_jump(ptr_prs->break_label_name, "break");
-			}
-			return;
-		}
-		case EXPRESSION_STATEMENT: {
+		return;
+	}
+	case EXPRESSION_STATEMENT: {
+		print_expression(ptr_prs, &ref_sta->expr1);
+		gen_discard();
+		return;
+	}
+	case RETURN_STATEMENT: {
+		if (ref_sta->expr1.category != VOID_EXPR &&
+		    ref_sta->expr1.details.type.type_category == STRUCT_) {
+			print_address_of_lvalue_or_struct(ptr_prs, &ref_sta->expr1,
+			                                  "returning a struct");
+		} else {
 			print_expression(ptr_prs, &ref_sta->expr1);
-			gen_discard();
-			return;
-		}
-		case RETURN_STATEMENT: {
-			if (ref_sta->expr1.category != VOID_EXPR &&
-			    ref_sta->expr1.details.type.type_category == STRUCT_) {
-				print_address_of_lvalue_or_struct(ptr_prs, &ref_sta->expr1,
-				                                  "returning a struct");
-			} else {
-				print_expression(ptr_prs, &ref_sta->expr1);
-			}
-
-			/* the first occurrence of return within a function */
-			if (ptr_prs->return_label_name == -1) {
-				int ret_label = get_new_label_name(ptr_prs);
-				ptr_prs->return_label_name = ret_label;
-				gen_jump(ret_label, "return");
-			} else {
-				gen_jump(ptr_prs->return_label_name, "return");
-			}
-
-			return;
-		}
-		case CONTINUE_STATEMENT: {
-			if (ptr_prs->continue_label_name == -1) {
-				simple_error("invalid `continue`; no loop\n");
-			} else {
-				gen_jump(ptr_prs->continue_label_name, "continue");
-			}
-			return;
-		}
-		case COMPOUND_STATEMENT: {
-			struct Vector /*<Statement>*/ vec = ref_sta->statement_vector;
-
-			for (int counter = 0; counter != vec.length; ++counter) {
-				const struct Statement *ptr_ith = vec.vector[counter];
-				print_statement(ptr_prs, ptr_ith);
-			}
-			return;
-		}
-		case IF_ELSE_STATEMENT: {
-			int label1 = get_new_label_name(ptr_prs);
-			int label2 = get_new_label_name(ptr_prs);
-			const struct Expr expr = ref_sta->expr1;
-			print_expression(ptr_prs, &expr);
-
-			gen_if_zero_jmp_nbyte(
-			    size_of_basic(&expr.details.type, "condition of `if`"), label1,
-			    0);
-			gen_discard();
-
-			const struct Statement *ptr_inner_s =
-			    ref_sta->statement_vector.vector[0];
-			print_statement(ptr_prs, ptr_inner_s);
-
-			gen_jump(label2, "if statement");
-			gen_label(label1);
-			gen_discard();
-
-			const struct Statement *ptr_inner_s2 =
-			    ref_sta->statement_vector.vector[1];
-			print_statement(ptr_prs, ptr_inner_s2);
-			gen_label(label2);
-
-			return;
-		}
-		case SWITCH_STATEMENT: {
-			codegen_switch(ptr_prs, ref_sta);
-			return;
-		}
-		case IF_STATEMENT: {
-
-			int label1 = get_new_label_name(ptr_prs);
-			int label2 = get_new_label_name(ptr_prs);
-			const struct Expr expr = ref_sta->expr1;
-			print_expression(ptr_prs, &expr);
-
-			gen_if_zero_jmp_nbyte(
-			    size_of_basic(&expr.details.type, "condition of `if`"), label1,
-			    0);
-			gen_discard();
-
-			print_statement(ptr_prs, ref_sta->inner_statement);
-
-			gen_jump(label2, "if statement");
-			gen_label(label1);
-			gen_discard();
-
-			gen_label(label2);
-
-			return;
-		}
-		case DO_WHILE_STATEMENT: {
-			int stashed_break_label = ptr_prs->break_label_name;
-			int stashed_continue_label = ptr_prs->continue_label_name;
-			int label1 = get_new_label_name(ptr_prs);
-			int break_label = get_new_label_name(ptr_prs);
-			int cont_label = get_new_label_name(ptr_prs);
-			ptr_prs->break_label_name = break_label;
-			ptr_prs->continue_label_name = cont_label;
-
-			gen_label(label1);
-			print_statement(ptr_prs, ref_sta->inner_statement);
-
-			gen_label(cont_label);
-
-			const struct Expr expr = ref_sta->expr1;
-			print_expression(ptr_prs, &expr);
-
-			gen_discard();
-			gen_if_nonzero_jmp_nbyte(
-			    size_of_basic(&expr.details.type, "condition of do-while"),
-			    label1, -8);
-			gen_label(break_label);
-
-			ptr_prs->break_label_name = stashed_break_label;
-			ptr_prs->continue_label_name = stashed_continue_label;
-
-			return;
 		}
 
-		case WHILE_STATEMENT: {
-			const struct Expr expr = ref_sta->expr1;
-
-			int stashed_break_label = ptr_prs->break_label_name;
-			int stashed_continue_label = ptr_prs->continue_label_name;
-
-			int label1 = get_new_label_name(ptr_prs);
-			int break_label = get_new_label_name(ptr_prs);
-			int cont_label = get_new_label_name(ptr_prs);
-			ptr_prs->break_label_name = break_label;
-			ptr_prs->continue_label_name = cont_label;
-
-			gen_label(label1);
-
-			print_expression(ptr_prs, &expr);
-
-			gen_discard();
-			gen_if_zero_jmp_nbyte(
-			    size_of_basic(&expr.details.type, "condition of `while`"),
-			    break_label, -8);
-
-			print_statement(ptr_prs, ref_sta->inner_statement);
-
-			gen_label(cont_label);
-			gen_jump(label1, "for(part4)");
-			gen_label(break_label);
-
-			ptr_prs->break_label_name = stashed_break_label;
-			ptr_prs->continue_label_name = stashed_continue_label;
-
-			return;
+		/* the first occurrence of return within a function */
+		if (ptr_prs->return_label_name == -1) {
+			int ret_label = get_new_label_name(ptr_prs);
+			ptr_prs->return_label_name = ret_label;
+			gen_jump(ret_label, "return");
+		} else {
+			gen_jump(ptr_prs->return_label_name, "return");
 		}
-		case FOR_STATEMENT: {
-			int stashed_break_label = ptr_prs->break_label_name;
-			int stashed_continue_label = ptr_prs->continue_label_name;
-			int label1 = get_new_label_name(ptr_prs);
-			int break_label = get_new_label_name(ptr_prs);
-			int cont_label = get_new_label_name(ptr_prs);
-			ptr_prs->break_label_name = break_label;
-			ptr_prs->continue_label_name = cont_label;
 
-			print_expression(ptr_prs, &ref_sta->expr1); /* expression1 */
-			gen_discard();
-			gen_label(label1);
-			print_expression(ptr_prs, &ref_sta->expr2); /* expression2 */
-
-			gen_discard();
-			gen_if_zero_jmp_nbyte(size_of_basic(&ref_sta->expr2.details.type,
-			                                    "condition of `for`"),
-			                      break_label, -8);
-
-			print_statement(ptr_prs, ref_sta->inner_statement);
-			gen_label(cont_label);
-			print_expression(ptr_prs, &ref_sta->expr3);
-			gen_discard();
-			gen_jump(label1, "for(part4)");
-			gen_label(break_label);
-
-			ptr_prs->break_label_name = stashed_break_label;
-			ptr_prs->continue_label_name = stashed_continue_label;
-
-			return;
+		return;
+	}
+	case CONTINUE_STATEMENT: {
+		if (ptr_prs->continue_label_name == -1) {
+			simple_error("invalid `continue`; no loop\n");
+		} else {
+			gen_jump(ptr_prs->continue_label_name, "continue");
 		}
+		return;
+	}
+	case COMPOUND_STATEMENT: {
+		struct Vector /*<Statement>*/ vec = ref_sta->statement_vector;
+
+		for (int counter = 0; counter != vec.length; ++counter) {
+			const struct Statement *ptr_ith = vec.vector[counter];
+			print_statement(ptr_prs, ptr_ith);
+		}
+		return;
+	}
+	case IF_ELSE_STATEMENT: {
+		int label1 = get_new_label_name(ptr_prs);
+		int label2 = get_new_label_name(ptr_prs);
+		const struct Expr expr = ref_sta->expr1;
+		print_expression(ptr_prs, &expr);
+
+		gen_if_zero_jmp_nbyte(
+		    size_of_basic(&expr.details.type, "condition of `if`"), label1, 0);
+		gen_discard();
+
+		const struct Statement *ptr_inner_s =
+		    ref_sta->statement_vector.vector[0];
+		print_statement(ptr_prs, ptr_inner_s);
+
+		gen_jump(label2, "if statement");
+		gen_label(label1);
+		gen_discard();
+
+		const struct Statement *ptr_inner_s2 =
+		    ref_sta->statement_vector.vector[1];
+		print_statement(ptr_prs, ptr_inner_s2);
+		gen_label(label2);
+
+		return;
+	}
+	case SWITCH_STATEMENT: {
+		codegen_switch(ptr_prs, ref_sta);
+		return;
+	}
+	case IF_STATEMENT: {
+
+		int label1 = get_new_label_name(ptr_prs);
+		int label2 = get_new_label_name(ptr_prs);
+		const struct Expr expr = ref_sta->expr1;
+		print_expression(ptr_prs, &expr);
+
+		gen_if_zero_jmp_nbyte(
+		    size_of_basic(&expr.details.type, "condition of `if`"), label1, 0);
+		gen_discard();
+
+		print_statement(ptr_prs, ref_sta->inner_statement);
+
+		gen_jump(label2, "if statement");
+		gen_label(label1);
+		gen_discard();
+
+		gen_label(label2);
+
+		return;
+	}
+	case DO_WHILE_STATEMENT: {
+		int stashed_break_label = ptr_prs->break_label_name;
+		int stashed_continue_label = ptr_prs->continue_label_name;
+		int label1 = get_new_label_name(ptr_prs);
+		int break_label = get_new_label_name(ptr_prs);
+		int cont_label = get_new_label_name(ptr_prs);
+		ptr_prs->break_label_name = break_label;
+		ptr_prs->continue_label_name = cont_label;
+
+		gen_label(label1);
+		print_statement(ptr_prs, ref_sta->inner_statement);
+
+		gen_label(cont_label);
+
+		const struct Expr expr = ref_sta->expr1;
+		print_expression(ptr_prs, &expr);
+
+		gen_discard();
+		gen_if_nonzero_jmp_nbyte(
+		    size_of_basic(&expr.details.type, "condition of do-while"), label1,
+		    -8);
+		gen_label(break_label);
+
+		ptr_prs->break_label_name = stashed_break_label;
+		ptr_prs->continue_label_name = stashed_continue_label;
+
+		return;
+	}
+
+	case WHILE_STATEMENT: {
+		const struct Expr expr = ref_sta->expr1;
+
+		int stashed_break_label = ptr_prs->break_label_name;
+		int stashed_continue_label = ptr_prs->continue_label_name;
+
+		int label1 = get_new_label_name(ptr_prs);
+		int break_label = get_new_label_name(ptr_prs);
+		int cont_label = get_new_label_name(ptr_prs);
+		ptr_prs->break_label_name = break_label;
+		ptr_prs->continue_label_name = cont_label;
+
+		gen_label(label1);
+
+		print_expression(ptr_prs, &expr);
+
+		gen_discard();
+		gen_if_zero_jmp_nbyte(
+		    size_of_basic(&expr.details.type, "condition of `while`"),
+		    break_label, -8);
+
+		print_statement(ptr_prs, ref_sta->inner_statement);
+
+		gen_label(cont_label);
+		gen_jump(label1, "for(part4)");
+		gen_label(break_label);
+
+		ptr_prs->break_label_name = stashed_break_label;
+		ptr_prs->continue_label_name = stashed_continue_label;
+
+		return;
+	}
+	case FOR_STATEMENT: {
+		int stashed_break_label = ptr_prs->break_label_name;
+		int stashed_continue_label = ptr_prs->continue_label_name;
+		int label1 = get_new_label_name(ptr_prs);
+		int break_label = get_new_label_name(ptr_prs);
+		int cont_label = get_new_label_name(ptr_prs);
+		ptr_prs->break_label_name = break_label;
+		ptr_prs->continue_label_name = cont_label;
+
+		print_expression(ptr_prs, &ref_sta->expr1); /* expression1 */
+		gen_discard();
+		gen_label(label1);
+		print_expression(ptr_prs, &ref_sta->expr2); /* expression2 */
+
+		gen_discard();
+		gen_if_zero_jmp_nbyte(
+		    size_of_basic(&ref_sta->expr2.details.type, "condition of `for`"),
+		    break_label, -8);
+
+		print_statement(ptr_prs, ref_sta->inner_statement);
+		gen_label(cont_label);
+		print_expression(ptr_prs, &ref_sta->expr3);
+		gen_discard();
+		gen_jump(label1, "for(part4)");
+		gen_label(break_label);
+
+		ptr_prs->break_label_name = stashed_break_label;
+		ptr_prs->continue_label_name = stashed_continue_label;
+
+		return;
+	}
 	}
 
 	assert0("nljsdgfs" && 0);
@@ -294,20 +292,20 @@ static void print_toplevel_definition(struct PrinterState *ptr_prs,
 		int offset = ptr_info->offset;
 		const struct Type type = ptr_info->type;
 		switch (size_of_basic(&type, "argument to be passed to function")) {
-			case 1:
-				gen_write_register_to_local_1byte(
-				    /* yes, the register is 4byte */
-				    get_reg_name_from_arg_pos_4byte(counter), offset);
-			case 4:
-				gen_write_register_to_local_4byte(
-				    get_reg_name_from_arg_pos_4byte(counter), offset);
-				break;
-			case 8:
-				gen_write_register_to_local_8byte(
-				    get_reg_name_from_arg_pos_8byte(counter), offset);
-				break;
-			default:
-				unsupported("Unsupported width in function parameter");
+		case 1:
+			gen_write_register_to_local_1byte(
+			    /* yes, the register is 4byte */
+			    get_reg_name_from_arg_pos_4byte(counter), offset);
+		case 4:
+			gen_write_register_to_local_4byte(
+			    get_reg_name_from_arg_pos_4byte(counter), offset);
+			break;
+		case 8:
+			gen_write_register_to_local_8byte(
+			    get_reg_name_from_arg_pos_8byte(counter), offset);
+			break;
+		default:
+			unsupported("Unsupported width in function parameter");
 		}
 	}
 	print_statement(ptr_prs, &sta);

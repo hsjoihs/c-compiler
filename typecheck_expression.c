@@ -14,26 +14,26 @@ int typecheck_constant_integral_expression(struct AnalyzerState *ptr_ps,
 {
 	const struct UntypedExpr uexpr = *ref_uexpr;
 	switch (uexpr.category) {
-		case INT_LITERAL_:
-			return uexpr.int_value;
-		case VAR: {
-			const char *name = uexpr.var_name;
+	case INT_LITERAL_:
+		return uexpr.int_value;
+	case VAR: {
+		const char *name = uexpr.var_name;
 
-			if (is_local_var(&ptr_ps->scope_chain, name)) {
-				break;
-			}
-
-			const struct EnumeratorAndValue *ptr_enum_and_value =
-			    get_global_enumerator(&ptr_ps->global_enumerator_list, name);
-
-			if (!ptr_enum_and_value) {
-				break;
-			}
-
-			return ptr_enum_and_value->value;
-		}
-		default:
+		if (is_local_var(&ptr_ps->scope_chain, name)) {
 			break;
+		}
+
+		const struct EnumeratorAndValue *ptr_enum_and_value =
+		    get_global_enumerator(&ptr_ps->global_enumerator_list, name);
+
+		if (!ptr_enum_and_value) {
+			break;
+		}
+
+		return ptr_enum_and_value->value;
+	}
+	default:
+		break;
 	}
 
 	fprintf(stderr, "Expected const expression, but did not get one.\n");
@@ -207,40 +207,40 @@ static int is_compatible(const struct AnalyzerState *ptr_ps,
 static enum SimpleBinOp to_simplebinop(enum TokenKind t)
 {
 	switch (t) {
-		case OP_PLUS:
-			return SIMPLE_BIN_OP_PLUS;
-		case OP_MINUS:
-			return SIMPLE_BIN_OP_MINUS;
-		case OP_ASTERISK:
-			return SIMPLE_BIN_OP_ASTERISK;
-		case OP_SLASH:
-			return SIMPLE_BIN_OP_SLASH;
-		case OP_PERCENT:
-			return SIMPLE_BIN_OP_PERCENT;
-		case OP_LT:
-			return SIMPLE_BIN_OP_LT;
-		case OP_LT_EQ:
-			return SIMPLE_BIN_OP_LT_EQ;
-		case OP_LSHIFT:
-			return SIMPLE_BIN_OP_LSHIFT;
-		case OP_GT:
-			return SIMPLE_BIN_OP_GT;
-		case OP_GT_EQ:
-			return SIMPLE_BIN_OP_GT_EQ;
-		case OP_RSHIFT:
-			return SIMPLE_BIN_OP_RSHIFT;
-		case OP_AND:
-			return SIMPLE_BIN_OP_AND;
-		case OP_OR:
-			return SIMPLE_BIN_OP_OR;
-		case OP_EQ_EQ:
-			return SIMPLE_BIN_OP_EQ_EQ;
-		case OP_NOT_EQ:
-			return SIMPLE_BIN_OP_NOT_EQ;
-		case OP_HAT:
-			return SIMPLE_BIN_OP_HAT;
-		default:
-			assert0("cannot happen" && 0);
+	case OP_PLUS:
+		return SIMPLE_BIN_OP_PLUS;
+	case OP_MINUS:
+		return SIMPLE_BIN_OP_MINUS;
+	case OP_ASTERISK:
+		return SIMPLE_BIN_OP_ASTERISK;
+	case OP_SLASH:
+		return SIMPLE_BIN_OP_SLASH;
+	case OP_PERCENT:
+		return SIMPLE_BIN_OP_PERCENT;
+	case OP_LT:
+		return SIMPLE_BIN_OP_LT;
+	case OP_LT_EQ:
+		return SIMPLE_BIN_OP_LT_EQ;
+	case OP_LSHIFT:
+		return SIMPLE_BIN_OP_LSHIFT;
+	case OP_GT:
+		return SIMPLE_BIN_OP_GT;
+	case OP_GT_EQ:
+		return SIMPLE_BIN_OP_GT_EQ;
+	case OP_RSHIFT:
+		return SIMPLE_BIN_OP_RSHIFT;
+	case OP_AND:
+		return SIMPLE_BIN_OP_AND;
+	case OP_OR:
+		return SIMPLE_BIN_OP_OR;
+	case OP_EQ_EQ:
+		return SIMPLE_BIN_OP_EQ_EQ;
+	case OP_NOT_EQ:
+		return SIMPLE_BIN_OP_NOT_EQ;
+	case OP_HAT:
+		return SIMPLE_BIN_OP_HAT;
+	default:
+		assert0("cannot happen" && 0);
 	}
 }
 
@@ -392,28 +392,28 @@ get_global_enumerator(const struct Vector /*<EnumeratorAndValue>*/ *ref_list,
 static enum UnaryOp to_unaryop(enum TokenKind t)
 {
 	switch (t) {
-		case OP_NOT:
-			return UNARY_OP_NOT;
-		case OP_TILDA:
-			return UNARY_OP_TILDA;
-		case OP_PLUS:
-			return UNARY_OP_PLUS;
-		case OP_MINUS:
-			return UNARY_OP_MINUS;
+	case OP_NOT:
+		return UNARY_OP_NOT;
+	case OP_TILDA:
+		return UNARY_OP_TILDA;
+	case OP_PLUS:
+		return UNARY_OP_PLUS;
+	case OP_MINUS:
+		return UNARY_OP_MINUS;
 
-		case OP_PLUS_PLUS:
-			return UNARY_OP_PLUS_PLUS;
-		case OP_MINUS_MINUS:
-			return UNARY_OP_MINUS_MINUS;
+	case OP_PLUS_PLUS:
+		return UNARY_OP_PLUS_PLUS;
+	case OP_MINUS_MINUS:
+		return UNARY_OP_MINUS_MINUS;
 
-		case OP_AND:
-			return UNARY_OP_AND;
+	case OP_AND:
+		return UNARY_OP_AND;
 
-		case OP_ASTERISK:
-			return UNARY_OP_ASTERISK;
+	case OP_ASTERISK:
+		return UNARY_OP_ASTERISK;
 
-		default:
-			assert0("cannot happen" && 0);
+	default:
+		assert0("cannot happen" && 0);
 	}
 }
 
@@ -437,30 +437,29 @@ static struct Expr unary_op_(const struct Expr *ref_expr, enum TokenKind kind,
 static enum SimpleBinOp op_before_assign(enum TokenKind kind)
 {
 	switch (kind) {
-		case OP_PLUS_EQ:
-			return SIMPLE_BIN_OP_PLUS;
-		case OP_MINUS_EQ:
-			return SIMPLE_BIN_OP_MINUS;
-		case OP_ASTERISK_EQ:
-			return SIMPLE_BIN_OP_ASTERISK;
-		case OP_SLASH_EQ:
-			return SIMPLE_BIN_OP_SLASH;
-		case OP_PERCENT_EQ:
-			return SIMPLE_BIN_OP_PERCENT;
-		case OP_LSHIFT_EQ:
-			return SIMPLE_BIN_OP_LSHIFT;
-		case OP_RSHIFT_EQ:
-			return SIMPLE_BIN_OP_RSHIFT;
-		case OP_AND_EQ:
-			return SIMPLE_BIN_OP_AND;
-		case OP_HAT_EQ:
-			return SIMPLE_BIN_OP_HAT;
-		case OP_OR_EQ:
-			return SIMPLE_BIN_OP_OR;
-		default:
-			assert0(
-			    "op_before_assign called before a non-assignment operator" &&
-			    0);
+	case OP_PLUS_EQ:
+		return SIMPLE_BIN_OP_PLUS;
+	case OP_MINUS_EQ:
+		return SIMPLE_BIN_OP_MINUS;
+	case OP_ASTERISK_EQ:
+		return SIMPLE_BIN_OP_ASTERISK;
+	case OP_SLASH_EQ:
+		return SIMPLE_BIN_OP_SLASH;
+	case OP_PERCENT_EQ:
+		return SIMPLE_BIN_OP_PERCENT;
+	case OP_LSHIFT_EQ:
+		return SIMPLE_BIN_OP_LSHIFT;
+	case OP_RSHIFT_EQ:
+		return SIMPLE_BIN_OP_RSHIFT;
+	case OP_AND_EQ:
+		return SIMPLE_BIN_OP_AND;
+	case OP_HAT_EQ:
+		return SIMPLE_BIN_OP_HAT;
+	case OP_OR_EQ:
+		return SIMPLE_BIN_OP_OR;
+	default:
+		assert0("op_before_assign called before a non-assignment operator" &&
+		        0);
 	}
 }
 
@@ -483,346 +482,330 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 {
 	const struct UntypedExpr uexpr = *ref_uexpr;
 	switch (uexpr.category) {
-		case DOT_EXPR: {
-			struct Expr struct_expr = typecheck_expression(ptr_ps, uexpr.ptr1);
-			const char *ident_after_dot = uexpr.ident_after_dot;
-			if (struct_expr.details.type.type_category != STRUCT_) {
-				fprintf(stderr, "member is requested but the left operand is "
-				                "not a struct\n");
-				exit(EXIT_FAILURE);
-			}
-
-			const char *tag = struct_expr.details.type.s.struct_tag;
-			const struct StructInternalCompleteInfo *ptr_info =
-			    lookup(ptr_ps->global_struct_tag_map, tag);
-			if (!ptr_info) {
-				fprintf(
-				    stderr,
-				    "tried to use a member of incomplete type `struct %s`\n",
-				    tag);
-				exit(EXIT_FAILURE);
-			}
-
-			struct Vector /* <TypeAndIdent> */ vec =
-			    *ptr_info->info.ptr_types_and_idents;
-			int nth_member = -1;
-
-			struct Expr expr;
-			for (int i = 0; i < vec.length; i++) {
-				const struct TypeAndIdent *ptr_vec_i = vec.vector[i];
-				if (strcmp(ptr_vec_i->ident_str, ident_after_dot) == 0) {
-					nth_member = i;
-
-					struct Type t2 = ptr_vec_i->type;
-					if_array_convert_to_ptr_(&t2);
-					expr.details.type = t2;
-					expr.details.true_type = ptr_vec_i->type;
-					break;
-				}
-			}
-
-			if (nth_member == -1) {
-				fprintf(stderr, "member `%s` does not belong to struct `%s`\n",
-				        ident_after_dot, tag);
-				exit(EXIT_FAILURE);
-			}
-
-			int offset = ptr_info->offset_vec[nth_member];
-
-			struct Expr *ptr_struct_expr = calloc(1, sizeof(struct Expr));
-			*ptr_struct_expr = struct_expr;
-
-			expr.category = STRUCT_AND_OFFSET;
-			expr.struct_offset = offset;
-			expr.ptr1 = ptr_struct_expr;
-			expr.ptr2 = 0;
-			expr.ptr3 = 0;
-			return expr;
+	case DOT_EXPR: {
+		struct Expr struct_expr = typecheck_expression(ptr_ps, uexpr.ptr1);
+		const char *ident_after_dot = uexpr.ident_after_dot;
+		if (struct_expr.details.type.type_category != STRUCT_) {
+			fprintf(stderr, "member is requested but the left operand is "
+			                "not a struct\n");
+			exit(EXIT_FAILURE);
 		}
-		case SIZEOF_TYPE: {
-			struct Expr expr;
-			expr.details.type = INT_TYPE();
-			expr.int_value =
-			    size_of(ptr_ps, &uexpr.operand_of_sizeof_or_alignof);
-			expr.category = INT_VALUE;
-			return expr;
+
+		const char *tag = struct_expr.details.type.s.struct_tag;
+		const struct StructInternalCompleteInfo *ptr_info =
+		    lookup(ptr_ps->global_struct_tag_map, tag);
+		if (!ptr_info) {
+			fprintf(stderr,
+			        "tried to use a member of incomplete type `struct %s`\n",
+			        tag);
+			exit(EXIT_FAILURE);
 		}
-		case ALIGNOF_TYPE: {
-			struct Expr expr;
-			expr.details.type = INT_TYPE();
-			expr.int_value =
-			    align_of(ptr_ps, &uexpr.operand_of_sizeof_or_alignof);
-			expr.category = INT_VALUE;
-			return expr;
-		}
-		case UNARY_EXPR: {
-			switch (uexpr.operator_) {
-				case OP_NOT: {
-					enum TokenKind kind = uexpr.operator_;
-					struct Expr expr = typecheck_expression(ptr_ps, uexpr.ptr1);
-					expect_scalar(&expr.details.type, "operand of logical not");
 
-					struct Type t = INT_TYPE();
-					struct Expr new_expr = unary_op_(&expr, kind, &t);
+		struct Vector /* <TypeAndIdent> */ vec =
+		    *ptr_info->info.ptr_types_and_idents;
+		int nth_member = -1;
 
-					return new_expr;
-				}
-				case OP_TILDA:
-				case OP_PLUS:
-				case OP_MINUS: {
-					enum TokenKind kind = uexpr.operator_;
-					struct Expr expr = typecheck_expression(ptr_ps, uexpr.ptr1);
-					expect_integral(
-					    &expr.details.type,
-					    "operand of bitnot, unary plus or unary minus");
+		struct Expr expr;
+		for (int i = 0; i < vec.length; i++) {
+			const struct TypeAndIdent *ptr_vec_i = vec.vector[i];
+			if (strcmp(ptr_vec_i->ident_str, ident_after_dot) == 0) {
+				nth_member = i;
 
-					/* integral promotion */
-					struct Type t = INT_TYPE();
-					struct Expr new_expr = unary_op_(&expr, kind, &t);
-
-					return new_expr;
-				}
-
-				case OP_PLUS_PLUS:
-				case OP_MINUS_MINUS: {
-					enum TokenKind opkind = uexpr.operator_;
-
-					struct Expr expr = typecheck_expression(ptr_ps, uexpr.ptr1);
-
-					struct Expr new_expr =
-					    unary_op_(&expr, opkind, &expr.details.type);
-					if (expr.details.type.type_category == PTR_) {
-						const struct Type deref =
-						    deref_type(&expr.details.type);
-						new_expr.size_info_for_pointer_arith =
-						    size_of(ptr_ps, &deref);
-					}
-					return new_expr;
-				}
-
-				case OP_AND: {
-					const struct Expr expr =
-					    typecheck_expression(ptr_ps, uexpr.ptr1);
-
-					struct Type type = expr.details.type;
-
-					if (type.type_category == PTR_ &&
-					    expr.details.true_type.type_category == ARRAY) {
-						type = expr.details.true_type;
-					}
-
-					const struct Type ptr_to_type_ = ptr_to_type(&type);
-					struct Expr new_expr =
-					    unary_op_(&expr, OP_AND, &ptr_to_type_);
-
-					return new_expr;
-				}
-				case OP_ASTERISK: {
-					const struct Expr expr =
-					    typecheck_expression(ptr_ps, uexpr.ptr1);
-
-					const struct Type type = deref_type(&expr.details.type);
-
-					struct Type t2 = type;
-					if_array_convert_to_ptr_(&t2);
-
-					struct Expr new_expr = unary_op_(&expr, OP_ASTERISK, &t2);
-					new_expr.details.true_type = type;
-
-					return new_expr;
-				}
-				default: {
-					fprintf(stderr,
-					        "FAILURE::::::: INVALID TOKEN %d in unary\n",
-					        uexpr.operator_);
-					exit(EXIT_FAILURE);
-				}
+				struct Type t2 = ptr_vec_i->type;
+				if_array_convert_to_ptr_(&t2);
+				expr.details.type = t2;
+				expr.details.true_type = ptr_vec_i->type;
+				break;
 			}
 		}
-		case FUNCCALL: {
-			const char *ident_str = uexpr.var_name;
 
-			struct Type ret_type;
-			if (!isElem(ptr_ps->func_info_map, ident_str)) {
-				fprintf(stderr, "Undeclared function `%s()` detected.\n",
-				        ident_str);
-				fprintf(stderr, "Assumes that `%s()` returns `int`\n",
-				        ident_str);
-				ret_type = INT_TYPE();
-			} else {
-				struct Type *ptr_func_info =
-				    lookup(ptr_ps->func_info_map, ident_str);
-				ret_type = *(ptr_func_info->derived_from);
-			}
-
-			struct Expr expr;
-			expr.args = init_vector();
-
-			if (ret_type.type_category == STRUCT_) {
-				expr.size_info_for_struct_assign = size_of(ptr_ps, &ret_type);
-				char *str = calloc(20, sizeof(char));
-				sprintf(str, "@anon%d", -ptr_ps->newest_offset);
-
-				int offset = add_local_var_to_scope(ptr_ps, &ret_type, str);
-
-				enum SystemVAbiClass abi_class =
-				    system_v_abi_class_of(ptr_ps, &ret_type);
-
-				expr.local_var_offset = offset;
-
-				if (abi_class == INTEGER_CLASS) {
-					expr.category = FUNCCALL_EXPR_RETURNING_INTEGER_CLASS;
-				} else {
-					expr.category = FUNCCALL_EXPR_RETURNING_MEMORY_CLASS;
-
-					struct Expr *ptr_arg = calloc(1, sizeof(struct Expr));
-
-					/* push pointer to anon as the first argument */
-					{
-						struct Expr anon_var_expr;
-						anon_var_expr.details.type = ret_type;
-						anon_var_expr.details.true_type = ret_type;
-						anon_var_expr.category = LOCAL_VAR_;
-						anon_var_expr.local_var_offset = offset;
-
-						const struct Type ptr_to_type_ = ptr_to_type(&ret_type);
-						*ptr_arg =
-						    unary_op_(&anon_var_expr, OP_AND, &ptr_to_type_);
-					}
-					push_vector(&expr.args, ptr_arg);
-				}
-			} else {
-				expr.category = FUNCCALL_EXPR;
-			}
-
-			for (int counter = 0; counter < uexpr.arg_exprs_vec.length;
-			     counter++) {
-				const struct UntypedExpr *ptr =
-				    uexpr.arg_exprs_vec.vector[counter];
-
-				struct Expr *ptr_arg = calloc(1, sizeof(struct Expr));
-				*ptr_arg = typecheck_expression(ptr_ps, ptr);
-				push_vector(&expr.args, ptr_arg);
-				if (counter > 5) {
-					unsupported("calling with 7 or more arguments");
-				}
-			}
-
-			expr.details.type = ret_type;
-			expr.global_var_name = ident_str;
-			return expr;
+		if (nth_member == -1) {
+			fprintf(stderr, "member `%s` does not belong to struct `%s`\n",
+			        ident_after_dot, tag);
+			exit(EXIT_FAILURE);
 		}
-		case POSTFIX_EXPR: {
+
+		int offset = ptr_info->offset_vec[nth_member];
+
+		struct Expr *ptr_struct_expr = calloc(1, sizeof(struct Expr));
+		*ptr_struct_expr = struct_expr;
+
+		expr.category = STRUCT_AND_OFFSET;
+		expr.struct_offset = offset;
+		expr.ptr1 = ptr_struct_expr;
+		expr.ptr2 = 0;
+		expr.ptr3 = 0;
+		return expr;
+	}
+	case SIZEOF_TYPE: {
+		struct Expr expr;
+		expr.details.type = INT_TYPE();
+		expr.int_value = size_of(ptr_ps, &uexpr.operand_of_sizeof_or_alignof);
+		expr.category = INT_VALUE;
+		return expr;
+	}
+	case ALIGNOF_TYPE: {
+		struct Expr expr;
+		expr.details.type = INT_TYPE();
+		expr.int_value = align_of(ptr_ps, &uexpr.operand_of_sizeof_or_alignof);
+		expr.category = INT_VALUE;
+		return expr;
+	}
+	case UNARY_EXPR: {
+		switch (uexpr.operator_) {
+		case OP_NOT: {
+			enum TokenKind kind = uexpr.operator_;
 			struct Expr expr = typecheck_expression(ptr_ps, uexpr.ptr1);
-			struct Expr *ptr_expr1 = calloc(1, sizeof(struct Expr));
-			*ptr_expr1 = expr;
+			expect_scalar(&expr.details.type, "operand of logical not");
 
+			struct Type t = INT_TYPE();
+			struct Expr new_expr = unary_op_(&expr, kind, &t);
+
+			return new_expr;
+		}
+		case OP_TILDA:
+		case OP_PLUS:
+		case OP_MINUS: {
+			enum TokenKind kind = uexpr.operator_;
+			struct Expr expr = typecheck_expression(ptr_ps, uexpr.ptr1);
+			expect_integral(&expr.details.type,
+			                "operand of bitnot, unary plus or unary minus");
+
+			/* integral promotion */
+			struct Type t = INT_TYPE();
+			struct Expr new_expr = unary_op_(&expr, kind, &t);
+
+			return new_expr;
+		}
+
+		case OP_PLUS_PLUS:
+		case OP_MINUS_MINUS: {
 			enum TokenKind opkind = uexpr.operator_;
 
-			struct Expr new_expr;
-			new_expr.details.type = expr.details.type;
-			new_expr.details.true_type = expr.details.type;
-			new_expr.category =
-			    opkind == OP_PLUS_PLUS ? POSTFIX_INCREMENT : POSTFIX_DECREMENT;
-			new_expr.ptr1 = ptr_expr1;
-			new_expr.ptr2 = 0;
-			new_expr.ptr3 = 0;
+			struct Expr expr = typecheck_expression(ptr_ps, uexpr.ptr1);
+
+			struct Expr new_expr = unary_op_(&expr, opkind, &expr.details.type);
 			if (expr.details.type.type_category == PTR_) {
 				const struct Type deref = deref_type(&expr.details.type);
 				new_expr.size_info_for_pointer_arith = size_of(ptr_ps, &deref);
 			}
+			return new_expr;
+		}
+
+		case OP_AND: {
+			const struct Expr expr = typecheck_expression(ptr_ps, uexpr.ptr1);
+
+			struct Type type = expr.details.type;
+
+			if (type.type_category == PTR_ &&
+			    expr.details.true_type.type_category == ARRAY) {
+				type = expr.details.true_type;
+			}
+
+			const struct Type ptr_to_type_ = ptr_to_type(&type);
+			struct Expr new_expr = unary_op_(&expr, OP_AND, &ptr_to_type_);
 
 			return new_expr;
 		}
-		case INT_LITERAL_: {
-			struct Expr expr;
-			expr.details.type = INT_TYPE();
-			expr.int_value = uexpr.int_value;
-			expr.category = INT_VALUE;
-			return expr;
+		case OP_ASTERISK: {
+			const struct Expr expr = typecheck_expression(ptr_ps, uexpr.ptr1);
+
+			const struct Type type = deref_type(&expr.details.type);
+
+			struct Type t2 = type;
+			if_array_convert_to_ptr_(&t2);
+
+			struct Expr new_expr = unary_op_(&expr, OP_ASTERISK, &t2);
+			new_expr.details.true_type = type;
+
+			return new_expr;
 		}
-		case VAR: {
-			const char *name = uexpr.var_name;
+		default: {
+			fprintf(stderr, "FAILURE::::::: INVALID TOKEN %d in unary\n",
+			        uexpr.operator_);
+			exit(EXIT_FAILURE);
+		}
+		}
+	}
+	case FUNCCALL: {
+		const char *ident_str = uexpr.var_name;
 
-			if (!is_local_var(&ptr_ps->scope_chain, name)) {
-				const struct EnumeratorAndValue *ptr_enum_and_value =
-				    get_global_enumerator(&ptr_ps->global_enumerator_list,
-				                          name);
-				if (ptr_enum_and_value) {
-					struct Expr expr;
-					expr.details.type = INT_TYPE();
-					expr.details.true_type = INT_TYPE();
-					expr.category = INT_VALUE;
-					expr.int_value = ptr_enum_and_value->value;
-					return expr;
-				}
-				struct Type type =
-				    resolve_name_globally(ptr_ps->global_vars_type_map, name);
+		struct Type ret_type;
+		if (!isElem(ptr_ps->func_info_map, ident_str)) {
+			fprintf(stderr, "Undeclared function `%s()` detected.\n",
+			        ident_str);
+			fprintf(stderr, "Assumes that `%s()` returns `int`\n", ident_str);
+			ret_type = INT_TYPE();
+		} else {
+			struct Type *ptr_func_info =
+			    lookup(ptr_ps->func_info_map, ident_str);
+			ret_type = *(ptr_func_info->derived_from);
+		}
 
-				struct Expr expr;
-				struct Type t2 = type;
-				if_array_convert_to_ptr_(&t2);
+		struct Expr expr;
+		expr.args = init_vector();
 
-				expr.details.type = t2;
-				expr.details.true_type = type;
-				expr.category = GLOBAL_VAR_;
-				expr.global_var_name = name;
-				return expr;
+		if (ret_type.type_category == STRUCT_) {
+			expr.size_info_for_struct_assign = size_of(ptr_ps, &ret_type);
+			char *str = calloc(20, sizeof(char));
+			sprintf(str, "@anon%d", -ptr_ps->newest_offset);
+
+			int offset = add_local_var_to_scope(ptr_ps, &ret_type, str);
+
+			enum SystemVAbiClass abi_class =
+			    system_v_abi_class_of(ptr_ps, &ret_type);
+
+			expr.local_var_offset = offset;
+
+			if (abi_class == INTEGER_CLASS) {
+				expr.category = FUNCCALL_EXPR_RETURNING_INTEGER_CLASS;
 			} else {
-				struct LocalVarInfo info =
-				    resolve_name_locally(&ptr_ps->scope_chain, name);
+				expr.category = FUNCCALL_EXPR_RETURNING_MEMORY_CLASS;
 
-				struct Expr expr;
-				struct Type t2 = info.type;
-				if_array_convert_to_ptr_(&t2);
+				struct Expr *ptr_arg = calloc(1, sizeof(struct Expr));
 
-				expr.details.type = t2;
-				expr.details.true_type = info.type;
-				expr.category = LOCAL_VAR_;
-				expr.local_var_offset = info.offset;
-				return expr;
+				/* push pointer to anon as the first argument */
+				{
+					struct Expr anon_var_expr;
+					anon_var_expr.details.type = ret_type;
+					anon_var_expr.details.true_type = ret_type;
+					anon_var_expr.category = LOCAL_VAR_;
+					anon_var_expr.local_var_offset = offset;
+
+					const struct Type ptr_to_type_ = ptr_to_type(&ret_type);
+					*ptr_arg = unary_op_(&anon_var_expr, OP_AND, &ptr_to_type_);
+				}
+				push_vector(&expr.args, ptr_arg);
+			}
+		} else {
+			expr.category = FUNCCALL_EXPR;
+		}
+
+		for (int counter = 0; counter < uexpr.arg_exprs_vec.length; counter++) {
+			const struct UntypedExpr *ptr = uexpr.arg_exprs_vec.vector[counter];
+
+			struct Expr *ptr_arg = calloc(1, sizeof(struct Expr));
+			*ptr_arg = typecheck_expression(ptr_ps, ptr);
+			push_vector(&expr.args, ptr_arg);
+			if (counter > 5) {
+				unsupported("calling with 7 or more arguments");
 			}
 		}
-		case STRING_LITERAL_: {
-			const struct Type char_type = CHAR_TYPE();
+
+		expr.details.type = ret_type;
+		expr.global_var_name = ident_str;
+		return expr;
+	}
+	case POSTFIX_EXPR: {
+		struct Expr expr = typecheck_expression(ptr_ps, uexpr.ptr1);
+		struct Expr *ptr_expr1 = calloc(1, sizeof(struct Expr));
+		*ptr_expr1 = expr;
+
+		enum TokenKind opkind = uexpr.operator_;
+
+		struct Expr new_expr;
+		new_expr.details.type = expr.details.type;
+		new_expr.details.true_type = expr.details.type;
+		new_expr.category =
+		    opkind == OP_PLUS_PLUS ? POSTFIX_INCREMENT : POSTFIX_DECREMENT;
+		new_expr.ptr1 = ptr_expr1;
+		new_expr.ptr2 = 0;
+		new_expr.ptr3 = 0;
+		if (expr.details.type.type_category == PTR_) {
+			const struct Type deref = deref_type(&expr.details.type);
+			new_expr.size_info_for_pointer_arith = size_of(ptr_ps, &deref);
+		}
+
+		return new_expr;
+	}
+	case INT_LITERAL_: {
+		struct Expr expr;
+		expr.details.type = INT_TYPE();
+		expr.int_value = uexpr.int_value;
+		expr.category = INT_VALUE;
+		return expr;
+	}
+	case VAR: {
+		const char *name = uexpr.var_name;
+
+		if (!is_local_var(&ptr_ps->scope_chain, name)) {
+			const struct EnumeratorAndValue *ptr_enum_and_value =
+			    get_global_enumerator(&ptr_ps->global_enumerator_list, name);
+			if (ptr_enum_and_value) {
+				struct Expr expr;
+				expr.details.type = INT_TYPE();
+				expr.details.true_type = INT_TYPE();
+				expr.category = INT_VALUE;
+				expr.int_value = ptr_enum_and_value->value;
+				return expr;
+			}
+			struct Type type =
+			    resolve_name_globally(ptr_ps->global_vars_type_map, name);
 
 			struct Expr expr;
-			expr.details.type = ptr_to_type(&char_type);
-			expr.details.true_type =
-			    arr_of_type(&char_type, strlen(uexpr.literal_string) + 1);
-			expr.category = STRING_LITERAL;
-			expr.literal_string = uexpr.literal_string;
+			struct Type t2 = type;
+			if_array_convert_to_ptr_(&t2);
 
+			expr.details.type = t2;
+			expr.details.true_type = type;
+			expr.category = GLOBAL_VAR_;
+			expr.global_var_name = name;
+			return expr;
+		} else {
+			struct LocalVarInfo info =
+			    resolve_name_locally(&ptr_ps->scope_chain, name);
+
+			struct Expr expr;
+			struct Type t2 = info.type;
+			if_array_convert_to_ptr_(&t2);
+
+			expr.details.type = t2;
+			expr.details.true_type = info.type;
+			expr.category = LOCAL_VAR_;
+			expr.local_var_offset = info.offset;
 			return expr;
 		}
-		case CONDITIONAL: {
-			struct Expr expr = typecheck_expression(ptr_ps, uexpr.ptr1);
-			struct Expr true_branch = typecheck_expression(ptr_ps, uexpr.ptr2);
-			struct Expr false_branch = typecheck_expression(ptr_ps, uexpr.ptr3);
-			expect_type(
-			    ptr_ps, &false_branch.details.type, &true_branch.details.type,
-			    "mismatch of type in the false branch and the true branch");
-			struct Expr *ptr_expr1 = calloc(1, sizeof(struct Expr));
-			struct Expr *ptr_expr2 = calloc(1, sizeof(struct Expr));
-			struct Expr *ptr_expr3 = calloc(1, sizeof(struct Expr));
-			*ptr_expr1 = expr;
-			*ptr_expr2 = true_branch;
-			*ptr_expr3 = false_branch;
+	}
+	case STRING_LITERAL_: {
+		const struct Type char_type = CHAR_TYPE();
 
-			struct Expr new_expr;
-			new_expr.details = true_branch.details;
-			new_expr.category = CONDITIONAL_EXPR;
-			new_expr.ptr1 = ptr_expr1;
-			new_expr.ptr2 = ptr_expr2;
-			new_expr.ptr3 = ptr_expr3;
-			return new_expr;
-		}
-		case BINARY_EXPR: {
-			const struct Expr expr = typecheck_expression(ptr_ps, uexpr.ptr1);
-			const struct Expr expr2 = typecheck_expression(ptr_ps, uexpr.ptr2);
-			return typecheck_binary_expression(ptr_ps, &expr, &expr2,
-			                                   uexpr.operator_);
-		}
+		struct Expr expr;
+		expr.details.type = ptr_to_type(&char_type);
+		expr.details.true_type =
+		    arr_of_type(&char_type, strlen(uexpr.literal_string) + 1);
+		expr.category = STRING_LITERAL;
+		expr.literal_string = uexpr.literal_string;
+
+		return expr;
+	}
+	case CONDITIONAL: {
+		struct Expr expr = typecheck_expression(ptr_ps, uexpr.ptr1);
+		struct Expr true_branch = typecheck_expression(ptr_ps, uexpr.ptr2);
+		struct Expr false_branch = typecheck_expression(ptr_ps, uexpr.ptr3);
+		expect_type(ptr_ps, &false_branch.details.type,
+		            &true_branch.details.type,
+		            "mismatch of type in the false branch and the true branch");
+		struct Expr *ptr_expr1 = calloc(1, sizeof(struct Expr));
+		struct Expr *ptr_expr2 = calloc(1, sizeof(struct Expr));
+		struct Expr *ptr_expr3 = calloc(1, sizeof(struct Expr));
+		*ptr_expr1 = expr;
+		*ptr_expr2 = true_branch;
+		*ptr_expr3 = false_branch;
+
+		struct Expr new_expr;
+		new_expr.details = true_branch.details;
+		new_expr.category = CONDITIONAL_EXPR;
+		new_expr.ptr1 = ptr_expr1;
+		new_expr.ptr2 = ptr_expr2;
+		new_expr.ptr3 = ptr_expr3;
+		return new_expr;
+	}
+	case BINARY_EXPR: {
+		const struct Expr expr = typecheck_expression(ptr_ps, uexpr.ptr1);
+		const struct Expr expr2 = typecheck_expression(ptr_ps, uexpr.ptr2);
+		return typecheck_binary_expression(ptr_ps, &expr, &expr2,
+		                                   uexpr.operator_);
+	}
 	}
 	assert("should not pass here" && 0);
 }
@@ -926,142 +909,137 @@ struct Expr typecheck_binary_expression(const struct AnalyzerState *ptr_ps,
 	}
 
 	switch (op) {
-		case OP_PLUS: {
-			const struct Type type1 = expr.details.type;
-			const struct Type type2 = expr2.details.type;
+	case OP_PLUS: {
+		const struct Type type1 = expr.details.type;
+		const struct Type type2 = expr2.details.type;
 
-			if (is_integral(&type1)) {
-				if (is_integral(&type2)) {
-					const struct Type t = INT_TYPE();
-					return simple_binary_op(&expr, &expr2, OP_PLUS, &t);
-				} else if (type2.type_category == PTR_) {
-					/* swapped */
-					return pointer_plusorminus_int(ptr_ps, &expr2, &expr,
-					                               OP_PLUS);
-				} else {
-					fprintf(stderr, "invalid type `");
-					debug_print_type(&type2);
-					fprintf(stderr, "`as the right operand of binary +\n");
-					exit(EXIT_FAILURE);
-				}
-			} else if (type1.type_category == PTR_) {
-				expect_integral(&expr2.details.type,
-				                "cannot add a pointer/struct to a pointer");
-				return pointer_plusorminus_int(ptr_ps, &expr, &expr2, OP_PLUS);
+		if (is_integral(&type1)) {
+			if (is_integral(&type2)) {
+				const struct Type t = INT_TYPE();
+				return simple_binary_op(&expr, &expr2, OP_PLUS, &t);
+			} else if (type2.type_category == PTR_) {
+				/* swapped */
+				return pointer_plusorminus_int(ptr_ps, &expr2, &expr, OP_PLUS);
 			} else {
 				fprintf(stderr, "invalid type `");
-				debug_print_type(&type1);
-				fprintf(stderr, "`as the left operand of binary +\n");
+				debug_print_type(&type2);
+				fprintf(stderr, "`as the right operand of binary +\n");
 				exit(EXIT_FAILURE);
 			}
-		}
-		case OP_MINUS: {
-
-			struct Type type1 = expr.details.type;
-			struct Type type2 = expr2.details.type;
-
-			if (is_integral(&type1)) {
-				if (is_integral(&type2)) {
-					const struct Type t = INT_TYPE();
-					return simple_binary_op(&expr, &expr2, OP_MINUS, &t);
-				} else if (type2.type_category == PTR_) {
-
-					fprintf(stderr, "cannot subtract a pointer "
-					                "from an integer.\n");
-					exit(EXIT_FAILURE);
-				}
-
-			} else if (type1.type_category == PTR_) {
-				if (is_integral(&type2)) {
-
-					/* pointer minus int */
-					return pointer_plusorminus_int(ptr_ps, &expr, &expr2,
-					                               OP_MINUS);
-				} else {
-					/* pointer minus pointer */
-
-					struct Expr *ptr_expr1 = calloc(1, sizeof(struct Expr));
-					struct Expr *ptr_expr2 = calloc(1, sizeof(struct Expr));
-					*ptr_expr1 = expr;
-					*ptr_expr2 = expr2;
-
-					struct Expr new_expr;
-					new_expr.details.type = INT_TYPE();
-					new_expr.details.true_type = INT_TYPE();
-					new_expr.category = POINTER_MINUS_POINTER;
-					new_expr.ptr1 = ptr_expr1;
-					new_expr.ptr2 = ptr_expr2;
-					new_expr.ptr3 = 0;
-					const struct Type deref = deref_type(&expr.details.type);
-					new_expr.size_info_for_pointer_arith =
-					    size_of(ptr_ps, &deref);
-
-					return new_expr;
-				}
-			} else {
-				fprintf(stderr, "invalid type `");
-				debug_print_type(&type1);
-				fprintf(stderr, "`as the left operand of binary -\n");
-				exit(EXIT_FAILURE);
-			}
-		}
-		case OP_AND_AND: {
-			expect_scalar(&expr.details.type, "operand of logical AND");
-			expect_scalar(&expr2.details.type, "operand of logical AND");
-			const struct Type t = INT_TYPE();
-			return binary_op(&expr, &expr2, LOGICAL_AND_EXPR, &t);
-		}
-		case OP_OR_OR: {
-			expect_scalar(&expr.details.type, "operand of logical OR");
-			expect_scalar(&expr2.details.type, "operand of logical OR");
-			const struct Type t = INT_TYPE();
-			return binary_op(&expr, &expr2, LOGICAL_OR_EXPR, &t);
-		}
-		case OP_OR:
-		case OP_AND:
-		case OP_LSHIFT:
-		case OP_RSHIFT:
-		case OP_HAT:
-		case OP_ASTERISK:
-		case OP_SLASH:
-		case OP_PERCENT: {
-			expect_integral(&expr.details.type, "left operand of an operator");
+		} else if (type1.type_category == PTR_) {
 			expect_integral(&expr2.details.type,
-			                "right operand of an operator");
-			return simple_binary_op(&expr, &expr2, op, &expr2.details.type);
-		}
-		case OP_GT:
-		case OP_GT_EQ:
-		case OP_LT:
-		case OP_LT_EQ:
-		case OP_NOT_EQ:
-		case OP_EQ_EQ: {
-			struct Expr expr_new = expr;
-			struct Expr expr2_new = expr2;
-
-			if (expr.details.type.type_category == PTR_) {
-				cast_to_null_pointer_if_possible(&expr2_new, &expr.details);
-			} else if (expr2.details.type.type_category == PTR_) {
-
-				cast_to_null_pointer_if_possible(&expr_new, &expr2.details);
-			}
-
-			expect_type(ptr_ps, &expr_new.details.type, &expr2_new.details.type,
-			            "mismatch in operands of an "
-			            "equality/comparison operator");
-			const struct Type t = INT_TYPE();
-			return simple_binary_op(&expr_new, &expr2_new, op, &t);
-		}
-		case OP_COMMA: {
-			if (expr2.details.type.type_category == STRUCT_) {
-				unsupported("struct as the right operand of comma operator");
-			}
-			return comma_op(&expr, &expr2, &expr2.details.type);
-		}
-		default: {
-			fprintf(stderr, "FAILURE::::::: INVALID TOKEN %d in binary expr\n",
-			        op);
+			                "cannot add a pointer/struct to a pointer");
+			return pointer_plusorminus_int(ptr_ps, &expr, &expr2, OP_PLUS);
+		} else {
+			fprintf(stderr, "invalid type `");
+			debug_print_type(&type1);
+			fprintf(stderr, "`as the left operand of binary +\n");
 			exit(EXIT_FAILURE);
 		}
+	}
+	case OP_MINUS: {
+
+		struct Type type1 = expr.details.type;
+		struct Type type2 = expr2.details.type;
+
+		if (is_integral(&type1)) {
+			if (is_integral(&type2)) {
+				const struct Type t = INT_TYPE();
+				return simple_binary_op(&expr, &expr2, OP_MINUS, &t);
+			} else if (type2.type_category == PTR_) {
+
+				fprintf(stderr, "cannot subtract a pointer "
+				                "from an integer.\n");
+				exit(EXIT_FAILURE);
+			}
+
+		} else if (type1.type_category == PTR_) {
+			if (is_integral(&type2)) {
+
+				/* pointer minus int */
+				return pointer_plusorminus_int(ptr_ps, &expr, &expr2, OP_MINUS);
+			} else {
+				/* pointer minus pointer */
+
+				struct Expr *ptr_expr1 = calloc(1, sizeof(struct Expr));
+				struct Expr *ptr_expr2 = calloc(1, sizeof(struct Expr));
+				*ptr_expr1 = expr;
+				*ptr_expr2 = expr2;
+
+				struct Expr new_expr;
+				new_expr.details.type = INT_TYPE();
+				new_expr.details.true_type = INT_TYPE();
+				new_expr.category = POINTER_MINUS_POINTER;
+				new_expr.ptr1 = ptr_expr1;
+				new_expr.ptr2 = ptr_expr2;
+				new_expr.ptr3 = 0;
+				const struct Type deref = deref_type(&expr.details.type);
+				new_expr.size_info_for_pointer_arith = size_of(ptr_ps, &deref);
+
+				return new_expr;
+			}
+		} else {
+			fprintf(stderr, "invalid type `");
+			debug_print_type(&type1);
+			fprintf(stderr, "`as the left operand of binary -\n");
+			exit(EXIT_FAILURE);
+		}
+	}
+	case OP_AND_AND: {
+		expect_scalar(&expr.details.type, "operand of logical AND");
+		expect_scalar(&expr2.details.type, "operand of logical AND");
+		const struct Type t = INT_TYPE();
+		return binary_op(&expr, &expr2, LOGICAL_AND_EXPR, &t);
+	}
+	case OP_OR_OR: {
+		expect_scalar(&expr.details.type, "operand of logical OR");
+		expect_scalar(&expr2.details.type, "operand of logical OR");
+		const struct Type t = INT_TYPE();
+		return binary_op(&expr, &expr2, LOGICAL_OR_EXPR, &t);
+	}
+	case OP_OR:
+	case OP_AND:
+	case OP_LSHIFT:
+	case OP_RSHIFT:
+	case OP_HAT:
+	case OP_ASTERISK:
+	case OP_SLASH:
+	case OP_PERCENT: {
+		expect_integral(&expr.details.type, "left operand of an operator");
+		expect_integral(&expr2.details.type, "right operand of an operator");
+		return simple_binary_op(&expr, &expr2, op, &expr2.details.type);
+	}
+	case OP_GT:
+	case OP_GT_EQ:
+	case OP_LT:
+	case OP_LT_EQ:
+	case OP_NOT_EQ:
+	case OP_EQ_EQ: {
+		struct Expr expr_new = expr;
+		struct Expr expr2_new = expr2;
+
+		if (expr.details.type.type_category == PTR_) {
+			cast_to_null_pointer_if_possible(&expr2_new, &expr.details);
+		} else if (expr2.details.type.type_category == PTR_) {
+
+			cast_to_null_pointer_if_possible(&expr_new, &expr2.details);
+		}
+
+		expect_type(ptr_ps, &expr_new.details.type, &expr2_new.details.type,
+		            "mismatch in operands of an "
+		            "equality/comparison operator");
+		const struct Type t = INT_TYPE();
+		return simple_binary_op(&expr_new, &expr2_new, op, &t);
+	}
+	case OP_COMMA: {
+		if (expr2.details.type.type_category == STRUCT_) {
+			unsupported("struct as the right operand of comma operator");
+		}
+		return comma_op(&expr, &expr2, &expr2.details.type);
+	}
+	default: {
+		fprintf(stderr, "FAILURE::::::: INVALID TOKEN %d in binary expr\n", op);
+		exit(EXIT_FAILURE);
+	}
 	}
 }
