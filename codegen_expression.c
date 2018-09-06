@@ -108,6 +108,17 @@ void print_address_of_lvalue(struct PrinterState *ptr_prs,
 {
 	const struct Expr expr = *ref_expr;
 	switch (expr.category) {
+		case STRUCT_ASSIGNMENT_EXPR: {
+			print_address_of_lvalue(ptr_prs, expr.ptr1,
+			                        "left hand of struct assignment");
+			print_address_of_lvalue(ptr_prs, expr.ptr2,
+			                        "right hand of struct assignment");
+			int size = expr.size_info_for_struct_assign;
+			gen_copy_struct_and_discard(size);
+			print_address_of_lvalue(ptr_prs, expr.ptr1,
+			                        "left hand of struct assignment");
+			return;
+		}
 		case FUNCCALL_EXPR_RETURNING_INTEGER_CLASS: {
 
 			pass_args(ptr_prs, &expr.args);
