@@ -804,7 +804,8 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 				struct Expr expr = typecheck_expression(ptr_ps, uexpr.ptr1);
 				struct Expr expr2 = typecheck_expression(ptr_ps, uexpr.ptr2);
 				if (expr.details.type.type_category == ARRAY ||
-				    expr.details.true_type.type_category == ARRAY) {
+				    (expr.details.type.type_category == PTR_ &&
+				     expr.details.true_type.type_category == ARRAY)) {
 					fprintf(stderr, "array is not an lvalue\n");
 					exit(EXIT_FAILURE);
 				}
