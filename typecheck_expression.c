@@ -1031,9 +1031,9 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 					return simple_binary_op(&expr, &expr2, uexpr.operator_, &t);
 				}
 				case OP_COMMA: {
-					if (expr.details.type.type_category == STRUCT_) {
+					if (expr2.details.type.type_category == STRUCT_) {
 						unsupported(
-						    "struct as the left operand of comma operator");
+						    "struct as the right operand of comma operator");
 					}
 					return comma_op(&expr, &expr2, &expr2.details.type);
 				}

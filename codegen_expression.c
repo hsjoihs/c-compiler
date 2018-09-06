@@ -333,16 +333,18 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 		}
 
 		case COMMA_EXPR: {
-			print_expression(ptr_prs, expr.ptr1);
-			print_expression(ptr_prs, expr.ptr2);
-
 			const struct Type left_type = expr.ptr1->details.type;
-			assert(left_type.type_category != STRUCT_);
-			if (left_type.type_category == PTR_) {
 
-				gen_discard2nd_8byte();
-				return;
+			if (left_type.type_category == STRUCT_) {
+
+				/* no one's gonna look at it anyway */
+				print_address_of_lvalue(ptr_prs, expr.ptr1,
+				                        "struct as the first operand of comma");
+			} else {
+
+				print_expression(ptr_prs, expr.ptr1);
 			}
+			print_expression(ptr_prs, expr.ptr2);
 
 			gen_discard2nd_8byte();
 			return;
