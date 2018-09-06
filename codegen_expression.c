@@ -394,9 +394,7 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 			print_expression_as_lvalue(ptr_prs, expr.ptr1);
 			print_expression(ptr_prs, expr.ptr2);
 
-			print_simple_binary_op(expr.simple_binary_operator,
-			                       &expr.ptr1->details.type,
-			                       expr.size_info_for_pointer_arith);
+			gen_discard2nd_8byte();
 
 			struct Type type = expr.ptr1->details.type;
 

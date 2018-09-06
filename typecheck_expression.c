@@ -874,8 +874,6 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 
 				if (uexpr.operator_ == OP_EQ) {
 					new_expr.category = ASSIGNMENT_EXPR;
-					new_expr.simple_binary_operator =
-					    op_before_assign(uexpr.operator_);
 				} else {
 					new_expr.category = COMPOUND_ASSIGNMENT_EXPR;
 					new_expr.simple_binary_operator =
