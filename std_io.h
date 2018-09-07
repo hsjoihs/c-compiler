@@ -24,5 +24,6 @@ int sprintf();
 
 char *fgets(char *buf, int a, struct __FILE *fp);
 int puts(const char *str);
+struct __FILE *fopen(const char *filename, const char *mode);
 
 #endif

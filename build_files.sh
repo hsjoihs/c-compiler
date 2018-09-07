@@ -5,13 +5,19 @@ build() {
 	./out/$1.out || { echo -e "\033[31mFAIL\033[m, at test case" $1 ; exit 1; }
 }
 
+build2() {
+	./out/compiler.out test/$1.c > s/$1.s
+	gcc s/$1.s -o out/$1.out
+	./out/$1.out || { echo -e "\033[31mFAIL\033[m, at test case" $1 ; exit 1; }
+}
+
 build nqueen2
-build nqueen3
+build2 nqueen3
 build nqueen4
-build nqueen5
+build2 nqueen5
 build nqueen6
-build nqueen7
+build2 nqueen7
 build nqueen8
-build escape
+build2 escape
 build duff
-build char_literal
+build2 char_literal
