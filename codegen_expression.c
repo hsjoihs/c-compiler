@@ -173,9 +173,25 @@ void print_address_of_lvalue_or_struct(struct PrinterState *ptr_prs,
 	case VOID_EXPR:
 		fprintf(stderr, "context: %s\n", msg);
 		simple_error("doesn't seem like an lvalue; it is a void expr.\n");
+	case COMMA_EXPR: {
+		print_expression_or_addr_of_struct(
+		    ptr_prs, expr.ptr1, "struct as the first operand of comma");
+
+		if (expr.ptr2->details.type.type_category != STRUCT_) {
+			simple_error(
+			    "either the result of comma expression is used as an "
+			    "lvalue, or the comma expression is used as if it were a "
+			    "struct though the second operand of comma isn't.\n");
+		}
+		print_address_of_lvalue_or_struct(
+		    ptr_prs, expr.ptr2, "struct as the second operand of comma");
+
+		gen_discard2nd_8byte();
+		return;
+	}
 	default:
 		fprintf(stderr, "context: %s\n", msg);
-		simple_error("doesn't seem like an lvalue\n");
+		simple_error("doesn't seem like an lvalue or a struct\n");
 	}
 }
 
@@ -340,15 +356,8 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 	}
 
 	case COMMA_EXPR: {
-		if (expr.ptr1->details.type.type_category == STRUCT_) {
-
-			/* no one's gonna look at it anyway */
-			print_address_of_lvalue_or_struct(
-			    ptr_prs, expr.ptr1, "struct as the first operand of comma");
-		} else {
-
-			print_expression(ptr_prs, expr.ptr1);
-		}
+		print_expression_or_addr_of_struct(
+		    ptr_prs, expr.ptr1, "struct as the first operand of comma");
 
 		if (expr.ptr2->details.type.type_category == STRUCT_) {
 			simple_error("struct is used as the right operand of comma "
