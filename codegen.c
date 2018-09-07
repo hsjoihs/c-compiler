@@ -25,17 +25,6 @@ static int is_label_compatible(const struct SourceLabel *ptr_label1,
 	return 0;
 }
 
-void print_expression_or_addr_of_struct(struct PrinterState *ptr_prs,
-                                        const struct Expr *ref_expr,
-                                        const char *msg)
-{
-	if (ref_expr->details.type.type_category == STRUCT_) {
-		print_address_of_lvalue_or_struct(ptr_prs, ref_expr, msg);
-	} else {
-		print_expression(ptr_prs, ref_expr);
-	}
-}
-
 void print_statement(struct PrinterState *ptr_prs,
                      const struct Statement *ref_sta)
 {
