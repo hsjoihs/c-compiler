@@ -38,6 +38,9 @@ char *unescape(const char *str)
 			case '"':
 				ans[j] = '"';
 				break;
+			case 39:
+				ans[j] = 39;
+				break;
 			}
 			i += 2;
 			j++;
@@ -90,6 +93,8 @@ char *escape(const char *str)
 			ans[j + 1] = '"';
 			j += 2;
 			break;
+
+		/* single quote need not be re-escaped */
 		default:
 			ans[j] = str[i];
 			j++;
