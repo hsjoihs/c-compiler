@@ -340,9 +340,7 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 	}
 
 	case COMMA_EXPR: {
-		const struct Type left_type = expr.ptr1->details.type;
-
-		if (left_type.type_category == STRUCT_) {
+		if (expr.ptr1->details.type.type_category == STRUCT_) {
 
 			/* no one's gonna look at it anyway */
 			print_address_of_lvalue_or_struct(
@@ -351,7 +349,15 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 
 			print_expression(ptr_prs, expr.ptr1);
 		}
-		print_expression(ptr_prs, expr.ptr2);
+
+		if (expr.ptr2->details.type.type_category == STRUCT_) {
+			simple_error("struct is used as the right operand of comma "
+			             "operator, but the result of comma expression is used "
+			             "in a non-struct manner.\n");
+
+		} else {
+			print_expression(ptr_prs, expr.ptr2);
+		}
 
 		gen_discard2nd_8byte();
 		return;
