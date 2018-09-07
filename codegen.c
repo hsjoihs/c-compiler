@@ -25,6 +25,18 @@ static int is_label_compatible(const struct SourceLabel *ptr_label1,
 	return 0;
 }
 
+void print_expression_or_addr_of_struct(struct PrinterState *ptr_prs,
+                                        const struct Expr *ref_expr,
+                                        const char *msg)
+{
+	if (ref_expr->category != VOID_EXPR &&
+	    ref_expr->details.type.type_category == STRUCT_) {
+		print_address_of_lvalue_or_struct(ptr_prs, ref_expr, msg);
+	} else {
+		print_expression(ptr_prs, ref_expr);
+	}
+}
+
 void print_statement(struct PrinterState *ptr_prs,
                      const struct Statement *ref_sta)
 {
@@ -69,13 +81,9 @@ void print_statement(struct PrinterState *ptr_prs,
 		return;
 	}
 	case RETURN_STATEMENT: {
-		if (ref_sta->expr1.category != VOID_EXPR &&
-		    ref_sta->expr1.details.type.type_category == STRUCT_) {
-			print_address_of_lvalue_or_struct(ptr_prs, &ref_sta->expr1,
-			                                  "returning a struct");
-		} else {
-			print_expression(ptr_prs, &ref_sta->expr1);
-		}
+
+		print_expression_or_addr_of_struct(ptr_prs, &ref_sta->expr1,
+		                                   "returning a struct");
 
 		/* the first occurrence of return within a function */
 		if (ptr_prs->return_label_name == -1) {
