@@ -477,6 +477,68 @@ struct Expr typecheck_binary_expression(const struct AnalyzerState *ptr_ps,
                                         const struct Expr *ref_expr2,
                                         enum TokenKind op);
 
+struct Expr typecheck_unary_expression(const struct AnalyzerState *ptr_ps,
+                                       const struct Expr *ref_expr,
+                                       enum TokenKind kind)
+{
+	{
+		const struct Expr expr = *ref_expr;
+		switch (kind) {
+		case OP_NOT: {
+			expect_scalar(&expr.details.type, "operand of logical not");
+			struct Type t = INT_TYPE();
+			return unary_op_(&expr, kind, &t);
+		}
+		case OP_TILDA:
+		case OP_PLUS:
+		case OP_MINUS: {
+			expect_integral(&expr.details.type,
+			                "operand of bitnot, unary plus or unary minus");
+
+			/* integral promotion */
+			struct Type t = INT_TYPE();
+			return unary_op_(&expr, kind, &t);
+		}
+
+		case OP_PLUS_PLUS:
+		case OP_MINUS_MINUS: {
+			struct Expr new_expr = unary_op_(&expr, kind, &expr.details.type);
+			if (expr.details.type.type_category == PTR_) {
+				const struct Type deref = deref_type(&expr.details.type);
+				new_expr.size_info_for_pointer_arith = size_of(ptr_ps, &deref);
+			}
+			return new_expr;
+		}
+
+		case OP_AND: {
+			struct Type type = expr.details.type;
+			if (type.type_category == PTR_ &&
+			    expr.details.true_type.type_category == ARRAY) {
+				type = expr.details.true_type;
+			}
+			const struct Type ptr_to_type_ = ptr_to_type(&type);
+			return unary_op_(&expr, OP_AND, &ptr_to_type_);
+		}
+		case OP_ASTERISK: {
+
+			const struct Type type = deref_type(&expr.details.type);
+
+			struct Type t2 = type;
+			if_array_convert_to_ptr_(&t2);
+
+			struct Expr new_expr = unary_op_(&expr, OP_ASTERISK, &t2);
+			new_expr.details.true_type = type;
+
+			return new_expr;
+		}
+		default: {
+			fprintf(stderr, "FAILURE::::::: INVALID TOKEN %d in unary\n", kind);
+			exit(EXIT_FAILURE);
+		}
+		}
+	}
+}
+
 struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
                                  const struct UntypedExpr *ref_uexpr)
 {
@@ -554,59 +616,7 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 	case UNARY_EXPR: {
 		enum TokenKind kind = uexpr.operator_;
 		const struct Expr expr = typecheck_expression(ptr_ps, uexpr.ptr1);
-		switch (kind) {
-		case OP_NOT: {
-			expect_scalar(&expr.details.type, "operand of logical not");
-			struct Type t = INT_TYPE();
-			return unary_op_(&expr, kind, &t);
-		}
-		case OP_TILDA:
-		case OP_PLUS:
-		case OP_MINUS: {
-			expect_integral(&expr.details.type,
-			                "operand of bitnot, unary plus or unary minus");
-
-			/* integral promotion */
-			struct Type t = INT_TYPE();
-			return unary_op_(&expr, kind, &t);
-		}
-
-		case OP_PLUS_PLUS:
-		case OP_MINUS_MINUS: {
-			struct Expr new_expr = unary_op_(&expr, kind, &expr.details.type);
-			if (expr.details.type.type_category == PTR_) {
-				const struct Type deref = deref_type(&expr.details.type);
-				new_expr.size_info_for_pointer_arith = size_of(ptr_ps, &deref);
-			}
-			return new_expr;
-		}
-
-		case OP_AND: {
-			struct Type type = expr.details.type;
-			if (type.type_category == PTR_ &&
-			    expr.details.true_type.type_category == ARRAY) {
-				type = expr.details.true_type;
-			}
-			const struct Type ptr_to_type_ = ptr_to_type(&type);
-			return unary_op_(&expr, OP_AND, &ptr_to_type_);
-		}
-		case OP_ASTERISK: {
-
-			const struct Type type = deref_type(&expr.details.type);
-
-			struct Type t2 = type;
-			if_array_convert_to_ptr_(&t2);
-
-			struct Expr new_expr = unary_op_(&expr, OP_ASTERISK, &t2);
-			new_expr.details.true_type = type;
-
-			return new_expr;
-		}
-		default: {
-			fprintf(stderr, "FAILURE::::::: INVALID TOKEN %d in unary\n", kind);
-			exit(EXIT_FAILURE);
-		}
-		}
+		return typecheck_unary_expression(ptr_ps, &expr, kind);
 	}
 	case FUNCCALL: {
 		const char *ident_str = uexpr.var_name;
