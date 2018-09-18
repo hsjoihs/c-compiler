@@ -639,7 +639,6 @@ struct Token *concat_str_literals(struct Token *tokvec)
 		}
 	}
 
-
 	struct Token *tokvec_new = calloc(tok_num, sizeof(struct Token));
 
 	int j = 0;
@@ -691,7 +690,7 @@ struct Token *read_all_tokens(const char *str)
 		}
 	}
 
-	return concat_str_literals(tokvec);
+	return tokvec;
 }
 
 static int count_all_tokens(const char *str)

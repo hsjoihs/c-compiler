@@ -45,7 +45,7 @@ int main(int argc, char const **argv)
 		return 0;
 	}
 
-	const struct Token *tokvec = read_all_tokens(str);
+	const struct Token *tokvec = concat_str_literals(read_all_tokens(str));
 
 	++tokvec; /* skip the dummy token BEGINNING */
 
