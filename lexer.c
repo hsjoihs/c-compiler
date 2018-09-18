@@ -2,8 +2,6 @@
 #include "std.h"
 #include "std_io.h"
 
-static void print_token(const struct Token *ptr_tok,
-                        const char *next_token_begins);
 static struct Token get_token(const char **ptr_to_str);
 
 char *unescape(const char *str)
@@ -108,22 +106,7 @@ char *escape(const char *str)
 
 static int from_hex(char c);
 
-void read_all_tokens_debug(const char *str)
-{
-	struct Token tok;
-
-	do {
-		tok = get_token(&str);
-		if (tok.kind == END) {
-			break;
-		}
-		print_token(&tok, str);
-		fprintf(stderr, "\n");
-	} while (1);
-}
-
-static void print_token(const struct Token *ptr_tok,
-                        const char *next_token_begins)
+void print_token(const struct Token *ptr_tok, const char *next_token_begins)
 {
 	if (ptr_tok->kind == END) {
 		fprintf(stderr, "DUMMY: END");
