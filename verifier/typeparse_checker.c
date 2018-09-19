@@ -10,7 +10,7 @@ struct UntypedExpr parse_assignment_expression(const struct Token **ptr_tokvec)
 void check_declaration(const char *str)
 {
 	fprintf(stderr, "Parsing: %s\n", str);
-	const struct Token *tokvec = read_all_tokens(str);
+	const struct Token *tokvec = concat_str_literals(remove_spaces_and_newlines(read_all_tokens(str)));
 
 	++tokvec; /* skip the dummy token BEGINNING */
 
@@ -26,7 +26,7 @@ void check_declaration(const char *str)
 void check_typename(const char *str)
 {
 	fprintf(stderr, "Parsing: %s\n", str);
-	const struct Token *tokvec = read_all_tokens(str);
+	const struct Token *tokvec = concat_str_literals(remove_spaces_and_newlines(read_all_tokens(str)));
 
 	++tokvec; /* skip the dummy token BEGINNING */
 
