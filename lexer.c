@@ -628,6 +628,7 @@ struct Token *concat_str_literals(struct Token *tokvec)
 	int k = 0;
 	for (;; j++, k++) {
 		tokvec_new[j] = tokvec[k];
+		/* token_begins_here is also copied here */
 		if (tokvec_new[j].kind == LIT_STRING) {
 			while (tokvec[k + 1].kind == LIT_STRING) {
 				int total_len = strlen(tokvec_new[j].literal_str) +
