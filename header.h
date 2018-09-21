@@ -158,8 +158,6 @@ void expect_and_consume(const struct Token **ptr_tokvec, enum TokenKind kind,
 _Noreturn void error_unexpected_token(const struct Token *tokvec,
                                       const char *str);
 
-struct Token *read_all_tokens(const char *str);
-
 void debug_print_type(const struct Type *ref_type);
 
 int can_start_a_type(const struct Token *tokvec);
@@ -364,8 +362,6 @@ struct Type ptr_to_type(const struct Type *ref_type);
 
 struct Type arr_of_type(const struct Type *ref_type, int length);
 
-struct Token *concat_str_literals(struct Token *tokvec);
-
 void print_token(const struct Token *ptr_tok, const char *next_token_begins);
 
-struct Token *remove_spaces_and_newlines(struct Token *tokvec);
+struct Token *read_and_preprocess(const char *str);

@@ -2,7 +2,16 @@
 #include "std.h"
 #include "std_io.h"
 
+static struct Token *concat_str_literals(struct Token *tokvec);
 static struct Token get_token(const char **ptr_to_str);
+static struct Token *remove_spaces_and_newlines(struct Token *tokvec);
+static struct Token *read_all_tokens(const char *str);
+
+struct Token *read_and_preprocess(const char *str)
+{
+	return concat_str_literals(
+	    remove_spaces_and_newlines(read_all_tokens(str)));
+}
 
 char *unescape(const char *str)
 {
@@ -620,7 +629,7 @@ static int from_hex(char c)
 
 static int count_all_tokens(const char *str);
 
-struct Token *remove_spaces_and_newlines(struct Token *tokvec)
+static struct Token *remove_spaces_and_newlines(struct Token *tokvec)
 {
 	int tok_num = 1;
 	for (;; tok_num++) {
@@ -651,7 +660,7 @@ struct Token *remove_spaces_and_newlines(struct Token *tokvec)
 	return tokvec_new;
 }
 
-struct Token *concat_str_literals(struct Token *tokvec)
+static struct Token *concat_str_literals(struct Token *tokvec)
 {
 	int tok_num = 1;
 	for (;; tok_num++) {
@@ -686,7 +695,7 @@ struct Token *concat_str_literals(struct Token *tokvec)
 	return tokvec_new;
 }
 
-struct Token *read_all_tokens(const char *str)
+static struct Token *read_all_tokens(const char *str)
 {
 	struct Token tok;
 	int tok_num;
