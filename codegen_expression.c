@@ -103,11 +103,23 @@ static void print_simple_binary_op(enum SimpleBinOp kind,
 	}
 }
 
-void print_address_of_lvalue(struct PrinterState *ptr_prs,
-                             const struct Expr *ref_expr, const char *msg)
+void print_address_of_lvalue_or_struct(struct PrinterState *ptr_prs,
+                                       const struct Expr *ref_expr,
+                                       const char *msg)
 {
 	const struct Expr expr = *ref_expr;
 	switch (expr.category) {
+		case STRUCT_ASSIGNMENT_EXPR: {
+			print_address_of_lvalue_or_struct(ptr_prs, expr.ptr1,
+			                                  "left hand of struct assignment");
+			print_address_of_lvalue_or_struct(
+			    ptr_prs, expr.ptr2, "right hand of struct assignment");
+			int size = expr.size_info_for_struct_assign;
+			gen_copy_struct_and_discard(size);
+			print_address_of_lvalue_or_struct(ptr_prs, expr.ptr1,
+			                                  "left hand of struct assignment");
+			return;
+		}
 		case FUNCCALL_EXPR_RETURNING_INTEGER_CLASS: {
 
 			pass_args(ptr_prs, &expr.args);
@@ -130,8 +142,8 @@ void print_address_of_lvalue(struct PrinterState *ptr_prs,
 			return;
 		}
 		case STRUCT_AND_OFFSET: {
-			print_address_of_lvalue(ptr_prs, expr.ptr1,
-			                        "struct whose member is to be accessed");
+			print_address_of_lvalue_or_struct(
+			    ptr_prs, expr.ptr1, "struct whose member is to be accessed");
 			int offset = expr.struct_offset;
 			gen_push_int(offset);
 			gen_cltq();
@@ -176,7 +188,7 @@ static void print_expression_as_lvalue(struct PrinterState *ptr_prs,
                                        const struct Expr *ref_expr)
 {
 	const struct Expr expr = *ref_expr;
-	print_address_of_lvalue(ptr_prs, &expr, "as lvalue");
+	print_address_of_lvalue_or_struct(ptr_prs, &expr, "as lvalue");
 	switch (expr.category) {
 		case FUNCCALL_EXPR_RETURNING_INTEGER_CLASS: {
 			unsupported("FUNCCALL_EXPR_RETURNING_STRUCT");
@@ -185,9 +197,8 @@ static void print_expression_as_lvalue(struct PrinterState *ptr_prs,
 			unsupported("FUNCCALL_EXPR_RETURNING_STRUCT");
 		}
 		case STRUCT_AND_OFFSET: {
-			struct Type type = expr.details.type;
 			gen_peek_deref_push_nbyte(
-			    size_of_basic(&type, "foo.bar as lvalue"));
+			    size_of_basic(&expr.details.type, "foo.bar as lvalue"));
 			return;
 		}
 		case LOCAL_VAR_: {
@@ -198,21 +209,17 @@ static void print_expression_as_lvalue(struct PrinterState *ptr_prs,
 			return;
 		}
 		case GLOBAL_VAR_: {
-			const char *name = expr.global_var_name;
-			struct Type type = expr.details.type;
-
-			printf("//load from global `%s`\n", name);
+			printf("//load from global `%s`\n", expr.global_var_name);
 			gen_peek_deref_push_nbyte(
-			    size_of_basic(&type, "global var as lvalue"));
+			    size_of_basic(&expr.details.type, "global var as lvalue"));
 
 			return;
 		}
 		case UNARY_OP_EXPR:
 			switch (expr.unary_operator) {
 				case UNARY_OP_ASTERISK: {
-					struct Type type = expr.details.type;
 					gen_peek_deref_push_nbyte(
-					    size_of_basic(&type, "*expr as lvalue"));
+					    size_of_basic(&expr.details.type, "*expr as lvalue"));
 					return;
 				}
 				default:
@@ -235,13 +242,14 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 			unsupported("FUNCCALL_EXPR_RETURNING_STRUCT");
 		}
 		case STRUCT_ASSIGNMENT_EXPR: {
-			print_address_of_lvalue(ptr_prs, expr.ptr1,
-			                        "left hand of struct assignment");
-			print_address_of_lvalue(ptr_prs, expr.ptr2,
-			                        "right hand of struct assignment");
+			print_address_of_lvalue_or_struct(ptr_prs, expr.ptr1,
+			                                  "left hand of struct assignment");
+			print_address_of_lvalue_or_struct(
+			    ptr_prs, expr.ptr2, "right hand of struct assignment");
 			int size = expr.size_info_for_struct_assign;
 			gen_copy_struct_and_discard(size);
 			gen_push_int(143253); /* random garbage */
+			return;
 		}
 		case VOID_EXPR: {
 			gen_push_int(123); /* random garbage */
@@ -338,8 +346,8 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 			if (left_type.type_category == STRUCT_) {
 
 				/* no one's gonna look at it anyway */
-				print_address_of_lvalue(ptr_prs, expr.ptr1,
-				                        "struct as the first operand of comma");
+				print_address_of_lvalue_or_struct(
+				    ptr_prs, expr.ptr1, "struct as the first operand of comma");
 			} else {
 
 				print_expression(ptr_prs, expr.ptr1);
@@ -466,7 +474,7 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 					    true_type.type_category == ARRAY) {
 						print_expression(ptr_prs, expr.ptr1);
 					} else {
-						print_address_of_lvalue(
+						print_address_of_lvalue_or_struct(
 						    ptr_prs, expr.ptr1,
 						    "address requested by & operator");
 					}

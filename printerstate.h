@@ -14,5 +14,6 @@ int get_new_label_name(struct PrinterState *ptr_prs);
 void print_expression(struct PrinterState *ptr_prs,
                       const struct Expr *ref_expr);
 
-void print_address_of_lvalue(struct PrinterState *ptr_prs,
-                             const struct Expr *ref_expr, const char *msg);
+void print_address_of_lvalue_or_struct(struct PrinterState *ptr_prs,
+                                       const struct Expr *ref_expr,
+                                       const char *msg);
