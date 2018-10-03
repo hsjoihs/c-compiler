@@ -641,7 +641,7 @@ struct Token *concat_str_literals(struct Token *tokvec)
 			}
 		}
 
-		if (tokvec[j].kind == END) {
+		if (tokvec_new[j].kind == END) {
 			break;
 		}
 	}
