@@ -8,7 +8,7 @@ endif
 
 # out/compiler.out is purely from clang/gcc
 1stgen:
-	gcc -Wall -Wextra -DOVERRIDE_STD -g std.c codegen.c alignment.c parse_analyze_toplevel.c parse_analyze_statement.c codegen_expression.c main.c vector.c typecheck_expression.c parse_expression.c error.c type.c parse_type.c map.c print_x86_64.c $(OSFLAG) lexer.c codegen_switch.c -o out/compiler.out
+	gcc -Wall -Wextra -DOVERRIDE_STD -g std.c codegen.c alignment.c parse_analyze_toplevel.c parse_analyze_statement.c codegen_expression.c main.c vector.c typecheck_expression.c parse_expression.c error.c type.c parse_type.c map.c print_x86_64.c $(OSFLAG) lexer.c codegen_switch.c -o out/compiler.out -fsanitize=address -fno-omit-frame-pointer
 	cp -p out/compiler.out out/compiler_1stgen.out
 
 2ndgen:
