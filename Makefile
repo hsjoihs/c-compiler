@@ -103,11 +103,11 @@ compile_files:
 	make 1stgen
 	./build_files.sh
 	cat test/quine.c | ./out/compiler.out > s/quine.s
-	gcc s/quine.s -o out/quine.out
+	gcc s/quine.s -o out/quine.out -no-pie -Wno-unused-command-line-argument
 	./out/quine.out > test/quine_res.c
 	diff test/quine.c test/quine_res.c
 	cat test/quine2.c | ./out/compiler.out > s/quine2.s
-	gcc s/quine2.s -o out/quine2.out
+	gcc s/quine2.s -o out/quine2.out -no-pie -Wno-unused-command-line-argument
 	./out/quine2.out > test/quine2_res.c
 	diff test/quine2.c test/quine2_res.c
 	cat test/vector_test.c | ./out/compiler.out > s/vector_test.s
