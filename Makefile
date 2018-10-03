@@ -142,10 +142,32 @@ warn:
 f:
 	make format
 	make test_all_
+	make test_sanitized_1stgen
 
 
 format:
 	clang-format -i *.c *.h -style=file
 
+1stgen_sanitized:
+	clang -Wall -Wextra -DOVERRIDE_STD -g $(SRC) $(OSFLAG) -o out/compiler.out  -fsanitize=address -fno-omit-frame-pointer
+	cp -p out/compiler.out out/compiler_1stgen_sanitized.out
 
-
+test_sanitized_1stgen:
+	make 1stgen_sanitized
+	./compile.sh vector $(OSFLAG)
+	./compile.sh map $(OSFLAG)
+	./compile.sh print_x86_64 $(OSFLAG)
+	./compile.sh alignment $(OSFLAG)
+	./compile.sh codegen_expression $(OSFLAG)
+	./compile.sh std $(OSFLAG)
+	./compile.sh error $(OSFLAG)
+	./compile.sh codegen $(OSFLAG)
+	./compile.sh main $(OSFLAG)
+	./compile.sh codegen_switch $(OSFLAG)
+	./compile.sh parse_analyze_statement $(OSFLAG)
+	./compile.sh parse_analyze_toplevel $(OSFLAG)
+	./compile.sh parse_expression $(OSFLAG)
+	./compile.sh parse_type $(OSFLAG)
+	./compile.sh type $(OSFLAG)
+	./compile.sh typecheck_expression $(OSFLAG)
+	./compile.sh lexer $(OSFLAG)
