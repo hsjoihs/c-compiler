@@ -30,7 +30,7 @@ endif
 	./compile.sh type $(OSFLAG)
 	./compile.sh typecheck_expression $(OSFLAG)
 	./compile.sh lexer $(OSFLAG)
-	gcc -Wall -Wextra -DOVERRIDE_STD self_compile_asm/std.s self_compile_asm/codegen.s self_compile_asm/alignment.s self_compile_asm/parse_analyze_toplevel.s self_compile_asm/lexer.s self_compile_asm/codegen_expression.s self_compile_asm/main.s self_compile_asm/vector.s self_compile_asm/typecheck_expression.s self_compile_asm/parse_expression.s self_compile_asm/error.s self_compile_asm/type.s self_compile_asm/parse_type.s self_compile_asm/map.s self_compile_asm/print_x86_64.s self_compile_asm/codegen_switch.s $(OSFLAG) self_compile_asm/parse_analyze_statement.s -o out/compiler.out -no-pie
+	gcc -Wall -Wextra -DOVERRIDE_STD self_compile_asm/std.s self_compile_asm/codegen.s self_compile_asm/alignment.s self_compile_asm/parse_analyze_toplevel.s self_compile_asm/lexer.s self_compile_asm/codegen_expression.s self_compile_asm/main.s self_compile_asm/vector.s self_compile_asm/typecheck_expression.s self_compile_asm/parse_expression.s self_compile_asm/error.s self_compile_asm/type.s self_compile_asm/parse_type.s self_compile_asm/map.s self_compile_asm/print_x86_64.s self_compile_asm/codegen_switch.s $(OSFLAG) self_compile_asm/parse_analyze_statement.s -o out/compiler.out -no-pie -Wno-unused-command-line-argument
 	cp -p out/compiler.out out/compiler_2ndgen.out
 
 test_mixed_compiler:
@@ -54,7 +54,7 @@ test_mixed_compiler:
 	./compile.sh type $(OSFLAG) __with2nd
 	./compile.sh typecheck_expression $(OSFLAG) __with2nd
 	./compile.sh lexer $(OSFLAG) __with2nd
-	gcc -Wall -Wextra -DOVERRIDE_STD self_compile_asm/std__with2nd.s self_compile_asm/codegen__with2nd.s self_compile_asm/alignment__with2nd.s self_compile_asm/parse_analyze_toplevel__with2nd.s self_compile_asm/lexer.s self_compile_asm/codegen_expression__with2nd.s self_compile_asm/main__with2nd.s self_compile_asm/vector__with2nd.s self_compile_asm/typecheck_expression__with2nd.s self_compile_asm/parse_expression__with2nd.s self_compile_asm/error__with2nd.s self_compile_asm/type__with2nd.s self_compile_asm/parse_type__with2nd.s self_compile_asm/map__with2nd.s self_compile_asm/print_x86_64__with2nd.s self_compile_asm/codegen_switch__with2nd.s $(OSFLAG) self_compile_asm/parse_analyze_statement__with2nd.s -o out/compiler_gen3.out -no-pie
+	gcc -Wall -Wextra -DOVERRIDE_STD self_compile_asm/std__with2nd.s self_compile_asm/codegen__with2nd.s self_compile_asm/alignment__with2nd.s self_compile_asm/parse_analyze_toplevel__with2nd.s self_compile_asm/lexer.s self_compile_asm/codegen_expression__with2nd.s self_compile_asm/main__with2nd.s self_compile_asm/vector__with2nd.s self_compile_asm/typecheck_expression__with2nd.s self_compile_asm/parse_expression__with2nd.s self_compile_asm/error__with2nd.s self_compile_asm/type__with2nd.s self_compile_asm/parse_type__with2nd.s self_compile_asm/map__with2nd.s self_compile_asm/print_x86_64__with2nd.s self_compile_asm/codegen_switch__with2nd.s $(OSFLAG) self_compile_asm/parse_analyze_statement__with2nd.s -o out/compiler_gen3.out -no-pie -Wno-unused-command-line-argument
 	diff self_compile_asm/vector.s self_compile_asm/vector__with2nd.s
 	diff self_compile_asm/map.s self_compile_asm/map__with2nd.s
 	diff self_compile_asm/print_x86_64.s self_compile_asm/print_x86_64__with2nd.s
