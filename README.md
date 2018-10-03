@@ -42,5 +42,5 @@ $ make 2ndgen
 Run
 
 ```
-$ make test_all_
+$ make test_mixed_compiler
 ```
