@@ -37,7 +37,7 @@ CLANG_WARN=-Wall -Wextra -Wimplicit-fallthrough -Weverything -Wno-documentation 
 	gcc -Wall -Wextra -DOVERRIDE_STD self_compile_asm/std.s self_compile_asm/codegen.s self_compile_asm/alignment.s self_compile_asm/parse_analyze_toplevel.s self_compile_asm/lexer.s self_compile_asm/codegen_expression.s self_compile_asm/main.s self_compile_asm/vector.s self_compile_asm/typecheck_expression.s self_compile_asm/parse_expression.s self_compile_asm/error.s self_compile_asm/type.s self_compile_asm/parse_type.s self_compile_asm/map.s self_compile_asm/print_x86_64.s self_compile_asm/codegen_switch.s $(OSFLAG) self_compile_asm/parse_analyze_statement.s -o out/compiler.out -no-pie -Wno-unused-command-line-argument
 	cp -p out/compiler.out out/compiler_2ndgen.out
 
-test_mixed_compiler:
+test_2ndgen_compiler:
 	make 2ndgen
 	./test_cases.sh
 	./test_compile_error.sh
@@ -82,7 +82,7 @@ test_all_:
 	make verify_typeparse
 	make compile_files
 	make check_error
-	make test_mixed_compiler
+	make test_2ndgen_compiler
 
 
 clean:

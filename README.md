@@ -42,5 +42,11 @@ $ make 2ndgen
 Run
 
 ```
-$ make test_mixed_compiler
+$ make test_2ndgen_compiler
+```
+
+to test the self-compiled compiler. To test some more, run 
+
+```
+$ make test_all_
 ```
