@@ -10,38 +10,38 @@ collect_labels(const struct Statement *ptr_sta)
 	struct Vector /*<SourceLabel>*/ ans = init_vector();
 	concat_vector(&ans, &sta.labels);
 	switch (sta.category) {
-		case RETURN_STATEMENT:
-		case BREAK_STATEMENT:
-		case CONTINUE_STATEMENT:
-		case EXPRESSION_STATEMENT:
-		case DECLARATION_STATEMENT:
-			/* nothing */
-			break;
-		case SWITCH_STATEMENT:
-			/* do nothing; don't peek labels */
-			break;
+	case RETURN_STATEMENT:
+	case BREAK_STATEMENT:
+	case CONTINUE_STATEMENT:
+	case EXPRESSION_STATEMENT:
+	case DECLARATION_STATEMENT:
+		/* nothing */
+		break;
+	case SWITCH_STATEMENT:
+		/* do nothing; don't peek labels */
+		break;
 
-		case IF_STATEMENT:
-		case FOR_STATEMENT:
-		case WHILE_STATEMENT:
-		case DO_WHILE_STATEMENT: {
+	case IF_STATEMENT:
+	case FOR_STATEMENT:
+	case WHILE_STATEMENT:
+	case DO_WHILE_STATEMENT: {
+		const struct Vector /*<SourceLabel>*/ inner_vec =
+		    collect_labels(sta.inner_statement);
+		concat_vector(&ans, &inner_vec);
+		break;
+	}
+
+	case COMPOUND_STATEMENT:
+	case IF_ELSE_STATEMENT: {
+		struct Vector /*<Statement>*/ statement_vec = sta.statement_vector;
+		for (int counter = 0; counter != statement_vec.length; ++counter) {
+			const struct Statement *ptr_ith = statement_vec.vector[counter];
 			const struct Vector /*<SourceLabel>*/ inner_vec =
-			    collect_labels(sta.inner_statement);
+			    collect_labels(ptr_ith);
 			concat_vector(&ans, &inner_vec);
-			break;
 		}
-
-		case COMPOUND_STATEMENT:
-		case IF_ELSE_STATEMENT: {
-			struct Vector /*<Statement>*/ statement_vec = sta.statement_vector;
-			for (int counter = 0; counter != statement_vec.length; ++counter) {
-				const struct Statement *ptr_ith = statement_vec.vector[counter];
-				const struct Vector /*<SourceLabel>*/ inner_vec =
-				    collect_labels(ptr_ith);
-				concat_vector(&ans, &inner_vec);
-			}
-			break;
-		}
+		break;
+	}
 	}
 	return ans;
 }

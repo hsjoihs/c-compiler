@@ -266,22 +266,22 @@ void gen_call_and_assign_small_struct_to_local(const char *fname, int offset,
 	       offset, size);
 	gen_call(fname);
 	switch (size) {
-		case 16:
-			printf("  movq %%rax, %d(%%rbp)\n", offset);
-			printf("  movq %%rdx, %d(%%rbp)\n", offset + 8);
-			break;
-		case 12:
-			printf("  movq %%rax, %d(%%rbp)\n", offset);
-			printf("  movl %%edx, %d(%%rbp)\n", offset + 8);
-			break;
-		case 8:
-			printf("  movq %%rax, %d(%%rbp)\n", offset);
-			break;
-		case 4:
-			printf("  movl %%eax, %d(%%rbp)\n", offset);
-			break;
-		default:
-			assert0("forbidden struct size as a funccall" && 0);
+	case 16:
+		printf("  movq %%rax, %d(%%rbp)\n", offset);
+		printf("  movq %%rdx, %d(%%rbp)\n", offset + 8);
+		break;
+	case 12:
+		printf("  movq %%rax, %d(%%rbp)\n", offset);
+		printf("  movl %%edx, %d(%%rbp)\n", offset + 8);
+		break;
+	case 8:
+		printf("  movq %%rax, %d(%%rbp)\n", offset);
+		break;
+	case 4:
+		printf("  movl %%eax, %d(%%rbp)\n", offset);
+		break;
+	default:
+		assert0("forbidden struct size as a funccall" && 0);
 	}
 	gen_discard();
 }
@@ -453,34 +453,34 @@ static void gen_if_nonzero_jmp_1byte(int label1, int offset)
 void gen_if_zero_jmp_nbyte(int n, int label1, int offset)
 {
 	switch (n) {
-		case 1:
-			gen_if_zero_jmp_1byte(label1, offset);
-			break;
-		case 4:
-			gen_if_zero_jmp_4byte(label1, offset);
-			break;
-		case 8:
-			gen_if_zero_jmp_8byte(label1, offset);
-			break;
-		default:
-			assert0("Unsupported width; cannot happen" && 0);
+	case 1:
+		gen_if_zero_jmp_1byte(label1, offset);
+		break;
+	case 4:
+		gen_if_zero_jmp_4byte(label1, offset);
+		break;
+	case 8:
+		gen_if_zero_jmp_8byte(label1, offset);
+		break;
+	default:
+		assert0("Unsupported width; cannot happen" && 0);
 	}
 }
 
 void gen_if_nonzero_jmp_nbyte(int n, int label1, int offset)
 {
 	switch (n) {
-		case 1:
-			gen_if_nonzero_jmp_1byte(label1, offset);
-			break;
-		case 4:
-			gen_if_nonzero_jmp_4byte(label1, offset);
-			break;
-		case 8:
-			gen_if_nonzero_jmp_8byte(label1, offset);
-			break;
-		default:
-			assert0("Unsupported width; cannot happen" && 0);
+	case 1:
+		gen_if_nonzero_jmp_1byte(label1, offset);
+		break;
+	case 4:
+		gen_if_nonzero_jmp_4byte(label1, offset);
+		break;
+	case 8:
+		gen_if_nonzero_jmp_8byte(label1, offset);
+		break;
+	default:
+		assert0("Unsupported width; cannot happen" && 0);
 	}
 }
 
@@ -540,22 +540,22 @@ void gen_epilogue_returning_small_struct(int size, int label)
 
 	puts("  movq (%rsp), %rcx");
 	switch (size) {
-		case 16:
-			printf("  movq (%%rcx), %%rax\n"
-			       "  movq 8(%%rcx), %%rdx\n");
-			break;
-		case 12:
-			printf("  movq (%%rcx), %%rax\n"
-			       "  movl 8(%%rcx), %%edx\n");
-			break;
-		case 8:
-			printf("  movq (%%rcx), %%rax\n");
-			break;
-		case 4:
-			printf("  movl (%%rcx), %%eax\n");
-			break;
-		default:
-			assert0("hbjnklsdgf" && 0);
+	case 16:
+		printf("  movq (%%rcx), %%rax\n"
+		       "  movq 8(%%rcx), %%rdx\n");
+		break;
+	case 12:
+		printf("  movq (%%rcx), %%rax\n"
+		       "  movl 8(%%rcx), %%edx\n");
+		break;
+	case 8:
+		printf("  movq (%%rcx), %%rax\n");
+		break;
+	case 4:
+		printf("  movl (%%rcx), %%eax\n");
+		break;
+	default:
+		assert0("hbjnklsdgf" && 0);
 	}
 
 	printf("  leave\n"
@@ -588,19 +588,19 @@ void gen_div_by_const(int num)
 	printf("  movq (%%rsp), %%rax\n");
 
 	switch (num) {
-		case 1: /* do nothing */
-			break;
-		case 2:
-			printf("  sarq $1, %%rax\n");
-			break;
-		case 4:
-			printf("  sarq $2, %%rax\n");
-			break;
-		case 8:
-			printf("  sarq $3, %%rax\n");
-			break;
-		default:
-			assert0("Unsupported width; cannot happen" && 0);
+	case 1: /* do nothing */
+		break;
+	case 2:
+		printf("  sarq $1, %%rax\n");
+		break;
+	case 4:
+		printf("  sarq $2, %%rax\n");
+		break;
+	case 8:
+		printf("  sarq $3, %%rax\n");
+		break;
+	default:
+		assert0("Unsupported width; cannot happen" && 0);
 	}
 	printf("  movq %%rax, (%%rsp)\n");
 }
@@ -720,140 +720,140 @@ void gen_logical_AND_part2(int label1, int label2)
 void gen_push_from_local_nbyte(int n, int offset)
 {
 	switch (n) {
-		case 1:
-			gen_push_from_local_1byte(offset);
-			break;
-		case 4:
-			gen_push_from_local_4byte(offset);
-			break;
-		case 8:
-			gen_push_from_local_8byte(offset);
-			break;
-		default:
-			assert0("Unsupported width; cannot happen" && 0);
+	case 1:
+		gen_push_from_local_1byte(offset);
+		break;
+	case 4:
+		gen_push_from_local_4byte(offset);
+		break;
+	case 8:
+		gen_push_from_local_8byte(offset);
+		break;
+	default:
+		assert0("Unsupported width; cannot happen" && 0);
 	}
 }
 
 void gen_peek_deref_push_nbyte(int n)
 {
 	switch (n) {
-		case 1:
-			gen_peek_deref_push_1byte();
-			break;
-		case 4:
-			gen_peek_deref_push_4byte();
-			break;
-		case 8:
-			gen_peek_deref_push_8byte();
-			break;
-		default:
-			assert0("Unsupported width; cannot happen" && 0);
+	case 1:
+		gen_peek_deref_push_1byte();
+		break;
+	case 4:
+		gen_peek_deref_push_4byte();
+		break;
+	case 8:
+		gen_peek_deref_push_8byte();
+		break;
+	default:
+		assert0("Unsupported width; cannot happen" && 0);
 	}
 }
 
 void gen_assign_nbyte(int n)
 {
 	switch (n) {
-		case 1:
-			gen_assign_1byte();
-			break;
-		case 4:
-			gen_assign_4byte();
-			break;
-		case 8:
-			gen_assign_8byte();
-			break;
-		default:
-			assert0("Unsupported width; cannot happen" && 0);
+	case 1:
+		gen_assign_1byte();
+		break;
+	case 4:
+		gen_assign_4byte();
+		break;
+	case 8:
+		gen_assign_8byte();
+		break;
+	default:
+		assert0("Unsupported width; cannot happen" && 0);
 	}
 }
 
 void gen_peek_and_dereference_nbyte(int n)
 {
 	switch (n) {
-		case 1:
-			gen_peek_and_dereference_1byte();
-			break;
-		case 4:
-			gen_peek_and_dereference_4byte();
-			break;
-		case 8:
-			gen_peek_and_dereference_8byte();
-			break;
-		default:
-			assert0("Unsupported width; cannot happen" && 0);
+	case 1:
+		gen_peek_and_dereference_1byte();
+		break;
+	case 4:
+		gen_peek_and_dereference_4byte();
+		break;
+	case 8:
+		gen_peek_and_dereference_8byte();
+		break;
+	default:
+		assert0("Unsupported width; cannot happen" && 0);
 	}
 }
 
 void gen_push_ret_of_nbyte(int n, const char *ident_str)
 {
 	switch (n) {
-		case 1:
-			gen_push_ret_of_1byte(ident_str);
-			break;
-		case 4:
-			gen_push_ret_of_4byte(ident_str);
-			break;
-		case 8:
-			gen_push_ret_of_8byte(ident_str);
-			break;
-		default:
-			assert0("Unsupported width; cannot happen" && 0);
+	case 1:
+		gen_push_ret_of_1byte(ident_str);
+		break;
+	case 4:
+		gen_push_ret_of_4byte(ident_str);
+		break;
+	case 8:
+		gen_push_ret_of_8byte(ident_str);
+		break;
+	default:
+		assert0("Unsupported width; cannot happen" && 0);
 	}
 }
 
 void gen_epilogue_nbyte(int n, int label_name)
 {
 	switch (n) {
-		case 1:
-		case 4:
-			gen_epilogue(label_name);
-			break;
-		case 8:
-			gen_epilogue_8byte(label_name);
-			break;
-		default:
-			assert0("Unsupported width; cannot happen" && 0);
+	case 1:
+	case 4:
+		gen_epilogue(label_name);
+		break;
+	case 8:
+		gen_epilogue_8byte(label_name);
+		break;
+	default:
+		assert0("Unsupported width; cannot happen" && 0);
 	}
 }
 
 const char *get_reg_name_from_arg_pos_4byte(int counter)
 {
 	switch (counter) {
-		case 0:
-			return "edi";
-		case 1:
-			return "esi";
-		case 2:
-			return "edx";
-		case 3:
-			return "ecx";
-		case 4:
-			return "r8d";
-		case 5:
-			return "r9d";
-		default:
-			assert0("cannot happen" && 0);
+	case 0:
+		return "edi";
+	case 1:
+		return "esi";
+	case 2:
+		return "edx";
+	case 3:
+		return "ecx";
+	case 4:
+		return "r8d";
+	case 5:
+		return "r9d";
+	default:
+		assert0("cannot happen" && 0);
 	}
 }
 
 const char *get_reg_name_from_arg_pos_8byte(int counter)
 {
 	switch (counter) {
-		case 0:
-			return "rdi";
-		case 1:
-			return "rsi";
-		case 2:
-			return "rdx";
-		case 3:
-			return "rcx";
-		case 4:
-			return "r8";
-		case 5:
-			return "r9";
-		default:
-			assert0("cannot happen" && 0);
+	case 0:
+		return "rdi";
+	case 1:
+		return "rsi";
+	case 2:
+		return "rdx";
+	case 3:
+		return "rcx";
+	case 4:
+		return "r8";
+	case 5:
+		return "r9";
+	default:
+		assert0("cannot happen" && 0);
 	}
 }
 

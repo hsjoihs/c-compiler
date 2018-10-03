@@ -17,27 +17,27 @@ char *unescape(const char *str)
 			j++;
 		} else {
 			switch (str[i + 1]) {
-				case 92:
-					ans[j] = 92;
-					break;
-				case 't':
-					ans[j] = 9;
-					break;
-				case 'n':
-					ans[j] = 10;
-					break;
-				case 'v':
-					ans[j] = 11;
-					break;
-				case 'f':
-					ans[j] = 12;
-					break;
-				case 'r':
-					ans[j] = 13;
-					break;
-				case '"':
-					ans[j] = '"';
-					break;
+			case 92:
+				ans[j] = 92;
+				break;
+			case 't':
+				ans[j] = 9;
+				break;
+			case 'n':
+				ans[j] = 10;
+				break;
+			case 'v':
+				ans[j] = 11;
+				break;
+			case 'f':
+				ans[j] = 12;
+				break;
+			case 'r':
+				ans[j] = 13;
+				break;
+			case '"':
+				ans[j] = '"';
+				break;
 			}
 			i += 2;
 			j++;
@@ -53,47 +53,47 @@ char *escape(const char *str)
 	int j = 0;
 	for (int i = 0; str[i]; i++) {
 		switch (str[i]) {
-			case 92:
-				ans[j] = 92;
-				ans[j + 1] = 92;
-				j += 2;
-				break;
-			case 9:
-				ans[j] = 92;
-				ans[j + 1] = 't';
-				j += 2;
-				break;
-			case 10:
-				ans[j] = 92;
-				ans[j + 1] = 'n';
-				j += 2;
-				break;
-			case 11: /* somehow \v fails */
-				ans[j] = 92;
-				ans[j + 1] = '0';
-				ans[j + 2] = '1';
-				ans[j + 3] = '3';
-				j += 4;
-				break;
-			case 12:
-				ans[j] = 92;
-				ans[j + 1] = 'f';
-				j += 2;
-				break;
-			case 13:
-				ans[j] = 92;
-				ans[j + 1] = 'r';
-				j += 2;
-				break;
-			case '"':
-				ans[j] = 92;
-				ans[j + 1] = '"';
-				j += 2;
-				break;
-			default:
-				ans[j] = str[i];
-				j++;
-				break;
+		case 92:
+			ans[j] = 92;
+			ans[j + 1] = 92;
+			j += 2;
+			break;
+		case 9:
+			ans[j] = 92;
+			ans[j + 1] = 't';
+			j += 2;
+			break;
+		case 10:
+			ans[j] = 92;
+			ans[j + 1] = 'n';
+			j += 2;
+			break;
+		case 11: /* somehow \v fails */
+			ans[j] = 92;
+			ans[j + 1] = '0';
+			ans[j + 2] = '1';
+			ans[j + 3] = '3';
+			j += 4;
+			break;
+		case 12:
+			ans[j] = 92;
+			ans[j + 1] = 'f';
+			j += 2;
+			break;
+		case 13:
+			ans[j] = 92;
+			ans[j + 1] = 'r';
+			j += 2;
+			break;
+		case '"':
+			ans[j] = 92;
+			ans[j + 1] = '"';
+			j += 2;
+			break;
+		default:
+			ans[j] = str[i];
+			j++;
+			break;
 		}
 	}
 
@@ -218,50 +218,50 @@ static struct Token get_token_raw(const char **ptr_to_str)
 
 	if (*str == '+') {
 		switch (str[1]) {
-			case '=':
-				t.kind = OP_PLUS_EQ;
-				*ptr_to_str += 2;
-				return t;
-			case '+':
-				t.kind = OP_PLUS_PLUS;
-				*ptr_to_str += 2;
-				return t;
-			default:
-				t.kind = OP_PLUS;
-				++*ptr_to_str;
-				return t;
+		case '=':
+			t.kind = OP_PLUS_EQ;
+			*ptr_to_str += 2;
+			return t;
+		case '+':
+			t.kind = OP_PLUS_PLUS;
+			*ptr_to_str += 2;
+			return t;
+		default:
+			t.kind = OP_PLUS;
+			++*ptr_to_str;
+			return t;
 		}
 
 	} else if (*str == '-') {
 		switch (str[1]) {
-			case '=':
-				t.kind = OP_MINUS_EQ;
-				*ptr_to_str += 2;
-				return t;
-			case '-':
-				t.kind = OP_MINUS_MINUS;
-				*ptr_to_str += 2;
-				return t;
-			case '>':
-				t.kind = ARROW;
-				*ptr_to_str += 2;
-				return t;
-			default:
-				t.kind = OP_MINUS;
-				++*ptr_to_str;
-				return t;
+		case '=':
+			t.kind = OP_MINUS_EQ;
+			*ptr_to_str += 2;
+			return t;
+		case '-':
+			t.kind = OP_MINUS_MINUS;
+			*ptr_to_str += 2;
+			return t;
+		case '>':
+			t.kind = ARROW;
+			*ptr_to_str += 2;
+			return t;
+		default:
+			t.kind = OP_MINUS;
+			++*ptr_to_str;
+			return t;
 		}
 
 	} else if (*str == '*') {
 		switch (str[1]) {
-			case '=':
-				t.kind = OP_ASTERISK_EQ;
-				*ptr_to_str += 2;
-				return t;
-			default:
-				t.kind = OP_ASTERISK;
-				++*ptr_to_str;
-				return t;
+		case '=':
+			t.kind = OP_ASTERISK_EQ;
+			*ptr_to_str += 2;
+			return t;
+		default:
+			t.kind = OP_ASTERISK;
+			++*ptr_to_str;
+			return t;
 		}
 
 	} else if (*str == '(') {
@@ -274,25 +274,25 @@ static struct Token get_token_raw(const char **ptr_to_str)
 		return t;
 	} else if (*str == '/') {
 		switch (str[1]) {
-			case '=':
-				t.kind = OP_SLASH_EQ;
-				*ptr_to_str += 2;
-				return t;
-			default:
-				t.kind = OP_SLASH;
-				++*ptr_to_str;
-				return t;
+		case '=':
+			t.kind = OP_SLASH_EQ;
+			*ptr_to_str += 2;
+			return t;
+		default:
+			t.kind = OP_SLASH;
+			++*ptr_to_str;
+			return t;
 		}
 	} else if (*str == '%') {
 		switch (str[1]) {
-			case '=':
-				t.kind = OP_PERCENT_EQ;
-				*ptr_to_str += 2;
-				return t;
-			default:
-				t.kind = OP_PERCENT;
-				++*ptr_to_str;
-				return t;
+		case '=':
+			t.kind = OP_PERCENT_EQ;
+			*ptr_to_str += 2;
+			return t;
+		default:
+			t.kind = OP_PERCENT;
+			++*ptr_to_str;
+			return t;
 		}
 	} else if (*str == ',') {
 		t.kind = OP_COMMA;
@@ -300,14 +300,14 @@ static struct Token get_token_raw(const char **ptr_to_str)
 		return t;
 	} else if (*str == '^') {
 		switch (str[1]) {
-			case '=':
-				t.kind = OP_HAT_EQ;
-				*ptr_to_str += 2;
-				return t;
-			default:
-				t.kind = OP_HAT;
-				++*ptr_to_str;
-				return t;
+		case '=':
+			t.kind = OP_HAT_EQ;
+			*ptr_to_str += 2;
+			return t;
+		default:
+			t.kind = OP_HAT;
+			++*ptr_to_str;
+			return t;
 		}
 	} else if (*str == ';') {
 		t.kind = SEMICOLON;
@@ -331,99 +331,99 @@ static struct Token get_token_raw(const char **ptr_to_str)
 		return t;
 	} else if (*str == '<') {
 		switch (str[1]) {
-			case '<':
-				switch (str[2]) {
-					case '=':
-						t.kind = OP_LSHIFT_EQ;
-						*ptr_to_str += 3;
-						return t;
-					default:
-						t.kind = OP_LSHIFT;
-						*ptr_to_str += 2;
-						return t;
-				}
+		case '<':
+			switch (str[2]) {
 			case '=':
-				t.kind = OP_LT_EQ;
-				*ptr_to_str += 2;
+				t.kind = OP_LSHIFT_EQ;
+				*ptr_to_str += 3;
 				return t;
 			default:
-				t.kind = OP_LT;
-				++*ptr_to_str;
+				t.kind = OP_LSHIFT;
+				*ptr_to_str += 2;
 				return t;
+			}
+		case '=':
+			t.kind = OP_LT_EQ;
+			*ptr_to_str += 2;
+			return t;
+		default:
+			t.kind = OP_LT;
+			++*ptr_to_str;
+			return t;
 		}
 	} else if (*str == '>') {
 		switch (str[1]) {
-			case '>':
-				switch (str[2]) {
-					case '=':
-						t.kind = OP_RSHIFT_EQ;
-						*ptr_to_str += 3;
-						return t;
-					default:
-						t.kind = OP_RSHIFT;
-						*ptr_to_str += 2;
-						return t;
-				}
+		case '>':
+			switch (str[2]) {
 			case '=':
-				t.kind = OP_GT_EQ;
-				*ptr_to_str += 2;
+				t.kind = OP_RSHIFT_EQ;
+				*ptr_to_str += 3;
 				return t;
 			default:
-				t.kind = OP_GT;
-				++*ptr_to_str;
+				t.kind = OP_RSHIFT;
+				*ptr_to_str += 2;
 				return t;
+			}
+		case '=':
+			t.kind = OP_GT_EQ;
+			*ptr_to_str += 2;
+			return t;
+		default:
+			t.kind = OP_GT;
+			++*ptr_to_str;
+			return t;
 		}
 	} else if (*str == '&') {
 		switch (str[1]) {
-			case '&':
-				t.kind = OP_AND_AND;
-				*ptr_to_str += 2;
-				return t;
-			case '=':
-				t.kind = OP_AND_EQ;
-				*ptr_to_str += 2;
-				return t;
-			default:
-				t.kind = OP_AND;
-				++*ptr_to_str;
-				return t;
+		case '&':
+			t.kind = OP_AND_AND;
+			*ptr_to_str += 2;
+			return t;
+		case '=':
+			t.kind = OP_AND_EQ;
+			*ptr_to_str += 2;
+			return t;
+		default:
+			t.kind = OP_AND;
+			++*ptr_to_str;
+			return t;
 		}
 	} else if (*str == '|') {
 		switch (str[1]) {
-			case '|':
-				t.kind = OP_OR_OR;
-				*ptr_to_str += 2;
-				return t;
-			case '=':
-				t.kind = OP_OR_EQ;
-				*ptr_to_str += 2;
-				return t;
-			default:
-				t.kind = OP_OR;
-				++*ptr_to_str;
-				return t;
+		case '|':
+			t.kind = OP_OR_OR;
+			*ptr_to_str += 2;
+			return t;
+		case '=':
+			t.kind = OP_OR_EQ;
+			*ptr_to_str += 2;
+			return t;
+		default:
+			t.kind = OP_OR;
+			++*ptr_to_str;
+			return t;
 		}
 	} else if (*str == '=') {
 		switch (str[1]) {
-			case '=':
-				t.kind = OP_EQ_EQ;
-				*ptr_to_str += 2;
-				return t;
-			default:
-				t.kind = OP_EQ;
-				++*ptr_to_str;
-				return t;
+		case '=':
+			t.kind = OP_EQ_EQ;
+			*ptr_to_str += 2;
+			return t;
+		default:
+			t.kind = OP_EQ;
+			++*ptr_to_str;
+			return t;
 		}
 	} else if (*str == '!') {
 		switch (str[1]) {
-			case '=':
-				t.kind = OP_NOT_EQ;
-				*ptr_to_str += 2;
-				return t;
-			default:
-				t.kind = OP_NOT;
-				++*ptr_to_str;
-				return t;
+		case '=':
+			t.kind = OP_NOT_EQ;
+			*ptr_to_str += 2;
+			return t;
+		default:
+			t.kind = OP_NOT;
+			++*ptr_to_str;
+			return t;
 		}
 	} else if (*str == '~') {
 		t.kind = OP_TILDA;
@@ -589,37 +589,37 @@ static struct Token get_token(const char **ptr_to_str)
 static int from_hex(char c)
 {
 	switch (c) {
-		case '0':
-		case '1':
-		case '2':
-		case '3':
-		case '4':
-		case '5':
-		case '6':
-		case '7':
-		case '8':
-		case '9':
-			return c - '0';
+	case '0':
+	case '1':
+	case '2':
+	case '3':
+	case '4':
+	case '5':
+	case '6':
+	case '7':
+	case '8':
+	case '9':
+		return c - '0';
 
-		/* works for EBCDIC, too! */
-		case 'a':
-		case 'b':
-		case 'c':
-		case 'd':
-		case 'e':
-		case 'f':
-			return c - 'a' + 10;
+	/* works for EBCDIC, too! */
+	case 'a':
+	case 'b':
+	case 'c':
+	case 'd':
+	case 'e':
+	case 'f':
+		return c - 'a' + 10;
 
-		case 'A':
-		case 'B':
-		case 'C':
-		case 'D':
-		case 'E':
-		case 'F':
-			return c - 'A' + 10;
+	case 'A':
+	case 'B':
+	case 'C':
+	case 'D':
+	case 'E':
+	case 'F':
+		return c - 'A' + 10;
 
-		default:
-			return -1;
+	default:
+		return -1;
 	}
 }
 
