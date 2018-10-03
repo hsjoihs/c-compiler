@@ -144,10 +144,17 @@ static struct Token get_token_raw(const char **ptr_to_str)
 		return t;
 	}
 
-	if (*str == ' ' || *str == "\t"[0] || *str == "\n"[0] || *str == "\v"[0] ||
-	    *str == "\f"[0] || *str == "\r"[0]) {
+	if (*str == ' ' || *str == "\t"[0] || *str == "\v"[0] || *str == "\f"[0] ||
+	    *str == "\r"[0]) {
 		++*ptr_to_str;
-		return get_token(ptr_to_str);
+		t.kind = SPACE;
+		return t;
+	}
+
+	if (*str == "\n"[0]) {
+		++*ptr_to_str;
+		t.kind = NEWLINE;
+		return t;
 	}
 
 	if (*str == '/' && str[1] == '*') {
@@ -612,6 +619,37 @@ static int from_hex(char c)
 }
 
 static int count_all_tokens(const char *str);
+
+struct Token *remove_spaces_and_newlines(struct Token *tokvec)
+{
+	int tok_num = 1;
+	for (;; tok_num++) {
+		if (tokvec[tok_num - 1].kind == END) {
+			break;
+		}
+	}
+
+	struct Token *tokvec_new = calloc(tok_num, sizeof(struct Token));
+
+	int j = 0;
+	int k = 0;
+	while (1) {
+		if (tokvec[k].kind == NEWLINE || tokvec[k].kind == SPACE) {
+			k++;
+			continue;
+		}
+
+		tokvec_new[j] = tokvec[k];
+
+		if (tokvec_new[j].kind == END) {
+			break;
+		}
+
+		j++;
+		k++;
+	}
+	return tokvec_new;
+}
 
 struct Token *concat_str_literals(struct Token *tokvec)
 {
