@@ -315,8 +315,7 @@ static void print_toplevel_definition(struct PrinterState *ptr_prs,
 	}
 
 	if (ptr_prs->return_label_name == -1) {
-		simple_error("warning: the return type is not void, but "
-		             "`return` is not found");
+		simple_error("the return type is not void, but `return` is not found");
 	}
 	if (ret_type.type_category == STRUCT_) {
 		enum SystemVAbiClass abi_class = ref_def->func.abi_class;

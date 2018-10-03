@@ -109,6 +109,30 @@ void print_address_of_lvalue_or_struct(struct PrinterState *ptr_prs,
 {
 	const struct Expr expr = *ref_expr;
 	switch (expr.category) {
+	case CONDITIONAL_EXPR: {
+		int label1 = get_new_label_name(ptr_prs);
+		int label2 = get_new_label_name(ptr_prs);
+
+		print_expression(ptr_prs, expr.ptr1);
+		gen_if_zero_jmp_nbyte(
+		    size_of_basic(&expr.ptr1->details.type,
+		                  "condition of conditional expression"),
+		    label1, 0);
+
+		if (expr.ptr2->details.type.type_category != STRUCT_) {
+			simple_error("the conditional operator is used as lvalue");
+		}
+
+		print_address_of_lvalue_or_struct(ptr_prs, expr.ptr2,
+		                                  "true branch of ternary operator");
+		gen_jump(label2, "ternary operator");
+		gen_label(label1);
+		print_address_of_lvalue_or_struct(ptr_prs, expr.ptr3,
+		                                  "false branch of ternary operator");
+		gen_label(label2);
+		gen_discard2nd_8byte();
+		return;
+	}
 	case STRUCT_ASSIGNMENT_EXPR: {
 		print_address_of_lvalue_or_struct(ptr_prs, expr.ptr1,
 		                                  "left hand of struct assignment");

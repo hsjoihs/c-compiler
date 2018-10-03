@@ -17,6 +17,26 @@ $ make
 
 to compile.
 
+The compiler can be run as 
+
+```
+$ cat input.c | ./out/compiler.out > s/output.s
+```
+
+or as
+
+```
+$ ./out/compiler.out input.c > s/output.s
+```
+
+. To self-compile, run 
+
+```
+$ make 2ndgen
+```
+
+; this will overwrite `./out/compiler.out`.
+
 ## How to test
 
 Run

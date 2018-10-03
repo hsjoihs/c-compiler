@@ -38,6 +38,9 @@ char *unescape(const char *str)
 			case '"':
 				ans[j] = '"';
 				break;
+			case 39:
+				ans[j] = 39;
+				break;
 			}
 			i += 2;
 			j++;
@@ -90,6 +93,8 @@ char *escape(const char *str)
 			ans[j + 1] = '"';
 			j += 2;
 			break;
+
+		/* single quote need not be re-escaped */
 		default:
 			ans[j] = str[i];
 			j++;
@@ -625,6 +630,41 @@ static int from_hex(char c)
 
 static int count_all_tokens(const char *str);
 
+struct Token *concat_str_literals(struct Token *tokvec)
+{
+	int tok_num = 1;
+	for (;; tok_num++) {
+		if (tokvec[tok_num - 1].kind == END) {
+			break;
+		}
+	}
+
+
+	struct Token *tokvec_new = calloc(tok_num, sizeof(struct Token));
+
+	int j = 0;
+	int k = 0;
+	for (;; j++, k++) {
+		tokvec_new[j] = tokvec[k];
+		if (tokvec_new[j].kind == LIT_STRING) {
+			while (tokvec[k + 1].kind == LIT_STRING) {
+				int total_len = strlen(tokvec_new[j].literal_str) +
+				                strlen(tokvec[k + 1].literal_str);
+				char *new_str = calloc(total_len + 1, sizeof(char));
+				strcpy(new_str, tokvec_new[j].literal_str);
+				strcat(new_str, tokvec[k + 1].literal_str);
+				tokvec_new[j].literal_str = new_str;
+				k++;
+			}
+		}
+
+		if (tokvec[j].kind == END) {
+			break;
+		}
+	}
+	return tokvec_new;
+}
+
 struct Token *read_all_tokens(const char *str)
 {
 	struct Token tok;
@@ -651,29 +691,7 @@ struct Token *read_all_tokens(const char *str)
 		}
 	}
 
-	struct Token *tokvec_new = calloc(tok_num, sizeof(struct Token));
-
-	int j = 0;
-	int k = 0;
-	for (;; j++, k++) {
-		tokvec_new[j] = tokvec[k];
-		if (tokvec_new[j].kind == LIT_STRING) {
-			while (tokvec[k + 1].kind == LIT_STRING) {
-				int total_len = strlen(tokvec_new[j].literal_str) +
-				                strlen(tokvec[k + 1].literal_str);
-				char *new_str = calloc(total_len + 1, sizeof(char));
-				strcpy(new_str, tokvec_new[j].literal_str);
-				strcat(new_str, tokvec[k + 1].literal_str);
-				tokvec_new[j].literal_str = new_str;
-				k++;
-			}
-		}
-
-		if (tokvec[j].kind == END) {
-			break;
-		}
-	}
-	return tokvec_new;
+	return concat_str_literals(tokvec);
 }
 
 static int count_all_tokens(const char *str)
