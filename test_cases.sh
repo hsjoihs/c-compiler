@@ -3,7 +3,7 @@
 run_test() {
 	echo -e $2 | ./out/compiler.out > s/full_compile$1.s
 	gcc misc/supplement.c -S -o s/supplement.s
-	gcc s/full_compile$1.s s/supplement.s -o out/task$1.out
+	gcc s/full_compile$1.s s/supplement.s -o out/task$1.out -no-pie
 	./out/task$1.out
 	res=$?
 	if [ $res -ne $3 ]; then { echo "got:" $res; echo "expected:" $3; echo -e "\033[31mFAIL\033[m, at test case" $1: $2; exit 1; }; else echo -e "\033[32mPASS\033[m"; fi
@@ -12,7 +12,7 @@ run_test() {
 run_test2() {
 	echo -e $2 | ./out/compiler.out > s/full_compile$1.s
 	gcc misc/supplement2.c -S -o s/supplement2.s
-	gcc s/full_compile$1.s s/supplement2.s -o out/task$1.out
+	gcc s/full_compile$1.s s/supplement2.s -o out/task$1.out -no-pie
 	./out/task$1.out
 	res=$?
 	if [ $res -ne $3 ]; then { echo "got:" $res; echo "expected:" $3; echo -e "\033[31mFAIL\033[m, at test case" $1: $2; exit 1; }; else echo -e "\033[32mPASS\033[m"; fi
