@@ -89,7 +89,7 @@ clean:
 	rm out/*.out s/*.s
 
 verify_typeparse:
-	clang -Wall -Wextra -Wimplicit-fallthrough $(OSFLAG) vector.c verifier/typeparse_checker.c lexer.c type.c parse_type.c error.c -o out/typeparse_check.out
+	gcc -Wall -Wextra $(OSFLAG) vector.c verifier/typeparse_checker.c lexer.c type.c parse_type.c error.c -o out/typeparse_check.out
 	./out/typeparse_check.out
 
 assembly_sandbox:
@@ -137,6 +137,7 @@ warn:
 	make format
 	clang $(CLANG_WARN) -DOVERRIDE_STD $(SRC) $(OSFLAG) -o out/compiler.out 
 	clang $(CLANG_WARN) misc/assembly_sandbox.c print_x86_64.c $(OSFLAG) -o out/assembly_sandbox.out
+	clang -Wall -Wextra -Wimplicit-fallthrough $(OSFLAG) vector.c verifier/typeparse_checker.c lexer.c type.c parse_type.c error.c -o out/typeparse_check.out
 
 f:
 	make format
