@@ -40,12 +40,18 @@ int main(int argc, char const **argv)
 		strcat(str, buffer);
 	}
 
+	const struct Token *tokvec = concat_str_literals(read_all_tokens(str));
+
 	if (is_lexer_debug) {
-		read_all_tokens_debug(str);
+		for (int i = 0;;) {
+			if (tokvec[i].kind == END) {
+				break;
+			}
+			print_token_at(tokvec + i);
+			fprintf(stderr, "\n");
+		}
 		return 0;
 	}
-
-	const struct Token *tokvec = read_all_tokens(str);
 
 	++tokvec; /* skip the dummy token BEGINNING */
 

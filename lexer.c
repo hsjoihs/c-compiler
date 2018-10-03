@@ -2,8 +2,6 @@
 #include "std.h"
 #include "std_io.h"
 
-static void print_token(const struct Token *ptr_tok,
-                        const char *next_token_begins);
 static struct Token get_token(const char **ptr_to_str);
 
 char *unescape(const char *str)
@@ -108,22 +106,7 @@ char *escape(const char *str)
 
 static int from_hex(char c);
 
-void read_all_tokens_debug(const char *str)
-{
-	struct Token tok;
-
-	do {
-		tok = get_token(&str);
-		if (tok.kind == END) {
-			break;
-		}
-		print_token(&tok, str);
-		fprintf(stderr, "\n");
-	} while (1);
-}
-
-static void print_token(const struct Token *ptr_tok,
-                        const char *next_token_begins)
+void print_token(const struct Token *ptr_tok, const char *next_token_begins)
 {
 	if (ptr_tok->kind == END) {
 		fprintf(stderr, "DUMMY: END");
@@ -639,13 +622,13 @@ struct Token *concat_str_literals(struct Token *tokvec)
 		}
 	}
 
-
 	struct Token *tokvec_new = calloc(tok_num, sizeof(struct Token));
 
 	int j = 0;
 	int k = 0;
 	for (;; j++, k++) {
 		tokvec_new[j] = tokvec[k];
+		/* token_begins_here is also copied here */
 		if (tokvec_new[j].kind == LIT_STRING) {
 			while (tokvec[k + 1].kind == LIT_STRING) {
 				int total_len = strlen(tokvec_new[j].literal_str) +
@@ -691,7 +674,7 @@ struct Token *read_all_tokens(const char *str)
 		}
 	}
 
-	return concat_str_literals(tokvec);
+	return tokvec;
 }
 
 static int count_all_tokens(const char *str)

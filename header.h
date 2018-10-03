@@ -283,8 +283,6 @@ struct Expr {
 	int struct_offset;
 };
 
-void read_all_tokens_debug(const char *str);
-
 struct Type ptr_of_type_to_arr_of_type(struct Type *ptr_type, int length);
 
 struct Type CHAR_TYPE(void);
@@ -360,3 +358,7 @@ void print_token_at(const struct Token *tokvec);
 struct Type ptr_to_type(const struct Type *ref_type);
 
 struct Type arr_of_type(const struct Type *ref_type, int length);
+
+struct Token *concat_str_literals(struct Token *tokvec);
+
+void print_token(const struct Token *ptr_tok, const char *next_token_begins);
