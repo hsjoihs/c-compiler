@@ -73,7 +73,6 @@ test_mixed_compiler:
 	diff self_compile_asm/lexer.s self_compile_asm/lexer__with2nd.s
 
 test_all_:
-	make supplement
 	make assembly_sandbox
 	make test_valid
 	make verify_typeparse
@@ -85,10 +84,6 @@ test_all_:
 clean:
 	rm out/*.out s/*.s
 
-supplement:
-	gcc misc/supplement.c -S -o s/supplement.s
-	gcc misc/supplement2.c -S -o s/supplement2.s
-
 verify_typeparse:
 	clang -Wall -Wextra -Wimplicit-fallthrough $(OSFLAG) vector.c verifier/typeparse_checker.c lexer.c type.c parse_type.c error.c -o out/typeparse_check.out
 	./out/typeparse_check.out
@@ -96,11 +91,11 @@ verify_typeparse:
 assembly_sandbox:
 	gcc -Wall -Wextra misc/assembly_sandbox.c print_x86_64.c $(OSFLAG) -o out/assembly_sandbox.out
 	echo -e '' | ./out/assembly_sandbox.out > s/assembly_sandbox.s
+	gcc misc/supplement.c -S -o s/supplement.s
 	gcc s/assembly_sandbox.s s/supplement.s -o out/sandbox.out
 	./out/sandbox.out || if [ $$? -ne 174 ]; then { echo "\n\033[31mFAIL\033[m"; exit 1; }; else echo "\n\033[32mPASS\033[m"; fi
 
 compile_files:
-	make supplement
 	make 1stgen
 	./build_files.sh
 	cat test/quine.c | ./out/compiler.out > s/quine.s
@@ -122,7 +117,6 @@ compile_files:
 
 test_valid:
 	rm out/*.out
-	make supplement
 	make 1stgen
 	./test_cases.sh
 
