@@ -74,6 +74,11 @@ enum TokenKind {
 	RES_NORETURN,
 	RES_EXTERN,
 	RES_STATIC,
+
+	/* preprocessor */
+	HASH,
+	NEWLINE,
+	SPACE
 };
 
 struct Token {
@@ -362,3 +367,5 @@ struct Type arr_of_type(const struct Type *ref_type, int length);
 struct Token *concat_str_literals(struct Token *tokvec);
 
 void print_token(const struct Token *ptr_tok, const char *next_token_begins);
+
+struct Token *remove_spaces_and_newlines(struct Token *tokvec);

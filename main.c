@@ -40,7 +40,8 @@ int main(int argc, char const **argv)
 		strcat(str, buffer);
 	}
 
-	const struct Token *tokvec = concat_str_literals(read_all_tokens(str));
+	const struct Token *tokvec =
+	    concat_str_literals(remove_spaces_and_newlines(read_all_tokens(str)));
 
 	if (is_lexer_debug) {
 		for (int i = 0;;) {
