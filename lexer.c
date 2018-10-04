@@ -25,13 +25,6 @@ struct Token *read_and_preprocess(const char *str)
 
 	struct Map2 *def_map = init_map();
 
-	int tok_num = 1;
-	for (;; tok_num++) {
-		if (src[tok_num - 1].kind == END) {
-			break;
-		}
-	}
-	assert(tok_num == t.tok_num);
 	struct Token *dst = calloc(t.tok_num, sizeof(struct Token));
 
 	int j = 0;
@@ -789,15 +782,8 @@ static int count_all_tokens(const char *str);
 static struct Token *remove_spaces_and_newlines(const struct Tokvec *ref_t)
 {
 	const struct Token *tokvec = ref_t->v;
-	int tok_num = 1;
-	for (;; tok_num++) {
-		if (tokvec[tok_num - 1].kind == END) {
-			break;
-		}
-	}
-	assert(tok_num == ref_t->tok_num);
 
-	struct Token *tokvec_new = calloc(tok_num, sizeof(struct Token));
+	struct Token *tokvec_new = calloc(ref_t->tok_num, sizeof(struct Token));
 
 	int j = 0;
 	int k = 0;
