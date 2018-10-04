@@ -4,11 +4,11 @@
 	#	
 #	
 
-#define INT int
 
+#define I INT
+#define INT int
 INT main()
 {
-#define I INT
 #define main
 	I k = 3;
 	#		

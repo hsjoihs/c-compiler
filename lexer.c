@@ -84,7 +84,6 @@ struct Token *read_and_preprocess(const char *str)
 					insert(def_map, macro_name, ptr_token);
 					continue;
 				}
-
 				if (src[k].kind == END) {
 					ptr_token->kind = SPACE;
 					insert(def_map, macro_name, ptr_token);
@@ -93,7 +92,24 @@ struct Token *read_and_preprocess(const char *str)
 					break;
 				}
 
-				unsupported("non-empty `#define` directive");
+				if (src[k + 1].kind != NEWLINE && src[k + 1].kind != END) {
+					unsupported(
+					    "`#define` directive that expands to multiple tokens");
+				}
+
+				/* one-token replacement */
+				*ptr_token = src[k];
+				insert(def_map, macro_name, ptr_token);
+				k++;
+
+				if (src[k].kind == NEWLINE) {
+					k++;
+					continue;
+				}
+				if (src[k].kind == END) {
+					dst[j] = src[k];
+					break;
+				}
 			}
 			unsupported("unknown directive");
 		}
@@ -109,7 +125,15 @@ struct Token *read_and_preprocess(const char *str)
 		if (src[k].kind == IDENT_OR_RESERVED &&
 		    isElem(def_map, src[k].ident_str)) {
 			struct Token *replace_with = lookup(def_map, src[k].ident_str);
-			dst[j] = *replace_with;
+
+			if (replace_with->kind == IDENT_OR_RESERVED &&
+			    isElem(def_map, replace_with->ident_str)) {
+				struct Token *replace_with2 = lookup(def_map, replace_with->ident_str);
+			#warning recursion level too low
+				dst[j] = *replace_with2;
+			} else {
+				dst[j] = *replace_with;
+			}
 		} else {
 			dst[j] = src[k];
 		}

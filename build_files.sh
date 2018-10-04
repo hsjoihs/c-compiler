@@ -22,3 +22,4 @@ build2 escape
 build duff
 build2 char_literal
 build2 preprocess
+build2 preprocess2
