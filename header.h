@@ -2,7 +2,7 @@
 #include "vector.h"
 
 enum TokenKind {
-	OP_PLUS /*= 1*/,
+	OP_PLUS,
 	OP_MINUS,
 	END,
 	BEGINNING,
@@ -89,16 +89,7 @@ struct Token {
 	const char *token_begins_here;
 };
 
-enum TypeCategory {
-	INT_ /*= 1*/,
-	PTR_,
-	ARRAY,
-	FN,
-	CHAR_,
-	STRUCT_,
-	VOID_,
-	ENUM_
-};
+enum TypeCategory { INT_, PTR_, ARRAY, FN, CHAR_, STRUCT_, VOID_, ENUM_ };
 
 struct TypeAndIdent;
 
@@ -167,7 +158,7 @@ struct Type parse_type_name(const struct Token **ptr_tokvec);
 _Noreturn void unsupported(const char *str);
 
 enum ExprCategory {
-	SIMPLE_BINARY_EXPR /*= 1*/,
+	SIMPLE_BINARY_EXPR,
 	COMMA_EXPR,
 	POINTER_PLUS_INT,
 	POINTER_MINUS_INT,
@@ -194,7 +185,7 @@ enum ExprCategory {
 };
 
 enum UntypedExprCategory {
-	BINARY_EXPR /*= 1*/,
+	BINARY_EXPR,
 	UNARY_EXPR,
 	CONDITIONAL,
 	VAR,
@@ -208,7 +199,7 @@ enum UntypedExprCategory {
 };
 
 enum SimpleBinOp {
-	SIMPLE_BIN_OP_PLUS /*= 1*/,
+	SIMPLE_BIN_OP_PLUS,
 	SIMPLE_BIN_OP_MINUS,
 	SIMPLE_BIN_OP_ASTERISK,
 	SIMPLE_BIN_OP_SLASH,
@@ -227,7 +218,7 @@ enum SimpleBinOp {
 };
 
 enum UnaryOp {
-	UNARY_OP_NOT /*= 1*/,
+	UNARY_OP_NOT,
 	UNARY_OP_TILDA,
 	UNARY_OP_PLUS,
 	UNARY_OP_MINUS,
@@ -291,7 +282,7 @@ struct Type ptr_of_type_to_arr_of_type(struct Type *ptr_type, int length);
 struct Type CHAR_TYPE(void);
 
 enum StatementCategory {
-	COMPOUND_STATEMENT /*= 1*/,
+	COMPOUND_STATEMENT,
 	IF_STATEMENT,
 	IF_ELSE_STATEMENT,
 	FOR_STATEMENT,
