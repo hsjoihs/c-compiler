@@ -8,7 +8,7 @@
 
 static void parse_declarator(const struct Token **ptr_tokvec,
                              const char **ptr_to_ident_str,
-                             struct Vector /*<TypeNode>*/ *ptr_vec);
+                             struct Vector /*<struct TypeNode>*/ *ptr_vec);
 
 static void skip_consts_or_noreturns(const struct Token **ptr_tokvec)
 {
@@ -20,15 +20,15 @@ static void skip_consts_or_noreturns(const struct Token **ptr_tokvec)
 	return;
 }
 
-#define TypeNode struct Type
-/* the link list is incomplete and should not be
+#define TypeNode Type
+/* struct TypeNode denotes that the link list is incomplete and should not be
                                  brought outside */
 
 static struct Type from_type3_to_type(const void **type3)
 {
 	struct Type type;
-	const TypeNode *ptr_elem = type3[0];
-	TypeNode elem = *ptr_elem;
+	const struct TypeNode *ptr_elem = type3[0];
+	struct TypeNode elem = *ptr_elem;
 	type = elem;
 	switch (elem.type_category) {
 	case INT_:
@@ -66,7 +66,7 @@ parse_parameter_declaration(const struct Token **ptr_tokvec)
 	struct Type type;
 	{
 		struct Type *ptr_base_type = parse_type_specifier(ptr_tokvec);
-		struct Vector /*<TypeNode>*/ *ptr_vec = init_vector_();
+		struct Vector /*<struct TypeNode>*/ *ptr_vec = init_vector_();
 		if ((*ptr_tokvec)[0].kind == OP_COMMA ||
 		    (*ptr_tokvec)[0].kind == RIGHT_PAREN) {
 			/* comma or right paren signifies the immediate end of
@@ -116,7 +116,7 @@ struct Type *parse_type_specifier(const struct Token **ptr_tokvec)
 	skip_consts_or_noreturns(&tokvec);
 
 	enum TokenKind tok = tokvec[0].kind;
-	TypeNode *ptr = calloc(1, sizeof(TypeNode));
+	struct TypeNode *ptr = calloc(1, sizeof(struct TypeNode));
 
 	if (tok == RES_CHAR) {
 		ptr->type_category = CHAR_;
@@ -206,8 +206,9 @@ struct Type *parse_type_specifier(const struct Token **ptr_tokvec)
 	return ptr;
 }
 
-static void parse_parameter_type_list(const struct Token **ptr_tokvec,
-                                      struct Vector /*<TypeNode>*/ *ptr_vec)
+static void
+parse_parameter_type_list(const struct Token **ptr_tokvec,
+                          struct Vector /*<struct TypeNode>*/ *ptr_vec)
 {
 	assert((*ptr_tokvec)[-1].kind == LEFT_PAREN);
 	const struct Token *tokvec = *ptr_tokvec;
@@ -215,25 +216,25 @@ static void parse_parameter_type_list(const struct Token **ptr_tokvec,
 	{
 
 		if (tokvec[0].kind == RIGHT_PAREN) { /* NO INFO */
-			TypeNode f;
+			struct TypeNode f;
 			f.type_category = FN;
 			f.is_param_infos_valid = 0;
 			f.param_infos = init_vector();
-			TypeNode *ptr = calloc(1, sizeof(TypeNode));
+			struct TypeNode *ptr = calloc(1, sizeof(struct TypeNode));
 			*ptr = f;
 			push_vector(&vec, ptr);
 		} else if (tokvec[0].kind == RES_VOID &&
 		           tokvec[1].kind == RIGHT_PAREN) { /* EXPLICITLY EMPTY */
 			tokvec += 1;
-			TypeNode f;
+			struct TypeNode f;
 			f.type_category = FN;
 			f.is_param_infos_valid = 1;
 			f.param_infos = init_vector();
-			TypeNode *ptr = calloc(1, sizeof(TypeNode));
+			struct TypeNode *ptr = calloc(1, sizeof(struct TypeNode));
 			*ptr = f;
 			push_vector(&vec, ptr);
 		} else if (can_start_a_type(tokvec)) {
-			TypeNode f;
+			struct TypeNode f;
 			f.type_category = FN;
 			f.is_param_infos_valid = 1;
 			f.param_infos = init_vector();
@@ -251,7 +252,7 @@ static void parse_parameter_type_list(const struct Token **ptr_tokvec,
 				            parse_parameter_declaration(&tokvec));
 			}
 
-			TypeNode *ptr = calloc(1, sizeof(TypeNode));
+			struct TypeNode *ptr = calloc(1, sizeof(struct TypeNode));
 			*ptr = f;
 			push_vector(&vec, ptr);
 		} else {
@@ -264,7 +265,7 @@ static void parse_parameter_type_list(const struct Token **ptr_tokvec,
 }
 
 static void parse_dcl_postfixes(const struct Token **ptr_tokvec,
-                                struct Vector /*<TypeNode>*/ *ptr_vec)
+                                struct Vector /*<struct TypeNode>*/ *ptr_vec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 
@@ -278,10 +279,10 @@ static void parse_dcl_postfixes(const struct Token **ptr_tokvec,
 			expect_and_consume(&tokvec, RIGHT_BRACKET,
 			                   "closing ] while parsing a declaration");
 
-			TypeNode a;
+			struct TypeNode a;
 			a.type_category = ARRAY;
 			a.array_length = length;
-			TypeNode *ptr = calloc(1, sizeof(TypeNode));
+			struct TypeNode *ptr = calloc(1, sizeof(struct TypeNode));
 			*ptr = a;
 			push_vector(&vec, ptr);
 			continue;
@@ -300,9 +301,10 @@ static void parse_dcl_postfixes(const struct Token **ptr_tokvec,
 	*ptr_vec = vec;
 }
 
-static void parse_direct_declarator(const struct Token **ptr_tokvec,
-                                    const char **ptr_to_ident_str,
-                                    struct Vector /*<TypeNode>*/ *ptr_vec)
+static void
+parse_direct_declarator(const struct Token **ptr_tokvec,
+                        const char **ptr_to_ident_str,
+                        struct Vector /*<struct TypeNode>*/ *ptr_vec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 
@@ -328,7 +330,7 @@ static void parse_direct_declarator(const struct Token **ptr_tokvec,
 
 static void parse_declarator(const struct Token **ptr_tokvec,
                              const char **ptr_to_ident_str,
-                             struct Vector /*<TypeNode>*/ *ptr_vec)
+                             struct Vector /*<struct TypeNode>*/ *ptr_vec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 	int asterisk_num = 0;
@@ -340,7 +342,7 @@ static void parse_declarator(const struct Token **ptr_tokvec,
 	parse_direct_declarator(&tokvec, ptr_to_ident_str, ptr_vec);
 
 	while (asterisk_num-- > 0) {
-		TypeNode *ptr = calloc(1, sizeof(TypeNode));
+		struct TypeNode *ptr = calloc(1, sizeof(struct TypeNode));
 		ptr->type_category = PTR_;
 		push_vector(ptr_vec, ptr);
 	}
@@ -348,9 +350,10 @@ static void parse_declarator(const struct Token **ptr_tokvec,
 	*ptr_tokvec = tokvec;
 }
 
-struct UntypedExpr *parse_init_declarator(const struct Token **ptr_tokvec,
-                                          const char **ptr_to_ident_str,
-                                          struct Vector /*<TypeNode>*/ *ptr_vec)
+struct UntypedExpr *
+parse_init_declarator(const struct Token **ptr_tokvec,
+                      const char **ptr_to_ident_str,
+                      struct Vector /*<struct TypeNode>*/ *ptr_vec)
 {
 	struct UntypedExpr *ptr_expr = 0;
 	parse_declarator(ptr_tokvec, ptr_to_ident_str, ptr_vec);
@@ -375,7 +378,7 @@ struct Type parse_struct_declaration(const struct Token **ptr_tokvec,
                                      const char **ptr_to_ident_str)
 {
 	struct Type *ptr_base_type = parse_type_specifier(ptr_tokvec);
-	struct Vector /*<TypeNode>*/ *ptr_vec = init_vector_();
+	struct Vector /*<struct TypeNode>*/ *ptr_vec = init_vector_();
 	parse_declarator(ptr_tokvec, ptr_to_ident_str, ptr_vec);
 	push_vector(ptr_vec, ptr_base_type);
 	return from_type3_to_type(ptr_vec->vector);
@@ -387,7 +390,7 @@ struct Type parse_declaration(const struct Token **ptr_tokvec,
                               struct UntypedExpr **ptr_ptr_uexpr)
 {
 	struct Type *ptr_base_type = parse_type_specifier(ptr_tokvec);
-	struct Vector /*<TypeNode>*/ *ptr_vec = init_vector_();
+	struct Vector /*<struct TypeNode>*/ *ptr_vec = init_vector_();
 	struct UntypedExpr *ptr_uexpr = parse_init_declarator(
 	    ptr_tokvec, ptr_to_ident_str, ptr_vec); /* nullable */
 	*ptr_ptr_uexpr = ptr_uexpr;
@@ -402,7 +405,7 @@ struct Type parse_type_specifier_and_declarator(const struct Token **ptr_tokvec,
                                                 const char **ptr_to_ident_str)
 {
 	struct Type *ptr_base_type = parse_type_specifier(ptr_tokvec);
-	struct Vector /*<TypeNode>*/ *ptr_vec = init_vector_();
+	struct Vector /*<struct TypeNode>*/ *ptr_vec = init_vector_();
 	parse_declarator(ptr_tokvec, ptr_to_ident_str, ptr_vec);
 	push_vector(ptr_vec, ptr_base_type);
 	return from_type3_to_type(ptr_vec->vector);
@@ -424,12 +427,13 @@ direct-abstract-declarator:
 
 */
 
-static void parse_abstract_declarator(const struct Token **ptr_tokvec,
-                                      struct Vector /*<TypeNode>*/ *ptr_vec);
+static void
+parse_abstract_declarator(const struct Token **ptr_tokvec,
+                          struct Vector /*<struct TypeNode>*/ *ptr_vec);
 
 static void
 parse_direct_abstract_declarator(const struct Token **ptr_tokvec,
-                                 struct Vector /*<TypeNode>*/ *ptr_vec)
+                                 struct Vector /*<struct TypeNode>*/ *ptr_vec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 
@@ -449,8 +453,9 @@ parse_direct_abstract_declarator(const struct Token **ptr_tokvec,
 	*ptr_vec = vec;
 }
 
-static void parse_abstract_declarator(const struct Token **ptr_tokvec,
-                                      struct Vector /*<TypeNode>*/ *ptr_vec)
+static void
+parse_abstract_declarator(const struct Token **ptr_tokvec,
+                          struct Vector /*<struct TypeNode>*/ *ptr_vec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 
@@ -472,7 +477,7 @@ static void parse_abstract_declarator(const struct Token **ptr_tokvec,
 	}
 
 	while (asterisk_num-- > 0) {
-		TypeNode *ptr = calloc(1, sizeof(TypeNode));
+		struct TypeNode *ptr = calloc(1, sizeof(struct TypeNode));
 		ptr->type_category = PTR_;
 		push_vector(ptr_vec, ptr);
 	}
@@ -484,7 +489,7 @@ static void parse_abstract_declarator(const struct Token **ptr_tokvec,
 struct Type parse_type_name(const struct Token **ptr_tokvec)
 {
 	struct Type *ptr_base_type = parse_type_specifier(ptr_tokvec);
-	struct Vector /*<TypeNode>*/ *ptr_vec = init_vector_();
+	struct Vector /*<struct TypeNode>*/ *ptr_vec = init_vector_();
 
 	const struct Token *tokvec = *ptr_tokvec;
 
