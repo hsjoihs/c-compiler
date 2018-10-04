@@ -7,9 +7,9 @@ struct Tokvec {
 	struct Token *v;
 };
 
-static struct Token *concat_str_literals(struct Token *tokvec);
+static struct Token *concat_str_literals(const struct Tokvec *ref_v);
 static struct Token get_token(const char **ptr_to_str);
-static struct Token *remove_spaces_and_newlines(const struct Tokvec *ref_t);
+static struct Tokvec remove_spaces_and_newlines(const struct Tokvec *ref_t);
 static struct Tokvec read_all_tokens(const char *str);
 
 enum PreprocessorState { LINE_HAS_JUST_STARTED, AFTER_HASH, NOTHING_SPECIAL };
@@ -139,7 +139,9 @@ struct Token *read_and_preprocess(const char *str)
 	u.tok_num = j + 1;
 	u.v = dst;
 
-	return concat_str_literals(remove_spaces_and_newlines(&u));
+	const struct Tokvec v = remove_spaces_and_newlines(&u);
+
+	return concat_str_literals(&v);
 }
 
 static void replace_recursively(struct Map2 *def_map,
@@ -779,7 +781,7 @@ static int from_hex(char c)
 
 static int count_all_tokens(const char *str);
 
-static struct Token *remove_spaces_and_newlines(const struct Tokvec *ref_t)
+static struct Tokvec remove_spaces_and_newlines(const struct Tokvec *ref_t)
 {
 	const struct Token *tokvec = ref_t->v;
 
@@ -802,17 +804,23 @@ static struct Token *remove_spaces_and_newlines(const struct Tokvec *ref_t)
 		j++;
 		k++;
 	}
-	return tokvec_new;
+	struct Tokvec t;
+	t.v = tokvec_new;
+	t.tok_num = j + 1;
+	return t;
 }
 
-static struct Token *concat_str_literals(struct Token *tokvec)
+static struct Token *concat_str_literals(const struct Tokvec *ref_v)
 {
+	struct Token *tokvec = ref_v->v;
+
 	int tok_num = 1;
 	for (;; tok_num++) {
 		if (tokvec[tok_num - 1].kind == END) {
 			break;
 		}
 	}
+	assert(tok_num == ref_v->tok_num);
 
 	struct Token *tokvec_new = calloc(tok_num, sizeof(struct Token));
 
