@@ -13,6 +13,8 @@ struct Token *read_and_preprocess(const char *str)
 {
 	const struct Token *src = read_all_tokens(str);
 
+	struct Map2 *def_map = init_map();
+
 	int tok_num = 1;
 	for (;; tok_num++) {
 		if (src[tok_num - 1].kind == END) {
@@ -44,14 +46,54 @@ struct Token *read_and_preprocess(const char *str)
 			} else if (src[k].kind != IDENT_OR_RESERVED) {
 				fprintf(stderr, "Expected preprocessor directive, but got `");
 				print_token_at(&src[k]);
-				fprintf(stderr, "` as the token after #.");
+				fprintf(stderr, "` as the token after `#`.");
 				exit(EXIT_FAILURE);
 			}
 
 			if (strcmp(src[k].ident_str, "define") == 0) {
+				k++; /* `define` */
+
+				while (src[k].kind == SPACE) {
+					k++;
+				}
+
+				if (src[k].kind != IDENT_OR_RESERVED) {
+					fprintf(stderr, "Expected macro name, but got `");
+					print_token_at(&src[k]);
+					fprintf(stderr, "` as the token after `#define`.");
+					exit(EXIT_FAILURE);
+				}
+
+				const char *macro_name = src[k].ident_str;
 				k++;
-				unsupported("`#define` directive");
-				continue;
+
+				if (src[k].kind == LEFT_PAREN) {
+					unsupported("function-style macro");
+				}
+
+				while (src[k].kind == SPACE) {
+					k++;
+				}
+
+				struct Token *ptr_token = calloc(1, sizeof(struct Token));
+
+				/* empty replacement */
+				if (src[k].kind == NEWLINE) {
+					k++;
+					ptr_token->kind = SPACE;
+					insert(def_map, macro_name, ptr_token);
+					continue;
+				}
+
+				if (src[k].kind == END) {
+					ptr_token->kind = SPACE;
+					insert(def_map, macro_name, ptr_token);
+
+					dst[j] = src[k];
+					break;
+				}
+
+				unsupported("non-empty `#define` directive");
 			}
 			unsupported("unknown directive");
 		}
@@ -64,7 +106,13 @@ struct Token *read_and_preprocess(const char *str)
 			s = NOTHING_SPECIAL;
 		}
 
-		dst[j] = src[k];
+		if (src[k].kind == IDENT_OR_RESERVED &&
+		    isElem(def_map, src[k].ident_str)) {
+			struct Token *replace_with = lookup(def_map, src[k].ident_str);
+			dst[j] = *replace_with;
+		} else {
+			dst[j] = src[k];
+		}
 
 		if (dst[j].kind == END) {
 			break;

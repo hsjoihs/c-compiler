@@ -89,7 +89,7 @@ clean:
 	rm out/*.out s/*.s
 
 verify_typeparse:
-	gcc -Wall -Wextra $(OSFLAG) vector.c verifier/typeparse_checker.c lexer.c type.c parse_type.c error.c -o out/typeparse_check.out
+	gcc -Wall -Wextra $(OSFLAG) vector.c verifier/typeparse_checker.c lexer.c type.c parse_type.c error.c map.c -o out/typeparse_check.out
 	./out/typeparse_check.out
 
 assembly_sandbox:
