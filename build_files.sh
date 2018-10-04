@@ -21,3 +21,4 @@ build nqueen8
 build2 escape
 build duff
 build2 char_literal
+build2 preprocess

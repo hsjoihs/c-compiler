@@ -4,13 +4,77 @@
 
 static struct Token *concat_str_literals(struct Token *tokvec);
 static struct Token get_token(const char **ptr_to_str);
-static struct Token *remove_spaces_and_newlines(struct Token *tokvec);
+static struct Token *remove_spaces_and_newlines(const struct Token *tokvec);
 static struct Token *read_all_tokens(const char *str);
+
+enum PreprocessorState { LINE_HAS_JUST_STARTED, AFTER_HASH, NOTHING_SPECIAL };
 
 struct Token *read_and_preprocess(const char *str)
 {
-	return concat_str_literals(
-	    remove_spaces_and_newlines(read_all_tokens(str)));
+	const struct Token *src = read_all_tokens(str);
+
+	int tok_num = 1;
+	for (;; tok_num++) {
+		if (src[tok_num - 1].kind == END) {
+			break;
+		}
+	}
+
+	struct Token *dst = calloc(tok_num, sizeof(struct Token));
+
+	int j = 0;
+	int k = 0;
+	enum PreprocessorState s = LINE_HAS_JUST_STARTED;
+	while (1) {
+		if (s == LINE_HAS_JUST_STARTED && src[k].kind == HASH) {
+			k++;
+
+			while (src[k].kind == SPACE) {
+				k++;
+			}
+
+			if (src[k].kind == NEWLINE) { /* empty directive */
+				dst[j] = src[k];
+				j++;
+				k++;
+				continue;
+			} else if (src[k].kind == END) { /* empty directive */
+				dst[j] = src[k];
+				break;
+			} else if (src[k].kind != IDENT_OR_RESERVED) {
+				fprintf(stderr, "Expected preprocessor directive, but got `");
+				print_token_at(&src[k]);
+				fprintf(stderr, "` as the token after #.");
+				exit(EXIT_FAILURE);
+			}
+
+			if (strcmp(src[k].ident_str, "define") == 0) {
+				k++;
+				unsupported("`#define` directive");
+				continue;
+			}
+			unsupported("unknown directive");
+		}
+
+		if (src[k].kind == NEWLINE || src[k].kind == BEGINNING) {
+			s = LINE_HAS_JUST_STARTED;
+		} else if (src[k].kind == SPACE) {
+			/* keep the state as is */
+		} else {
+			s = NOTHING_SPECIAL;
+		}
+
+		dst[j] = src[k];
+
+		if (dst[j].kind == END) {
+			break;
+		}
+
+		j++;
+		k++;
+	}
+
+	return concat_str_literals(remove_spaces_and_newlines(dst));
 }
 
 char *unescape(const char *str)
@@ -163,6 +227,12 @@ static struct Token get_token_raw(const char **ptr_to_str)
 	if (*str == "\n"[0]) {
 		++*ptr_to_str;
 		t.kind = NEWLINE;
+		return t;
+	}
+
+	if (*str == '#') {
+		++*ptr_to_str;
+		t.kind = HASH;
 		return t;
 	}
 
@@ -629,7 +699,7 @@ static int from_hex(char c)
 
 static int count_all_tokens(const char *str);
 
-static struct Token *remove_spaces_and_newlines(struct Token *tokvec)
+static struct Token *remove_spaces_and_newlines(const struct Token *tokvec)
 {
 	int tok_num = 1;
 	for (;; tok_num++) {
