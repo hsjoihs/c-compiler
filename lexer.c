@@ -9,6 +9,9 @@ static struct Token *read_all_tokens(const char *str);
 
 enum PreprocessorState { LINE_HAS_JUST_STARTED, AFTER_HASH, NOTHING_SPECIAL };
 
+static void replace_recursively(struct Map2 *def_map, const struct Token *ref_src,
+                                struct Token *ptr_dst);
+
 struct Token *read_and_preprocess(const char *str)
 {
 	const struct Token *src = read_all_tokens(str);
@@ -122,21 +125,7 @@ struct Token *read_and_preprocess(const char *str)
 			s = NOTHING_SPECIAL;
 		}
 
-		if (src[k].kind == IDENT_OR_RESERVED &&
-		    isElem(def_map, src[k].ident_str)) {
-			struct Token *replace_with = lookup(def_map, src[k].ident_str);
-
-			if (replace_with->kind == IDENT_OR_RESERVED &&
-			    isElem(def_map, replace_with->ident_str)) {
-				struct Token *replace_with2 = lookup(def_map, replace_with->ident_str);
-			#warning recursion level too low
-				dst[j] = *replace_with2;
-			} else {
-				dst[j] = *replace_with;
-			}
-		} else {
-			dst[j] = src[k];
-		}
+		replace_recursively(def_map, &src[k], &dst[j]);
 
 		if (dst[j].kind == END) {
 			break;
@@ -147,6 +136,20 @@ struct Token *read_and_preprocess(const char *str)
 	}
 
 	return concat_str_literals(remove_spaces_and_newlines(dst));
+}
+
+static void replace_recursively(struct Map2 *def_map, const struct Token *ref_src,
+                                struct Token *ptr_dst)
+{
+	if (ref_src->kind == IDENT_OR_RESERVED &&
+	    isElem(def_map, ref_src->ident_str)) {
+		struct Token *replace_with = lookup(def_map, ref_src->ident_str);
+
+		replace_recursively(def_map, replace_with, ptr_dst);
+
+	} else {
+		*ptr_dst = *ref_src;
+	}
 }
 
 char *unescape(const char *str)
