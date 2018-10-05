@@ -185,3 +185,4 @@ test_sanitized_1stgen:
 	./compile.sh typecheck_expression $(OSFLAG)
 	./compile.sh lexer $(OSFLAG)
 	./compile.sh file_io $(OSFLAG)
+	./compile.sh cpp $(OSFLAG)
