@@ -113,6 +113,26 @@ struct Token *read_and_preprocess(const char *str)
 					dst[j] = src[k];
 					break;
 				}
+			} else if (strcmp(src[k].ident_str, "include") == 0) {
+				k++; /* `include` */
+
+				while (src[k].kind == SPACE) {
+					k++;
+				}
+
+				if (src[k].kind == OP_LT) {
+					unsupported("`#include <...>`");
+				}
+
+				if (src[k].kind != LIT_STRING) {
+					fprintf(stderr, "Expected include path, but got `");
+					print_token_at(&src[k]);
+					fprintf(stderr, "` as the token after `#include`.");
+					exit(EXIT_FAILURE);
+				}
+
+				src[k].literal_str;
+				unsupported("`#include` directive");
 			}
 			unsupported("unknown directive");
 		}
