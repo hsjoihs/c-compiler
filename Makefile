@@ -15,6 +15,13 @@ CLANG_WARN=-Wall -Wextra -Wimplicit-fallthrough -Weverything -Wno-documentation 
 	gcc -Wall -Wextra -DOVERRIDE_STD -g $(SRC) $(OSFLAG) -o out/compiler.out
 	cp -p out/compiler.out out/compiler_1stgen.out
 
+test_include:
+	make 1stgen
+	./compile.sh map $(OSFLAG)
+	./out/compiler.out __.c > self_compile_asm/__.s
+	gcc -Wall -Wextra -DOVERRIDE_STD self_compile_asm/__.s self_compile_asm/map.s -o out/test_include.out -no-pie -Wno-unused-command-line-argument
+	./out/test_include.out
+
 2ndgen:
 	make 1stgen
 	./compile.sh vector $(OSFLAG)

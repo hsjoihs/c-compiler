@@ -19,23 +19,22 @@ static void replace_recursively(struct Map2 *def_map,
                                 const struct Token *ref_src,
                                 struct Token *ptr_dst);
 
-struct Tokvec preprocess(const char *str);
+struct Tokvec preprocess(const char *str, struct Map2 *def_map);
 
 struct Token *read_and_preprocess(const char *str)
 {
-	struct Tokvec u = preprocess(str);
+	struct Map2 *def_map = init_map();
+	struct Tokvec u = preprocess(str, def_map);
 
 	const struct Tokvec v = remove_spaces_and_newlines(&u);
 
 	return concat_str_literals(&v);
 }
 
-struct Tokvec preprocess(const char *str)
+struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 {
 	const struct Tokvec t = read_all_tokens(str);
 	const struct Token *src = t.v;
-
-	struct Map2 *def_map = init_map();
 
 	int total_token_num = t.tok_num;
 
@@ -54,6 +53,7 @@ struct Tokvec preprocess(const char *str)
 
 			if (src[k].kind == NEWLINE) { /* empty directive */
 				dst[j] = src[k];
+				s = LINE_HAS_JUST_STARTED;
 				j++;
 				k++;
 				continue;
@@ -97,6 +97,7 @@ struct Tokvec preprocess(const char *str)
 				/* empty replacement */
 				if (src[k].kind == NEWLINE) {
 					k++;
+					s = LINE_HAS_JUST_STARTED;
 					ptr_token->kind = SPACE;
 					insert(def_map, macro_name, ptr_token);
 					continue;
@@ -121,6 +122,7 @@ struct Tokvec preprocess(const char *str)
 
 				if (src[k].kind == NEWLINE) {
 					k++;
+					s = LINE_HAS_JUST_STARTED;
 					continue;
 				}
 				if (src[k].kind == END) {
@@ -146,6 +148,9 @@ struct Tokvec preprocess(const char *str)
 				}
 
 				struct __FILE *fp = fopen(src[k].literal_str, "r");
+
+				k++; /* consume the filepath token */
+
 				if (!fp) {
 					fprintf(stderr,
 					        "failed to open file `%s` to be `#include`d.\n",
@@ -154,7 +159,7 @@ struct Tokvec preprocess(const char *str)
 				}
 
 				char *imported = read_from_file(fp);
-				const struct Tokvec new_vec = read_all_tokens(imported);
+				const struct Tokvec new_vec = preprocess(imported, def_map);
 
 				total_token_num +=
 				    new_vec.tok_num - 2; /* BEGINNING and END gone */
@@ -163,11 +168,34 @@ struct Tokvec preprocess(const char *str)
 				    dst, total_token_num *
 				             sizeof(struct Token)); /* realloc never fails */
 
-#warning start copying, but with preprocessor active
+				int l = 1;
+				while (1) {
+					if (new_vec.v[l].kind == END) {
+						break;
+					}
+					dst[j] = new_vec.v[l];
+					j++;
+					l++;
+				}
 
-				unsupported("`#include` directive");
+				if (src[k].kind == NEWLINE) {
+					k++;
+					s = LINE_HAS_JUST_STARTED;
+					continue;
+				}
+				if (src[k].kind == END) {
+					dst[j] = src[k];
+					break;
+				}
+
+				fprintf(stderr, "Unexpected token  `");
+				print_token_at(&src[k]);
+				fprintf(stderr, "` as the token after `#include (filepath)`.");
+				exit(EXIT_FAILURE);
+
+			} else {
+				unsupported("unknown directive");
 			}
-			unsupported("unknown directive");
 		}
 
 		if (src[k].kind == NEWLINE || src[k].kind == BEGINNING) {
@@ -193,8 +221,6 @@ struct Tokvec preprocess(const char *str)
 	u.v = dst;
 
 	return u;
-
-	
 }
 
 static void replace_recursively(struct Map2 *def_map,
