@@ -19,7 +19,18 @@ static void replace_recursively(struct Map2 *def_map,
                                 const struct Token *ref_src,
                                 struct Token *ptr_dst);
 
+struct Tokvec preprocess(const char *str);
+
 struct Token *read_and_preprocess(const char *str)
+{
+	struct Tokvec u = preprocess(str);
+
+	const struct Tokvec v = remove_spaces_and_newlines(&u);
+
+	return concat_str_literals(&v);
+}
+
+struct Tokvec preprocess(const char *str)
 {
 	const struct Tokvec t = read_all_tokens(str);
 	const struct Token *src = t.v;
@@ -181,9 +192,9 @@ struct Token *read_and_preprocess(const char *str)
 	u.tok_num = j + 1;
 	u.v = dst;
 
-	const struct Tokvec v = remove_spaces_and_newlines(&u);
+	return u;
 
-	return concat_str_literals(&v);
+	
 }
 
 static void replace_recursively(struct Map2 *def_map,
