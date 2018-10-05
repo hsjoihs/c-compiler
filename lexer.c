@@ -1,3 +1,4 @@
+#include "file_io.h"
 #include "header.h"
 #include "std.h"
 #include "std_io.h"
@@ -25,7 +26,9 @@ struct Token *read_and_preprocess(const char *str)
 
 	struct Map2 *def_map = init_map();
 
-	struct Token *dst = calloc(t.tok_num, sizeof(struct Token));
+	int total_token_num = t.tok_num;
+
+	struct Token *dst = calloc(total_token_num, sizeof(struct Token));
 
 	int j = 0;
 	int k = 0;
@@ -131,7 +134,26 @@ struct Token *read_and_preprocess(const char *str)
 					exit(EXIT_FAILURE);
 				}
 
-				src[k].literal_str;
+				struct __FILE *fp = fopen(src[k].literal_str, "r");
+				if (!fp) {
+					fprintf(stderr,
+					        "failed to open file `%s` to be `#include`d.\n",
+					        src[k].literal_str);
+					exit(EXIT_FAILURE);
+				}
+
+				char *imported = read_from_file(fp);
+				const struct Tokvec new_vec = read_all_tokens(imported);
+
+				total_token_num +=
+				    new_vec.tok_num - 2; /* BEGINNING and END gone */
+
+				dst = realloc(
+				    dst, total_token_num *
+				             sizeof(struct Token)); /* realloc never fails */
+
+#warning start copying, but with preprocessor active
+
 				unsupported("`#include` directive");
 			}
 			unsupported("unknown directive");
