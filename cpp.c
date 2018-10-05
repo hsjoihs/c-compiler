@@ -3,7 +3,7 @@
 #include "std.h"
 #include "std_io.h"
 
-static void replace_recursively(struct Map2 *def_map,
+static void replace_recursively(struct Map2 *def_map, struct Map2 *used_map,
                                 const struct Token *ref_src,
                                 struct Token *ptr_dst);
 
@@ -184,7 +184,8 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 			s = NOTHING_SPECIAL;
 		}
 
-		replace_recursively(def_map, &src[k], &dst[j]);
+		struct Map2 *used_map = init_map();
+		replace_recursively(def_map, used_map, &src[k], &dst[j]);
 
 		if (dst[j].kind == END) {
 			break;
@@ -201,15 +202,21 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 	return u;
 }
 
-static void replace_recursively(struct Map2 *def_map,
+static void replace_recursively(struct Map2 *def_map, struct Map2 *used_map,
                                 const struct Token *ref_src,
                                 struct Token *ptr_dst)
 {
 	if (ref_src->kind == IDENT_OR_RESERVED &&
-	    isElem(def_map, ref_src->ident_str)) {
+	    isElem(def_map, ref_src->ident_str) &&
+	    !isElem(used_map, ref_src->ident_str)) {
 		struct Token *replace_with = lookup(def_map, ref_src->ident_str);
 
-		replace_recursively(def_map, replace_with, ptr_dst);
+		int u;
+		insert(
+		    used_map, ref_src->ident_str,
+		    &u /* this can be any arbitrary non-null pointer*/);
+
+		replace_recursively(def_map, used_map, replace_with, ptr_dst);
 
 	} else {
 		*ptr_dst = *ref_src;
