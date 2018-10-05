@@ -814,15 +814,7 @@ static struct Token *concat_str_literals(const struct Tokvec *ref_v)
 {
 	struct Token *tokvec = ref_v->v;
 
-	int tok_num = 1;
-	for (;; tok_num++) {
-		if (tokvec[tok_num - 1].kind == END) {
-			break;
-		}
-	}
-	assert(tok_num == ref_v->tok_num);
-
-	struct Token *tokvec_new = calloc(tok_num, sizeof(struct Token));
+	struct Token *tokvec_new = calloc(ref_v->tok_num, sizeof(struct Token));
 
 	int j = 0;
 	int k = 0;
