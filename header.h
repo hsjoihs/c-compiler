@@ -356,3 +356,14 @@ struct Type arr_of_type(const struct Type *ref_type, int length);
 void print_token(const struct Token *ptr_tok, const char *next_token_begins);
 
 struct Token *read_and_preprocess(const char *str);
+
+enum PreprocessorState { LINE_HAS_JUST_STARTED, AFTER_HASH, NOTHING_SPECIAL };
+
+struct Tokvec {
+	int tok_num;
+	struct Token *v;
+};
+
+struct Tokvec preprocess(const char *str, struct Map2 *def_map);
+
+struct Tokvec read_all_tokens(const char *str);
