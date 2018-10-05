@@ -93,7 +93,7 @@ test_all_:
 	make compile_files
 	make check_error
 	make test_2ndgen_compiler
-
+	make test_include
 
 clean:
 	rm out/*.out s/*.s
