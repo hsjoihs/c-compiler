@@ -158,8 +158,10 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 					exit(EXIT_FAILURE);
 				}
 
-				char *imported = read_from_file(fp);
+				const char *imported = read_from_file(fp);
 				const struct Tokvec new_vec = preprocess(imported, def_map);
+				/* def_map will be modified, and that's how all the macros will
+				 * be obtained here */
 
 				total_token_num +=
 				    new_vec.tok_num - 2; /* BEGINNING and END gone */
