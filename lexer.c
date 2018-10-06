@@ -698,6 +698,7 @@ static struct Token *concat_str_literals(const struct Tokvec *ref_v)
 	return tokvec_new;
 }
 
+/* before END comes always a NEWLINE */
 struct Tokvec read_all_tokens(const char *str)
 {
 	struct Token tok;
@@ -707,7 +708,8 @@ struct Tokvec read_all_tokens(const char *str)
 		tok_num = count_all_tokens(str2);
 	}
 
-	struct Token *tokvec = calloc(tok_num, sizeof(struct Token));
+	/* 1 additional for extra NEWLINE */
+	struct Token *tokvec = calloc(tok_num + 1, sizeof(struct Token));
 
 	tok.kind = BEGINNING;
 	tok.ident_str = 0;
@@ -720,12 +722,14 @@ struct Tokvec read_all_tokens(const char *str)
 		tokvec[i] = tok;
 
 		if (tok.kind == END) {
+			tokvec[i + 1] = tok;
+			tokvec[i].kind = NEWLINE;
 			break;
 		}
 	}
 
 	struct Tokvec t;
-	t.tok_num = tok_num;
+	t.tok_num = tok_num + 1;
 	t.v = tokvec;
 	return t;
 }
