@@ -7,9 +7,16 @@ static struct Token *concat_str_literals(const struct Tokvec *ref_v);
 static struct Token get_token(const char **ptr_to_str);
 static struct Tokvec remove_spaces_and_newlines(const struct Tokvec *ref_t);
 
-struct Token *read_and_preprocess(const char *str)
+struct Token *read_and_preprocess(const char *str,
+                                  struct Vector *ref_cmdline_macros)
 {
 	struct Map2 *def_map = init_map();
+	for (int i = 0; i < ref_cmdline_macros->length; i++) {
+		struct Token *ptr_token = calloc(1, sizeof(struct Token));
+		ptr_token->kind = LIT_DEC_INTEGER;
+		ptr_token->int_value = 1;
+		insert(def_map, ref_cmdline_macros->vector[i], ptr_token);
+	}
 	struct Tokvec u = preprocess(str, def_map);
 
 	const struct Tokvec v = remove_spaces_and_newlines(&u);

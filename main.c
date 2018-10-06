@@ -24,7 +24,7 @@ int main(int argc, char const **argv)
 
 	char *str = read_from_file(fp);
 
-	const struct Token *tokvec = read_and_preprocess(str);
+	const struct Token *tokvec = read_and_preprocess(str, &macros);
 
 	++tokvec; /* skip the dummy token BEGINNING */
 
