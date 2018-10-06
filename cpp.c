@@ -13,6 +13,7 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 	const struct Token *src = t.v;
 
 	int total_token_num = t.tok_num;
+	int ifdef_depth = 0;
 
 	struct Token *dst = calloc(total_token_num, sizeof(struct Token));
 
@@ -192,9 +193,65 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 					exit(EXIT_FAILURE);
 				}
 
-				const char *macro_name = src[k].ident_str;
-				k++;
+				while (src[k].kind == SPACE) {
+					k++;
+				}
+
+				const char *macro_name = src[k++].ident_str;
+
+				if (src[k].kind == END) {
+					fprintf(stderr,
+					        "End of file was encountered immediately after an "
+					        "`#if%sdef` directive",
+					        is_ifdef ? "" : "n");
+					exit(EXIT_FAILURE);
+				}
+
+				if (src[k].kind != NEWLINE) {
+					fprintf(stderr, "Expected newline, but got `");
+					print_token_at(&src[k]);
+					fprintf(stderr,
+					        "` as the token after `#if%sdef (macro_name)`.",
+					        is_ifdef ? "" : "n");
+					exit(EXIT_FAILURE);
+				}
+
+				s = LINE_HAS_JUST_STARTED;
 				unsupported("#ifdef/#ifndef");
+
+			} else if (strcmp(src[k].ident_str, "endif") ==
+			           0) { /* passes only when the #if(n)?def condition was
+				               true. If false, it will be handled in
+				               #if(n)?def.*/
+				k++;
+
+				if (ifdef_depth < 1) {
+					fprintf(stderr,
+					        "mismatch of `#endif` directive was detected.\n");
+					exit(EXIT_FAILURE);
+				}
+
+				ifdef_depth--;
+
+				while (src[k].kind == SPACE) {
+					k++;
+				}
+
+				if (src[k].kind == NEWLINE) {
+					k++;
+					s = LINE_HAS_JUST_STARTED;
+					continue;
+				}
+				if (src[k].kind == END) {
+					dst[j] = src[k];
+					break;
+				}
+
+				fprintf(stderr, "Expected newline, but got `");
+				print_token_at(&src[k]);
+				fprintf(stderr, "` as the token after `#endif`.");
+				exit(EXIT_FAILURE);
+
 			} else {
 				unsupported("unknown directive");
 			}
@@ -217,6 +274,11 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 
 		j++;
 		k++;
+	}
+
+	if (ifdef_depth) {
+		fprintf(stderr, "insufficient number of `#endif`s.\n");
+		exit(EXIT_FAILURE);
 	}
 
 	struct Tokvec u;
