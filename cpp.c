@@ -19,7 +19,6 @@ static void consume_the_rest_of_line(const struct Token **ptr_src)
 	while ((*ptr_src)[0].kind != NEWLINE) {
 		(*ptr_src)++;
 	}
-	(*ptr_src)++;
 }
 
 static void skip_till_corresponding_endif(const struct Token **ptr_src)
@@ -59,6 +58,7 @@ static void skip_till_corresponding_endif(const struct Token **ptr_src)
 			} else {
 				consume_the_rest_of_line(&src);
 			}
+			src++;
 			s = LINE_HAS_JUST_STARTED;
 			continue;
 		}
@@ -217,6 +217,7 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 
 				expect_and_consume(&src, NEWLINE,
 				                   "newline after `#if%sdef (macro_name)`");
+				src--; /* ad hoc */
 
 				s = LINE_HAS_JUST_STARTED;
 

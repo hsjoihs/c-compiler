@@ -24,24 +24,24 @@ test_include:
 
 2ndgen:
 	make 1stgen
-	./compile.sh vector $(OSFLAG)
-	./compile.sh map $(OSFLAG)
-	./compile.sh print_x86_64 $(OSFLAG)
-	./compile.sh alignment $(OSFLAG)
-	./compile.sh codegen_expression $(OSFLAG)
-	./compile.sh std $(OSFLAG)
-	./compile.sh error $(OSFLAG)
-	./compile.sh codegen $(OSFLAG)
+	./compile2.sh vector $(OSFLAG)
+	./compile2.sh map $(OSFLAG)
+	./compile2.sh print_x86_64 $(OSFLAG)
+	./compile2.sh alignment $(OSFLAG)
+	./compile2.sh codegen_expression $(OSFLAG)
+	./compile2.sh std $(OSFLAG)
+	./compile2.sh error $(OSFLAG)
+	./compile2.sh codegen $(OSFLAG)
+	./compile2.sh codegen_switch $(OSFLAG)
+	./compile2.sh parse_analyze_statement $(OSFLAG)
+	./compile2.sh parse_analyze_toplevel $(OSFLAG)
+	./compile2.sh parse_expression $(OSFLAG)
+	./compile2.sh parse_type $(OSFLAG)
+	./compile2.sh type $(OSFLAG)
+	./compile2.sh typecheck_expression $(OSFLAG)
+	./compile2.sh file_io $(OSFLAG)
 	./compile.sh main $(OSFLAG)
-	./compile.sh codegen_switch $(OSFLAG)
-	./compile.sh parse_analyze_statement $(OSFLAG)
-	./compile.sh parse_analyze_toplevel $(OSFLAG)
-	./compile.sh parse_expression $(OSFLAG)
-	./compile.sh parse_type $(OSFLAG)
-	./compile.sh type $(OSFLAG)
-	./compile.sh typecheck_expression $(OSFLAG)
 	./compile.sh lexer $(OSFLAG)
-	./compile.sh file_io $(OSFLAG)
 	./compile.sh cpp $(OSFLAG)
 	gcc -Wall -Wextra -DOVERRIDE_STD self_compile_asm/std.s self_compile_asm/codegen.s self_compile_asm/alignment.s self_compile_asm/parse_analyze_toplevel.s self_compile_asm/lexer.s self_compile_asm/codegen_expression.s self_compile_asm/main.s self_compile_asm/vector.s self_compile_asm/typecheck_expression.s self_compile_asm/parse_expression.s self_compile_asm/error.s self_compile_asm/type.s self_compile_asm/parse_type.s self_compile_asm/map.s self_compile_asm/print_x86_64.s self_compile_asm/codegen_switch.s self_compile_asm/file_io.s $(OSFLAG) self_compile_asm/parse_analyze_statement.s self_compile_asm/cpp.s -o out/compiler.out -no-pie -Wno-unused-command-line-argument
 	cp -p out/compiler.out out/compiler_2ndgen.out
@@ -50,24 +50,24 @@ test_2ndgen_compiler:
 	make 2ndgen
 	./test_cases.sh
 	./test_compile_error.sh
-	./compile.sh vector $(OSFLAG) __with2nd
-	./compile.sh map $(OSFLAG) __with2nd
-	./compile.sh print_x86_64 $(OSFLAG) __with2nd
-	./compile.sh alignment $(OSFLAG) __with2nd
-	./compile.sh codegen_expression $(OSFLAG) __with2nd
-	./compile.sh std $(OSFLAG) __with2nd
-	./compile.sh error $(OSFLAG) __with2nd
-	./compile.sh codegen $(OSFLAG) __with2nd
+	./compile2.sh vector $(OSFLAG) __with2nd
+	./compile2.sh map $(OSFLAG) __with2nd
+	./compile2.sh print_x86_64 $(OSFLAG) __with2nd
+	./compile2.sh alignment $(OSFLAG) __with2nd
+	./compile2.sh codegen_expression $(OSFLAG) __with2nd
+	./compile2.sh std $(OSFLAG) __with2nd
+	./compile2.sh error $(OSFLAG) __with2nd
+	./compile2.sh codegen $(OSFLAG) __with2nd
+	./compile2.sh codegen_switch $(OSFLAG) __with2nd
+	./compile2.sh parse_analyze_statement $(OSFLAG) __with2nd
+	./compile2.sh parse_analyze_toplevel $(OSFLAG) __with2nd
+	./compile2.sh parse_expression $(OSFLAG) __with2nd
+	./compile2.sh parse_type $(OSFLAG) __with2nd
+	./compile2.sh type $(OSFLAG) __with2nd
+	./compile2.sh typecheck_expression $(OSFLAG) __with2nd
+	./compile2.sh file_io $(OSFLAG) __with2nd
 	./compile.sh main $(OSFLAG) __with2nd
-	./compile.sh codegen_switch $(OSFLAG) __with2nd
-	./compile.sh parse_analyze_statement $(OSFLAG) __with2nd
-	./compile.sh parse_analyze_toplevel $(OSFLAG) __with2nd
-	./compile.sh parse_expression $(OSFLAG) __with2nd
-	./compile.sh parse_type $(OSFLAG) __with2nd
-	./compile.sh type $(OSFLAG) __with2nd
-	./compile.sh typecheck_expression $(OSFLAG) __with2nd
 	./compile.sh lexer $(OSFLAG) __with2nd
-	./compile.sh file_io $(OSFLAG) __with2nd
 	./compile.sh cpp $(OSFLAG) __with2nd
 	gcc -Wall -Wextra -DOVERRIDE_STD self_compile_asm/std__with2nd.s self_compile_asm/codegen__with2nd.s self_compile_asm/alignment__with2nd.s self_compile_asm/parse_analyze_toplevel__with2nd.s self_compile_asm/lexer.s self_compile_asm/codegen_expression__with2nd.s self_compile_asm/main__with2nd.s self_compile_asm/vector__with2nd.s self_compile_asm/typecheck_expression__with2nd.s self_compile_asm/parse_expression__with2nd.s self_compile_asm/error__with2nd.s self_compile_asm/type__with2nd.s self_compile_asm/parse_type__with2nd.s self_compile_asm/map__with2nd.s self_compile_asm/print_x86_64__with2nd.s self_compile_asm/codegen_switch__with2nd.s $(OSFLAG) self_compile_asm/parse_analyze_statement__with2nd.s self_compile_asm/file_io__with2nd.s self_compile_asm/cpp__with2nd.s -o out/compiler_gen3.out -no-pie -Wno-unused-command-line-argument
 	diff self_compile_asm/vector.s self_compile_asm/vector__with2nd.s
@@ -167,22 +167,22 @@ format:
 
 test_sanitized_1stgen:
 	make 1stgen_sanitized
-	./compile.sh vector $(OSFLAG)
-	./compile.sh map $(OSFLAG)
-	./compile.sh print_x86_64 $(OSFLAG)
-	./compile.sh alignment $(OSFLAG)
-	./compile.sh codegen_expression $(OSFLAG)
-	./compile.sh std $(OSFLAG)
-	./compile.sh error $(OSFLAG)
-	./compile.sh codegen $(OSFLAG)
-	./compile.sh main $(OSFLAG)
-	./compile.sh codegen_switch $(OSFLAG)
-	./compile.sh parse_analyze_statement $(OSFLAG)
-	./compile.sh parse_analyze_toplevel $(OSFLAG)
-	./compile.sh parse_expression $(OSFLAG)
-	./compile.sh parse_type $(OSFLAG)
-	./compile.sh type $(OSFLAG)
-	./compile.sh typecheck_expression $(OSFLAG)
+	./compile2.sh vector $(OSFLAG)
+	./compile2.sh map $(OSFLAG)
+	./compile2.sh print_x86_64 $(OSFLAG)
+	./compile2.sh alignment $(OSFLAG)
+	./compile2.sh codegen_expression $(OSFLAG)
+	./compile2.sh std $(OSFLAG)
+	./compile2.sh error $(OSFLAG)
+	./compile2.sh codegen $(OSFLAG)
+	./compile.sh  main $(OSFLAG)
+	./compile2.sh codegen_switch $(OSFLAG)
+	./compile2.sh parse_analyze_statement $(OSFLAG)
+	./compile2.sh parse_analyze_toplevel $(OSFLAG)
+	./compile2.sh parse_expression $(OSFLAG)
+	./compile2.sh parse_type $(OSFLAG)
+	./compile2.sh type $(OSFLAG)
+	./compile2.sh typecheck_expression $(OSFLAG)
 	./compile.sh lexer $(OSFLAG)
-	./compile.sh file_io $(OSFLAG)
+	./compile2.sh file_io $(OSFLAG)
 	./compile.sh cpp $(OSFLAG)
