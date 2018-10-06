@@ -521,6 +521,9 @@ static struct Token get_token_raw(const char **ptr_to_str)
 		int i = 1;
 
 		for (;; ++i) {
+			if (str[i] == 0) {
+				break;
+			}
 			if (strchr("_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 			           "0123456789",
 			           str[i]) == 0) {
