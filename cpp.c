@@ -14,9 +14,69 @@ static void consume_spaces(const struct Token **ptr_src)
 	}
 }
 
-static void skip_till_corresponding_endif()
+static void consume_the_rest_of_line(const struct Token **ptr_src)
 {
-	unsupported("#ifdef/#ifndef false branch");
+	while ((*ptr_src)[0].kind != NEWLINE) {
+		(*ptr_src)++;
+	}
+	(*ptr_src)++;
+}
+
+static void skip_till_corresponding_endif(const struct Token **ptr_src)
+{
+	const struct Token *src = *ptr_src;
+	enum PreprocessorState s = LINE_HAS_JUST_STARTED;
+	int ifdef_depth = 1;
+	while (1) {
+		if (s == LINE_HAS_JUST_STARTED && src[0].kind == HASH) {
+			src++;
+
+			consume_spaces(&src);
+
+			if (src[0].kind == NEWLINE) { /* empty directive */
+				s = LINE_HAS_JUST_STARTED;
+				src++;
+				continue;
+			}
+
+			expect_and_consume(
+			    &src, IDENT_OR_RESERVED,
+			    "identifier after `#` for preprocessor directive");
+
+			if (strcmp(src[-1].ident_str, "ifdef") == 0 ||
+			    strcmp(src[-1].ident_str, "ifndef") == 0) {
+				ifdef_depth++;
+				consume_the_rest_of_line(&src);
+			} else if (strcmp(src[-1].ident_str, "endif") == 0) {
+			
+				consume_spaces(&src);
+				expect_and_consume(&src, NEWLINE, "newline after `#endif`");
+				if (ifdef_depth == 1) {
+					*ptr_src = src;
+					return;
+				}
+				ifdef_depth--;
+			} else {
+				consume_the_rest_of_line(&src);
+			}
+			s = LINE_HAS_JUST_STARTED;
+			continue;
+		}
+
+		if (src[0].kind == NEWLINE || src[0].kind == BEGINNING) {
+			s = LINE_HAS_JUST_STARTED;
+		} else if (src[0].kind == SPACE) {
+			/* keep the state as is */
+		} else {
+			s = NOTHING_SPECIAL;
+		}
+
+		if (src[0].kind == END) {
+			fprintf(stderr, "insufficient `#endif`.\n");
+			exit(EXIT_FAILURE);
+		}
+		src++;
+	}
 }
 
 /* lexer inserts a NEWLINE before END; hence, END can mostly be ignored */
@@ -122,7 +182,7 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 				    dst, total_token_num *
 				             sizeof(struct Token)); /* realloc never fails */
 
-				int l = 1;
+				int l = 1; /* skip BEGINNING */
 				while (1) {
 					if (new_vec.v[l].kind == END) {
 						break;
@@ -163,7 +223,8 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 				if (is_ifdef == isElem(def_map, macro_name)) { /* true branch */
 					ifdef_depth++;
 				} else { /* false branch */
-					skip_till_corresponding_endif();
+					skip_till_corresponding_endif(&src);
+					continue;
 				}
 
 			} else if (strcmp(src[-1].ident_str, "endif") ==
