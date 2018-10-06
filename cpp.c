@@ -178,7 +178,7 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 			} else if (strcmp(src[k].ident_str, "ifdef") == 0 ||
 			           strcmp(src[k].ident_str, "ifndef") == 0) {
 				int is_ifdef = strcmp(src[k].ident_str, "ifdef") == 0;
-				k++; /* `define` */
+				k++; /* `if(n)?def` */
 
 				while (src[k].kind == SPACE) {
 					k++;
