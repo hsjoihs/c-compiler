@@ -19,6 +19,7 @@ static void skip_till_corresponding_endif()
 	unsupported("#ifdef/#ifndef false branch");
 }
 
+/* lexer inserts a NEWLINE before END; hence, END can mostly be ignored */
 struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 {
 	const struct Tokvec t = read_all_tokens(str);
@@ -43,9 +44,6 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 				j++;
 				src++;
 				continue;
-			} else if (src[0].kind == END) { /* empty directive */
-				dst[j] = *src;
-				break;
 			} else if (src[0].kind != IDENT_OR_RESERVED) {
 				fprintf(stderr, "Expected preprocessor directive, but got `");
 				print_token_at(src);
@@ -80,15 +78,8 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 					insert(def_map, macro_name, ptr_token);
 					continue;
 				}
-				if (src[0].kind == END) {
-					ptr_token->kind = SPACE;
-					insert(def_map, macro_name, ptr_token);
 
-					dst[j] = *src;
-					break;
-				}
-
-				if (src[1].kind != NEWLINE && src[1].kind != END) {
+				if (src[1].kind != NEWLINE) {
 					unsupported(
 					    "`#define` directive that expands to multiple tokens");
 				}
@@ -102,10 +93,6 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 					src++;
 					s = LINE_HAS_JUST_STARTED;
 					continue;
-				}
-				if (src[0].kind == END) {
-					dst[j] = *src;
-					break;
 				}
 			} else if (strcmp(src[0].ident_str, "include") == 0) {
 				src++; /* `include` */
@@ -156,10 +143,6 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 					s = LINE_HAS_JUST_STARTED;
 					continue;
 				}
-				if (src[0].kind == END) {
-					dst[j] = *src;
-					break;
-				}
 
 				error_unexpected_token(
 				    src, "newline or end of file after `#include (filepath)`");
@@ -177,15 +160,8 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 				const char *macro_name = src[-1].ident_str;
 				consume_spaces(&src);
 
-				if (src[0].kind == END) {
-					fprintf(stderr,
-					        "End of file was encountered immediately after an "
-					        "`#if%sdef` directive",
-					        is_ifdef ? "" : "n");
-					exit(EXIT_FAILURE);
-				}
-
-				expect_and_consume(&src, NEWLINE, "newline after `#if%sdef (macro_name)`");
+				expect_and_consume(&src, NEWLINE,
+				                   "newline after `#if%sdef (macro_name)`");
 
 				s = LINE_HAS_JUST_STARTED;
 
@@ -215,10 +191,6 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 					src++;
 					s = LINE_HAS_JUST_STARTED;
 					continue;
-				}
-				if (src[0].kind == END) {
-					dst[j] = *src;
-					break;
 				}
 
 				fprintf(stderr, "Expected newline, but got `");
