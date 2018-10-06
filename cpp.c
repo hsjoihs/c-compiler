@@ -156,6 +156,10 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 					l++;
 				}
 
+				while (src[k].kind == SPACE) {
+					k++;
+				}
+
 				if (src[k].kind == NEWLINE) {
 					k++;
 					s = LINE_HAS_JUST_STARTED;
