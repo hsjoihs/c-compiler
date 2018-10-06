@@ -7,6 +7,12 @@ static void replace_recursively(struct Map2 *def_map, struct Map2 *used_map,
                                 const struct Token *ref_src,
                                 struct Token *ptr_dst);
 
+
+void skip_till_corresponding_endif()
+{
+	unsupported("#ifdef/#ifndef false branch");
+}
+
 struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 {
 	const struct Tokvec t = read_all_tokens(str);
@@ -216,12 +222,13 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 					exit(EXIT_FAILURE);
 				}
 
+				k++;
 				s = LINE_HAS_JUST_STARTED;
 
 				if (is_ifdef == isElem(def_map, macro_name)) { /* true branch */
 					ifdef_depth++;
-				} else {
-					unsupported("#ifdef/#ifndef false branch");
+				} else { /* false branch */
+					skip_till_corresponding_endif();
 				}
 
 			} else if (strcmp(src[k].ident_str, "endif") ==
