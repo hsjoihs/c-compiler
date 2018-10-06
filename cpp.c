@@ -44,15 +44,13 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 				j++;
 				src++;
 				continue;
-			} else if (src[0].kind != IDENT_OR_RESERVED) {
-				fprintf(stderr, "Expected preprocessor directive, but got `");
-				print_token_at(src);
-				fprintf(stderr, "` as the token after `#`.");
-				exit(EXIT_FAILURE);
 			}
 
-			if (strcmp(src[0].ident_str, "define") == 0) {
-				src++; /* `define` */
+			expect_and_consume(
+			    &src, IDENT_OR_RESERVED,
+			    "identifier after `#` for preprocessor directive");
+
+			if (strcmp(src[-1].ident_str, "define") == 0) {
 
 				consume_spaces(&src);
 				expect_and_consume(&src, IDENT_OR_RESERVED,
@@ -94,9 +92,7 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 					s = LINE_HAS_JUST_STARTED;
 					continue;
 				}
-			} else if (strcmp(src[0].ident_str, "include") == 0) {
-				src++; /* `include` */
-
+			} else if (strcmp(src[-1].ident_str, "include") == 0) {
 				consume_spaces(&src);
 
 				if (src[0].kind == OP_LT) {
@@ -147,10 +143,9 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 				error_unexpected_token(
 				    src, "newline or end of file after `#include (filepath)`");
 
-			} else if (strcmp(src[0].ident_str, "ifdef") == 0 ||
-			           strcmp(src[0].ident_str, "ifndef") == 0) {
-				int is_ifdef = strcmp(src[0].ident_str, "ifdef") == 0;
-				src++; /* `if(n)?def` */
+			} else if (strcmp(src[-1].ident_str, "ifdef") == 0 ||
+			           strcmp(src[-1].ident_str, "ifndef") == 0) {
+				int is_ifdef = strcmp(src[-1].ident_str, "ifdef") == 0;
 
 				consume_spaces(&src);
 				expect_and_consume(&src, IDENT_OR_RESERVED,
@@ -171,12 +166,10 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 					skip_till_corresponding_endif();
 				}
 
-			} else if (strcmp(src[0].ident_str, "endif") ==
+			} else if (strcmp(src[-1].ident_str, "endif") ==
 			           0) { /* passes only when the #if(n)?def condition was
 				               true. If false, it will be handled in
 				               #if(n)?def.*/
-				src++;
-
 				if (ifdef_depth < 1) {
 					fprintf(stderr,
 					        "mismatch of `#endif` directive was detected.\n");
@@ -184,20 +177,10 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 				}
 
 				ifdef_depth--;
-
 				consume_spaces(&src);
-
-				if (src[0].kind == NEWLINE) {
-					src++;
-					s = LINE_HAS_JUST_STARTED;
-					continue;
-				}
-
-				fprintf(stderr, "Expected newline, but got `");
-				print_token_at(src);
-				fprintf(stderr, "` as the token after `#endif`.");
-				exit(EXIT_FAILURE);
-
+				expect_and_consume(&src, NEWLINE, "newline after `#endif`");
+				s = LINE_HAS_JUST_STARTED;
+				continue;
 			} else {
 				unsupported("unknown directive");
 			}
