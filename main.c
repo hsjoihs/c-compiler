@@ -7,40 +7,20 @@ int main(int argc, char const **argv)
 {
 	struct __FILE *fp;
 
-	int is_lexer_debug = 0;
 	if (argc == 1) {
 		fp = stdin;
-	} else if (argc == 2 && strcmp(argv[1], "--lexer-debug") == 0) {
-		fp = stdin;
-		is_lexer_debug = 1;
 	} else {
-		const char *filename = strcmp(argv[1], "--lexer-debug") == 0
-		                           ? (is_lexer_debug = 1, argv[2])
-		                           : argv[1];
+		const char *filename = argv[1];
 		fp = fopen(filename, "r");
 		if (!fp) {
 			fprintf(stderr, "failed to open file `%s`.\n", filename);
 			exit(EXIT_FAILURE);
-		}
-		if (argc == 3 && strcmp(argv[2], "--lexer-debug") == 0) {
-			is_lexer_debug = 1;
 		}
 	}
 
 	char *str = read_from_file(fp);
 
 	const struct Token *tokvec = read_and_preprocess(str);
-
-	if (is_lexer_debug) {
-		for (int i = 0;;) {
-			if (tokvec[i].kind == END) {
-				break;
-			}
-			print_token_at(tokvec + i);
-			fprintf(stderr, "\n");
-		}
-		return 0;
-	}
 
 	++tokvec; /* skip the dummy token BEGINNING */
 
