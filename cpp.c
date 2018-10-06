@@ -171,6 +171,26 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 				fprintf(stderr, "` as the token after `#include (filepath)`.");
 				exit(EXIT_FAILURE);
 
+			} else if (strcmp(src[k].ident_str, "ifdef") == 0 ||
+			           strcmp(src[k].ident_str, "ifndef") == 0) {
+				int is_ifdef = strcmp(src[k].ident_str, "ifdef") == 0;
+				k++; /* `define` */
+
+				while (src[k].kind == SPACE) {
+					k++;
+				}
+
+				if (src[k].kind != IDENT_OR_RESERVED) {
+					fprintf(stderr, "Expected macro name, but got `");
+					print_token_at(&src[k]);
+					fprintf(stderr, "` as the token after `#if%sdef`.",
+					        is_ifdef ? "" : "n");
+					exit(EXIT_FAILURE);
+				}
+
+				const char *macro_name = src[k].ident_str;
+				k++;
+				unsupported("#ifdef/#ifndef");
 			} else {
 				unsupported("unknown directive");
 			}
