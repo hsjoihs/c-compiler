@@ -75,6 +75,7 @@ void gen_logical_not_of_pointer(void);
 
 #ifdef OSX
 #define PREFIX "_"
-#else
+#endif
+#ifndef OSX
 #define PREFIX ""
 #endif

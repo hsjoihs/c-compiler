@@ -12,7 +12,8 @@
 
 #ifdef __STDC__
 #define size_t2 unsigned long
-#else
+#endif
+#ifndef __STDC__
 #define size_t2 int
 #endif
 

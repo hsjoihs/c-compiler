@@ -618,7 +618,8 @@ void gen_push_address_of_global(const char *ident)
 	printf("  subq $8, %%rsp\n");
 #ifdef OSX
 	printf("  movq " PREFIX "%s@GOTPCREL(%%rip), %%rax\n", ident);
-#else
+#endif
+#ifndef OSX
 	printf("  leaq " PREFIX "%s(%%rip), %%rax\n", ident);
 #endif
 	printf("  movq %%rax, (%%rsp)\n");

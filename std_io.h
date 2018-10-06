@@ -6,7 +6,8 @@
 #define stdin __stdinp
 extern struct __FILE *stderr;
 extern struct __FILE *stdin;
-#else
+#endif
+#ifndef OSX
 extern struct __FILE *stderr;
 extern struct __FILE *stdin;
 #endif
@@ -16,7 +17,8 @@ typedef struct __FILE FILE;
 int fprintf(FILE *restrict, const char *restrict, ...);
 int printf(const char *restrict, ...);
 int sprintf(char *restrict s, const char *restrict format, ...);
-#else
+#endif
+#ifndef __STDC__
 int fprintf();
 int printf();
 int sprintf();
