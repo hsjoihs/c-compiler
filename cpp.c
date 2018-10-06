@@ -16,7 +16,7 @@ void skip_till_corresponding_endif()
 struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 {
 	const struct Tokvec t = read_all_tokens(str);
-	const struct Token *src = t.v;
+	struct Token *src = t.v;
 
 	int total_token_num = t.tok_num;
 	int ifdef_depth = 0;
@@ -24,122 +24,121 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 	struct Token *dst = calloc(total_token_num, sizeof(struct Token));
 
 	int j = 0;
-	int k = 0;
 	enum PreprocessorState s = LINE_HAS_JUST_STARTED;
 	while (1) {
-		if (s == LINE_HAS_JUST_STARTED && src[k].kind == HASH) {
-			k++;
+		if (s == LINE_HAS_JUST_STARTED && src[0].kind == HASH) {
+			src++;
 
-			while (src[k].kind == SPACE) {
-				k++;
+			while (src[0].kind == SPACE) {
+				src++;
 			}
 
-			if (src[k].kind == NEWLINE) { /* empty directive */
-				dst[j] = src[k];
+			if (src[0].kind == NEWLINE) { /* empty directive */
+				dst[j] = *src;
 				s = LINE_HAS_JUST_STARTED;
 				j++;
-				k++;
+				src++;
 				continue;
-			} else if (src[k].kind == END) { /* empty directive */
-				dst[j] = src[k];
+			} else if (src[0].kind == END) { /* empty directive */
+				dst[j] = *src;
 				break;
-			} else if (src[k].kind != IDENT_OR_RESERVED) {
+			} else if (src[0].kind != IDENT_OR_RESERVED) {
 				fprintf(stderr, "Expected preprocessor directive, but got `");
-				print_token_at(&src[k]);
+				print_token_at(src);
 				fprintf(stderr, "` as the token after `#`.");
 				exit(EXIT_FAILURE);
 			}
 
-			if (strcmp(src[k].ident_str, "define") == 0) {
-				k++; /* `define` */
+			if (strcmp(src[0].ident_str, "define") == 0) {
+				src++; /* `define` */
 
-				while (src[k].kind == SPACE) {
-					k++;
+				while (src[0].kind == SPACE) {
+					src++;
 				}
 
-				if (src[k].kind != IDENT_OR_RESERVED) {
+				if (src[0].kind != IDENT_OR_RESERVED) {
 					fprintf(stderr, "Expected macro name, but got `");
-					print_token_at(&src[k]);
+					print_token_at(src);
 					fprintf(stderr, "` as the token after `#define`.");
 					exit(EXIT_FAILURE);
 				}
 
-				const char *macro_name = src[k].ident_str;
-				k++;
+				const char *macro_name = src[0].ident_str;
+				src++;
 
-				if (src[k].kind == LEFT_PAREN) {
+				if (src[0].kind == LEFT_PAREN) {
 					unsupported("function-style macro");
 				}
 
-				while (src[k].kind == SPACE) {
-					k++;
+				while (src[0].kind == SPACE) {
+					src++;
 				}
 
 				struct Token *ptr_token = calloc(1, sizeof(struct Token));
 
 				/* empty replacement */
-				if (src[k].kind == NEWLINE) {
-					k++;
+				if (src[0].kind == NEWLINE) {
+					src++;
 					s = LINE_HAS_JUST_STARTED;
 					ptr_token->kind = SPACE;
 					insert(def_map, macro_name, ptr_token);
 					continue;
 				}
-				if (src[k].kind == END) {
+				if (src[0].kind == END) {
 					ptr_token->kind = SPACE;
 					insert(def_map, macro_name, ptr_token);
 
-					dst[j] = src[k];
+					dst[j] = *src;
 					break;
 				}
 
-				if (src[k + 1].kind != NEWLINE && src[k + 1].kind != END) {
+				if (src[1].kind != NEWLINE && src[1].kind != END) {
 					unsupported(
 					    "`#define` directive that expands to multiple tokens");
 				}
 
 				/* one-token replacement */
-				*ptr_token = src[k];
+				*ptr_token = *src;
 				insert(def_map, macro_name, ptr_token);
-				k++;
+				src++;
 
-				if (src[k].kind == NEWLINE) {
-					k++;
+				if (src[0].kind == NEWLINE) {
+					src++;
 					s = LINE_HAS_JUST_STARTED;
 					continue;
 				}
-				if (src[k].kind == END) {
-					dst[j] = src[k];
+				if (src[0].kind == END) {
+					dst[j] = *src;
 					break;
 				}
-			} else if (strcmp(src[k].ident_str, "include") == 0) {
-				k++; /* `include` */
+			} else if (strcmp(src[0].ident_str, "include") == 0) {
+				src++; /* `include` */
 
-				while (src[k].kind == SPACE) {
-					k++;
+				while (src[0].kind == SPACE) {
+					src++;
 				}
 
-				if (src[k].kind == OP_LT) {
+				if (src[0].kind == OP_LT) {
 					unsupported("`#include <...>`");
 				}
 
-				if (src[k].kind != LIT_STRING) {
+				if (src[0].kind != LIT_STRING) {
 					fprintf(stderr, "Expected include path, but got `");
-					print_token_at(&src[k]);
+					print_token_at(src);
 					fprintf(stderr, "` as the token after `#include`.");
 					exit(EXIT_FAILURE);
 				}
 
-				struct __FILE *fp = fopen(src[k].literal_str, "r");
-
-				k++; /* consume the filepath token */
+				struct __FILE *fp = fopen(src[0].literal_str, "r");
 
 				if (!fp) {
 					fprintf(stderr,
 					        "failed to open file `%s` to be `#include`d.\n",
-					        src[k].literal_str);
+					        src[0].literal_str);
 					exit(EXIT_FAILURE);
 				}
+
+				src++; /* consume the filepath token */
 
 				const char *imported = read_from_file(fp);
 				const struct Tokvec new_vec = preprocess(imported, def_map);
@@ -163,49 +162,49 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 					l++;
 				}
 
-				while (src[k].kind == SPACE) {
-					k++;
+				while (src[0].kind == SPACE) {
+					src++;
 				}
 
-				if (src[k].kind == NEWLINE) {
-					k++;
+				if (src[0].kind == NEWLINE) {
+					src++;
 					s = LINE_HAS_JUST_STARTED;
 					continue;
 				}
-				if (src[k].kind == END) {
-					dst[j] = src[k];
+				if (src[0].kind == END) {
+					dst[j] = *src;
 					break;
 				}
 
 				fprintf(stderr, "Unexpected token  `");
-				print_token_at(&src[k]);
+				print_token_at(src);
 				fprintf(stderr, "` as the token after `#include (filepath)`.");
 				exit(EXIT_FAILURE);
 
-			} else if (strcmp(src[k].ident_str, "ifdef") == 0 ||
-			           strcmp(src[k].ident_str, "ifndef") == 0) {
-				int is_ifdef = strcmp(src[k].ident_str, "ifdef") == 0;
-				k++; /* `if(n)?def` */
+			} else if (strcmp(src[0].ident_str, "ifdef") == 0 ||
+			           strcmp(src[0].ident_str, "ifndef") == 0) {
+				int is_ifdef = strcmp(src[0].ident_str, "ifdef") == 0;
+				src++; /* `if(n)?def` */
 
-				while (src[k].kind == SPACE) {
-					k++;
+				while (src[0].kind == SPACE) {
+					src++;
 				}
 
-				if (src[k].kind != IDENT_OR_RESERVED) {
+				if (src[0].kind != IDENT_OR_RESERVED) {
 					fprintf(stderr, "Expected macro name, but got `");
-					print_token_at(&src[k]);
+					print_token_at(src);
 					fprintf(stderr, "` as the token after `#if%sdef`.",
 					        is_ifdef ? "" : "n");
 					exit(EXIT_FAILURE);
 				}
 
-				while (src[k].kind == SPACE) {
-					k++;
+				while (src[0].kind == SPACE) {
+					src++;
 				}
 
-				const char *macro_name = src[k++].ident_str;
+				const char *macro_name = (src++)[0].ident_str;
 
-				if (src[k].kind == END) {
+				if (src[0].kind == END) {
 					fprintf(stderr,
 					        "End of file was encountered immediately after an "
 					        "`#if%sdef` directive",
@@ -213,16 +212,16 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 					exit(EXIT_FAILURE);
 				}
 
-				if (src[k].kind != NEWLINE) {
+				if (src[0].kind != NEWLINE) {
 					fprintf(stderr, "Expected newline, but got `");
-					print_token_at(&src[k]);
+					print_token_at(&src[0]);
 					fprintf(stderr,
 					        "` as the token after `#if%sdef (macro_name)`.",
 					        is_ifdef ? "" : "n");
 					exit(EXIT_FAILURE);
 				}
 
-				k++;
+				src++;
 				s = LINE_HAS_JUST_STARTED;
 
 				if (is_ifdef == isElem(def_map, macro_name)) { /* true branch */
@@ -231,11 +230,11 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 					skip_till_corresponding_endif();
 				}
 
-			} else if (strcmp(src[k].ident_str, "endif") ==
+			} else if (strcmp(src[0].ident_str, "endif") ==
 			           0) { /* passes only when the #if(n)?def condition was
 				               true. If false, it will be handled in
 				               #if(n)?def.*/
-				k++;
+				src++;
 
 				if (ifdef_depth < 1) {
 					fprintf(stderr,
@@ -245,22 +244,22 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 
 				ifdef_depth--;
 
-				while (src[k].kind == SPACE) {
-					k++;
+				while (src[0].kind == SPACE) {
+					src++;
 				}
 
-				if (src[k].kind == NEWLINE) {
-					k++;
+				if (src[0].kind == NEWLINE) {
+					src++;
 					s = LINE_HAS_JUST_STARTED;
 					continue;
 				}
-				if (src[k].kind == END) {
-					dst[j] = src[k];
+				if (src[0].kind == END) {
+					dst[j] = *src;
 					break;
 				}
 
 				fprintf(stderr, "Expected newline, but got `");
-				print_token_at(&src[k]);
+				print_token_at(src);
 				fprintf(stderr, "` as the token after `#endif`.");
 				exit(EXIT_FAILURE);
 
@@ -269,23 +268,23 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 			}
 		}
 
-		if (src[k].kind == NEWLINE || src[k].kind == BEGINNING) {
+		if (src[0].kind == NEWLINE || src[0].kind == BEGINNING) {
 			s = LINE_HAS_JUST_STARTED;
-		} else if (src[k].kind == SPACE) {
+		} else if (src[0].kind == SPACE) {
 			/* keep the state as is */
 		} else {
 			s = NOTHING_SPECIAL;
 		}
 
 		struct Map2 *used_map = init_map();
-		replace_recursively(def_map, used_map, &src[k], &dst[j]);
+		replace_recursively(def_map, used_map, src, &dst[j]);
 
 		if (dst[j].kind == END) {
 			break;
 		}
 
 		j++;
-		k++;
+		src++;
 	}
 
 	if (ifdef_depth) {
