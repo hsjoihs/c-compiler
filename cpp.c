@@ -217,7 +217,12 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 				}
 
 				s = LINE_HAS_JUST_STARTED;
-				unsupported("#ifdef/#ifndef");
+
+				if (is_ifdef == isElem(def_map, macro_name)) { /* true branch */
+					ifdef_depth++;
+				} else {
+					unsupported("#ifdef/#ifndef false branch");
+				}
 
 			} else if (strcmp(src[k].ident_str, "endif") ==
 			           0) { /* passes only when the #if(n)?def condition was
