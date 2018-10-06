@@ -49,7 +49,21 @@ static void skip_till_corresponding_endif(const struct Token **ptr_src)
 			} else if (strcmp(src[-1].ident_str, "endif") == 0) {
 
 				consume_spaces(&src);
-				expect_and_consume(&src, NEWLINE, "newline after `#endif`");
+
+				if (src[0].kind == END) {
+					if (ifdef_depth == 1) {
+						*ptr_src = src;
+						return;
+					} else {
+						fprintf(stderr, "insufficient `#endif`.\n");
+						exit(EXIT_FAILURE);
+					}
+				}
+
+				if (src[0].kind != NEWLINE) {
+					error_unexpected_token(src, "newline after `#endif`");
+				}
+
 				if (ifdef_depth == 1) {
 					*ptr_src = src;
 					return;
