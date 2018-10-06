@@ -212,9 +212,8 @@ static void replace_recursively(struct Map2 *def_map, struct Map2 *used_map,
 		struct Token *replace_with = lookup(def_map, ref_src->ident_str);
 
 		int u;
-		insert(
-		    used_map, ref_src->ident_str,
-		    &u /* this can be any arbitrary non-null pointer*/);
+		insert(used_map, ref_src->ident_str,
+		       &u /* this can be any arbitrary non-null pointer*/);
 
 		replace_recursively(def_map, used_map, replace_with, ptr_dst);
 
