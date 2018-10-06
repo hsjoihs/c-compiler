@@ -7,8 +7,14 @@ static void replace_recursively(struct Map2 *def_map, struct Map2 *used_map,
                                 const struct Token *ref_src,
                                 struct Token *ptr_dst);
 
+static void consume_spaces(struct Token **ptr_src)
+{
+	while ((*ptr_src)[0].kind == SPACE) {
+		(*ptr_src)++;
+	}
+}
 
-void skip_till_corresponding_endif()
+static void skip_till_corresponding_endif()
 {
 	unsupported("#ifdef/#ifndef false branch");
 }
@@ -29,9 +35,7 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 		if (s == LINE_HAS_JUST_STARTED && src[0].kind == HASH) {
 			src++;
 
-			while (src[0].kind == SPACE) {
-				src++;
-			}
+			consume_spaces(&src);
 
 			if (src[0].kind == NEWLINE) { /* empty directive */
 				dst[j] = *src;
@@ -52,9 +56,7 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 			if (strcmp(src[0].ident_str, "define") == 0) {
 				src++; /* `define` */
 
-				while (src[0].kind == SPACE) {
-					src++;
-				}
+				consume_spaces(&src);
 
 				if (src[0].kind != IDENT_OR_RESERVED) {
 					fprintf(stderr, "Expected macro name, but got `");
@@ -66,13 +68,14 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 				const char *macro_name = src[0].ident_str;
 				src++;
 
+				/* only when the identifier is IMMEDIATELY followed by
+				 * LEFT_PAREN */
 				if (src[0].kind == LEFT_PAREN) {
 					unsupported("function-style macro");
 				}
 
-				while (src[0].kind == SPACE) {
-					src++;
-				}
+				/* that's why this must be here, not earlier */
+				consume_spaces(&src);
 
 				struct Token *ptr_token = calloc(1, sizeof(struct Token));
 
@@ -114,9 +117,7 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 			} else if (strcmp(src[0].ident_str, "include") == 0) {
 				src++; /* `include` */
 
-				while (src[0].kind == SPACE) {
-					src++;
-				}
+				consume_spaces(&src);
 
 				if (src[0].kind == OP_LT) {
 					unsupported("`#include <...>`");
@@ -162,9 +163,7 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 					l++;
 				}
 
-				while (src[0].kind == SPACE) {
-					src++;
-				}
+				consume_spaces(&src);
 
 				if (src[0].kind == NEWLINE) {
 					src++;
@@ -186,9 +185,7 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 				int is_ifdef = strcmp(src[0].ident_str, "ifdef") == 0;
 				src++; /* `if(n)?def` */
 
-				while (src[0].kind == SPACE) {
-					src++;
-				}
+				consume_spaces(&src);
 
 				if (src[0].kind != IDENT_OR_RESERVED) {
 					fprintf(stderr, "Expected macro name, but got `");
@@ -198,9 +195,7 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 					exit(EXIT_FAILURE);
 				}
 
-				while (src[0].kind == SPACE) {
-					src++;
-				}
+				consume_spaces(&src);
 
 				const char *macro_name = (src++)[0].ident_str;
 
@@ -244,9 +239,7 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 
 				ifdef_depth--;
 
-				while (src[0].kind == SPACE) {
-					src++;
-				}
+				consume_spaces(&src);
 
 				if (src[0].kind == NEWLINE) {
 					src++;
