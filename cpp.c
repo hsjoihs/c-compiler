@@ -48,7 +48,7 @@ static void skip_till_corresponding_endif(const struct Token **ptr_src)
 				ifdef_depth++;
 				consume_the_rest_of_line(&src);
 			} else if (strcmp(src[-1].ident_str, "endif") == 0) {
-			
+
 				consume_spaces(&src);
 				expect_and_consume(&src, NEWLINE, "newline after `#endif`");
 				if (ifdef_depth == 1) {

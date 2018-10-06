@@ -5,16 +5,20 @@
 
 int main(int argc, char const **argv)
 {
-	struct __FILE *fp;
+	struct __FILE *fp = stdin;
 
-	if (argc == 1) {
-		fp = stdin;
-	} else {
-		const char *filename = argv[1];
-		fp = fopen(filename, "r");
-		if (!fp) {
-			fprintf(stderr, "failed to open file `%s`.\n", filename);
-			exit(EXIT_FAILURE);
+	struct Vector macros = init_vector();
+
+	for (int i = 1; i < argc; i++) {
+		if (strncmp(argv[i], "-D", 2) == 0) {
+			push_vector(&macros, argv[i] + 2);
+		} else {
+			const char *filename = argv[i];
+			fp = fopen(filename, "r");
+			if (!fp) {
+				fprintf(stderr, "failed to open file `%s`.\n", filename);
+				exit(EXIT_FAILURE);
+			}
 		}
 	}
 
