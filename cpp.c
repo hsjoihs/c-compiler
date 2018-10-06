@@ -7,7 +7,7 @@ static void replace_recursively(struct Map2 *def_map, struct Map2 *used_map,
                                 const struct Token *ref_src,
                                 struct Token *ptr_dst);
 
-static void consume_spaces(struct Token **ptr_src)
+static void consume_spaces(const struct Token **ptr_src)
 {
 	while ((*ptr_src)[0].kind == SPACE) {
 		(*ptr_src)++;
@@ -22,7 +22,7 @@ static void skip_till_corresponding_endif()
 struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 {
 	const struct Tokvec t = read_all_tokens(str);
-	struct Token *src = t.v;
+	const struct Token *src = t.v;
 
 	int total_token_num = t.tok_num;
 	int ifdef_depth = 0;
@@ -57,16 +57,9 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 				src++; /* `define` */
 
 				consume_spaces(&src);
-
-				if (src[0].kind != IDENT_OR_RESERVED) {
-					fprintf(stderr, "Expected macro name, but got `");
-					print_token_at(src);
-					fprintf(stderr, "` as the token after `#define`.");
-					exit(EXIT_FAILURE);
-				}
-
-				const char *macro_name = src[0].ident_str;
-				src++;
+				expect_and_consume(&src, IDENT_OR_RESERVED,
+				                   "macro name after `#define`");
+				const char *macro_name = src[-1].ident_str;
 
 				/* only when the identifier is IMMEDIATELY followed by
 				 * LEFT_PAREN */
@@ -123,23 +116,16 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 					unsupported("`#include <...>`");
 				}
 
-				if (src[0].kind != LIT_STRING) {
-					fprintf(stderr, "Expected include path, but got `");
-					print_token_at(src);
-					fprintf(stderr, "` as the token after `#include`.");
-					exit(EXIT_FAILURE);
-				}
+				expect_and_consume(&src, LIT_STRING, "path after `#include`");
 
-				struct __FILE *fp = fopen(src[0].literal_str, "r");
+				struct __FILE *fp = fopen(src[-1].literal_str, "r");
 
 				if (!fp) {
 					fprintf(stderr,
 					        "failed to open file `%s` to be `#include`d.\n",
-					        src[0].literal_str);
+					        src[-1].literal_str);
 					exit(EXIT_FAILURE);
 				}
-
-				src++; /* consume the filepath token */
 
 				const char *imported = read_from_file(fp);
 				const struct Tokvec new_vec = preprocess(imported, def_map);
@@ -175,10 +161,8 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 					break;
 				}
 
-				fprintf(stderr, "Unexpected token  `");
-				print_token_at(src);
-				fprintf(stderr, "` as the token after `#include (filepath)`.");
-				exit(EXIT_FAILURE);
+				error_unexpected_token(
+				    src, "newline or end of file after `#include (filepath)`");
 
 			} else if (strcmp(src[0].ident_str, "ifdef") == 0 ||
 			           strcmp(src[0].ident_str, "ifndef") == 0) {
@@ -186,18 +170,12 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 				src++; /* `if(n)?def` */
 
 				consume_spaces(&src);
+				expect_and_consume(&src, IDENT_OR_RESERVED,
+				                   is_ifdef ? "identifier after `#ifdef`"
+				                            : "identifier after `#ifndef`");
 
-				if (src[0].kind != IDENT_OR_RESERVED) {
-					fprintf(stderr, "Expected macro name, but got `");
-					print_token_at(src);
-					fprintf(stderr, "` as the token after `#if%sdef`.",
-					        is_ifdef ? "" : "n");
-					exit(EXIT_FAILURE);
-				}
-
+				const char *macro_name = src[-1].ident_str;
 				consume_spaces(&src);
-
-				const char *macro_name = (src++)[0].ident_str;
 
 				if (src[0].kind == END) {
 					fprintf(stderr,
@@ -207,16 +185,8 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 					exit(EXIT_FAILURE);
 				}
 
-				if (src[0].kind != NEWLINE) {
-					fprintf(stderr, "Expected newline, but got `");
-					print_token_at(&src[0]);
-					fprintf(stderr,
-					        "` as the token after `#if%sdef (macro_name)`.",
-					        is_ifdef ? "" : "n");
-					exit(EXIT_FAILURE);
-				}
+				expect_and_consume(&src, NEWLINE, "newline after `#if%sdef (macro_name)`");
 
-				src++;
 				s = LINE_HAS_JUST_STARTED;
 
 				if (is_ifdef == isElem(def_map, macro_name)) { /* true branch */
