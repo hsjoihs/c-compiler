@@ -93,6 +93,9 @@ static void skip_till_corresponding_endif(const struct Token **ptr_src)
 	}
 }
 
+static int foo(struct Token *dst, const struct Token **ptr_src,
+               int *ptr_j, enum PreprocessorState *ptr_s, struct Map2 *def_map);
+
 /* lexer inserts a NEWLINE before END; hence, END can mostly be ignored */
 struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 {
@@ -262,23 +265,9 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 			}
 		}
 
-		if (src[0].kind == NEWLINE || src[0].kind == BEGINNING) {
-			s = LINE_HAS_JUST_STARTED;
-		} else if (src[0].kind == SPACE) {
-			/* keep the state as is */
-		} else {
-			s = NOTHING_SPECIAL;
-		}
-
-		struct Map2 *used_map = init_map();
-		replace_recursively(def_map, used_map, src, &dst[j]);
-
-		if (dst[j].kind == END) {
+		if (foo(dst, &src, &j, &s, def_map)) {
 			break;
 		}
-
-		j++;
-		src++;
 	}
 
 	if (ifdef_depth) {
@@ -291,6 +280,36 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 	u.v = dst;
 
 	return u;
+}
+
+static int foo(struct Token *dst, const struct Token **ptr_src,
+               int *ptr_j, enum PreprocessorState *ptr_s, struct Map2 *def_map)
+{
+	const struct Token *src = *ptr_src;
+	int j = *ptr_j;
+
+	if (src[0].kind == NEWLINE || src[0].kind == BEGINNING) {
+		*ptr_s = LINE_HAS_JUST_STARTED;
+	} else if (src[0].kind == SPACE) {
+		/* keep the state as is */
+	} else {
+		*ptr_s = NOTHING_SPECIAL;
+	}
+
+	struct Map2 *used_map = init_map();
+	replace_recursively(def_map, used_map, src, &dst[j]);
+
+	if (dst[j].kind == END) {
+		*ptr_src = src;
+		*ptr_j = j;
+		return 1; /* break */
+	}
+
+	j++;
+	src++;
+	*ptr_src = src;
+	*ptr_j = j;
+	return 0;
 }
 
 static void replace_recursively(struct Map2 *def_map, struct Map2 *used_map,
