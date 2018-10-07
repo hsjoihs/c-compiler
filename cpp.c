@@ -97,7 +97,12 @@ static int replacement(struct Token *dst, const struct Token **ptr_src,
                        int *ptr_j, enum PreprocessorState *ptr_s,
                        struct Map2 *def_map);
 
-/* return 1 => continue; return 0 => fallthru */
+/*
+ * ptr_src:
+ *    at the start, # followed by spaces are already consumed.
+ *    when returning, NEWLINE is consumed if it exists (return 1 => continue)
+ *    if nonexistent, it will return 0 and fallthru.
+ */
 static int handle_define(const struct Token **ptr_src,
                          enum PreprocessorState *ptr_s, struct Map2 *def_map)
 {
