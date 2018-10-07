@@ -116,7 +116,8 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 			}
 			continue;
 		}
-		src++;
+
+		src++; /* HASH */
 
 		consume_spaces(&src);
 
@@ -131,9 +132,11 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 		expect_and_consume(&src, IDENT_OR_RESERVED,
 		                   "identifier after `#` for preprocessor directive");
 
-		if (strcmp(src[-1].ident_str, "define") == 0) {
+		const char *directive = src[-1].ident_str;
 
 			consume_spaces(&src);
+		if (strcmp(directive, "define") == 0) {
+
 			expect_and_consume(&src, IDENT_OR_RESERVED,
 			                   "macro name after `#define`");
 			const char *macro_name = src[-1].ident_str;
@@ -173,8 +176,7 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 				s = LINE_HAS_JUST_STARTED;
 				continue;
 			}
-		} else if (strcmp(src[-1].ident_str, "include") == 0) {
-			consume_spaces(&src);
+		} else if (strcmp(directive, "include") == 0) {
 
 			if (src[0].kind == OP_LT) {
 				unsupported("`#include <...>`");
@@ -222,11 +224,10 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 			error_unexpected_token(
 			    src, "newline or end of file after `#include (filepath)`");
 
-		} else if (strcmp(src[-1].ident_str, "ifdef") == 0 ||
-		           strcmp(src[-1].ident_str, "ifndef") == 0) {
-			int is_ifdef = strcmp(src[-1].ident_str, "ifdef") == 0;
+		} else if (strcmp(directive, "ifdef") == 0 ||
+		           strcmp(directive, "ifndef") == 0) {
+			int is_ifdef = strcmp(directive, "ifdef") == 0;
 
-			consume_spaces(&src);
 			expect_and_consume(&src, IDENT_OR_RESERVED,
 			                   is_ifdef ? "identifier after `#ifdef`"
 			                            : "identifier after `#ifndef`");
@@ -247,7 +248,7 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 				continue;
 			}
 
-		} else if (strcmp(src[-1].ident_str, "endif") ==
+		} else if (strcmp(directive, "endif") ==
 		           0) { /* passes only when the #if(n)?def condition was
 			               true. If false, it will be handled in
 			               #if(n)?def.*/
@@ -258,7 +259,6 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 			}
 
 			ifdef_depth--;
-			consume_spaces(&src);
 			expect_and_consume(&src, NEWLINE, "newline after `#endif`");
 			s = LINE_HAS_JUST_STARTED;
 			continue;
