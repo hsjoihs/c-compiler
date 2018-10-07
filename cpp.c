@@ -93,8 +93,9 @@ static void skip_till_corresponding_endif(const struct Token **ptr_src)
 	}
 }
 
-static int foo(struct Token *dst, const struct Token **ptr_src, int *ptr_j,
-               enum PreprocessorState *ptr_s, struct Map2 *def_map);
+static int replacement(struct Token *dst, const struct Token **ptr_src,
+                       int *ptr_j, enum PreprocessorState *ptr_s,
+                       struct Map2 *def_map);
 
 /* return 1 => continue; return 0 => fallthru */
 static int handle_define(const struct Token **ptr_src,
@@ -156,7 +157,7 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 	enum PreprocessorState s = LINE_HAS_JUST_STARTED;
 	while (1) {
 		if (s != LINE_HAS_JUST_STARTED || src[0].kind != HASH) {
-			if (foo(dst, &src, &j, &s, def_map)) {
+			if (replacement(dst, &src, &j, &s, def_map)) {
 				break;
 			}
 			continue;
@@ -179,7 +180,7 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 		consume_spaces(&src);
 
 		if (strcmp(directive, "define") == 0) {
-			if(handle_define(&src, &s, def_map)){
+			if (handle_define(&src, &s, def_map)) {
 				continue;
 			}
 		} else if (strcmp(directive, "include") == 0) {
@@ -242,7 +243,9 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 			consume_spaces(&src);
 
 			expect_and_consume(&src, NEWLINE,
-			                   "newline after `#if%sdef (macro_name)`");
+			                   is_ifdef
+			                       ? "newline after `#ifdef (macro_name)`"
+			                       : "newline after `#ifndef (macro_name)`");
 			src--; /* ad hoc */
 
 			s = LINE_HAS_JUST_STARTED;
@@ -272,7 +275,7 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 			unsupported("unknown directive");
 		}
 
-		if (foo(dst, &src, &j, &s, def_map)) {
+		if (replacement(dst, &src, &j, &s, def_map)) {
 			break;
 		}
 	}
@@ -289,8 +292,9 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 	return u;
 }
 
-static int foo(struct Token *dst, const struct Token **ptr_src, int *ptr_j,
-               enum PreprocessorState *ptr_s, struct Map2 *def_map)
+static int replacement(struct Token *dst, const struct Token **ptr_src,
+                       int *ptr_j, enum PreprocessorState *ptr_s,
+                       struct Map2 *def_map)
 {
 	const struct Token *src = *ptr_src;
 	int j = *ptr_j;
