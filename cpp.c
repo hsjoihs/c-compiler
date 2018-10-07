@@ -96,6 +96,51 @@ static void skip_till_corresponding_endif(const struct Token **ptr_src)
 static int foo(struct Token *dst, const struct Token **ptr_src, int *ptr_j,
                enum PreprocessorState *ptr_s, struct Map2 *def_map);
 
+/* return 1 => continue; return 0 => fallthru */
+static int handle_define(const struct Token **ptr_src,
+                         enum PreprocessorState *ptr_s, struct Map2 *def_map)
+{
+	expect_and_consume(ptr_src, IDENT_OR_RESERVED,
+	                   "macro name after `#define`");
+	const char *macro_name = (*ptr_src)[-1].ident_str;
+
+	/* only when the identifier is IMMEDIATELY followed by
+	 * LEFT_PAREN */
+	if ((*ptr_src)[0].kind == LEFT_PAREN) {
+		unsupported("function-style macro");
+	}
+
+	/* that's why this must be here, not earlier */
+	consume_spaces(ptr_src);
+
+	struct Token *ptr_token = calloc(1, sizeof(struct Token));
+
+	/* empty replacement */
+	if ((*ptr_src)[0].kind == NEWLINE) {
+		(*ptr_src)++;
+		*ptr_s = LINE_HAS_JUST_STARTED;
+		ptr_token->kind = SPACE;
+		insert(def_map, macro_name, ptr_token);
+		return 1;
+	}
+
+	if ((*ptr_src)[1].kind != NEWLINE) {
+		unsupported("`#define` directive that expands to multiple tokens");
+	}
+
+	/* one-token replacement */
+	*ptr_token = **ptr_src;
+	insert(def_map, macro_name, ptr_token);
+	(*ptr_src)++;
+
+	if ((*ptr_src)[0].kind == NEWLINE) {
+		(*ptr_src)++;
+		*ptr_s = LINE_HAS_JUST_STARTED;
+		return 1;
+	}
+	return 0;
+}
+
 /* lexer inserts a NEWLINE before END; hence, END can mostly be ignored */
 struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 {
@@ -122,9 +167,7 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 		consume_spaces(&src);
 
 		if (src[0].kind == NEWLINE) { /* empty directive */
-			dst[j] = *src;
 			s = LINE_HAS_JUST_STARTED;
-			j++;
 			src++;
 			continue;
 		}
@@ -133,47 +176,10 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 		                   "identifier after `#` for preprocessor directive");
 
 		const char *directive = src[-1].ident_str;
+		consume_spaces(&src);
 
-			consume_spaces(&src);
 		if (strcmp(directive, "define") == 0) {
-
-			expect_and_consume(&src, IDENT_OR_RESERVED,
-			                   "macro name after `#define`");
-			const char *macro_name = src[-1].ident_str;
-
-			/* only when the identifier is IMMEDIATELY followed by
-			 * LEFT_PAREN */
-			if (src[0].kind == LEFT_PAREN) {
-				unsupported("function-style macro");
-			}
-
-			/* that's why this must be here, not earlier */
-			consume_spaces(&src);
-
-			struct Token *ptr_token = calloc(1, sizeof(struct Token));
-
-			/* empty replacement */
-			if (src[0].kind == NEWLINE) {
-				src++;
-				s = LINE_HAS_JUST_STARTED;
-				ptr_token->kind = SPACE;
-				insert(def_map, macro_name, ptr_token);
-				continue;
-			}
-
-			if (src[1].kind != NEWLINE) {
-				unsupported(
-				    "`#define` directive that expands to multiple tokens");
-			}
-
-			/* one-token replacement */
-			*ptr_token = *src;
-			insert(def_map, macro_name, ptr_token);
-			src++;
-
-			if (src[0].kind == NEWLINE) {
-				src++;
-				s = LINE_HAS_JUST_STARTED;
+			if(handle_define(&src, &s, def_map)){
 				continue;
 			}
 		} else if (strcmp(directive, "include") == 0) {
