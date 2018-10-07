@@ -147,6 +147,63 @@ static int handle_define(const struct Token **ptr_src,
 	return 0;
 }
 
+static void handle_include(struct Token **ptr_dst, const struct Token **ptr_src,
+                           int *ptr_j, enum PreprocessorState *ptr_s,
+                           struct Map2 *def_map, int *ptr_total_token_num)
+{
+	const struct Token *src = *ptr_src;
+	int j = *ptr_j;
+	struct Token *dst = *ptr_dst;
+
+	if (src[0].kind == OP_LT) {
+		unsupported("`#include <...>`");
+	}
+
+	expect_and_consume(&src, LIT_STRING, "path after `#include`");
+
+	struct __FILE *fp = fopen(src[-1].literal_str, "r");
+
+	if (!fp) {
+		fprintf(stderr, "failed to open file `%s` to be `#include`d.\n",
+		        src[-1].literal_str);
+		exit(EXIT_FAILURE);
+	}
+
+	const char *imported = read_from_file(fp);
+	const struct Tokvec new_vec = preprocess(imported, def_map);
+	/* def_map will be modified, and that's how all the macros will
+	 * be obtained here */
+
+	*ptr_total_token_num += new_vec.tok_num - 2; /* BEGINNING and END gone */
+
+	dst = realloc(dst, *ptr_total_token_num *
+	                       sizeof(struct Token)); /* realloc never fails */
+
+	int l = 1; /* skip BEGINNING */
+	while (1) {
+		if (new_vec.v[l].kind == END) {
+			break;
+		}
+		dst[j] = new_vec.v[l];
+		j++;
+		l++;
+	}
+
+	consume_spaces(&src);
+
+	if (src[0].kind == NEWLINE) {
+		src++;
+		*ptr_s = LINE_HAS_JUST_STARTED;
+	} else {
+		error_unexpected_token(
+		    src, "newline or end of file after `#include (filepath)`");
+	}
+
+	*ptr_j = j;
+	*ptr_src = src;
+	*ptr_dst = dst;
+}
+
 /* lexer inserts a NEWLINE before END; hence, END can mostly be ignored */
 struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 {
@@ -189,53 +246,8 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 				continue;
 			}
 		} else if (strcmp(directive, "include") == 0) {
-
-			if (src[0].kind == OP_LT) {
-				unsupported("`#include <...>`");
-			}
-
-			expect_and_consume(&src, LIT_STRING, "path after `#include`");
-
-			struct __FILE *fp = fopen(src[-1].literal_str, "r");
-
-			if (!fp) {
-				fprintf(stderr, "failed to open file `%s` to be `#include`d.\n",
-				        src[-1].literal_str);
-				exit(EXIT_FAILURE);
-			}
-
-			const char *imported = read_from_file(fp);
-			const struct Tokvec new_vec = preprocess(imported, def_map);
-			/* def_map will be modified, and that's how all the macros will
-			 * be obtained here */
-
-			total_token_num += new_vec.tok_num - 2; /* BEGINNING and END gone */
-
-			dst = realloc(dst,
-			              total_token_num *
-			                  sizeof(struct Token)); /* realloc never fails */
-
-			int l = 1; /* skip BEGINNING */
-			while (1) {
-				if (new_vec.v[l].kind == END) {
-					break;
-				}
-				dst[j] = new_vec.v[l];
-				j++;
-				l++;
-			}
-
-			consume_spaces(&src);
-
-			if (src[0].kind == NEWLINE) {
-				src++;
-				s = LINE_HAS_JUST_STARTED;
-				continue;
-			}
-
-			error_unexpected_token(
-			    src, "newline or end of file after `#include (filepath)`");
-
+			handle_include(&dst, &src, &j, &s, def_map, &total_token_num);
+			continue;
 		} else if (strcmp(directive, "ifdef") == 0 ||
 		           strcmp(directive, "ifndef") == 0) {
 			int is_ifdef = strcmp(directive, "ifdef") == 0;
