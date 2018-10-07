@@ -147,6 +147,12 @@ static int handle_define(const struct Token **ptr_src,
 	return 0;
 }
 
+/*
+ * ptr_src:
+ *    at the start, # followed by spaces are already consumed.
+ *    when returning, NEWLINE is consumed if it exists (return 1 => continue)
+ *    if nonexistent, it will throw an error.
+ */
 static void handle_include(struct Token **ptr_dst, const struct Token **ptr_src,
                            int *ptr_j, enum PreprocessorState *ptr_s,
                            struct Map2 *def_map, int *ptr_total_token_num)
