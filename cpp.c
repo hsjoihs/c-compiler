@@ -5,9 +5,9 @@
 
 static void replacement_(struct Token *dst_initial,
                          const struct Token *src, int dst_offset,
-                         enum PreprocessorState *ptr_s, struct Map2 *def_map);
+                         enum PreprocessorState *ptr_s, const struct Map2 *def_map);
 
-static void replace_recursively(struct Map2 *def_map, struct Map2 *used_map,
+static void replace_recursively(const struct Map2 *def_map, struct Map2 *used_map,
                                 const struct Token *ref_src,
                                 struct Token *ptr_dst);
 
@@ -331,9 +331,14 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 	return u;
 }
 
+/*
+ * Copy one token from src[0] to &dst_initial[dst_offset], but may invoke macro replacement.
+ * Since currently the result of replacement is guaranteed to be a single token, 
+ * realloc is not needed.
+ */
 static void replacement_(struct Token *dst_initial,
                          const struct Token *src, int dst_offset,
-                         enum PreprocessorState *ptr_s, struct Map2 *def_map)
+                         enum PreprocessorState *ptr_s, const struct Map2 *def_map)
 {
 
 	if (src[0].kind == NEWLINE || src[0].kind == BEGINNING) {
@@ -349,7 +354,7 @@ static void replacement_(struct Token *dst_initial,
 
 }
 
-static void replace_recursively(struct Map2 *def_map, struct Map2 *used_map,
+static void replace_recursively(const struct Map2 *def_map, struct Map2 *used_map,
                                 const struct Token *src,
                                 struct Token *ptr_dst)
 {
