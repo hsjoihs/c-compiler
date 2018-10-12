@@ -151,8 +151,8 @@ static int handle_define(const struct Token **ptr_src, struct Map2 *def_map)
  *    if nonexistent, it will throw an error.
  */
 static void handle_include(struct Token **ptr_dst, const struct Token **ptr_src,
-                           int *ref_dst_offset, 
-                           struct Map2 *def_map, int *ptr_total_token_num)
+                           int *ref_dst_offset, struct Map2 *def_map,
+                           int *ptr_total_token_num)
 {
 	const struct Token *src = *ptr_src;
 	int dst_offset = *ref_dst_offset;
@@ -179,8 +179,9 @@ static void handle_include(struct Token **ptr_dst, const struct Token **ptr_src,
 
 	*ptr_total_token_num += new_vec.tok_num - 2; /* BEGINNING and END gone */
 
-	dst_initial = realloc(dst_initial, *ptr_total_token_num *
-	                       sizeof(struct Token)); /* realloc never fails */
+	dst_initial = realloc(dst_initial,
+	                      *ptr_total_token_num *
+	                          sizeof(struct Token)); /* realloc never fails */
 
 	int l = 1; /* skip BEGINNING */
 	while (1) {
@@ -207,8 +208,7 @@ static void handle_include(struct Token **ptr_dst, const struct Token **ptr_src,
 }
 
 static int handle_ifdef(int is_ifdef, const struct Token **ptr_src,
-                        struct Map2 *def_map, 
-                        int *ptr_ifdef_depth)
+                        struct Map2 *def_map, int *ptr_ifdef_depth)
 {
 	expect_and_consume(ptr_src, IDENT_OR_RESERVED,
 	                   is_ifdef ? "identifier after `#ifdef`"
@@ -268,19 +268,22 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 		const char *directive = src[-1].ident_str;
 		consume_spaces(&src);
 
-		assert(s == LINE_HAS_JUST_STARTED); /* because otherwise we aren't here */
+		assert(s ==
+		       LINE_HAS_JUST_STARTED); /* because otherwise we aren't here */
 
 		if (strcmp(directive, "define") == 0) {
 			if (handle_define(&src, def_map)) {
 				continue;
 			}
 		} else if (strcmp(directive, "include") == 0) {
-			/* dst_initial may be realloc'd; total_token_num could be modified */
-			handle_include(&dst_initial, &src, &dst_offset, def_map, &total_token_num);
+			/* dst_initial may be realloc'd; total_token_num could be modified
+			 */
+			handle_include(&dst_initial, &src, &dst_offset, def_map,
+			               &total_token_num);
 			continue;
 		} else if (strcmp(directive, "ifdef") == 0 ||
 		           strcmp(directive, "ifndef") == 0) {
-			if (handle_ifdef(strcmp(directive, "ifdef") == 0, &src, def_map, 
+			if (handle_ifdef(strcmp(directive, "ifdef") == 0, &src, def_map,
 			                 &ifdef_depth)) {
 				continue;
 			}
