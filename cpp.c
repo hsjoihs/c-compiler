@@ -247,10 +247,10 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 	int dst_offset = 0;
 	enum PreprocessorState s = LINE_HAS_JUST_STARTED;
 
-	int flag = 0;
+	int flag = 1;
 	while (1) {
-		if (flag == 1 || s != LINE_HAS_JUST_STARTED || src[0].kind != HASH) {
-			flag = 0;
+		if (flag == 0 || s != LINE_HAS_JUST_STARTED || src[0].kind != HASH) {
+			flag = 1;
 			replacement_(dst_initial, src, dst_offset, &s, def_map);
 
 			if (dst_initial[dst_offset].kind == END) {
@@ -283,6 +283,7 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 			if (handle_define(&src, def_map)) {
 				continue;
 			}
+			flag = 0;
 		} else if (strcmp(directive, "include") == 0) {
 			/* dst_initial may be realloc'd; total_token_num could be modified
 			 */
@@ -295,6 +296,7 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 			                 &ifdef_depth)) {
 				continue;
 			}
+			flag = 0;
 		} else if (strcmp(directive, "endif") ==
 		           0) { /* passes only when the #if(n)?def condition was
 			               true. If false, it will be handled in
@@ -311,8 +313,6 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 		} else {
 			unsupported("unknown directive");
 		}
-
-		flag = 1;
 	}
 
 	if (ifdef_depth) {
