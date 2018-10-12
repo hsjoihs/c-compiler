@@ -253,8 +253,6 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 			continue;
 		}
 
-		assert(s == LINE_HAS_JUST_STARTED); /* because otherwise we aren't here */
-
 		src++; /* HASH */
 
 		consume_spaces(&src);
@@ -270,18 +268,18 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 		const char *directive = src[-1].ident_str;
 		consume_spaces(&src);
 
+		assert(s == LINE_HAS_JUST_STARTED); /* because otherwise we aren't here */
+
 		if (strcmp(directive, "define") == 0) {
-			assert(s == LINE_HAS_JUST_STARTED);
 			if (handle_define(&src, def_map)) {
 				continue;
 			}
 		} else if (strcmp(directive, "include") == 0) {
-			assert(s == LINE_HAS_JUST_STARTED);
+			/* dst_initial may be realloc'd; total_token_num could be modified */
 			handle_include(&dst_initial, &src, &dst_offset, def_map, &total_token_num);
 			continue;
 		} else if (strcmp(directive, "ifdef") == 0 ||
 		           strcmp(directive, "ifndef") == 0) {
-			assert(s == LINE_HAS_JUST_STARTED);
 			if (handle_ifdef(strcmp(directive, "ifdef") == 0, &src, def_map, 
 			                 &ifdef_depth)) {
 				continue;
@@ -298,7 +296,6 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 
 			ifdef_depth--;
 			expect_and_consume(&src, NEWLINE, "newline after `#endif`");
-			s = LINE_HAS_JUST_STARTED;
 			continue;
 		} else {
 			unsupported("unknown directive");
