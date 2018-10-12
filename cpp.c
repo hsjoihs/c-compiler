@@ -103,8 +103,7 @@ static int replacement(struct Token *dst_initial, const struct Token **ptr_src,
  *    when returning, NEWLINE is consumed if it exists (return 1 => continue)
  *    if nonexistent, it will return 0 and fallthru.
  */
-static int handle_define(const struct Token **ptr_src,
-                         enum PreprocessorState *ptr_s, struct Map2 *def_map)
+static int handle_define(const struct Token **ptr_src, struct Map2 *def_map)
 {
 	expect_and_consume(ptr_src, IDENT_OR_RESERVED,
 	                   "macro name after `#define`");
@@ -124,7 +123,6 @@ static int handle_define(const struct Token **ptr_src,
 	/* empty replacement */
 	if ((*ptr_src)[0].kind == NEWLINE) {
 		(*ptr_src)++;
-		*ptr_s = LINE_HAS_JUST_STARTED;
 		ptr_token->kind = SPACE;
 		insert(def_map, macro_name, ptr_token);
 		return 1;
@@ -141,7 +139,6 @@ static int handle_define(const struct Token **ptr_src,
 
 	if ((*ptr_src)[0].kind == NEWLINE) {
 		(*ptr_src)++;
-		*ptr_s = LINE_HAS_JUST_STARTED;
 		return 1;
 	}
 	return 0;
@@ -154,7 +151,7 @@ static int handle_define(const struct Token **ptr_src,
  *    if nonexistent, it will throw an error.
  */
 static void handle_include(struct Token **ptr_dst, const struct Token **ptr_src,
-                           int *ref_dst_offset, enum PreprocessorState *ptr_s,
+                           int *ref_dst_offset, 
                            struct Map2 *def_map, int *ptr_total_token_num)
 {
 	const struct Token *src = *ptr_src;
@@ -199,7 +196,6 @@ static void handle_include(struct Token **ptr_dst, const struct Token **ptr_src,
 
 	if (src[0].kind == NEWLINE) {
 		src++;
-		*ptr_s = LINE_HAS_JUST_STARTED;
 	} else {
 		error_unexpected_token(
 		    src, "newline or end of file after `#include (filepath)`");
@@ -211,7 +207,7 @@ static void handle_include(struct Token **ptr_dst, const struct Token **ptr_src,
 }
 
 static int handle_ifdef(int is_ifdef, const struct Token **ptr_src,
-                        struct Map2 *def_map, enum PreprocessorState *ptr_s,
+                        struct Map2 *def_map, 
                         int *ptr_ifdef_depth)
 {
 	expect_and_consume(ptr_src, IDENT_OR_RESERVED,
@@ -225,8 +221,6 @@ static int handle_ifdef(int is_ifdef, const struct Token **ptr_src,
 	                   is_ifdef ? "newline after `#ifdef (macro_name)`"
 	                            : "newline after `#ifndef (macro_name)`");
 	(*ptr_src)--; /* ad hoc */
-
-	*ptr_s = LINE_HAS_JUST_STARTED;
 
 	if (is_ifdef == isElem(def_map, macro_name)) { /* true branch */
 		(*ptr_ifdef_depth)++;
@@ -259,12 +253,13 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 			continue;
 		}
 
+		assert(s == LINE_HAS_JUST_STARTED); /* because otherwise we aren't here */
+
 		src++; /* HASH */
 
 		consume_spaces(&src);
 
 		if (src[0].kind == NEWLINE) { /* empty directive */
-			s = LINE_HAS_JUST_STARTED;
 			src++;
 			continue;
 		}
@@ -276,15 +271,18 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 		consume_spaces(&src);
 
 		if (strcmp(directive, "define") == 0) {
-			if (handle_define(&src, &s, def_map)) {
+			assert(s == LINE_HAS_JUST_STARTED);
+			if (handle_define(&src, def_map)) {
 				continue;
 			}
 		} else if (strcmp(directive, "include") == 0) {
-			handle_include(&dst_initial, &src, &dst_offset, &s, def_map, &total_token_num);
+			assert(s == LINE_HAS_JUST_STARTED);
+			handle_include(&dst_initial, &src, &dst_offset, def_map, &total_token_num);
 			continue;
 		} else if (strcmp(directive, "ifdef") == 0 ||
 		           strcmp(directive, "ifndef") == 0) {
-			if (handle_ifdef(strcmp(directive, "ifdef") == 0, &src, def_map, &s,
+			assert(s == LINE_HAS_JUST_STARTED);
+			if (handle_ifdef(strcmp(directive, "ifdef") == 0, &src, def_map, 
 			                 &ifdef_depth)) {
 				continue;
 			}
