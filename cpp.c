@@ -246,8 +246,11 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 
 	int dst_offset = 0;
 	enum PreprocessorState s = LINE_HAS_JUST_STARTED;
+
+	int flag = 0;
 	while (1) {
-		if (s != LINE_HAS_JUST_STARTED || src[0].kind != HASH) {
+		if (flag == 1 || s != LINE_HAS_JUST_STARTED || src[0].kind != HASH) {
+			flag = 0;
 			replacement_(dst_initial, src, dst_offset, &s, def_map);
 
 			if (dst_initial[dst_offset].kind == END) {
@@ -267,7 +270,6 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 			src++;
 			continue;
 		}
-
 		expect_and_consume(&src, IDENT_OR_RESERVED,
 		                   "identifier after `#` for preprocessor directive");
 
@@ -310,14 +312,7 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 			unsupported("unknown directive");
 		}
 
-		replacement_(dst_initial, src, dst_offset, &s, def_map);
-
-		if (dst_initial[dst_offset].kind == END) {
-			break;
-		}
-
-		dst_offset++;
-		src++;
+		flag = 1;
 	}
 
 	if (ifdef_depth) {
