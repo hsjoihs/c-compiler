@@ -4,7 +4,7 @@
 #include "std_io.h"
 
 static void replacement_(struct Token *dst_initial,
-                         const struct Token **ptr_src, int dst_offset,
+                         const struct Token *src, int dst_offset,
                          enum PreprocessorState *ptr_s, struct Map2 *def_map);
 
 static void replace_recursively(struct Map2 *def_map, struct Map2 *used_map,
@@ -247,7 +247,7 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 	enum PreprocessorState s = LINE_HAS_JUST_STARTED;
 	while (1) {
 		if (s != LINE_HAS_JUST_STARTED || src[0].kind != HASH) {
-			replacement_(dst_initial, &src, dst_offset, &s, def_map);
+			replacement_(dst_initial, src, dst_offset, &s, def_map);
 
 			if (dst_initial[dst_offset].kind == END) {
 				break;
@@ -309,7 +309,7 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 			unsupported("unknown directive");
 		}
 
-		replacement_(dst_initial, &src, dst_offset, &s, def_map);
+		replacement_(dst_initial, src, dst_offset, &s, def_map);
 
 		if (dst_initial[dst_offset].kind == END) {
 			break;
@@ -332,10 +332,9 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 }
 
 static void replacement_(struct Token *dst_initial,
-                         const struct Token **ptr_src, int dst_offset,
+                         const struct Token *src, int dst_offset,
                          enum PreprocessorState *ptr_s, struct Map2 *def_map)
 {
-	const struct Token *src = *ptr_src;
 
 	if (src[0].kind == NEWLINE || src[0].kind == BEGINNING) {
 		*ptr_s = LINE_HAS_JUST_STARTED;
@@ -348,25 +347,24 @@ static void replacement_(struct Token *dst_initial,
 	struct Map2 *used_map = init_map();
 	replace_recursively(def_map, used_map, src, &dst_initial[dst_offset]);
 
-	*ptr_src = src;
 }
 
 static void replace_recursively(struct Map2 *def_map, struct Map2 *used_map,
-                                const struct Token *ref_src,
+                                const struct Token *src,
                                 struct Token *ptr_dst)
 {
-	if (ref_src->kind == IDENT_OR_RESERVED &&
-	    isElem(def_map, ref_src->ident_str) &&
-	    !isElem(used_map, ref_src->ident_str)) {
-		struct Token *replace_with = lookup(def_map, ref_src->ident_str);
+	if (src[0].kind == IDENT_OR_RESERVED &&
+	    isElem(def_map, src[0].ident_str) &&
+	    !isElem(used_map, src[0].ident_str)) {
+		struct Token *replace_with = lookup(def_map, src[0].ident_str);
 
 		int u;
-		insert(used_map, ref_src->ident_str,
+		insert(used_map, src[0].ident_str,
 		       &u /* this can be any arbitrary non-null pointer*/);
 
 		replace_recursively(def_map, used_map, replace_with, ptr_dst);
 
 	} else {
-		*ptr_dst = *ref_src;
+		*ptr_dst = src[0];
 	}
 }
