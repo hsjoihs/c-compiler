@@ -3,6 +3,10 @@
 #include "std.h"
 #include "std_io.h"
 
+static void replacement_(struct Token *dst_initial,
+                         const struct Token **ptr_src, int *ref_dst_offset,
+                         enum PreprocessorState *ptr_s, struct Map2 *def_map);
+
 static void replace_recursively(struct Map2 *def_map, struct Map2 *used_map,
                                 const struct Token *ref_src,
                                 struct Token *ptr_dst);
@@ -92,10 +96,6 @@ static void skip_till_corresponding_endif(const struct Token **ptr_src)
 		src++;
 	}
 }
-
-static int replacement(struct Token *dst_initial, const struct Token **ptr_src,
-                       int *ref_dst_offset, enum PreprocessorState *ptr_s,
-                       struct Map2 *def_map);
 
 /*
  * ptr_src:
@@ -247,9 +247,14 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 	enum PreprocessorState s = LINE_HAS_JUST_STARTED;
 	while (1) {
 		if (s != LINE_HAS_JUST_STARTED || src[0].kind != HASH) {
-			if (replacement(dst_initial, &src, &dst_offset, &s, def_map)) {
+			replacement_(dst_initial, &src, &dst_offset, &s, def_map);
+
+			if (dst_initial[dst_offset].kind == END) {
 				break;
 			}
+
+			dst_offset++;
+			src++;
 			continue;
 		}
 
@@ -304,9 +309,14 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 			unsupported("unknown directive");
 		}
 
-		if (replacement(dst_initial, &src, &dst_offset, &s, def_map)) {
+		replacement_(dst_initial, &src, &dst_offset, &s, def_map);
+
+		if (dst_initial[dst_offset].kind == END) {
 			break;
 		}
+
+		dst_offset++;
+		src++;
 	}
 
 	if (ifdef_depth) {
@@ -321,9 +331,9 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 	return u;
 }
 
-static int replacement(struct Token *dst_initial, const struct Token **ptr_src,
-                       int *ref_dst_offset, enum PreprocessorState *ptr_s,
-                       struct Map2 *def_map)
+static void replacement_(struct Token *dst_initial,
+                         const struct Token **ptr_src, int *ref_dst_offset,
+                         enum PreprocessorState *ptr_s, struct Map2 *def_map)
 {
 	const struct Token *src = *ptr_src;
 	int dst_offset = *ref_dst_offset;
@@ -339,17 +349,8 @@ static int replacement(struct Token *dst_initial, const struct Token **ptr_src,
 	struct Map2 *used_map = init_map();
 	replace_recursively(def_map, used_map, src, &dst_initial[dst_offset]);
 
-	if (dst_initial[dst_offset].kind == END) {
-		*ptr_src = src;
-		*ref_dst_offset = dst_offset;
-		return 1; /* break */
-	}
-
-	dst_offset++;
-	src++;
 	*ptr_src = src;
 	*ref_dst_offset = dst_offset;
-	return 0;
 }
 
 static void replace_recursively(struct Map2 *def_map, struct Map2 *used_map,
