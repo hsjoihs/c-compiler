@@ -3,11 +3,12 @@
 #include "std.h"
 #include "std_io.h"
 
-static void replacement_(struct Token *dst_initial,
-                         const struct Token *src, int dst_offset,
-                         enum PreprocessorState *ptr_s, const struct Map2 *def_map);
+static void replacement_(struct Token *dst_initial, const struct Token *src,
+                         int dst_offset, enum PreprocessorState *ptr_s,
+                         const struct Map2 *def_map);
 
-static void replace_recursively(const struct Map2 *def_map, struct Map2 *used_map,
+static void replace_recursively(const struct Map2 *def_map,
+                                struct Map2 *used_map,
                                 const struct Token *ref_src,
                                 struct Token *ptr_dst);
 
@@ -332,13 +333,13 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 }
 
 /*
- * Copy one token from src[0] to &dst_initial[dst_offset], but may invoke macro replacement.
- * Since currently the result of replacement is guaranteed to be a single token, 
- * realloc is not needed.
+ * Copy one token from src[0] to &dst_initial[dst_offset], but may invoke macro
+ * replacement. Since currently the result of replacement is guaranteed to be a
+ * single token, realloc is not needed.
  */
-static void replacement_(struct Token *dst_initial,
-                         const struct Token *src, int dst_offset,
-                         enum PreprocessorState *ptr_s, const struct Map2 *def_map)
+static void replacement_(struct Token *dst_initial, const struct Token *src,
+                         int dst_offset, enum PreprocessorState *ptr_s,
+                         const struct Map2 *def_map)
 {
 
 	if (src[0].kind == NEWLINE || src[0].kind == BEGINNING) {
@@ -351,15 +352,13 @@ static void replacement_(struct Token *dst_initial,
 
 	struct Map2 *used_map = init_map();
 	replace_recursively(def_map, used_map, src, &dst_initial[dst_offset]);
-
 }
 
-static void replace_recursively(const struct Map2 *def_map, struct Map2 *used_map,
-                                const struct Token *src,
+static void replace_recursively(const struct Map2 *def_map,
+                                struct Map2 *used_map, const struct Token *src,
                                 struct Token *ptr_dst)
 {
-	if (src[0].kind == IDENT_OR_RESERVED &&
-	    isElem(def_map, src[0].ident_str) &&
+	if (src[0].kind == IDENT_OR_RESERVED && isElem(def_map, src[0].ident_str) &&
 	    !isElem(used_map, src[0].ident_str)) {
 		struct Token *replace_with = lookup(def_map, src[0].ident_str);
 
