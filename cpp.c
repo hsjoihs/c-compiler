@@ -210,6 +210,34 @@ static void handle_include(struct Token **ptr_dst, const struct Token **ptr_src,
 	*ptr_dst = dst;
 }
 
+static int handle_ifdef(int is_ifdef, const struct Token **ptr_src,
+                        struct Map2 *def_map, enum PreprocessorState *ptr_s,
+                        int *ptr_ifdef_depth)
+{
+	expect_and_consume(ptr_src, IDENT_OR_RESERVED,
+	                   is_ifdef ? "identifier after `#ifdef`"
+	                            : "identifier after `#ifndef`");
+
+	const char *macro_name = (*ptr_src)[-1].ident_str;
+	consume_spaces(ptr_src);
+
+	expect_and_consume(ptr_src, NEWLINE,
+	                   is_ifdef ? "newline after `#ifdef (macro_name)`"
+	                            : "newline after `#ifndef (macro_name)`");
+	(*ptr_src)--; /* ad hoc */
+
+	*ptr_s = LINE_HAS_JUST_STARTED;
+
+	if (is_ifdef == isElem(def_map, macro_name)) { /* true branch */
+		(*ptr_ifdef_depth)++;
+	} else { /* false branch */
+		skip_till_corresponding_endif(ptr_src);
+
+		return 1;
+	}
+	return 0;
+}
+
 /* lexer inserts a NEWLINE before END; hence, END can mostly be ignored */
 struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 {
@@ -256,30 +284,10 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 			continue;
 		} else if (strcmp(directive, "ifdef") == 0 ||
 		           strcmp(directive, "ifndef") == 0) {
-			int is_ifdef = strcmp(directive, "ifdef") == 0;
-
-			expect_and_consume(&src, IDENT_OR_RESERVED,
-			                   is_ifdef ? "identifier after `#ifdef`"
-			                            : "identifier after `#ifndef`");
-
-			const char *macro_name = src[-1].ident_str;
-			consume_spaces(&src);
-
-			expect_and_consume(&src, NEWLINE,
-			                   is_ifdef
-			                       ? "newline after `#ifdef (macro_name)`"
-			                       : "newline after `#ifndef (macro_name)`");
-			src--; /* ad hoc */
-
-			s = LINE_HAS_JUST_STARTED;
-
-			if (is_ifdef == isElem(def_map, macro_name)) { /* true branch */
-				ifdef_depth++;
-			} else { /* false branch */
-				skip_till_corresponding_endif(&src);
+			if (handle_ifdef(strcmp(directive, "ifdef") == 0, &src, def_map, &s,
+			                 &ifdef_depth)) {
 				continue;
 			}
-
 		} else if (strcmp(directive, "endif") ==
 		           0) { /* passes only when the #if(n)?def condition was
 			               true. If false, it will be handled in
