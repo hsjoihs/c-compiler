@@ -280,23 +280,17 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 		       LINE_HAS_JUST_STARTED); /* because otherwise we aren't here */
 
 		if (strcmp(directive, "define") == 0) {
-			if (handle_define(&src, def_map)) {
-				continue;
-			}
-			flag = 0;
+			flag = handle_define(&src, def_map);
 		} else if (strcmp(directive, "include") == 0) {
 			/* dst_initial may be realloc'd; total_token_num could be modified
 			 */
 			handle_include(&dst_initial, &src, &dst_offset, def_map,
 			               &total_token_num);
-			continue;
+			flag = 1;
 		} else if (strcmp(directive, "ifdef") == 0 ||
 		           strcmp(directive, "ifndef") == 0) {
-			if (handle_ifdef(strcmp(directive, "ifdef") == 0, &src, def_map,
-			                 &ifdef_depth)) {
-				continue;
-			}
-			flag = 0;
+			flag = handle_ifdef(strcmp(directive, "ifdef") == 0, &src, def_map,
+			                 &ifdef_depth);
 		} else if (strcmp(directive, "endif") ==
 		           0) { /* passes only when the #if(n)?def condition was
 			               true. If false, it will be handled in
@@ -309,7 +303,7 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 
 			ifdef_depth--;
 			expect_and_consume(&src, NEWLINE, "newline after `#endif`");
-			continue;
+			flag = 1;
 		} else {
 			unsupported("unknown directive");
 		}
