@@ -93,8 +93,8 @@ static void skip_till_corresponding_endif(const struct Token **ptr_src)
 	}
 }
 
-static int replacement(struct Token *dst, const struct Token **ptr_src,
-                       int *ptr_j, enum PreprocessorState *ptr_s,
+static int replacement(struct Token *dst_initial, const struct Token **ptr_src,
+                       int *ref_dst_offset, enum PreprocessorState *ptr_s,
                        struct Map2 *def_map);
 
 /*
@@ -154,12 +154,12 @@ static int handle_define(const struct Token **ptr_src,
  *    if nonexistent, it will throw an error.
  */
 static void handle_include(struct Token **ptr_dst, const struct Token **ptr_src,
-                           int *ptr_j, enum PreprocessorState *ptr_s,
+                           int *ref_dst_offset, enum PreprocessorState *ptr_s,
                            struct Map2 *def_map, int *ptr_total_token_num)
 {
 	const struct Token *src = *ptr_src;
-	int j = *ptr_j;
-	struct Token *dst = *ptr_dst;
+	int dst_offset = *ref_dst_offset;
+	struct Token *dst_initial = *ptr_dst;
 
 	if (src[0].kind == OP_LT) {
 		unsupported("`#include <...>`");
@@ -182,7 +182,7 @@ static void handle_include(struct Token **ptr_dst, const struct Token **ptr_src,
 
 	*ptr_total_token_num += new_vec.tok_num - 2; /* BEGINNING and END gone */
 
-	dst = realloc(dst, *ptr_total_token_num *
+	dst_initial = realloc(dst_initial, *ptr_total_token_num *
 	                       sizeof(struct Token)); /* realloc never fails */
 
 	int l = 1; /* skip BEGINNING */
@@ -190,8 +190,8 @@ static void handle_include(struct Token **ptr_dst, const struct Token **ptr_src,
 		if (new_vec.v[l].kind == END) {
 			break;
 		}
-		dst[j] = new_vec.v[l];
-		j++;
+		dst_initial[dst_offset] = new_vec.v[l];
+		dst_offset++;
 		l++;
 	}
 
@@ -205,9 +205,9 @@ static void handle_include(struct Token **ptr_dst, const struct Token **ptr_src,
 		    src, "newline or end of file after `#include (filepath)`");
 	}
 
-	*ptr_j = j;
+	*ref_dst_offset = dst_offset;
 	*ptr_src = src;
-	*ptr_dst = dst;
+	*ptr_dst = dst_initial;
 }
 
 static int handle_ifdef(int is_ifdef, const struct Token **ptr_src,
@@ -247,13 +247,13 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 	int total_token_num = t.tok_num;
 	int ifdef_depth = 0;
 
-	struct Token *dst = calloc(total_token_num, sizeof(struct Token));
+	struct Token *dst_initial = calloc(total_token_num, sizeof(struct Token));
 
-	int j = 0;
+	int dst_offset = 0;
 	enum PreprocessorState s = LINE_HAS_JUST_STARTED;
 	while (1) {
 		if (s != LINE_HAS_JUST_STARTED || src[0].kind != HASH) {
-			if (replacement(dst, &src, &j, &s, def_map)) {
+			if (replacement(dst_initial, &src, &dst_offset, &s, def_map)) {
 				break;
 			}
 			continue;
@@ -280,7 +280,7 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 				continue;
 			}
 		} else if (strcmp(directive, "include") == 0) {
-			handle_include(&dst, &src, &j, &s, def_map, &total_token_num);
+			handle_include(&dst_initial, &src, &dst_offset, &s, def_map, &total_token_num);
 			continue;
 		} else if (strcmp(directive, "ifdef") == 0 ||
 		           strcmp(directive, "ifndef") == 0) {
@@ -306,7 +306,7 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 			unsupported("unknown directive");
 		}
 
-		if (replacement(dst, &src, &j, &s, def_map)) {
+		if (replacement(dst_initial, &src, &dst_offset, &s, def_map)) {
 			break;
 		}
 	}
@@ -317,18 +317,18 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 	}
 
 	struct Tokvec u;
-	u.tok_num = j + 1;
-	u.v = dst;
+	u.tok_num = dst_offset + 1;
+	u.v = dst_initial;
 
 	return u;
 }
 
-static int replacement(struct Token *dst, const struct Token **ptr_src,
-                       int *ptr_j, enum PreprocessorState *ptr_s,
+static int replacement(struct Token *dst_initial, const struct Token **ptr_src,
+                       int *ref_dst_offset, enum PreprocessorState *ptr_s,
                        struct Map2 *def_map)
 {
 	const struct Token *src = *ptr_src;
-	int j = *ptr_j;
+	int dst_offset = *ref_dst_offset;
 
 	if (src[0].kind == NEWLINE || src[0].kind == BEGINNING) {
 		*ptr_s = LINE_HAS_JUST_STARTED;
@@ -339,18 +339,18 @@ static int replacement(struct Token *dst, const struct Token **ptr_src,
 	}
 
 	struct Map2 *used_map = init_map();
-	replace_recursively(def_map, used_map, src, &dst[j]);
+	replace_recursively(def_map, used_map, src, &dst_initial[dst_offset]);
 
-	if (dst[j].kind == END) {
+	if (dst_initial[dst_offset].kind == END) {
 		*ptr_src = src;
-		*ptr_j = j;
+		*ref_dst_offset = dst_offset;
 		return 1; /* break */
 	}
 
-	j++;
+	dst_offset++;
 	src++;
 	*ptr_src = src;
-	*ptr_j = j;
+	*ref_dst_offset = dst_offset;
 	return 0;
 }
 
