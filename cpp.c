@@ -5,6 +5,17 @@
 
 enum LineState { LINE_HAS_JUST_STARTED, AFTER_HASH, NOTHING_SPECIAL };
 
+static void set_line_state(enum LineState *ps, enum TokenKind kind)
+{
+	if (kind == NEWLINE || kind == BEGINNING) {
+		*ps = LINE_HAS_JUST_STARTED;
+	} else if (kind == SPACE) {
+		/* keep the state as is */
+	} else {
+		*ps = NOTHING_SPECIAL;
+	}
+}
+
 static void replace_recursively(const struct Map2 *def_map,
                                 struct Map2 *used_map,
                                 const struct Token *ref_src,
@@ -80,13 +91,7 @@ static void skip_till_corresponding_endif(const struct Token **ptr_src)
 			continue;
 		}
 
-		if (src[0].kind == NEWLINE || src[0].kind == BEGINNING) {
-			s = LINE_HAS_JUST_STARTED;
-		} else if (src[0].kind == SPACE) {
-			/* keep the state as is */
-		} else {
-			s = NOTHING_SPECIAL;
-		}
+		set_line_state(&s, src[0].kind);
 
 		if (src[0].kind == END) {
 			fprintf(stderr, "insufficient `#endif`.\n");
@@ -251,13 +256,7 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 		     dst_offset++, src++) {
 			flag = 1;
 
-			if (src[0].kind == NEWLINE || src[0].kind == BEGINNING) {
-				s = LINE_HAS_JUST_STARTED;
-			} else if (src[0].kind == SPACE) {
-				/* keep the state as is */
-			} else {
-				s = NOTHING_SPECIAL;
-			}
+			set_line_state(&s, src[0].kind);
 
 			struct Map2 *used_map = init_map();
 			replace_recursively(def_map, used_map, src,
