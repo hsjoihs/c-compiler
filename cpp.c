@@ -38,25 +38,24 @@ static void consume_the_rest_of_line(const struct Token **ptr_src)
 static void skip_till_corresponding_endif(const struct Token **ptr_src)
 {
 	const struct Token *src = *ptr_src;
-	enum LineState s = LINE_HAS_JUST_STARTED;
+
 	int ifdef_depth = 1;
 	while (1) {
-		while (s != LINE_HAS_JUST_STARTED || src[0].kind != HASH) {
+		for (enum LineState s = LINE_HAS_JUST_STARTED;
+		     s != LINE_HAS_JUST_STARTED || src[0].kind != HASH; src++) {
 			set_line_state(&s, src[0].kind);
 
 			if (src[0].kind == END) {
 				fprintf(stderr, "insufficient `#endif`.\n");
 				exit(EXIT_FAILURE);
 			}
-			src++;
 		}
 
-		src++;
+		src++; /* HASH */
 
 		consume_spaces(&src);
 
 		if (src[0].kind == NEWLINE) { /* empty directive */
-			s = LINE_HAS_JUST_STARTED;
 			src++;
 			continue;
 		}
@@ -95,7 +94,6 @@ static void skip_till_corresponding_endif(const struct Token **ptr_src)
 			consume_the_rest_of_line(&src);
 		}
 		src++;
-		s = LINE_HAS_JUST_STARTED;
 	}
 }
 
