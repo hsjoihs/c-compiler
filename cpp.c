@@ -245,11 +245,12 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 	struct Token *dst_initial = calloc(total_token_num, sizeof(struct Token));
 
 	int dst_offset = 0;
-	enum PreprocessorState s = LINE_HAS_JUST_STARTED;
 
 	int flag = 1;
 	while (1) {
-		while (flag == 0 || s != LINE_HAS_JUST_STARTED || src[0].kind != HASH) {
+		for (enum PreprocessorState s = LINE_HAS_JUST_STARTED;
+		     flag == 0 || s != LINE_HAS_JUST_STARTED || src[0].kind != HASH;
+		     dst_offset++, src++) {
 			flag = 1;
 			replacement_(dst_initial, src, dst_offset, &s, def_map);
 
@@ -265,9 +266,6 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 
 				return u;
 			}
-
-			dst_offset++;
-			src++;
 		}
 
 		src++; /* HASH */
@@ -283,9 +281,6 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 
 		const char *directive = src[-1].ident_str;
 		consume_spaces(&src);
-
-		assert(s ==
-		       LINE_HAS_JUST_STARTED); /* because otherwise we aren't here */
 
 		if (strcmp(directive, "define") == 0) {
 			flag = handle_define(&src, def_map);
