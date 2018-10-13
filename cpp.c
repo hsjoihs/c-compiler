@@ -52,63 +52,53 @@ static void skip_till_corresponding_endif(const struct Token **ptr_src)
 			src++;
 			continue;
 		}
-		{
-			src++;
 
-			consume_spaces(&src);
+		src++;
 
-			if (src[0].kind == NEWLINE) { /* empty directive */
-				s = LINE_HAS_JUST_STARTED;
-				src++;
-				continue;
-			}
+		consume_spaces(&src);
 
-			expect_and_consume(
-			    &src, IDENT_OR_RESERVED,
-			    "identifier after `#` for preprocessor directive");
-
-			if (strcmp(src[-1].ident_str, "ifdef") == 0 ||
-			    strcmp(src[-1].ident_str, "ifndef") == 0) {
-				ifdef_depth++;
-				consume_the_rest_of_line(&src);
-			} else if (strcmp(src[-1].ident_str, "endif") == 0) {
-
-				consume_spaces(&src);
-
-				if (src[0].kind == END) {
-					if (ifdef_depth == 1) {
-						*ptr_src = src;
-						return;
-					} else {
-						fprintf(stderr, "insufficient `#endif`.\n");
-						exit(EXIT_FAILURE);
-					}
-				}
-
-				if (src[0].kind != NEWLINE) {
-					error_unexpected_token(src, "newline after `#endif`");
-				}
-
-				if (ifdef_depth == 1) {
-					*ptr_src = src;
-					return;
-				}
-				ifdef_depth--;
-			} else {
-				consume_the_rest_of_line(&src);
-			}
-			src++;
+		if (src[0].kind == NEWLINE) { /* empty directive */
 			s = LINE_HAS_JUST_STARTED;
+			src++;
 			continue;
 		}
 
-		set_line_state(&s, src[0].kind);
+		expect_and_consume(&src, IDENT_OR_RESERVED,
+		                   "identifier after `#` for preprocessor directive");
 
-		if (src[0].kind == END) {
-			fprintf(stderr, "insufficient `#endif`.\n");
-			exit(EXIT_FAILURE);
+		if (strcmp(src[-1].ident_str, "ifdef") == 0 ||
+		    strcmp(src[-1].ident_str, "ifndef") == 0) {
+			ifdef_depth++;
+			consume_the_rest_of_line(&src);
+		} else if (strcmp(src[-1].ident_str, "endif") == 0) {
+
+			consume_spaces(&src);
+
+			if (src[0].kind == END) {
+				if (ifdef_depth == 1) {
+					*ptr_src = src;
+					return;
+				} else {
+					fprintf(stderr, "insufficient `#endif`.\n");
+					exit(EXIT_FAILURE);
+				}
+			}
+
+			if (src[0].kind != NEWLINE) {
+				error_unexpected_token(src, "newline after `#endif`");
+			}
+
+			if (ifdef_depth == 1) {
+				*ptr_src = src;
+				return;
+			}
+			ifdef_depth--;
+		} else {
+			consume_the_rest_of_line(&src);
 		}
 		src++;
+		s = LINE_HAS_JUST_STARTED;
+		continue;
 	}
 }
 
