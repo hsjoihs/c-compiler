@@ -358,8 +358,6 @@ void print_token(const struct Token *ptr_tok, const char *next_token_begins);
 struct Token *read_and_preprocess(const char *str,
                                   struct Vector *ref_cmdline_macros);
 
-enum PreprocessorState { LINE_HAS_JUST_STARTED, AFTER_HASH, NOTHING_SPECIAL };
-
 struct Tokvec {
 	int tok_num;
 	struct Token *v;

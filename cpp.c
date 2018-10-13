@@ -3,9 +3,7 @@
 #include "std.h"
 #include "std_io.h"
 
-static void replacement_(struct Token *dst_initial, const struct Token *src,
-                         int dst_offset, enum PreprocessorState *ptr_s,
-                         const struct Map2 *def_map);
+enum LineState { LINE_HAS_JUST_STARTED, AFTER_HASH, NOTHING_SPECIAL };
 
 static void replace_recursively(const struct Map2 *def_map,
                                 struct Map2 *used_map,
@@ -29,7 +27,7 @@ static void consume_the_rest_of_line(const struct Token **ptr_src)
 static void skip_till_corresponding_endif(const struct Token **ptr_src)
 {
 	const struct Token *src = *ptr_src;
-	enum PreprocessorState s = LINE_HAS_JUST_STARTED;
+	enum LineState s = LINE_HAS_JUST_STARTED;
 	int ifdef_depth = 1;
 	while (1) {
 		if (s == LINE_HAS_JUST_STARTED && src[0].kind == HASH) {
@@ -248,11 +246,22 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 
 	int flag = 1;
 	while (1) {
-		for (enum PreprocessorState s = LINE_HAS_JUST_STARTED;
+		for (enum LineState s = LINE_HAS_JUST_STARTED;
 		     flag == 0 || s != LINE_HAS_JUST_STARTED || src[0].kind != HASH;
 		     dst_offset++, src++) {
 			flag = 1;
-			replacement_(dst_initial, src, dst_offset, &s, def_map);
+
+			if (src[0].kind == NEWLINE || src[0].kind == BEGINNING) {
+				s = LINE_HAS_JUST_STARTED;
+			} else if (src[0].kind == SPACE) {
+				/* keep the state as is */
+			} else {
+				s = NOTHING_SPECIAL;
+			}
+
+			struct Map2 *used_map = init_map();
+			replace_recursively(def_map, used_map, src,
+			                    &dst_initial[dst_offset]);
 
 			if (dst_initial[dst_offset].kind == END) {
 				if (ifdef_depth) {
@@ -311,28 +320,6 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 			unsupported("unknown directive");
 		}
 	}
-}
-
-/*
- * Copy one token from src[0] to &dst_initial[dst_offset], but may invoke macro
- * replacement. Since currently the result of replacement is guaranteed to be a
- * single token, realloc is not needed.
- */
-static void replacement_(struct Token *dst_initial, const struct Token *src,
-                         int dst_offset, enum PreprocessorState *ptr_s,
-                         const struct Map2 *def_map)
-{
-
-	if (src[0].kind == NEWLINE || src[0].kind == BEGINNING) {
-		*ptr_s = LINE_HAS_JUST_STARTED;
-	} else if (src[0].kind == SPACE) {
-		/* keep the state as is */
-	} else {
-		*ptr_s = NOTHING_SPECIAL;
-	}
-
-	struct Map2 *used_map = init_map();
-	replace_recursively(def_map, used_map, src, &dst_initial[dst_offset]);
 }
 
 static void replace_recursively(const struct Map2 *def_map,
