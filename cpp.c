@@ -41,7 +41,18 @@ static void skip_till_corresponding_endif(const struct Token **ptr_src)
 	enum LineState s = LINE_HAS_JUST_STARTED;
 	int ifdef_depth = 1;
 	while (1) {
-		if (s == LINE_HAS_JUST_STARTED && src[0].kind == HASH) {
+
+		if (s != LINE_HAS_JUST_STARTED || src[0].kind != HASH) {
+			set_line_state(&s, src[0].kind);
+
+			if (src[0].kind == END) {
+				fprintf(stderr, "insufficient `#endif`.\n");
+				exit(EXIT_FAILURE);
+			}
+			src++;
+			continue;
+		}
+		{
 			src++;
 
 			consume_spaces(&src);
