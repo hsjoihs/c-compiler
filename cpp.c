@@ -254,7 +254,16 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 			replacement_(dst_initial, src, dst_offset, &s, def_map);
 
 			if (dst_initial[dst_offset].kind == END) {
-				break;
+				if (ifdef_depth) {
+					fprintf(stderr, "insufficient number of `#endif`s.\n");
+					exit(EXIT_FAILURE);
+				}
+
+				struct Tokvec u;
+				u.tok_num = dst_offset + 1;
+				u.v = dst_initial;
+
+				return u;
 			}
 
 			dst_offset++;
@@ -290,7 +299,7 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 		} else if (strcmp(directive, "ifdef") == 0 ||
 		           strcmp(directive, "ifndef") == 0) {
 			flag = handle_ifdef(strcmp(directive, "ifdef") == 0, &src, def_map,
-			                 &ifdef_depth);
+			                    &ifdef_depth);
 		} else if (strcmp(directive, "endif") ==
 		           0) { /* passes only when the #if(n)?def condition was
 			               true. If false, it will be handled in
@@ -308,17 +317,6 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 			unsupported("unknown directive");
 		}
 	}
-
-	if (ifdef_depth) {
-		fprintf(stderr, "insufficient number of `#endif`s.\n");
-		exit(EXIT_FAILURE);
-	}
-
-	struct Tokvec u;
-	u.tok_num = dst_offset + 1;
-	u.v = dst_initial;
-
-	return u;
 }
 
 /*
