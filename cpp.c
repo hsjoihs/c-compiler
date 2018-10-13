@@ -249,7 +249,7 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 
 	int flag = 1;
 	while (1) {
-		if (flag == 0 || s != LINE_HAS_JUST_STARTED || src[0].kind != HASH) {
+		while (flag == 0 || s != LINE_HAS_JUST_STARTED || src[0].kind != HASH) {
 			flag = 1;
 			replacement_(dst_initial, src, dst_offset, &s, def_map);
 
@@ -268,7 +268,6 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 
 			dst_offset++;
 			src++;
-			continue;
 		}
 
 		src++; /* HASH */
