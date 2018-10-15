@@ -23,49 +23,44 @@ int main()
 	return a(b());
 }
 	*/
+	gen_prologue(100, "a");
+	gen_write_register_to_local_8byte("rdi", -8); // void *q
+	gen_push_from_local_8byte(-8);
+	gen_write_to_local_8byte(-16); // p = q;
+	gen_discard();
+	
+	gen_push_int(171);
+	gen_pop_to_reg_4byte("edi");
 	puts(
-	    "	.globl	"PREFIX"a                      ## -- Begin function a\n"
-	    ""PREFIX"a:                                     ## @a\n"
-	    "	pushq	%rbp\n"
-	    "	movq	%rsp, %rbp\n"
-	    "	subq	$16, %rsp\n"
-	    "	movl	$171, %eax\n"
-	    "	movq	%rdi, -8(%rbp)\n"
-	    "	movq	-8(%rbp), %rdi\n"
-	    "	movq	%rdi, -16(%rbp)\n"
-	    "	movl	%eax, %edi\n"
-	    "	callq	*-16(%rbp)\n"
-	    "	addq	$16, %rsp\n"
-	    "	popq	%rbp\n"
-	    "	retq\n");
-	puts("	.globl	"PREFIX"f                      ## -- Begin function f\n"
-	     ""PREFIX"f:                                     ## @f\n"
-	     "	pushq	%rbp\n"
-	     "	movq	%rsp, %rbp\n"
+	    "  call *-16(%rbp)\n"
+	    "  subq $8, %rsp\n"
+	    "  movq %rax, (%rsp) \n");
+	gen_epilogue(1);
+
+	gen_prologue(0, "f");
+	puts(
 	     "	movl	%edi, -4(%rbp)\n"
 	     "	movl	-4(%rbp), %edi\n"
 	     "	addl	$3, %edi\n"
 	     "	movl	%edi, %eax\n"
 	     "	popq	%rbp\n"
-	     "	retq\n");
-	puts("	.globl	"PREFIX"b                      ## -- Begin function b\n"
-	     ""PREFIX"b:                                     ## @b\n"
-	     "	pushq	%rbp\n"
-	     "	movq	%rsp, %rbp\n"
-	     "	leaq	"PREFIX"f(%rip), %rax\n"
+	     "	ret\n");
+
+	gen_prologue(0, "b");
+	gen_push_address_of_global("f");
+	puts(
+	     "  addq $8, %rsp\n"
 	     "	popq	%rbp\n"
-	     "	retq\n");
-	puts("	.globl	"PREFIX"main                   ## -- Begin function main\n"
-	     ""PREFIX"main:                                  ## @main\n"
-	     "	pushq	%rbp\n"
-	     "	movq	%rsp, %rbp\n"
-	     "	subq	$16, %rsp\n"
+	     "	ret\n");
+
+	gen_prologue(16, "main");
+	puts(
 	     "	movl	$0, -4(%rbp)\n"
 	     "	callq	"PREFIX"b\n"
 	     "	movq	%rax, %rdi\n"
 	     "	callq	"PREFIX"a\n"
 	     "	addq	$16, %rsp\n"
 	     "	popq	%rbp\n"
-	     "	retq\n");
+	     "	ret\n");
 	return 0;
 }
