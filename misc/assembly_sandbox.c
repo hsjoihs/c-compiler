@@ -8,20 +8,6 @@ int a(void* q){
 	int (*p)(int) = q;
 	return (*p)(171);
 }
-
-int f(int a){
-	return 3 + a;
-}
-
-void *b(void)
-{
-	return f;
-}
-
-int main()
-{
-	return a(b());
-}
 	*/
 	gen_prologue(100, "a");
 	gen_write_register_to_local_8byte("rdi", -8); // void *q
@@ -37,28 +23,39 @@ int main()
 	    "  movq %rax, (%rsp) \n");
 	gen_epilogue(1);
 
+	/*
+int f(int a){
+	return 3 + a;
+}
+	*/
 	gen_prologue(0, "f");
-	puts(
-	     "	movl	%edi, -4(%rbp)\n"
-	     "	movl	-4(%rbp), %edi\n"
-	     "	addl	$3, %edi\n"
-	     "	movl	%edi, %eax\n"
-	     "	popq	%rbp\n"
-	     "	ret\n");
+	gen_write_register_to_local_4byte("edi", -4);
+	gen_push_from_local_4byte(-4);
+	gen_push_int(3);
+	gen_op_ints("addl");
+	gen_epilogue(2);
 
+	/*
+void *b(void)
+{
+	return f;
+}
+	*/
 	gen_prologue(0, "b");
 	gen_push_address_of_global("f");
-	puts(
-	     "  addq $8, %rsp\n"
-	     "	popq	%rbp\n"
-	     "	ret\n");
-
+	gen_epilogue_8byte(3);
+	
+	/*
+int main()
+{
+	return a(b());
+}
+	*/
 	gen_prologue(16, "main");
+	gen_push_ret_of_8byte("b");
+	gen_pop_to_reg_8byte("rdi");
 	puts(
-	     "	movl	$0, -4(%rbp)\n"
-	     "	callq	"PREFIX"b\n"
-	     "	movq	%rax, %rdi\n"
-	     "	callq	"PREFIX"a\n"
+	     "	call	"PREFIX"a\n"
 	     "	addq	$16, %rsp\n"
 	     "	popq	%rbp\n"
 	     "	ret\n");
