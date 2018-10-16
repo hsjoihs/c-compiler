@@ -332,22 +332,19 @@ static void parse_declarator(const struct Token **ptr_tokvec,
                              const char **ptr_to_ident_str,
                              struct Vector /*<struct TypeNode>*/ *ptr_vec)
 {
-	const struct Token *tokvec = *ptr_tokvec;
 	int asterisk_num = 0;
-	for (; tokvec[0].kind == OP_ASTERISK;
-	     ++tokvec, skip_consts_or_noreturns(&tokvec)) {
+	for (; (*ptr_tokvec)[0].kind == OP_ASTERISK;
+	     ++*ptr_tokvec, skip_consts_or_noreturns(ptr_tokvec)) {
 		asterisk_num++;
 	}
 
-	parse_direct_declarator(&tokvec, ptr_to_ident_str, ptr_vec);
+	parse_direct_declarator(ptr_tokvec, ptr_to_ident_str, ptr_vec);
 
 	while (asterisk_num-- > 0) {
 		struct TypeNode *ptr = calloc(1, sizeof(struct TypeNode));
 		ptr->type_category = PTR_;
 		push_vector(ptr_vec, ptr);
 	}
-
-	*ptr_tokvec = tokvec;
 }
 
 struct UntypedExpr *
