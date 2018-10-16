@@ -11,7 +11,7 @@ run_test() {
 
 run_test2() {
 	echo -e $2 | ./out/compiler.out > s/full_compile$1.s
-	gcc misc/supplement2.c -S -o s/supplement2.s
+	./out/compiler.out misc/supplement2.c > s/supplement2.s
 	gcc s/full_compile$1.s s/supplement2.s -o out/task$1.out -no-pie -Wno-unused-command-line-argument
 	./out/task$1.out
 	res=$?
