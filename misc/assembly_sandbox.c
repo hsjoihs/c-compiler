@@ -54,10 +54,8 @@ int main()
 	gen_prologue(16, "main");
 	gen_push_ret_of_8byte("b");
 	gen_pop_to_reg_8byte("rdi");
-	puts(
-	     "	call	"PREFIX"a\n"
-	     "	addq	$16, %rsp\n"
-	     "	popq	%rbp\n"
-	     "	ret\n");
+	gen_push_ret_of_8byte("a");
+	gen_epilogue_8byte(4);
+	
 	return 0;
 }
