@@ -74,6 +74,7 @@ void gen_logical_not_of_pointer(void);
 void gen_call_local_fp_and_push_ret_of_1byte(int offset);
 void gen_call_local_fp_and_push_ret_of_4byte(int offset);
 void gen_call_local_fp_and_push_ret_of_8byte(int offset);
+void return_garbage(void);
 
 #ifdef OSX
 #define PREFIX "_"

@@ -310,7 +310,7 @@ static void print_toplevel_definition(struct PrinterState *ptr_prs,
 		if (ptr_prs->return_label_name != -1) {
 			gen_label(ptr_prs->return_label_name);
 		}
-		printf("  movl $123, %%eax\nleave\nret\n");
+		return_garbage();
 		return;
 	}
 
@@ -329,7 +329,7 @@ static void print_toplevel_definition(struct PrinterState *ptr_prs,
 			gen_push_from_local_nbyte(8, ref_def->func.hidden_var_offset);
 			gen_swap();
 			gen_copy_struct_and_discard(ret_struct_size);
-			printf("  movl $123, %%eax\nleave\nret\n");
+			return_garbage();
 		}
 	} else {
 		gen_epilogue_nbyte(size_of_basic(&ret_type, "return value"),

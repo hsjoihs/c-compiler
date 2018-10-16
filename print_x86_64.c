@@ -993,3 +993,10 @@ void gen_logical_not_of_pointer(void)
 	     "  movzbl %al, %eax\n"
 	     "  movl %eax, (%rsp)");
 }
+
+void return_garbage(void)
+{
+	printf("  movl $123, %%eax\n"
+	       "leave\n"
+	       "ret\n");
+}
