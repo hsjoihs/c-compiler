@@ -17,10 +17,7 @@ int a(void* q){
 	
 	gen_push_int(171);
 	gen_pop_to_reg_4byte("edi");
-	puts(
-	    "  call *-16(%rbp)\n"
-	    "  subq $8, %rsp\n"
-	    "  movq %rax, (%rsp) \n");
+	gen_call_local_fp_and_push_ret_of_4byte(-16);
 	gen_epilogue(1);
 
 	/*

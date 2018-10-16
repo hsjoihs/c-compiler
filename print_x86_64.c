@@ -194,10 +194,12 @@ void gen_swap(void)
 	       "movq %%rax, 8(%%rsp)\n");
 }
 
+static void gen_call(const char *s1, const char *s2);
+
 void gen_push_ret_of_1byte(const char *fname)
 {
 	printf("//gen_push_ret_of_1byte(\"%s\")\n", fname);
-	gen_call(fname);
+	gen_call(PREFIX, fname);
 
 	printf("  movsbl %%al, %%eax\n"
 	       "  movl %%eax, (%%rsp)\n");
@@ -206,18 +208,47 @@ void gen_push_ret_of_1byte(const char *fname)
 void gen_push_ret_of_4byte(const char *fname)
 {
 	printf("//gen_push_ret_of_4byte(\"%s\")\n", fname);
-	gen_call(fname);
+	gen_call(PREFIX, fname);
 	printf("  movl %%eax, (%%rsp)\n");
 }
 
 void gen_push_ret_of_8byte(const char *fname)
 {
 	printf("//gen_push_ret_of_8byte(\"%s\")\n", fname);
-	gen_call(fname);
+	gen_call(PREFIX, fname);
 	printf("  movq %%rax, (%%rsp)\n");
 }
 
-void gen_call(const char *fname)
+void gen_call_local_fp_and_push_ret_of_1byte(int offset)
+{
+	printf("//gen_call_local_fp_and_push_ret_of_1byte(%d)\n", offset);
+	char str[100];
+	sprintf(str, "*%d", offset);
+	gen_call(str, "(%rbp)");
+
+	printf("  movsbl %%al, %%eax\n"
+	       "  movl %%eax, (%%rsp)\n");
+}
+
+void gen_call_local_fp_and_push_ret_of_4byte(int offset)
+{
+	printf("//gen_call_local_fp_and_push_ret_of_4byte(%d)\n", offset);
+	char str[100];
+	sprintf(str, "*%d", offset);
+	gen_call(str, "(%rbp)");
+	printf("  movl %%eax, (%%rsp)\n");
+}
+
+void gen_call_local_fp_and_push_ret_of_8byte(int offset)
+{
+	printf("//gen_call_local_fp_and_push_ret_of_8byte(%d)\n", offset);
+	char str[100];
+	sprintf(str, "*%d", offset);
+	gen_call(str, "(%rbp)");
+	printf("  movq %%rax, (%%rsp)\n");
+}
+
+static void gen_call(const char *s1, const char *s2)
 {
 
 	/* alignment */
@@ -242,7 +273,7 @@ void gen_call(const char *fname)
 	       "  movq %%rax, (%%rsp)\n"
 	       "  movb $0, %%al\n" /* printf */
 	);
-	printf("  call " PREFIX "%s\n", fname);
+	printf("  call %s%s\n", s1, s2);
 
 	/*
 	if it was already aligned:
@@ -264,7 +295,7 @@ void gen_call_and_assign_small_struct_to_local(const char *fname, int offset,
 {
 	printf("//gen_call_and_assign_small_struct_to_local(%s, %d, %d)\n", fname,
 	       offset, size);
-	gen_call(fname);
+	gen_call(PREFIX, fname);
 	switch (size) {
 	case 16:
 		printf("  movq %%rax, %d(%%rbp)\n", offset);
