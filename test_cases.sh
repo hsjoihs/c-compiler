@@ -27,16 +27,7 @@ run_test2() {
 	if [ $res -ne $3 ]; then { echo "got:" $res; echo "expected:" $3; echo -e "\033[31mFAIL\033[m, at test case" $1: $2; exit 1; }; else echo -e "\033[32mPASS\033[m"; fi
 }
 
-run_test3() {
-	echo -e $2 | ./out/compiler.out > s/full_compile$1.s
-	gcc misc/supplement3.c -S -o s/supplement3.s
-	gcc s/full_compile$1.s s/supplement3.s -o out/task$1.out -no-pie -Wno-unused-command-line-argument
-	./out/task$1.out
-	res=$?
-	if [ $res -ne $3 ]; then { echo "got:" $res; echo "expected:" $3; echo -e "\033[31mFAIL\033[m, at test case" $1: $2; exit 1; }; else echo -e "\033[32mPASS\033[m"; fi
-}
-
-run_test3 331 'void *return_fp(void); int call_fp(void* q); int main(){return call_fp(return_fp());}' 174
+run_test0 331 'void *return_fp(void); int call_fp(void* q); int main(){return call_fp(return_fp());}' 174
 
 run_test 329 'int main(){void *null = 0; int (*p)(void) = null; return 123;}' 123
 run_test 330 'int main(){void *null = 0; int (*p)(int) = null; return 123;}' 123
