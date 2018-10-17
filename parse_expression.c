@@ -339,6 +339,41 @@ parse_unary_expression(const struct Token **ptr_tokvec)
 static struct UntypedExpr dot(const struct UntypedExpr *ref_expr,
                               const char *name);
 
+/* LPAREN is already consumed */
+static struct Vector /*<UntypedExpr>*/
+parse_arguments(const struct Token **ptr_tokvec)
+{
+	const struct Token *tokvec = *ptr_tokvec;
+	struct Vector /*<UntypedExpr>*/ arguments = init_vector();
+
+	if (tokvec[0].kind == RIGHT_PAREN) {
+		tokvec++;
+	} else {
+		struct UntypedExpr e = parse_assignment_expression(&tokvec);
+		struct UntypedExpr *ptr_e = calloc(1, sizeof(struct UntypedExpr));
+		*ptr_e = e;
+		push_vector(&arguments, ptr_e);
+
+		while (1) {
+			enum TokenKind kind = tokvec[0].kind;
+			if (kind != OP_COMMA) {
+				break;
+			}
+			++tokvec;
+
+			struct UntypedExpr e = parse_assignment_expression(&tokvec);
+			struct UntypedExpr *ptr_e = calloc(1, sizeof(struct UntypedExpr));
+			*ptr_e = e;
+			push_vector(&arguments, ptr_e);
+		}
+
+		expect_and_consume(&tokvec, RIGHT_PAREN,
+		                   "closing parenthesis of function call");
+	}
+	*ptr_tokvec = tokvec;
+	return arguments;
+}
+
 static struct UntypedExpr
 parse_postfix_expression(const struct Token **ptr_tokvec)
 {
@@ -350,34 +385,7 @@ parse_postfix_expression(const struct Token **ptr_tokvec)
 
 		tokvec += 2;
 
-		struct Vector /*<UntypedExpr>*/ arguments = init_vector();
-
-		if (tokvec[0].kind == RIGHT_PAREN) {
-			tokvec++;
-		} else {
-			struct UntypedExpr e = parse_assignment_expression(&tokvec);
-			struct UntypedExpr *ptr_e = calloc(1, sizeof(struct UntypedExpr));
-			*ptr_e = e;
-			push_vector(&arguments, ptr_e);
-
-			while (1) {
-				enum TokenKind kind = tokvec[0].kind;
-				if (kind != OP_COMMA) {
-					break;
-				}
-				++tokvec;
-
-				struct UntypedExpr e = parse_assignment_expression(&tokvec);
-				struct UntypedExpr *ptr_e =
-				    calloc(1, sizeof(struct UntypedExpr));
-				*ptr_e = e;
-				push_vector(&arguments, ptr_e);
-			}
-
-			expect_and_consume(&tokvec, RIGHT_PAREN,
-			                   "closing parenthesis of function call");
-		}
-		*ptr_tokvec = tokvec;
+		struct Vector /*<UntypedExpr>*/ arguments = parse_arguments(&tokvec);
 
 		expr.category = FUNCCALL;
 		expr.arg_exprs_vec = arguments;
