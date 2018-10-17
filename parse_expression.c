@@ -384,6 +384,9 @@ parse_postfix_expression(const struct Token **ptr_tokvec)
 		expr.var_name = ident_str;
 	} else {
 		expr = parse_primary_expression(&tokvec);
+		if (tokvec[0].kind == LEFT_PAREN) {
+			unsupported("calling function pointer");
+		}
 	}
 
 	while (1) {
