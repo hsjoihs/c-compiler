@@ -32,6 +32,7 @@ run_test 332 'int main(){int a = 1; int *b = a?&a : 0; return 123;}' 123
 run_test 333 'int main(){int a = 1; int *b = a? 0 :&a; return 123;}' 123
 run_test 334 'int main(){int a = 0; int *b = a?&a : 0; return 123;}' 123
 run_test 335 'int main(){int a = 0; int *b = a? 0 :&a; return 123;}' 123
+run_test0 336 'void *return_fp(void); int call_fp_(void* q){int (*p)(int) = q;return (p)(171);} int main(){return call_fp_(return_fp());}' 174
 
 run_test 329 'int main(){void *null = 0; int (*p)(void) = null; return 123;}' 123
 run_test 330 'int main(){void *null = 0; int (*p)(int) = null; return 123;}' 123

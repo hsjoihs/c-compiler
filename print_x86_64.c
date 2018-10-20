@@ -241,6 +241,23 @@ void gen_call_reg_and_push_ret_of_8byte(const char *reg)
 	printf("  movq %%rax, (%%rsp)\n");
 }
 
+void gen_call_reg_and_push_ret_of_nbyte(int n, const char *reg)
+{
+	switch (n) {
+	case 1:
+		gen_call_reg_and_push_ret_of_1byte(reg);
+		break;
+	case 4:
+		gen_call_reg_and_push_ret_of_4byte(reg);
+		break;
+	case 8:
+		gen_call_reg_and_push_ret_of_8byte(reg);
+		break;
+	default:
+		assert0("Unsupported width; cannot happen" && 0);
+	}
+}
+
 static void gen_call(const char *s1, const char *s2)
 {
 

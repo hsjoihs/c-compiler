@@ -74,6 +74,7 @@ void gen_logical_not_of_pointer(void);
 void gen_call_reg_and_push_ret_of_1byte(const char *reg);
 void gen_call_reg_and_push_ret_of_4byte(const char *reg);
 void gen_call_reg_and_push_ret_of_8byte(const char *reg);
+void gen_call_reg_and_push_ret_of_nbyte(int n, const char *reg);
 void return_garbage(void);
 
 #ifdef OSX

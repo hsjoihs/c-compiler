@@ -569,7 +569,22 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 		return;
 	}
 	case FPCALL_EXPR: {
-		unsupported("FPCALL_EXPR");
+		struct Type ret_type = expr.details.type;
+
+		print_expression(ptr_prs, expr.ptr1);
+		pass_args(ptr_prs, &expr.args);
+		gen_pop_to_reg_8byte("r11");
+
+		int size;
+		if (ret_type.type_category != VOID_) {
+			size = size_of_basic(&ret_type, "return value");
+		} else {
+			size = 4; /* for convenience */
+		}
+
+		gen_call_reg_and_push_ret_of_nbyte(size, "r11");
+
+		return;
 	}
 	case FUNCCALL_EXPR: {
 		const char *ident_str = expr.global_var_name;

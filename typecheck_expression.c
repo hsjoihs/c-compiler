@@ -713,7 +713,25 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 			        "`, which is neither function nor function pointer\n");
 			exit(EXIT_FAILURE);
 		}
-		unsupported("calling function pointer");
+
+		struct Type ret_type = *(fn_type.derived_from);
+
+		int is_param_infos_valid = fn_type.is_param_infos_valid;
+		struct Vector /*<TypeAndIdent>*/ param_infos;
+
+		if (is_param_infos_valid) {
+			param_infos = fn_type.param_infos;
+		}
+
+		struct Expr expr =
+		    foo(ptr_ps, &ret_type, is_param_infos_valid ? &param_infos : 0,
+		        &uexpr.arg_exprs_vec, 1 /* is_fp_call */);
+
+		struct Expr *ptr_fp_expr = calloc(1, sizeof(struct Expr));
+		*ptr_fp_expr = fp_expr;
+		expr.ptr1 = ptr_fp_expr;
+
+		return expr;
 	}
 	case FUNCCALL: {
 		const char *ident_str = uexpr.var_name;
