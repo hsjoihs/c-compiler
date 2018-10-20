@@ -542,9 +542,6 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 {
 	const struct UntypedExpr uexpr = *ref_uexpr;
 	switch (uexpr.category) {
-	case FUNC_PTR_CALL: {
-		unsupported("calling function pointer");
-	}
 	case DOT_EXPR: {
 		struct Expr struct_expr = typecheck_expression(ptr_ps, uexpr.ptr1);
 		const char *ident_after_dot = uexpr.ident_after_dot;
@@ -618,6 +615,23 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 		enum TokenKind kind = uexpr.operator_;
 		const struct Expr expr = typecheck_expression(ptr_ps, uexpr.ptr1);
 		return typecheck_unary_expression(ptr_ps, &expr, kind);
+	}
+	case FUNC_PTR_CALL: {
+		struct Expr fp_expr = typecheck_expression(ptr_ps, uexpr.ptr1);
+
+		struct Type fn_type;
+		if (fp_expr.details.type.type_category == FN) {
+			fn_type = fp_expr.details.type;
+		} else if (fp_expr.details.type.type_category == PTR_ &&
+		           fp_expr.details.type.derived_from->type_category == FN) {
+			fn_type = *(fp_expr.details.type.derived_from);
+		} else {
+			fprintf(stderr, "function call operator was applied to something of type `");
+			debug_print_type(&fp_expr.details.type);
+			fprintf(stderr, "`, which is neither function nor function pointer\n");
+			exit(EXIT_FAILURE);
+		}
+		unsupported("calling function pointer");
 	}
 	case FUNCCALL: {
 		const char *ident_str = uexpr.var_name;
