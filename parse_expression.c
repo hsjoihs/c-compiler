@@ -399,7 +399,8 @@ parse_postfix_expression(const struct Token **ptr_tokvec)
 			tokvec++;
 
 			/* this consumes the closing paren */
-			struct Vector /*<UntypedExpr>*/ arguments = parse_arguments(&tokvec);
+			struct Vector /*<UntypedExpr>*/ arguments =
+			    parse_arguments(&tokvec);
 
 			struct UntypedExpr *ptr_expr1 =
 			    calloc(1, sizeof(struct UntypedExpr));

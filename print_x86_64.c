@@ -219,7 +219,6 @@ void gen_push_ret_of_8byte(const char *fname)
 	printf("  movq %%rax, (%%rsp)\n");
 }
 
-
 void gen_call_reg_and_push_ret_of_1byte(const char *reg)
 {
 	printf("//gen_call_reg_and_push_ret_of_1byte(\"%s\")\n", reg);
