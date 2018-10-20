@@ -610,8 +610,8 @@ foo(struct AnalyzerState *ptr_ps, const struct Type *ref_ret_type,
 }
 
 /* returns null pointer if the name is not found */
-static struct Expr */* nullable */from_name_to_expr(struct AnalyzerState *ptr_ps,
-                                     const char *name)
+static struct Expr * /* nullable */
+from_name_to_expr(struct AnalyzerState *ptr_ps, const char *name)
 {
 	if (!is_local_var(&ptr_ps->scope_chain, name)) {
 		const struct EnumeratorAndValue *ptr_enum_and_value =
@@ -661,7 +661,7 @@ static struct Expr */* nullable */from_name_to_expr(struct AnalyzerState *ptr_ps
 		expr.details.true_type = info.type;
 		expr.category = LOCAL_VAR_;
 		expr.local_var_offset = info.offset;
-		
+
 		struct Expr *p_expr = calloc(1, sizeof(struct Expr));
 		*p_expr = expr;
 		return p_expr;
@@ -846,7 +846,8 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 	case VAR: {
 		struct Expr *p = from_name_to_expr(ptr_ps, uexpr.var_name);
 		if (!p) {
-			fprintf(stderr, "%s is not declared either globally or locally\n", uexpr.var_name);
+			fprintf(stderr, "%s is not declared either globally or locally\n",
+			        uexpr.var_name);
 			exit(EXIT_FAILURE);
 		}
 		return *p;
