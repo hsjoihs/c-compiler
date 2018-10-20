@@ -836,6 +836,15 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 		struct Expr expr = typecheck_expression(ptr_ps, uexpr.ptr1);
 		struct Expr true_branch = typecheck_expression(ptr_ps, uexpr.ptr2);
 		struct Expr false_branch = typecheck_expression(ptr_ps, uexpr.ptr3);
+
+		if (false_branch.details.type.type_category == PTR_) {
+			cast_to_null_pointer_if_possible(&true_branch,
+			                                 &false_branch.details);
+		} else if (true_branch.details.type.type_category == PTR_) {
+			cast_to_null_pointer_if_possible(&false_branch,
+			                                 &true_branch.details);
+		}
+
 		expect_type(ptr_ps, &false_branch.details.type,
 		            &true_branch.details.type,
 		            "mismatch of type in the false branch and the true branch");
