@@ -522,6 +522,10 @@ struct Expr typecheck_unary_expression(const struct AnalyzerState *ptr_ps,
 
 		const struct Type type = deref_type(&expr.details.type);
 
+		if (type.type_category == FN) { /* function reverts to function pointer */
+			return expr;
+		}
+
 		struct Type t2 = type;
 		if_array_convert_to_ptr_(&t2);
 
