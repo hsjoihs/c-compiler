@@ -621,6 +621,48 @@ foo(struct AnalyzerState *ptr_ps, const struct Type *ref_ret_type,
 	return expr;
 }
 
+static struct Expr from_name_to_expr(struct AnalyzerState *ptr_ps,
+                                     const char *name)
+{
+	if (!is_local_var(&ptr_ps->scope_chain, name)) {
+		const struct EnumeratorAndValue *ptr_enum_and_value =
+		    get_global_enumerator(&ptr_ps->global_enumerator_list, name);
+		if (ptr_enum_and_value) {
+			struct Expr expr;
+			expr.details.type = INT_TYPE();
+			expr.details.true_type = INT_TYPE();
+			expr.category = INT_VALUE;
+			expr.int_value = ptr_enum_and_value->value;
+			return expr;
+		}
+		struct Type type =
+		    resolve_name_globally(ptr_ps->global_vars_type_map, name);
+
+		struct Expr expr;
+		struct Type t2 = type;
+		if_array_convert_to_ptr_(&t2);
+
+		expr.details.type = t2;
+		expr.details.true_type = type;
+		expr.category = GLOBAL_VAR_;
+		expr.global_var_name = name;
+		return expr;
+	} else {
+		struct LocalVarInfo info =
+		    resolve_name_locally(&ptr_ps->scope_chain, name);
+
+		struct Expr expr;
+		struct Type t2 = info.type;
+		if_array_convert_to_ptr_(&t2);
+
+		expr.details.type = t2;
+		expr.details.true_type = info.type;
+		expr.category = LOCAL_VAR_;
+		expr.local_var_offset = info.offset;
+		return expr;
+	}
+}
+
 struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
                                  const struct UntypedExpr *ref_uexpr)
 {
@@ -797,45 +839,7 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 		return expr;
 	}
 	case VAR: {
-		const char *name = uexpr.var_name;
-
-		if (!is_local_var(&ptr_ps->scope_chain, name)) {
-			const struct EnumeratorAndValue *ptr_enum_and_value =
-			    get_global_enumerator(&ptr_ps->global_enumerator_list, name);
-			if (ptr_enum_and_value) {
-				struct Expr expr;
-				expr.details.type = INT_TYPE();
-				expr.details.true_type = INT_TYPE();
-				expr.category = INT_VALUE;
-				expr.int_value = ptr_enum_and_value->value;
-				return expr;
-			}
-			struct Type type =
-			    resolve_name_globally(ptr_ps->global_vars_type_map, name);
-
-			struct Expr expr;
-			struct Type t2 = type;
-			if_array_convert_to_ptr_(&t2);
-
-			expr.details.type = t2;
-			expr.details.true_type = type;
-			expr.category = GLOBAL_VAR_;
-			expr.global_var_name = name;
-			return expr;
-		} else {
-			struct LocalVarInfo info =
-			    resolve_name_locally(&ptr_ps->scope_chain, name);
-
-			struct Expr expr;
-			struct Type t2 = info.type;
-			if_array_convert_to_ptr_(&t2);
-
-			expr.details.type = t2;
-			expr.details.true_type = info.type;
-			expr.category = LOCAL_VAR_;
-			expr.local_var_offset = info.offset;
-			return expr;
-		}
+		return from_name_to_expr(ptr_ps, uexpr.var_name);
 	}
 	case STRING_LITERAL_: {
 		const struct Type char_type = CHAR_TYPE();
