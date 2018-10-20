@@ -537,6 +537,85 @@ struct Expr typecheck_unary_expression(const struct AnalyzerState *ptr_ps,
 	}
 }
 
+struct Expr
+foo(struct AnalyzerState *ptr_ps, const struct Type *ref_ret_type,
+
+    const struct Vector /*<TypeAndIdent>*/ *nullable_ref_param_infos,
+    const struct Vector /* <UntypedExpr> */ *ref_arg_exprs_vec, int is_fp_call)
+{
+	const struct Type ret_type = *ref_ret_type;
+
+	struct Expr expr;
+	expr.args = init_vector();
+
+	if (ret_type.type_category == STRUCT_) {
+		expr.size_info_for_struct_assign = size_of(ptr_ps, &ret_type);
+		char *str = calloc(20, sizeof(char));
+		sprintf(str, "@anon%d", -ptr_ps->newest_offset);
+
+		int offset = add_local_var_to_scope(ptr_ps, &ret_type, str);
+
+		enum SystemVAbiClass abi_class =
+		    system_v_abi_class_of(ptr_ps, &ret_type);
+
+		expr.local_var_offset = offset;
+
+		if (abi_class == INTEGER_CLASS) {
+			expr.category = is_fp_call ? FPCALL_EXPR_RETURNING_INTEGER_CLASS
+			                           : FUNCCALL_EXPR_RETURNING_INTEGER_CLASS;
+		} else {
+			expr.category = is_fp_call ? FPCALL_EXPR_RETURNING_MEMORY_CLASS
+			                           : FUNCCALL_EXPR_RETURNING_MEMORY_CLASS;
+
+			struct Expr *ptr_arg = calloc(1, sizeof(struct Expr));
+
+			/* push pointer to anon as the first argument */
+			{
+				struct Expr anon_var_expr;
+				anon_var_expr.details.type = ret_type;
+				anon_var_expr.details.true_type = ret_type;
+				anon_var_expr.category = LOCAL_VAR_;
+				anon_var_expr.local_var_offset = offset;
+
+				const struct Type ptr_to_type_ = ptr_to_type(&ret_type);
+				*ptr_arg = unary_op_(&anon_var_expr, OP_AND, &ptr_to_type_);
+			}
+			push_vector(&expr.args, ptr_arg);
+		}
+	} else {
+		expr.category = is_fp_call ? FPCALL_EXPR : FUNCCALL_EXPR;
+	}
+
+	for (int counter = 0; counter < ref_arg_exprs_vec->length; counter++) {
+		const struct UntypedExpr *ptr = ref_arg_exprs_vec->vector[counter];
+
+		struct Expr *ptr_arg = calloc(1, sizeof(struct Expr));
+		*ptr_arg = typecheck_expression(ptr_ps, ptr);
+
+		if (nullable_ref_param_infos) {
+			const struct TypeAndIdent *pti =
+			    nullable_ref_param_infos->vector[counter];
+			if (!is_compatible(ptr_ps, &pti->type, &ptr_arg->details.type)) {
+				fprintf(stderr, "Expected type `");
+				debug_print_type(&pti->type);
+				fprintf(stderr, "` for parameter `%s`, but got `",
+				        pti->ident_str);
+				debug_print_type(&ptr_arg->details.type);
+				fprintf(stderr, "`.\n");
+				exit(EXIT_FAILURE);
+			}
+		}
+
+		push_vector(&expr.args, ptr_arg);
+		if (counter > 5) {
+			unsupported("calling with 7 or more arguments");
+		}
+	}
+
+	expr.details.type = ret_type;
+	return expr;
+}
+
 struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
                                  const struct UntypedExpr *ref_uexpr)
 {
@@ -626,9 +705,12 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 		           fp_expr.details.type.derived_from->type_category == FN) {
 			fn_type = *(fp_expr.details.type.derived_from);
 		} else {
-			fprintf(stderr, "function call operator was applied to something of type `");
+			fprintf(
+			    stderr,
+			    "function call operator was applied to something of type `");
 			debug_print_type(&fp_expr.details.type);
-			fprintf(stderr, "`, which is neither function nor function pointer\n");
+			fprintf(stderr,
+			        "`, which is neither function nor function pointer\n");
 			exit(EXIT_FAILURE);
 		}
 		unsupported("calling function pointer");
@@ -656,70 +738,15 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 			}
 		}
 
-		struct Expr expr;
-		expr.args = init_vector();
-
-		if (ret_type.type_category == STRUCT_) {
-			expr.size_info_for_struct_assign = size_of(ptr_ps, &ret_type);
-			char *str = calloc(20, sizeof(char));
-			sprintf(str, "@anon%d", -ptr_ps->newest_offset);
-
-			int offset = add_local_var_to_scope(ptr_ps, &ret_type, str);
-
-			enum SystemVAbiClass abi_class =
-			    system_v_abi_class_of(ptr_ps, &ret_type);
-
-			expr.local_var_offset = offset;
-
-			if (abi_class == INTEGER_CLASS) {
-				expr.category = FUNCCALL_EXPR_RETURNING_INTEGER_CLASS;
-			} else {
-				expr.category = FUNCCALL_EXPR_RETURNING_MEMORY_CLASS;
-
-				struct Expr *ptr_arg = calloc(1, sizeof(struct Expr));
-
-				/* push pointer to anon as the first argument */
-				{
-					struct Expr anon_var_expr;
-					anon_var_expr.details.type = ret_type;
-					anon_var_expr.details.true_type = ret_type;
-					anon_var_expr.category = LOCAL_VAR_;
-					anon_var_expr.local_var_offset = offset;
-
-					const struct Type ptr_to_type_ = ptr_to_type(&ret_type);
-					*ptr_arg = unary_op_(&anon_var_expr, OP_AND, &ptr_to_type_);
-				}
-				push_vector(&expr.args, ptr_arg);
-			}
+		struct Vector /*<TypeAndIdent>*/ *nullable_ref_param_infos;
+		if (is_param_infos_valid) {
+			nullable_ref_param_infos = &param_infos;
 		} else {
-			expr.category = FUNCCALL_EXPR;
+			nullable_ref_param_infos = 0;
 		}
 
-		for (int counter = 0; counter < uexpr.arg_exprs_vec.length; counter++) {
-			const struct UntypedExpr *ptr = uexpr.arg_exprs_vec.vector[counter];
-
-			struct Expr *ptr_arg = calloc(1, sizeof(struct Expr));
-			*ptr_arg = typecheck_expression(ptr_ps, ptr);
-
-			if (is_param_infos_valid) {
-				const struct TypeAndIdent* pti = param_infos.vector[counter];
-				if (!is_compatible(ptr_ps, &pti->type, &ptr_arg->details.type)) {
-					fprintf(stderr, "Expected type `");
-					debug_print_type(&pti->type);
-					fprintf(stderr, "` for parameter `%s`, but got `", pti->ident_str);
-					debug_print_type(&ptr_arg->details.type);
-					fprintf(stderr, "`.\n");
-					exit(EXIT_FAILURE);
-				}
-			}
-
-			push_vector(&expr.args, ptr_arg);
-			if (counter > 5) {
-				unsupported("calling with 7 or more arguments");
-			}
-		}
-
-		expr.details.type = ret_type;
+		struct Expr expr = foo(ptr_ps, &ret_type, nullable_ref_param_infos,
+		                       &uexpr.arg_exprs_vec, 0 /* is_fp_call */);
 		expr.global_var_name = ident_str;
 		return expr;
 	}

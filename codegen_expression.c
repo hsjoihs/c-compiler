@@ -144,6 +144,12 @@ void print_address_of_lvalue_or_struct(struct PrinterState *ptr_prs,
 		                                  "left hand of struct assignment");
 		return;
 	}
+	case FPCALL_EXPR_RETURNING_INTEGER_CLASS: {
+		unsupported("FPCALL_EXPR_RETURNING_INTEGER_CLASS");
+	}
+	case FPCALL_EXPR_RETURNING_MEMORY_CLASS: {
+		unsupported("FPCALL_EXPR_RETURNING_MEMORY_CLASS");
+	}
 	case FUNCCALL_EXPR_RETURNING_INTEGER_CLASS: {
 
 		pass_args(ptr_prs, &expr.args);
@@ -230,6 +236,12 @@ static void print_expression_as_lvalue(struct PrinterState *ptr_prs,
 	const struct Expr expr = *ref_expr;
 	print_address_of_lvalue_or_struct(ptr_prs, &expr, "as lvalue");
 	switch (expr.category) {
+	case FPCALL_EXPR_RETURNING_INTEGER_CLASS: {
+		unsupported("FPCALL_EXPR_RETURNING_STRUCT");
+	}
+	case FPCALL_EXPR_RETURNING_MEMORY_CLASS: {
+		unsupported("FPCALL_EXPR_RETURNING_STRUCT");
+	}
 	case FUNCCALL_EXPR_RETURNING_INTEGER_CLASS: {
 		unsupported("FUNCCALL_EXPR_RETURNING_STRUCT");
 	}
@@ -275,6 +287,12 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 {
 	const struct Expr expr = *ref_expr;
 	switch (expr.category) {
+	case FPCALL_EXPR_RETURNING_INTEGER_CLASS: {
+		unsupported("FPCALL_EXPR_RETURNING_INTEGER_CLASS");
+	}
+	case FPCALL_EXPR_RETURNING_MEMORY_CLASS: {
+		unsupported("FPCALL_EXPR_RETURNING_MEMORY_CLASS");
+	}
 	case FUNCCALL_EXPR_RETURNING_INTEGER_CLASS: {
 		unsupported("FUNCCALL_EXPR_RETURNING_STRUCT");
 	}
@@ -549,6 +567,9 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 		gen_label(label2);
 		gen_discard2nd_8byte();
 		return;
+	}
+	case FPCALL_EXPR: {
+		unsupported("FPCALL_EXPR");
 	}
 	case FUNCCALL_EXPR: {
 		const char *ident_str = expr.global_var_name;
