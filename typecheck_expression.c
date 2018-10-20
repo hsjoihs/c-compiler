@@ -609,7 +609,8 @@ foo(struct AnalyzerState *ptr_ps, const struct Type *ref_ret_type,
 	return expr;
 }
 
-static struct Expr from_name_to_expr(struct AnalyzerState *ptr_ps,
+/* returns null pointer if the name is not found */
+static struct Expr */* nullable */from_name_to_expr(struct AnalyzerState *ptr_ps,
                                      const char *name)
 {
 	if (!is_local_var(&ptr_ps->scope_chain, name)) {
@@ -621,7 +622,10 @@ static struct Expr from_name_to_expr(struct AnalyzerState *ptr_ps,
 			expr.details.true_type = INT_TYPE();
 			expr.category = INT_VALUE;
 			expr.int_value = ptr_enum_and_value->value;
-			return expr;
+
+			struct Expr *p_expr = calloc(1, sizeof(struct Expr));
+			*p_expr = expr;
+			return p_expr;
 		}
 
 		struct Type type;
@@ -630,8 +634,7 @@ static struct Expr from_name_to_expr(struct AnalyzerState *ptr_ps,
 			struct Type *ptr_type = lookup(ptr_ps->global_vars_type_map, name);
 			type = *ptr_type;
 		} else {
-			fprintf(stderr, "%s is not declared globally\n", name);
-			exit(EXIT_FAILURE);
+			return 0;
 		}
 
 		struct Expr expr;
@@ -642,7 +645,10 @@ static struct Expr from_name_to_expr(struct AnalyzerState *ptr_ps,
 		expr.details.true_type = type;
 		expr.category = GLOBAL_VAR_;
 		expr.global_var_name = name;
-		return expr;
+
+		struct Expr *p_expr = calloc(1, sizeof(struct Expr));
+		*p_expr = expr;
+		return p_expr;
 	} else {
 		struct LocalVarInfo info =
 		    resolve_name_locally(&ptr_ps->scope_chain, name);
@@ -655,7 +661,10 @@ static struct Expr from_name_to_expr(struct AnalyzerState *ptr_ps,
 		expr.details.true_type = info.type;
 		expr.category = LOCAL_VAR_;
 		expr.local_var_offset = info.offset;
-		return expr;
+		
+		struct Expr *p_expr = calloc(1, sizeof(struct Expr));
+		*p_expr = expr;
+		return p_expr;
 	}
 }
 
@@ -835,7 +844,12 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 		return expr;
 	}
 	case VAR: {
-		return from_name_to_expr(ptr_ps, uexpr.var_name);
+		struct Expr *p = from_name_to_expr(ptr_ps, uexpr.var_name);
+		if (!p) {
+			fprintf(stderr, "%s is not declared either globally or locally\n", uexpr.var_name);
+			exit(EXIT_FAILURE);
+		}
+		return *p;
 	}
 	case STRING_LITERAL_: {
 		const struct Type char_type = CHAR_TYPE();
