@@ -392,13 +392,26 @@ parse_postfix_expression(const struct Token **ptr_tokvec)
 		expr.var_name = ident_str;
 	} else {
 		expr = parse_primary_expression(&tokvec);
-		if (tokvec[0].kind == LEFT_PAREN) {
-			unsupported("calling function pointer");
-		}
 	}
 
 	while (1) {
-		if (tokvec[0].kind == LEFT_BRACKET) {
+		if (tokvec[0].kind == LEFT_PAREN) {
+			tokvec++;
+
+			/* this consumes the closing paren */
+			struct Vector /*<UntypedExpr>*/ arguments = parse_arguments(&tokvec);
+
+			struct UntypedExpr *ptr_expr1 =
+			    calloc(1, sizeof(struct UntypedExpr));
+			*ptr_expr1 = expr;
+
+			struct UntypedExpr new_expr;
+			new_expr.category = FUNC_PTR_CALL;
+			new_expr.arg_exprs_vec = arguments;
+			new_expr.ptr1 = ptr_expr1;
+
+			expr = new_expr;
+		} else if (tokvec[0].kind == LEFT_BRACKET) {
 			++tokvec;
 			const struct UntypedExpr expr2 = parse_expression(&tokvec);
 			expect_and_consume(&tokvec, RIGHT_BRACKET, "right bracket ]");

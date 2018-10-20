@@ -542,6 +542,9 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 {
 	const struct UntypedExpr uexpr = *ref_uexpr;
 	switch (uexpr.category) {
+	case FUNC_PTR_CALL: {
+		unsupported("calling function pointer");
+	}
 	case DOT_EXPR: {
 		struct Expr struct_expr = typecheck_expression(ptr_ps, uexpr.ptr1);
 		const char *ident_after_dot = uexpr.ident_after_dot;
