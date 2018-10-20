@@ -530,6 +530,16 @@ struct Expr typecheck_unary_expression(const struct AnalyzerState *ptr_ps,
 	}
 	case OP_ASTERISK: {
 
+		/* function type, automatically converted to a function pointer,
+		 * gets dereferenced to become a function type, which is again
+		 * automatically converted to a function pointer
+		 */
+		if (expr.details.type.type_category == FN) {
+			struct Type type = expr.details.type;
+			const struct Type ptr_to_type_ = ptr_to_type(&type);
+			return unary_op_(&expr, OP_AND, &ptr_to_type_);
+		}
+
 		const struct Type type = deref_type(&expr.details.type);
 
 		if (type.type_category ==

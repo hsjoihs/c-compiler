@@ -38,6 +38,7 @@ run_test0 338 'void *return_fp(void); int call_fp_(void* q){int (*p)(int) = q;re
 run_test0 339 'void *return_fp(void); int call_fp_(void* q){int (*p)(int) = q;return p(171);} int main(){return call_fp_(return_fp());}' 174
 run_test 340 'int add_3(int a){return 3 + a;} void *return_fp(void){return &add_3;} int call_fp_(void* q){int (*p)(int) = q;return p(171);} int main(){return call_fp_(return_fp());}' 174
 run_test 341 'int add_3(int a){return 3 + a;} int (*return_fp(void))(int){return &add_3;} int call_fp_(int (*q)(int)){int (*p)(int) = q;return p(171);} int main(){return call_fp_(return_fp());}' 174
+run_test 342 'int printf(); int main(){(**************printf)("Hello, World!"); return 0;}' 0
 
 run_test 329 'int main(){void *null = 0; int (*p)(void) = null; return 123;}' 123
 run_test 330 'int main(){void *null = 0; int (*p)(int) = null; return 123;}' 123
