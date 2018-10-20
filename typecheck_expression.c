@@ -738,15 +738,9 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 			}
 		}
 
-		struct Vector /*<TypeAndIdent>*/ *nullable_ref_param_infos;
-		if (is_param_infos_valid) {
-			nullable_ref_param_infos = &param_infos;
-		} else {
-			nullable_ref_param_infos = 0;
-		}
-
-		struct Expr expr = foo(ptr_ps, &ret_type, nullable_ref_param_infos,
-		                       &uexpr.arg_exprs_vec, 0 /* is_fp_call */);
+		struct Expr expr =
+		    foo(ptr_ps, &ret_type, is_param_infos_valid ? &param_infos : 0,
+		        &uexpr.arg_exprs_vec, 0 /* is_fp_call */);
 		expr.global_var_name = ident_str;
 		return expr;
 	}
