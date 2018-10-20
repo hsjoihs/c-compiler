@@ -364,18 +364,6 @@ int isAssign(enum TokenKind opkind)
 	        opkind == OP_HAT_EQ || opkind == OP_OR_EQ);
 }
 
-static struct Type resolve_name_globally(struct Map2 /*<Type>*/ *m,
-                                         const char *str)
-{
-	if (isElem(m, str)) {
-		struct Type *ptr_type = lookup(m, str);
-		return *ptr_type;
-	} else {
-		fprintf(stderr, "%s is not declared globally\n", str);
-		exit(EXIT_FAILURE);
-	}
-}
-
 static const struct EnumeratorAndValue *
 get_global_enumerator(const struct Vector /*<EnumeratorAndValue>*/ *ref_list,
                       const char *name)
@@ -635,8 +623,16 @@ static struct Expr from_name_to_expr(struct AnalyzerState *ptr_ps,
 			expr.int_value = ptr_enum_and_value->value;
 			return expr;
 		}
-		struct Type type =
-		    resolve_name_globally(ptr_ps->global_vars_type_map, name);
+
+		struct Type type;
+
+		if (isElem(ptr_ps->global_vars_type_map, name)) {
+			struct Type *ptr_type = lookup(ptr_ps->global_vars_type_map, name);
+			type = *ptr_type;
+		} else {
+			fprintf(stderr, "%s is not declared globally\n", name);
+			exit(EXIT_FAILURE);
+		}
 
 		struct Expr expr;
 		struct Type t2 = type;
