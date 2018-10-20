@@ -219,32 +219,26 @@ void gen_push_ret_of_8byte(const char *fname)
 	printf("  movq %%rax, (%%rsp)\n");
 }
 
-void gen_call_local_fp_and_push_ret_of_1byte(int offset)
-{
-	printf("//gen_call_local_fp_and_push_ret_of_1byte(%d)\n", offset);
-	char str[100];
-	sprintf(str, "*%d", offset);
-	gen_call(str, "(%rbp)");
 
+void gen_call_reg_and_push_ret_of_1byte(const char *reg)
+{
+	printf("//gen_call_reg_and_push_ret_of_1byte(\"%s\")\n", reg);
+	gen_call("*%", reg);
 	printf("  movsbl %%al, %%eax\n"
 	       "  movl %%eax, (%%rsp)\n");
 }
 
-void gen_call_local_fp_and_push_ret_of_4byte(int offset)
+void gen_call_reg_and_push_ret_of_4byte(const char *reg)
 {
-	printf("//gen_call_local_fp_and_push_ret_of_4byte(%d)\n", offset);
-	char str[100];
-	sprintf(str, "*%d", offset);
-	gen_call(str, "(%rbp)");
+	printf("//gen_call_reg_and_push_ret_of_4byte(\"%s\")\n", reg);
+	gen_call("*%", reg);
 	printf("  movl %%eax, (%%rsp)\n");
 }
 
-void gen_call_local_fp_and_push_ret_of_8byte(int offset)
+void gen_call_reg_and_push_ret_of_8byte(const char *reg)
 {
-	printf("//gen_call_local_fp_and_push_ret_of_8byte(%d)\n", offset);
-	char str[100];
-	sprintf(str, "*%d", offset);
-	gen_call(str, "(%rbp)");
+	printf("//gen_call_reg_and_push_ret_of_8byte(\"%s\")\n", reg);
+	gen_call("*%", reg);
 	printf("  movq %%rax, (%%rsp)\n");
 }
 

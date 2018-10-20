@@ -17,7 +17,11 @@ int a(void* q){
 	
 	gen_push_int(171);
 	gen_pop_to_reg_4byte("edi");
-	gen_call_local_fp_and_push_ret_of_4byte(-16);
+
+	gen_push_from_local_8byte(-16);
+	gen_pop_to_reg_8byte("r11");
+
+	gen_call_reg_and_push_ret_of_4byte("r11");
 	gen_epilogue(1);
 
 	/*
