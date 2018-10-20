@@ -111,6 +111,28 @@ static int is_strictly_equal(const struct AnalyzerState *ptr_ps,
 		return strcmp(t1.e.enum_tag, t2.e.enum_tag) == 0;
 	}
 
+	if (t1.type_category == FN && t2.type_category == FN) {
+		if (!is_strictly_equal(ptr_ps, t1.derived_from, t2.derived_from)) {
+			return 0;
+		}
+
+		if (t1.is_param_infos_valid && t2.is_param_infos_valid) {
+			if (t1.param_infos.length != t2.param_infos.length) {
+				return 0;
+			}
+
+			for (int i = 0; i < t1.param_infos.length; i++) {
+				if (!is_strictly_equal(ptr_ps, t1.param_infos.vector[i],
+				                       t2.param_infos.vector[i])) {
+					return 0;
+				}
+			}
+			return 1;
+		} else { /* when invalid, it matches no matter what */
+			return 1;
+		}
+	}
+
 	return 0;
 }
 
@@ -632,6 +654,9 @@ from_name_to_expr(struct AnalyzerState *ptr_ps, const char *name)
 
 		if (isElem(ptr_ps->global_vars_type_map, name)) {
 			struct Type *ptr_type = lookup(ptr_ps->global_vars_type_map, name);
+			type = *ptr_type;
+		} else if (isElem(ptr_ps->func_info_map, name)) {
+			struct Type *ptr_type = lookup(ptr_ps->func_info_map, name);
 			type = *ptr_type;
 		} else {
 			return 0;
