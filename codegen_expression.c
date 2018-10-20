@@ -585,6 +585,9 @@ static void pass_args(struct PrinterState *ptr_prs,
 	}
 
 	for (int counter = 0; counter < ref_args->length; counter++) {
+		if (counter >= 6) {
+			unsupported("7 or more arguments in codegen");
+		}
 		const struct Expr *ptr_expr_ = ref_args->vector[counter];
 
 		switch (size_of_basic(&ptr_expr_->details.type, "argument")) {

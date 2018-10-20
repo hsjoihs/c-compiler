@@ -283,6 +283,9 @@ static void print_toplevel_definition(struct PrinterState *ptr_prs,
 		gen_prologue(ref_def->func.capacity, declarator_name);
 	}
 	for (int counter = 0; counter < offsets_and_types.length; ++counter) {
+		if (counter >= 6) {
+			unsupported("7 or more args detected in function definition");
+		}
 		const struct LocalVarInfo *ptr_info = offsets_and_types.vector[counter];
 
 		int offset = ptr_info->offset;
