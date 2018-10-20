@@ -637,15 +637,23 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 		const char *ident_str = uexpr.var_name;
 
 		struct Type ret_type;
+
+		int is_param_infos_valid;
+		struct Vector /*<TypeAndIdent>*/ param_infos;
 		if (!isElem(ptr_ps->func_info_map, ident_str)) {
 			fprintf(stderr, "Undeclared function `%s()` detected.\n",
 			        ident_str);
 			fprintf(stderr, "Assumes that `%s()` returns `int`\n", ident_str);
 			ret_type = INT_TYPE();
+			is_param_infos_valid = 0;
 		} else {
 			struct Type *ptr_func_info =
 			    lookup(ptr_ps->func_info_map, ident_str);
 			ret_type = *(ptr_func_info->derived_from);
+			is_param_infos_valid = ptr_func_info->is_param_infos_valid;
+			if (is_param_infos_valid) {
+				param_infos = ptr_func_info->param_infos;
+			}
 		}
 
 		struct Expr expr;
@@ -692,6 +700,19 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 
 			struct Expr *ptr_arg = calloc(1, sizeof(struct Expr));
 			*ptr_arg = typecheck_expression(ptr_ps, ptr);
+
+			if (is_param_infos_valid) {
+				const struct TypeAndIdent* pti = param_infos.vector[counter];
+				if (!is_compatible(ptr_ps, &pti->type, &ptr_arg->details.type)) {
+					fprintf(stderr, "Expected type `");
+					debug_print_type(&pti->type);
+					fprintf(stderr, "` for parameter `%s`, but got `", pti->ident_str);
+					debug_print_type(&ptr_arg->details.type);
+					fprintf(stderr, "`.\n");
+					exit(EXIT_FAILURE);
+				}
+			}
+
 			push_vector(&expr.args, ptr_arg);
 			if (counter > 5) {
 				unsupported("calling with 7 or more arguments");
