@@ -793,6 +793,18 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 		int is_param_infos_valid;
 		struct Vector /*<TypeAndIdent>*/ param_infos;
 		if (!isElem(ptr_ps->func_info_map, ident_str)) {
+			if (from_name_to_expr(ptr_ps, ident_str)) {
+				struct UntypedExpr *p_fp_u =
+				    calloc(1, sizeof(struct UntypedExpr));
+				p_fp_u->category = VAR;
+				p_fp_u->var_name = ident_str;
+
+				struct UntypedExpr u = uexpr;
+				u.category = FUNC_PTR_CALL;
+				u.ptr1 = p_fp_u;
+
+				return typecheck_expression(ptr_ps, &u);
+			}
 			fprintf(stderr, "Undeclared function `%s()` detected.\n",
 			        ident_str);
 			fprintf(stderr, "Assumes that `%s()` returns `int`\n", ident_str);
