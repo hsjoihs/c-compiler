@@ -118,7 +118,7 @@ run_test 309 'struct A{int a; int *b; int c;}; struct B{char d; struct A e;}; in
 run_test 305 'int main(void) {int a[5]; a[3] = 174; int (*p)[5] = &a; return (*p)[3];} ' 174
 run_test 306 'int main(void) {char a = 74; char *p = &a; return *p+100;} ' 174
 
-run_test2 304 'struct A {int a;}; int g(int a); struct A f (int u){ struct A s; s.a = u; return s;} int main(void){ return g(174); }' 174
+run_test2 304 'struct A {int a;}; int g_fnc(int a); struct A func_ (int u){ struct A s; s.a = u; return s;} int main(void){ return g_fnc(174); }' 174
 
 run_test0 302 'extern int GLOBAL_VAR; int main(){return 171 + GLOBAL_VAR;}' 174
 run_test 303 'static int hidden() { return 3;} int main(){return 171 + hidden();}' 174

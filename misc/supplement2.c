@@ -1,8 +1,8 @@
-struct A {int a;};
-struct A f (int u);
+struct A_2 {int a;};
+struct A_2 func_ (int u);
 
-int g(int a)
+int g_fnc(int a)
 {
-	struct A u = f(a);
+	struct A_2 u = func_(a);
 	return u.a;
 }
