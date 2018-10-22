@@ -48,6 +48,7 @@ test_include:
 
 test_2ndgen_compiler:
 	make 2ndgen
+	make link_test
 	./test_cases.sh
 	./test_compile_error.sh
 	./compile2.sh vector $(OSFLAG) __with2nd
@@ -132,9 +133,17 @@ compile_files:
 	gcc s/vector_test3.s -c
 	gcc s/vector_test4.s -c
 
+link_test:
+	./out/compiler.out test/link1.c > s/link1.s
+	./out/compiler.out test/link2.c > s/link2.s
+	gcc s/link1.s s/link2.s -o out/link.out -no-pie -Wno-unused-command-line-argument
+	./out/link.out; test $$? -eq 174 
+
+
 test_valid:
 	rm out/*.out
 	make 1stgen
+	make link_test
 	./test_cases.sh
 
 check_error:

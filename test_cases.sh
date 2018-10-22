@@ -109,12 +109,6 @@ run_test 309 'struct A{int a; int *b; int c;}; struct B{char d; struct A e;}; in
 run_test 305 'int main(void) {int a[5]; a[3] = 174; int (*p)[5] = &a; return (*p)[3];} ' 174
 run_test 306 'int main(void) {char a = 74; char *p = &a; return *p+100;} ' 174
 
-./out/compiler.out test/link1.c > s/full_compile304.s
-./out/compiler.out test/link2.c > s/link2.s
-gcc s/full_compile304.s s/link2.s -o out/link.out -no-pie -Wno-unused-command-line-argument
-./out/link.out
-res=$?
-if [ $res -ne 174 ]; then { echo "got:" $res; echo "expected:" 174; echo -e "\033[31mFAIL\033[m, at test case" 304; exit 1; }; else echo -e "\033[32mPASS\033[m"; fi
 
 run_test0 302 'extern int GLOBAL_VAR; int main(){return 171 + GLOBAL_VAR;}' 174
 run_test 303 'static int hidden() { return 3;} int main(){return 171 + hidden();}' 174
