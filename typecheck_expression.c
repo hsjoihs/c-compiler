@@ -980,7 +980,14 @@ struct Expr typecheck_binary_expression(const struct AnalyzerState *ptr_ps,
 			struct Expr expr2_new = expr2;
 
 			if (expr.details.type.type_category == PTR_) {
-				cast_to_null_pointer_if_possible(&expr2_new, &expr.details);
+				/* automatically convert function name to function pointer */
+				if (expr2.details.type.type_category == FN) {
+					struct Type type = expr2.details.type;
+					const struct Type ptr_to_type_ = ptr_to_type(&type);
+					expr2_new = unary_op_(&expr2, OP_AND, &ptr_to_type_);
+				} else {
+					cast_to_null_pointer_if_possible(&expr2_new, &expr.details);
+				}
 			}
 
 			expect_type(ptr_ps, &expr.details.type, &expr2_new.details.type,
