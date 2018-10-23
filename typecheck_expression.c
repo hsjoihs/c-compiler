@@ -482,6 +482,16 @@ void cast_to_null_pointer_if_possible(struct Expr *ref_e,
 	}
 }
 
+void if_function_cast_to_pointer(struct Expr *ref_expr)
+{
+	if (ref_expr->details.type.type_category == FN) {
+		struct Type type = ref_expr->details.type;
+		const struct Type ptr_to_type_ = ptr_to_type(&type);
+		struct Expr e = unary_op_(ref_expr, OP_AND, &ptr_to_type_);
+		*ref_expr = e;
+	}
+}
+
 struct Expr typecheck_binary_expression(const struct AnalyzerState *ptr_ps,
                                         const struct Expr *ref_expr,
                                         const struct Expr *ref_expr2,
@@ -535,9 +545,9 @@ struct Expr typecheck_unary_expression(const struct AnalyzerState *ptr_ps,
 		 * automatically converted to a function pointer
 		 */
 		if (expr.details.type.type_category == FN) {
-			struct Type type = expr.details.type;
-			const struct Type ptr_to_type_ = ptr_to_type(&type);
-			return unary_op_(&expr, OP_AND, &ptr_to_type_);
+			struct Expr e = expr;
+			if_function_cast_to_pointer(&e);
+			return e;
 		}
 
 		const struct Type type = deref_type(&expr.details.type);
