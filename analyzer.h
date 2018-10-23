@@ -58,3 +58,6 @@ enum SystemVAbiClass system_v_abi_class_of(const struct AnalyzerState *ptr_ps,
 
 void expect_scalar(const struct Type *ref_type, const char *context);
 void expect_integral(const struct Type *ref_actual_type, const char *message);
+
+void cast_to_null_pointer_if_possible(struct Expr *ref_e,
+                                      const struct TypePair *ref_details);

@@ -473,8 +473,8 @@ static enum SimpleBinOp op_before_assign(enum TokenKind kind)
 	}
 }
 
-static void cast_to_null_pointer_if_possible(struct Expr *ref_e,
-                                             const struct TypePair *ref_details)
+void cast_to_null_pointer_if_possible(struct Expr *ref_e,
+                                      const struct TypePair *ref_details)
 {
 	if (ref_e->category == INT_VALUE && ref_e->int_value == 0) {
 		ref_e->category = NULLPTR;

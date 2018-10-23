@@ -162,10 +162,11 @@ struct Statement parse_statement(struct AnalyzerState *ptr_ps,
 			const struct UntypedExpr u = parse_expression(&tokvec);
 			struct Expr expr = typecheck_expression(ptr_ps, &u);
 
-			if (ptr_ps->func_ret_type.type_category == PTR_ &&
-			    expr.category == INT_VALUE && expr.int_value == 0) {
-				expr.category = NULLPTR;
-				expr.details.type = ptr_ps->func_ret_type;
+			if (ptr_ps->func_ret_type.type_category == PTR_) {
+				struct TypePair details;
+				details.type = ptr_ps->func_ret_type;
+				details.true_type = ptr_ps->func_ret_type;
+				cast_to_null_pointer_if_possible(&expr, &details);
 			}
 
 			expect_type(ptr_ps, &expr.details.type, &ptr_ps->func_ret_type,
