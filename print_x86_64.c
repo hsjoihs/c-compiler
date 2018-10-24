@@ -738,25 +738,23 @@ void gen_logical_OR_part2(int label1, int label2)
 {
 	printf("//gen_logical_OR_part2(%d, %d)\n", label1, label2);
 
-	printf("  movl $0, %%eax\n"
+	printf("  movl $0, (%%rsp)\n"
 	       "  jmp .L%d\n",
 	       label2);
 	printf(".L%d:\n", label1);
-	printf("  movl $1, %%eax\n");
+	printf("  movl $1, (%%rsp)\n");
 	printf(".L%d:\n", label2);
-	printf("  movl %%eax, (%%rsp)\n");
 }
 
 void gen_logical_AND_part2(int label1, int label2)
 {
 
-	printf("  movl $1, %%eax\n"
+	printf("  movl $1, (%%rsp)\n"
 	       "  jmp .L%d\n",
 	       label2);
 	printf(".L%d:\n", label1);
-	printf("  movl $0, %%eax\n");
+	printf("  movl $0, (%%rsp)\n");
 	printf(".L%d:\n", label2);
-	printf("  movl %%eax, (%%rsp)\n");
 }
 
 void gen_push_from_local_nbyte(int n, int offset)
