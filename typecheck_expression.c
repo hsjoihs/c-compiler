@@ -482,13 +482,13 @@ void cast_to_null_pointer_if_possible(struct Expr *ref_e,
 	}
 }
 
-void if_function_cast_to_pointer(struct Expr *ref_expr)
+void if_function_cast_to_pointer(struct Expr *ptr_expr)
 {
-	if (ref_expr->details.type.type_category == FN) {
-		struct Type type = ref_expr->details.type;
+	if (ptr_expr->details.type.type_category == FN) {
+		struct Type type = ptr_expr->details.type;
 		const struct Type ptr_to_type_ = ptr_to_type(&type);
-		struct Expr e = unary_op_(ref_expr, OP_AND, &ptr_to_type_);
-		*ref_expr = e;
+		struct Expr e = unary_op_(ptr_expr, OP_AND, &ptr_to_type_);
+		*ptr_expr = e;
 	}
 }
 
