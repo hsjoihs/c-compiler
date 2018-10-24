@@ -6,7 +6,7 @@ ifeq ($(UNAME_S),Darwin)
     OSFLAG += -DOSX
 endif
 
-SRC=std.c codegen.c alignment.c parse_analyze_toplevel.c parse_analyze_statement.c codegen_expression.c main.c vector.c typecheck_expression.c parse_expression.c error.c type.c parse_type.c map.c print_x86_64.c lexer.c codegen_switch.c file_io.c cpp.c
+SRC=std.c codegen.c alignment.c parse_analyze_toplevel.c parse_analyze_statement.c codegen_expression.c main.c vector.c typecheck_expression.c parse_expression.c error.c type.c parse_type.c map.c print_x86_64.c print_x86_64_unofficial.c lexer.c codegen_switch.c file_io.c cpp.c
 
 CLANG_WARN=-Wall -Wextra -Wimplicit-fallthrough -Weverything -Wno-documentation -Wno-padded -Wno-missing-prototypes -Wno-switch-enum
 
@@ -27,6 +27,7 @@ test_include:
 	./compile2.sh vector $(OSFLAG)
 	./compile2.sh map $(OSFLAG)
 	./compile2.sh print_x86_64 $(OSFLAG)
+	./compile2.sh print_x86_64_unofficial $(OSFLAG)
 	./compile2.sh alignment $(OSFLAG)
 	./compile2.sh codegen_expression $(OSFLAG)
 	./compile2.sh std $(OSFLAG)
@@ -43,7 +44,7 @@ test_include:
 	./compile2.sh main $(OSFLAG)
 	./compile2.sh lexer $(OSFLAG)
 	./compile2.sh cpp $(OSFLAG)
-	gcc -Wall -Wextra -DOVERRIDE_STD self_compile_asm/std.s self_compile_asm/codegen.s self_compile_asm/alignment.s self_compile_asm/parse_analyze_toplevel.s self_compile_asm/lexer.s self_compile_asm/codegen_expression.s self_compile_asm/main.s self_compile_asm/vector.s self_compile_asm/typecheck_expression.s self_compile_asm/parse_expression.s self_compile_asm/error.s self_compile_asm/type.s self_compile_asm/parse_type.s self_compile_asm/map.s self_compile_asm/print_x86_64.s self_compile_asm/codegen_switch.s self_compile_asm/file_io.s $(OSFLAG) self_compile_asm/parse_analyze_statement.s self_compile_asm/cpp.s -o out/compiler.out -no-pie -Wno-unused-command-line-argument
+	gcc -Wall -Wextra -DOVERRIDE_STD self_compile_asm/std.s self_compile_asm/codegen.s self_compile_asm/alignment.s self_compile_asm/parse_analyze_toplevel.s self_compile_asm/lexer.s self_compile_asm/codegen_expression.s self_compile_asm/main.s self_compile_asm/vector.s self_compile_asm/typecheck_expression.s self_compile_asm/parse_expression.s self_compile_asm/error.s self_compile_asm/type.s self_compile_asm/parse_type.s self_compile_asm/map.s self_compile_asm/print_x86_64.s self_compile_asm/print_x86_64_unofficial.s self_compile_asm/codegen_switch.s self_compile_asm/file_io.s $(OSFLAG) self_compile_asm/parse_analyze_statement.s self_compile_asm/cpp.s -o out/compiler.out -no-pie -Wno-unused-command-line-argument
 	cp -p out/compiler.out out/compiler_2ndgen.out
 
 test_2ndgen_compiler:
@@ -54,6 +55,7 @@ test_2ndgen_compiler:
 	./compile2.sh vector $(OSFLAG) __with2nd
 	./compile2.sh map $(OSFLAG) __with2nd
 	./compile2.sh print_x86_64 $(OSFLAG) __with2nd
+	./compile2.sh print_x86_64_unofficial $(OSFLAG) __with2nd
 	./compile2.sh alignment $(OSFLAG) __with2nd
 	./compile2.sh codegen_expression $(OSFLAG) __with2nd
 	./compile2.sh std $(OSFLAG) __with2nd
@@ -70,10 +72,11 @@ test_2ndgen_compiler:
 	./compile2.sh main $(OSFLAG) __with2nd
 	./compile2.sh lexer $(OSFLAG) __with2nd
 	./compile2.sh cpp $(OSFLAG) __with2nd
-	gcc -Wall -Wextra -DOVERRIDE_STD self_compile_asm/std__with2nd.s self_compile_asm/codegen__with2nd.s self_compile_asm/alignment__with2nd.s self_compile_asm/parse_analyze_toplevel__with2nd.s self_compile_asm/lexer.s self_compile_asm/codegen_expression__with2nd.s self_compile_asm/main__with2nd.s self_compile_asm/vector__with2nd.s self_compile_asm/typecheck_expression__with2nd.s self_compile_asm/parse_expression__with2nd.s self_compile_asm/error__with2nd.s self_compile_asm/type__with2nd.s self_compile_asm/parse_type__with2nd.s self_compile_asm/map__with2nd.s self_compile_asm/print_x86_64__with2nd.s self_compile_asm/codegen_switch__with2nd.s $(OSFLAG) self_compile_asm/parse_analyze_statement__with2nd.s self_compile_asm/file_io__with2nd.s self_compile_asm/cpp__with2nd.s -o out/compiler_gen3.out -no-pie -Wno-unused-command-line-argument
+	gcc -Wall -Wextra -DOVERRIDE_STD self_compile_asm/std__with2nd.s self_compile_asm/codegen__with2nd.s self_compile_asm/alignment__with2nd.s self_compile_asm/parse_analyze_toplevel__with2nd.s self_compile_asm/lexer.s self_compile_asm/codegen_expression__with2nd.s self_compile_asm/main__with2nd.s self_compile_asm/vector__with2nd.s self_compile_asm/typecheck_expression__with2nd.s self_compile_asm/parse_expression__with2nd.s self_compile_asm/error__with2nd.s self_compile_asm/type__with2nd.s self_compile_asm/parse_type__with2nd.s self_compile_asm/map__with2nd.s self_compile_asm/print_x86_64__with2nd.s self_compile_asm/print_x86_64_unofficial__with2nd.s self_compile_asm/codegen_switch__with2nd.s $(OSFLAG) self_compile_asm/parse_analyze_statement__with2nd.s self_compile_asm/file_io__with2nd.s self_compile_asm/cpp__with2nd.s -o out/compiler_gen3.out -no-pie -Wno-unused-command-line-argument
 	diff self_compile_asm/vector.s self_compile_asm/vector__with2nd.s
 	diff self_compile_asm/map.s self_compile_asm/map__with2nd.s
 	diff self_compile_asm/print_x86_64.s self_compile_asm/print_x86_64__with2nd.s
+	diff self_compile_asm/print_x86_64_unofficial.s self_compile_asm/print_x86_64_unofficial__with2nd.s
 	diff self_compile_asm/alignment.s self_compile_asm/alignment__with2nd.s
 	diff self_compile_asm/codegen_expression.s self_compile_asm/codegen_expression__with2nd.s
 	diff self_compile_asm/std.s self_compile_asm/std__with2nd.s
@@ -106,7 +109,7 @@ verify_typeparse:
 	./out/typeparse_check.out
 
 assembly_sandbox:
-	gcc -Wall -Wextra misc/assembly_sandbox.c print_x86_64.c $(OSFLAG) -o out/assembly_sandbox.out
+	gcc -Wall -Wextra misc/assembly_sandbox.c print_x86_64.c print_x86_64_unofficial.c $(OSFLAG) -o out/assembly_sandbox.out
 	echo -e '' | ./out/assembly_sandbox.out > s/assembly_sandbox.s
 	gcc misc/supplement.c -S -o s/supplement.s
 	gcc s/assembly_sandbox.s s/supplement.s -o out/sandbox.out
@@ -176,6 +179,7 @@ test_sanitized_1stgen:
 	./compile2.sh vector $(OSFLAG)
 	./compile2.sh map $(OSFLAG)
 	./compile2.sh print_x86_64 $(OSFLAG)
+	./compile2.sh print_x86_64_unofficial $(OSFLAG)
 	./compile2.sh alignment $(OSFLAG)
 	./compile2.sh codegen_expression $(OSFLAG)
 	./compile2.sh std $(OSFLAG)
