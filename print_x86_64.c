@@ -717,9 +717,9 @@ void gen_assign_1byte(void)
 	printf("  movb %%al, (%%rsp)\n");
 }
 
-void gen_str(int strnum, const char *str)
+void gen_string_literal(int strnum, const char *str)
 {
-	printf("//gen_str(%d, \"%s\")\n", strnum, str);
+	printf("//gen_string_literal(%d, \"%s\")\n", strnum, str);
 	printf("L_str%d:\n"
 	       ".asciz \"%s\"\n",
 	       strnum, str);
