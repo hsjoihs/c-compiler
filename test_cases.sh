@@ -21,6 +21,7 @@ run_test() {
 run_test 344 'int main(){char a[456]; return a + 3 - a; }' 3
 run_test 345 'struct A {int k[15];}; int main(){struct A s; return 3;}' 3
 run_test 346 'struct A {int k[15]; int a;}; int main(){struct A s; s.a = 3; return s.a;}' 3
+run_test 347 'struct A {int k[15]; int a;}; int main(){return sizeof(struct A);}' 64
 #run_test 347 'struct A {int k[15];}; int main(){struct A s; s.k[3] = 35; return s.k[3];}' 35
 #run_test 348 'struct A {int k[15];}; int main(){struct A a[5]; return a + 3 - a;}' 3
 
