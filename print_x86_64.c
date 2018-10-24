@@ -602,6 +602,7 @@ void gen_call_and_assign_small_struct_to_local(const char *fname, int offset,
  *            memcpy                 *
  * pops two pointers and does memcpy *
  *************************************/
+static void gen_memcpy(const char *dst, const char *src, int size);
 
 /*
 struct Foo *p = pop();
@@ -611,8 +612,9 @@ struct Foo *q = pop();
 */
 void gen_copy_2nd_struct_to_1st_and_discard(int size)
 {
-	gen_swap();
-	gen_copy_1st_struct_to_2nd_and_discard(size);
+	printf("//gen_copy_2nd_struct_to_1st_and_discard(%d)\n", size);
+	gen_memcpy("(%rsp)", "8(%rsp)", size);
+	printf("  addq $16, %%rsp\n");
 }
 
 /*
@@ -624,35 +626,41 @@ struct Foo *p = pop();
 void gen_copy_1st_struct_to_2nd_and_discard(int size)
 {
 	printf("//gen_copy_1st_struct_to_2nd_and_discard(%d)\n", size);
+	gen_memcpy("8(%rsp)", "(%rsp)", size);
+	printf("  addq $16, %%rsp\n");
+}
+
+/*
+ */
+static void gen_memcpy(const char *dst, const char *src, int size)
+{
 	int next_copy_begins_at = 0;
 	while (1) {
 		if (size - next_copy_begins_at >= 8) {
-			printf("  movq (%%rsp), %%rdx\n"
+			printf("  movq %s, %%rdx\n"
 			       "  movq %d(%%rdx), %%rax\n"
-			       "  movq 8(%%rsp), %%rdx\n"
+			       "  movq %s, %%rdx\n"
 			       "  movq %%rax, %d(%%rdx)\n",
-			       next_copy_begins_at, next_copy_begins_at);
+			       src, next_copy_begins_at, dst, next_copy_begins_at);
 			next_copy_begins_at += 8;
 		} else if (size - next_copy_begins_at >= 4) {
-			printf("  movq (%%rsp), %%rdx\n"
+			printf("  movq %s, %%rdx\n"
 			       "  movl %d(%%rdx), %%eax\n"
-			       "  movq 8(%%rsp), %%rdx\n"
+			       "  movq %s, %%rdx\n"
 			       "  movl %%eax, %d(%%rdx)\n",
-			       next_copy_begins_at, next_copy_begins_at);
+			       src, next_copy_begins_at, dst, next_copy_begins_at);
 			next_copy_begins_at += 4;
 		} else if (size - next_copy_begins_at >= 1) {
-			printf("  movq (%%rsp), %%rdx\n"
+			printf("  movq %s, %%rdx\n"
 			       "  movzbl %d(%%rdx), %%eax\n"
-			       "  movq 8(%%rsp), %%rdx\n"
+			       "  movq %s, %%rdx\n"
 			       "  movb %%al, %d(%%rdx)\n",
-			       next_copy_begins_at, next_copy_begins_at);
+			       src, next_copy_begins_at, dst, next_copy_begins_at);
 			next_copy_begins_at += 1;
 		} else {
 			break;
 		}
 	}
-	gen_discard();
-	gen_discard();
 }
 
 /***********
