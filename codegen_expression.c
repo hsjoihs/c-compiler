@@ -428,7 +428,13 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 		gen_if_nonzero_jmp_nbyte(
 		    size_of_basic(&expr.ptr2->details.type, "operand of logical or"),
 		    label1, -8);
-		gen_logical_OR_part2(label1, label2);
+		gen_discard();
+		gen_push_int(0);
+		gen_jump(label2, "logical OR");
+		gen_label(label1);
+		gen_discard();
+		gen_push_int(1);
+		gen_label(label2);
 		return;
 	}
 	case LOGICAL_AND_EXPR: {
@@ -445,7 +451,13 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 		gen_if_zero_jmp_nbyte(
 		    size_of_basic(&expr.ptr2->details.type, "operand of logical and"),
 		    label1, -8);
-		gen_logical_AND_part2(label1, label2);
+		gen_discard();
+		gen_push_int(1);
+		gen_jump(label2, "logical AND");
+		printf(".L%d:\n", label1);
+		gen_discard();
+		gen_push_int(0);
+		printf(".L%d:\n", label2);
 		return;
 	}
 
