@@ -594,7 +594,7 @@ void gen_call_and_assign_small_struct_to_local(const char *fname, int offset,
 {
 	printf("//gen_call_and_assign_small_struct_to_local(%s, %d, %d)\n", fname,
 	       offset, size);
-	gen_call(PREFIX, fname);
+	gen_raw_call(PREFIX, fname);
 	switch (size) {
 	case 16:
 		printf("  movq %%rax, %d(%%rbp)\n", offset);
