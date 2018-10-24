@@ -32,7 +32,7 @@ void push_vector(struct Vector *ptr, const void *tok)
 const void *pop_vector(struct Vector *ptr)
 {
 	if (ptr->length == 0) {
-		assert("tried to pop an empty vector of type `void*`" && 0);
+		assert("tried to pop an empty vector" && 0);
 	}
 	--(ptr->length);
 	return ptr->vector[ptr->length]; /* safe, since it is not yet released or
