@@ -218,50 +218,32 @@ void gen_jump(int label, const char *comment)
 	printf("  jmp .L%d\n", label);
 }
 
-void gen_if_zero_jmp_nbyte(int n, int label1, int offset)
+static const char *cmp(int n)
 {
 	switch (n) {
-	case 1: {
-		printf("//gen_if_zero_jmp_1byte(%d, %d)\n", label1, offset);
-		printf("  cmpb $0, %d(%%rsp)\n", offset);
-		printf("  je .L%d\n", label1);
-	} break;
-	case 4: {
-		printf("//gen_if_zero_jmp_4byte(%d, %d)\n", label1, offset);
-		printf("  cmpl $0, %d(%%rsp)\n", offset);
-		printf("  je .L%d\n", label1);
-	} break;
-	case 8: {
-		printf("//gen_if_zero_jmp_8byte(%d, %d)\n", label1, offset);
-		printf("  cmpq $0, %d(%%rsp)\n", offset);
-		printf("  je .L%d\n", label1);
-	} break;
+	case 1:
+		return "cmpb";
+	case 4:
+		return "cmpl";
+	case 8:
+		return "cmpq";
 	default:
 		assert0("Unsupported width; cannot happen" && 0);
 	}
 }
 
+void gen_if_zero_jmp_nbyte(int n, int label1, int offset)
+{
+	printf("//gen_if_zero_jmp_nbyte(%d, %d, %d)\n", n, label1, offset);
+	printf("  %s $0, %d(%%rsp)\n", cmp(n), offset);
+	printf("  je .L%d\n", label1);
+}
+
 void gen_if_nonzero_jmp_nbyte(int n, int label1, int offset)
 {
-	switch (n) {
-	case 1: {
-		printf("//gen_if_nonzero_jmp_1byte(%d, %d)\n", label1, offset);
-		printf("  cmpb $0, %d(%%rsp)\n", offset);
-		printf("  jne .L%d\n", label1);
-	} break;
-	case 4: {
-		printf("//gen_if_nonzero_jmp_4byte(%d, %d)\n", label1, offset);
-		printf("  cmpl $0, %d(%%rsp)\n", offset);
-		printf("  jne .L%d\n", label1);
-	} break;
-	case 8: {
-		printf("//gen_if_nonzero_jmp_8byte(%d, %d)\n", label1, offset);
-		printf("  cmpq $0, %d(%%rsp)\n", offset);
-		printf("  jne .L%d\n", label1);
-	} break;
-	default:
-		assert0("Unsupported width; cannot happen" && 0);
-	}
+	printf("//gen_if_nonzero_jmp_1byte(%d, %d, %d)\n", n, label1, offset);
+	printf("  %s $0, %d(%%rsp)\n", cmp(n), offset);
+	printf("  jne .L%d\n", label1);
 }
 
 void gen_if_2nd_matches_int_jmp_4byte(int constant1, int label1)
