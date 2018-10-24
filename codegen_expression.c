@@ -130,7 +130,7 @@ void print_address_of_lvalue_or_struct(struct PrinterState *ptr_prs,
 		print_address_of_lvalue_or_struct(ptr_prs, expr.ptr3,
 		                                  "false branch of ternary operator");
 		gen_label(label2);
-		gen_discard2nd_8byte();
+		gen_discard2nd();
 		return;
 	}
 	case STRUCT_ASSIGNMENT_EXPR: {
@@ -139,7 +139,7 @@ void print_address_of_lvalue_or_struct(struct PrinterState *ptr_prs,
 		print_address_of_lvalue_or_struct(ptr_prs, expr.ptr2,
 		                                  "right hand of struct assignment");
 		int size = expr.size_info_for_struct_assign;
-		gen_copy_struct_and_discard(size);
+		gen_copy_1st_struct_to_2nd_and_discard(size);
 		print_address_of_lvalue_or_struct(ptr_prs, expr.ptr1,
 		                                  "left hand of struct assignment");
 		return;
@@ -216,7 +216,7 @@ void print_address_of_lvalue_or_struct(struct PrinterState *ptr_prs,
 		print_address_of_lvalue_or_struct(
 		    ptr_prs, expr.ptr2, "struct as the second operand of comma");
 
-		gen_discard2nd_8byte();
+		gen_discard2nd();
 		return;
 	}
 	default:
@@ -305,7 +305,7 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 		print_address_of_lvalue_or_struct(ptr_prs, expr.ptr2,
 		                                  "right hand of struct assignment");
 		int size = expr.size_info_for_struct_assign;
-		gen_copy_struct_and_discard(size);
+		gen_copy_1st_struct_to_2nd_and_discard(size);
 		gen_push_int(143253); /* random garbage */
 		return;
 	}
@@ -319,7 +319,7 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 	}
 	case STRUCT_AND_OFFSET: {
 		print_expression_as_lvalue(ptr_prs, &expr);
-		gen_discard2nd_8byte();
+		gen_discard2nd();
 		return;
 	}
 	case POINTER_MINUS_POINTER: {
@@ -410,7 +410,7 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 			print_expression(ptr_prs, expr.ptr2);
 		}
 
-		gen_discard2nd_8byte();
+		gen_discard2nd();
 		return;
 	}
 
@@ -466,7 +466,7 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 		print_expression_as_lvalue(ptr_prs, expr.ptr1);
 		print_expression(ptr_prs, expr.ptr2);
 
-		gen_discard2nd_8byte();
+		gen_discard2nd();
 
 		struct Type type = expr.ptr1->details.type;
 
@@ -577,7 +577,7 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 		gen_label(label1);
 		print_expression(ptr_prs, expr.ptr3);
 		gen_label(label2);
-		gen_discard2nd_8byte();
+		gen_discard2nd();
 		return;
 	}
 	case FPCALL_EXPR: {

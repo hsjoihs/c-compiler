@@ -330,8 +330,7 @@ static void print_toplevel_definition(struct PrinterState *ptr_prs,
 		} else {
 			gen_label(ptr_prs->return_label_name);
 			gen_push_from_local_nbyte(8, ref_def->func.hidden_var_offset);
-			gen_swap();
-			gen_copy_struct_and_discard(ret_struct_size);
+			gen_copy_2nd_struct_to_1st_and_discard(ret_struct_size);
 			return_garbage();
 		}
 	} else {

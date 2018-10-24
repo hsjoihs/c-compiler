@@ -106,7 +106,7 @@ void codegen_switch(struct PrinterState *ptr_prs,
 		}
 		int constant1 = ptr_ll->source_label.case_int;
 		int label1 = ptr_ll->assembly_label;
-		gen_if_neg8_matches_jmp_4byte(constant1, label1);
+		gen_if_2nd_matches_int_jmp_4byte(constant1, label1);
 	}
 	gen_jump(default_label, "switch-default");
 

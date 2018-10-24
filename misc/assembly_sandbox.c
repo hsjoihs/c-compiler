@@ -1,6 +1,8 @@
 #include "../print_x86_64.h"
 #include <stdio.h>
 
+void gen_write_to_local_8byte(int offset);
+
 int main()
 {
 	/*
