@@ -605,10 +605,10 @@ void gen_call_and_assign_small_struct_to_local(const char *fname, int offset,
 static void gen_memcpy(const char *dst, const char *src, int size);
 
 /*
-struct Foo *p = pop();
-struct Foo *q = pop();
+struct Foo *dst = pop();
+struct Foo *src = pop();
 
-*p = *q;
+*dst = *src;
 */
 void gen_copy_2nd_struct_to_1st_and_discard(int size)
 {
@@ -618,10 +618,10 @@ void gen_copy_2nd_struct_to_1st_and_discard(int size)
 }
 
 /*
-struct Foo *q = pop();
-struct Foo *p = pop();
+struct Foo *src = pop();
+struct Foo *dst = pop();
 
-*p = *q;
+*dst = *src;
 */
 void gen_copy_1st_struct_to_2nd_and_discard(int size)
 {
