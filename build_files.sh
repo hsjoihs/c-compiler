@@ -26,3 +26,4 @@ build2 preprocess2
 build2 preprocess3
 build2 preprocess4
 build2 preprocess5
+build2 small_struct
