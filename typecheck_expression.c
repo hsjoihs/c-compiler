@@ -773,61 +773,6 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 		expr.ptr3 = 0;
 		return expr;
 	}
-	case DOT_EXPR: {
-		struct Expr struct_expr = typecheck_expression(ptr_ps, uexpr.ptr1);
-		const char *ident_after_dot = uexpr.ident_after_dot;
-		if (struct_expr.details.type.type_category != STRUCT_) {
-			fprintf(stderr, "member is requested but the left operand is "
-			                "not a struct\n");
-			exit(EXIT_FAILURE);
-		}
-
-		const char *tag = struct_expr.details.type.s.struct_tag;
-		const struct StructInternalCompleteInfo *ptr_info =
-		    lookup(ptr_ps->global_struct_tag_map, tag);
-		if (!ptr_info) {
-			fprintf(stderr,
-			        "tried to use a member of incomplete type `struct %s`\n",
-			        tag);
-			exit(EXIT_FAILURE);
-		}
-
-		struct Vector /* <TypeAndIdent> */ vec =
-		    *ptr_info->info.ptr_types_and_idents;
-		int nth_member = -1;
-
-		struct Expr expr;
-		for (int i = 0; i < vec.length; i++) {
-			const struct TypeAndIdent *ptr_vec_i = vec.vector[i];
-			if (strcmp(ptr_vec_i->ident_str, ident_after_dot) == 0) {
-				nth_member = i;
-
-				struct Type t2 = ptr_vec_i->type;
-				if_array_convert_to_ptr_(&t2);
-				expr.details.type = t2;
-				expr.details.true_type = ptr_vec_i->type;
-				break;
-			}
-		}
-
-		if (nth_member == -1) {
-			fprintf(stderr, "member `%s` does not belong to struct `%s`\n",
-			        ident_after_dot, tag);
-			exit(EXIT_FAILURE);
-		}
-
-		int offset = ptr_info->offset_vec[nth_member];
-
-		struct Expr *ptr_struct_expr = calloc(1, sizeof(struct Expr));
-		*ptr_struct_expr = struct_expr;
-
-		expr.category = STRUCT_AND_OFFSET;
-		expr.struct_offset = offset;
-		expr.ptr1 = ptr_struct_expr;
-		expr.ptr2 = 0;
-		expr.ptr3 = 0;
-		return expr;
-	}
 	case SIZEOF_TYPE: {
 		struct Expr expr;
 		expr.details.type = INT_TYPE();

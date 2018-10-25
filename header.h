@@ -200,7 +200,6 @@ enum UntypedExprCategory {
 	STRING_LITERAL_,
 	SIZEOF_TYPE,
 	ALIGNOF_TYPE,
-	DOT_EXPR,
 	AMPERSAND_DOT,
 };
 
