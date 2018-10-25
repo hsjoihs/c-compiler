@@ -211,11 +211,7 @@ static struct Token get_token_raw(const char **ptr_to_str)
 			i++;
 		}
 		int length = i;
-		char *new_str = calloc(length + 1, sizeof(char));
-		for (int j = 0; j < length; j++) {
-			new_str[j] = str[j];
-		}
-		new_str[length] = 0;
+		char *new_str = strndup(str, length);
 		t.kind = LIT_STRING;
 		t.literal_str = unescape(new_str);
 
@@ -241,11 +237,7 @@ static struct Token get_token_raw(const char **ptr_to_str)
 			i++;
 		}
 		int length = i;
-		char *new_str = calloc(length + 1, sizeof(char));
-		for (int j = 0; j < length; j++) {
-			new_str[j] = str[j];
-		}
-		new_str[length] = 0;
+		char *new_str = strndup(str, length);
 		const char *unescaped = unescape(new_str);
 
 		if (strlen(unescaped) > 1) {

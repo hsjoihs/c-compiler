@@ -29,6 +29,7 @@ char *strcpy(char *s1, const char *s2);
 char *strcat(char *s1, const char *s2);
 char *strchr(const char *s, int c);
 int strncmp(const char *s1, const char *s2, size_t2 n);
+char *strndup(const char *str, size_t2 size);
 
 #define EXIT_FAILURE 1
 #endif
