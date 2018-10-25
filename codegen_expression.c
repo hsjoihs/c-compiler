@@ -236,17 +236,11 @@ static void print_expression_as_lvalue(struct PrinterState *ptr_prs,
 	const struct Expr expr = *ref_expr;
 	print_address_of_lvalue_or_struct(ptr_prs, &expr, "as lvalue");
 	switch (expr.category) {
-	case FPCALL_EXPR_RETURNING_INTEGER_CLASS: {
-		unsupported("FPCALL_EXPR_RETURNING_STRUCT");
-	}
-	case FPCALL_EXPR_RETURNING_MEMORY_CLASS: {
-		unsupported("FPCALL_EXPR_RETURNING_STRUCT");
-	}
-	case FUNCCALL_EXPR_RETURNING_INTEGER_CLASS: {
-		unsupported("FUNCCALL_EXPR_RETURNING_STRUCT");
-	}
+	case FPCALL_EXPR_RETURNING_INTEGER_CLASS: 
+	case FPCALL_EXPR_RETURNING_MEMORY_CLASS:
+	case FUNCCALL_EXPR_RETURNING_INTEGER_CLASS:
 	case FUNCCALL_EXPR_RETURNING_MEMORY_CLASS: {
-		unsupported("FUNCCALL_EXPR_RETURNING_STRUCT");
+		unsupported("struct returned by function used as a pure rvalue");
 	}
 	case LOCAL_VAR_: {
 		gen_push_from_local_nbyte(
@@ -282,17 +276,11 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 {
 	const struct Expr expr = *ref_expr;
 	switch (expr.category) {
-	case FPCALL_EXPR_RETURNING_INTEGER_CLASS: {
-		unsupported("FPCALL_EXPR_RETURNING_INTEGER_CLASS");
-	}
-	case FPCALL_EXPR_RETURNING_MEMORY_CLASS: {
-		unsupported("FPCALL_EXPR_RETURNING_MEMORY_CLASS");
-	}
-	case FUNCCALL_EXPR_RETURNING_INTEGER_CLASS: {
-		unsupported("FUNCCALL_EXPR_RETURNING_STRUCT");
-	}
+	case FPCALL_EXPR_RETURNING_INTEGER_CLASS:
+	case FPCALL_EXPR_RETURNING_MEMORY_CLASS:
+	case FUNCCALL_EXPR_RETURNING_INTEGER_CLASS:
 	case FUNCCALL_EXPR_RETURNING_MEMORY_CLASS: {
-		unsupported("FUNCCALL_EXPR_RETURNING_STRUCT");
+		unsupported("struct returned by function used as a pure rvalue");
 	}
 	case STRUCT_ASSIGNMENT_EXPR: {
 		print_address_of_lvalue_or_struct(ptr_prs, expr.ptr1,
