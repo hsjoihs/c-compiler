@@ -61,3 +61,4 @@ void expect_integral(const struct Type *ref_actual_type, const char *message);
 
 void cast_to_null_pointer_if_possible(struct Expr *ref_e,
                                       const struct TypePair *ref_details);
+void if_function_cast_to_pointer(struct Expr *ptr_expr);

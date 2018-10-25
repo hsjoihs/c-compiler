@@ -167,6 +167,7 @@ struct Statement parse_statement(struct AnalyzerState *ptr_ps,
 				details.type = ptr_ps->func_ret_type;
 				details.true_type = ptr_ps->func_ret_type;
 				cast_to_null_pointer_if_possible(&expr, &details);
+				if_function_cast_to_pointer(&expr);
 			}
 
 			expect_type(ptr_ps, &expr.details.type, &ptr_ps->func_ret_type,
