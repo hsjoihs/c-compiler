@@ -995,7 +995,7 @@ struct Expr typecheck_binary_expression(const struct AnalyzerState *ptr_ps,
 				cast_to_null_pointer_if_possible(&expr2_new, &expr.details);
 			}
 
-			expect_type(ptr_ps, &expr.details.type, &expr2_new.details.type,
+			expect_type(ptr_ps, &expr2_new.details.type, &expr.details.type,
 			            "mismatch in assignment operator");
 
 			*ptr_expr2 = expr2_new;
