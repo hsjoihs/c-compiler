@@ -171,15 +171,6 @@ void print_address_of_lvalue_or_struct(struct PrinterState *ptr_prs,
 		gen_push_address_of_local(expr.local_var_offset);
 		return;
 	}
-	case STRUCT_AND_OFFSET: {
-		print_address_of_lvalue_or_struct(
-		    ptr_prs, expr.ptr1, "struct whose member is to be accessed");
-		int offset = expr.struct_offset;
-		gen_push_int(offset);
-		gen_cltq();
-		gen_op_8byte("addq");
-		return;
-	}
 	case LOCAL_VAR_: {
 		gen_push_address_of_local(expr.local_var_offset);
 
@@ -248,11 +239,6 @@ static void print_expression_as_lvalue(struct PrinterState *ptr_prs,
 	case FUNCCALL_EXPR_RETURNING_MEMORY_CLASS: {
 		unsupported("FUNCCALL_EXPR_RETURNING_STRUCT");
 	}
-	case STRUCT_AND_OFFSET: {
-		gen_peek_deref_push_nbyte(
-		    size_of_basic(&expr.details.type, "foo.bar as lvalue"));
-		return;
-	}
 	case LOCAL_VAR_: {
 		gen_push_from_local_nbyte(
 		    size_of_basic(&expr.details.type, "local var as lvalue"),
@@ -318,14 +304,13 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 		return;
 	}
 	case PTR_STRUCT_AND_OFFSET: {
-		struct Expr expr2 = expr;
-		expr2.category = STRUCT_AND_OFFSET;
-		print_address_of_lvalue_or_struct(ptr_prs, &expr2, "member access");
-		return;
-	}
-	case STRUCT_AND_OFFSET: {
-		print_expression_as_lvalue(ptr_prs, &expr);
-		gen_discard2nd();
+		print_address_of_lvalue_or_struct(
+		    ptr_prs, expr.ptr1, "struct whose member is to be accessed");
+		int offset = expr.struct_offset;
+		gen_push_int(offset);
+		gen_cltq();
+		gen_op_8byte("addq");
+
 		return;
 	}
 	case POINTER_MINUS_POINTER: {
