@@ -337,7 +337,7 @@ parse_unary_expression(const struct Token **ptr_tokvec)
 }
 
 static struct UntypedExpr ampersand_dot(const struct UntypedExpr *ref_expr,
-                              const char *name);
+                                        const char *name);
 
 /* LPAREN is already consumed */
 static struct Vector /*<UntypedExpr>*/
@@ -467,7 +467,7 @@ parse_postfix_expression(const struct Token **ptr_tokvec)
 
 /* generates `&s.a`. necessary to support an array as a member */
 static struct UntypedExpr ampersand_dot(const struct UntypedExpr *ref_expr,
-                              const char *name)
+                                        const char *name)
 {
 	struct UntypedExpr *ptr_expr1 = calloc(1, sizeof(struct UntypedExpr));
 	*ptr_expr1 = *ref_expr;
@@ -480,7 +480,6 @@ static struct UntypedExpr ampersand_dot(const struct UntypedExpr *ref_expr,
 	new_expr.ident_after_dot = name;
 	return new_expr;
 }
-
 
 static struct UntypedExpr
 parse_primary_expression(const struct Token **ptr_tokvec)
