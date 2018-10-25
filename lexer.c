@@ -224,18 +224,38 @@ static struct Token get_token_raw(const char **ptr_to_str)
 	}
 
 	if (*str == 39) {
-		str++;
-		if (*str == 92) {
-			unsupported("escape sequence in character literal");
-		} else if (str[1] == 39) {
-			t.kind = LIT_DEC_INTEGER;
-			t.int_value = str[0];
-			str += 2;
-			*ptr_to_str = str;
-			return t;
-		} else {
+		int i = 0;
+		++str;
+		while (1) {
+			if (str[i] == 92 && str[i + 1] == 92) {
+				i += 2;
+				continue;
+			}
+			if (str[i] == 92 && str[i + 1] == 39) {
+				i += 2;
+				continue;
+			}
+			if (str[i] == 39) {
+				break;
+			}
+			i++;
+		}
+		int length = i;
+		char *new_str = calloc(length + 1, sizeof(char));
+		for (int j = 0; j < length; j++) {
+			new_str[j] = str[j];
+		}
+		new_str[length] = 0;
+		const char *unescaped = unescape(new_str);
+
+		if (strlen(unescaped) > 1) {
 			unsupported("more than one character in character literal");
 		}
+
+		t.kind = LIT_DEC_INTEGER;
+		t.int_value = unescaped[0];
+		*ptr_to_str = str + length + 1;
+		return t;
 	}
 
 	if (*str == '+') {
