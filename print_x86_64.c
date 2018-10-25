@@ -461,25 +461,33 @@ void gen_mul_by_const(int mul)
 
 void gen_div_by_const(int num)
 {
+	if (num == 1) { /* do nothing */
+		return;
+	}
+
 	printf("//gen_div_by_const(%d)\n", num);
 	printf("  movq (%%rsp), %%rax\n");
 
 	switch (num) {
-	case 1: /* do nothing */
-		break;
 	case 2:
 		printf("  sarq $1, %%rax\n");
-		break;
+		printf("  movq %%rax, (%%rsp)\n");
+		return;
 	case 4:
 		printf("  sarq $2, %%rax\n");
-		break;
+		printf("  movq %%rax, (%%rsp)\n");
+		return;
 	case 8:
 		printf("  sarq $3, %%rax\n");
-		break;
+		printf("  movq %%rax, (%%rsp)\n");
+		return;
 	default:
-		poison_and_die("Unsupported width; cannot happen");
+		printf("  movl $%d, %%ecx\n", num);
+		puts("  cqto\n"
+		     "  idivq %rcx\n"
+		     "  movl %eax, (%rsp)\n");
+		return;
 	}
-	printf("  movq %%rax, (%%rsp)\n");
 }
 
 void gen_logical_not_of_pointer(void)

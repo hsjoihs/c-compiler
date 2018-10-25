@@ -26,6 +26,8 @@ run_test 348 'struct A {int k[15];}; int main(){struct A s; void *p = s.k; retur
 run_test 349 'struct A {int k[15];}; int main(){struct A s; int *p = s.k; return 35;}' 35
 run_test 350 'struct A {int k[15];}; int main(){struct A s; int (*p)[15] = &s.k; return 35;}' 35
 run_test 351 'struct A {int k[15];}; int main(){struct A s; s.k[3] = 35; return s.k[3];}' 35
+run_test 352 'struct A {int a; int b; int c;}; int main(){struct A a[5]; return a + 3 - a;}' 3
+run_test 353 'struct A {int k[15];}; int main(){struct A a[5]; return a + 3 - a;}' 3
 
 run_test0 331 'void *return_fp(void); int call_fp(void* q); int main(){return call_fp(return_fp());}' 174
 run_test 332 'int main(){int a = 1; int *b = a?&a : 0; return 123;}' 123
