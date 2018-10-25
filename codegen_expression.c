@@ -148,7 +148,16 @@ void print_address_of_lvalue_or_struct(struct PrinterState *ptr_prs,
 		unsupported("FPCALL_EXPR_RETURNING_INTEGER_CLASS");
 	}
 	case FPCALL_EXPR_RETURNING_MEMORY_CLASS: {
-		unsupported("FPCALL_EXPR_RETURNING_MEMORY_CLASS");
+		print_expression(ptr_prs, expr.ptr1);
+		pass_args(ptr_prs, &expr.args);
+		gen_pop_to_reg_8byte("r11");
+
+		/* call a function that returns a void */
+		gen_call_reg_and_push_ret_of_nbyte(4, "r11");
+		gen_discard();
+
+		gen_push_address_of_local(expr.local_var_offset);
+		return;
 	}
 	case FUNCCALL_EXPR_RETURNING_INTEGER_CLASS: {
 

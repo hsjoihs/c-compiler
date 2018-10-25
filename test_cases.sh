@@ -18,6 +18,8 @@ run_test() {
 	if [ $res -ne $3 ]; then { echo "got:" $res; echo "expected:" $3; echo -e "\033[31mFAIL\033[m, at test case" $1: $2; exit 1; }; else echo -e "\033[32mPASS\033[m"; fi
 }
 
+run_test 354 'struct A {int k[15];}; struct A f(int a, int b){struct A q; q.k[0] = a; q.k[14] = b; return q;} int main(){struct A (*g)(int a, int b) = f; struct A q = g(10, 11); return q.k[0] + q.k[14]; }' 21
+
 run_test 344 'int main(){char a[456]; return a + 3 - a; }' 3
 run_test 345 'struct A {int k[15];}; int main(){struct A s; return 3;}' 3
 run_test 346 'struct A {int k[15]; int a;}; int main(){struct A s; s.a = 3; return s.a;}' 3
