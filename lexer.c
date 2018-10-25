@@ -546,19 +546,7 @@ static struct Token get_token_raw(const char **ptr_to_str)
 		/*
 		    identifier: str[0] ~ str[i-1]
 		*/
-		char *new_str = calloc(i + 1, sizeof(char));
-		if (!new_str) {
-			fprintf(stderr, "memory ran out\n");
-			exit(EXIT_FAILURE);
-		}
-
-		for (int j = 0; j < i; j++) {
-			new_str[j] = str[j];
-		}
-		new_str[i] = 0;
-
-		t.ident_str = new_str;
-
+		t.ident_str = strndup(str, i);
 		*ptr_to_str = str + i;
 		return t;
 	}
