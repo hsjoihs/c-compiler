@@ -60,22 +60,30 @@ void gen_epilogue_returning_small_struct(int size, int label)
 	printf(".L%d:", label);
 
 	puts("  movq (%rsp), %rcx");
-	switch (size) {
-	case 16:
-		printf("  movq (%%rcx), %%rax\n"
-		       "  movq 8(%%rcx), %%rdx\n");
-		break;
-	case 12:
-		printf("  movq (%%rcx), %%rax\n"
-		       "  movl 8(%%rcx), %%edx\n");
-		break;
-	case 8:
+	if (size >= 8) {
 		printf("  movq (%%rcx), %%rax\n");
-		break;
-	case 4:
+		if (size == 16) {
+			printf("  movq 8(%%rcx), %%rdx\n");
+		} else if (size == 12) {
+			printf("  movl 8(%%rcx), %%edx\n");
+		} else if (size == 8) {
+			/* do nothing */
+		} 
+	} else if (size == 4) {
 		printf("  movl (%%rcx), %%eax\n");
-		break;
-	default:
+	} else if (size == 3) {
+		printf(
+			"  movzwl 2(%%rcx), %%edx\n"
+			"  shll $16, %%edx\n"
+			"  movzwl (%%rcx), %%esi\n"
+			"  orl %%edx, %%esi\n"
+			"  movl %%esi, %%eax\n"
+			);
+	} else if (size == 2) {
+		printf("  movw (%%rcx), %%ax\n");
+	} else if (size == 1) {
+		printf("  movb (%%rcx), %%al\n");
+	} else {
 		poison_and_die(
 		    "returning a struct that has alignment 1 is unsupported");
 	}

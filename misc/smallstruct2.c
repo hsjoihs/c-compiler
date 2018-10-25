@@ -18,9 +18,9 @@ struct A15 {char a[15];}; struct A15 deref15(struct A15 *p);
 struct A16 {char a[16];}; struct A16 deref16(struct A16 *p);
 int main()
 {
-	//{struct A1 q; struct A1 r = deref1(&q); if (memcmp(&q, &r, 1)) return 1;}
-	//{struct A2 q; struct A2 r = deref2(&q); if (memcmp(&q, &r, 2)) return 2;}
-	//{struct A3 q; struct A3 r = deref3(&q); if (memcmp(&q, &r, 3)) return 3;}
+	{struct A1 q; struct A1 r = deref1(&q); if (memcmp(&q, &r, 1)) return 1;}
+	{struct A2 q; struct A2 r = deref2(&q); if (memcmp(&q, &r, 2)) return 2;}
+	{struct A3 q; struct A3 r = deref3(&q); if (memcmp(&q, &r, 3)) return 3;}
 	{struct A4 q; struct A4 r = deref4(&q); if (memcmp(&q, &r, 4)) return 4;}
 	//{struct A5 q; struct A5 r = deref5(&q); if (memcmp(&q, &r, 5)) return 5;}
 	//{struct A6 q; struct A6 r = deref6(&q); if (memcmp(&q, &r, 6)) return 6;}
