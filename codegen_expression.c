@@ -307,10 +307,11 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 		print_address_of_lvalue_or_struct(
 		    ptr_prs, expr.ptr1, "struct whose member is to be accessed");
 		int offset = expr.struct_offset;
-		gen_push_int(offset);
-		gen_cltq();
-		gen_op_8byte("addq");
-
+		if (offset) {
+			gen_push_int(offset);
+			gen_cltq();
+			gen_op_8byte("addq");
+		}
 		return;
 	}
 	case POINTER_MINUS_POINTER: {
