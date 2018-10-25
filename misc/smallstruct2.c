@@ -37,13 +37,13 @@ int main()
 	{struct A6 q; garbge(&q, 6); struct A6 r = deref6(&q); if (memcmp(&q, &r, 6)) return 6;}
 	{struct A7 q; garbge(&q, 7); struct A7 r = deref7(&q); if (memcmp(&q, &r, 7)) return 7;}
 	{struct A8 q; garbge(&q, 8); struct A8 r = deref8(&q); if (memcmp(&q, &r, 8)) return 8;}
-	//{struct A9 q; garbge(&q, 9); struct A9 r = deref9(&q); if (memcmp(&q, &r, 9)) return 9;}
-	//{struct A10 q; garbge(&q, 10); struct A10 r = deref10(&q); if (memcmp(&q, &r, 10)) return 10;}
-	//{struct A11 q; garbge(&q, 11); struct A11 r = deref11(&q); if (memcmp(&q, &r, 11)) return 11;}
+	{struct A9 q; garbge(&q, 9); struct A9 r = deref9(&q); if (memcmp(&q, &r, 9)) return 9;}
+	{struct A10 q; garbge(&q, 10); struct A10 r = deref10(&q); if (memcmp(&q, &r, 10)) return 10;}
+	{struct A11 q; garbge(&q, 11); struct A11 r = deref11(&q); if (memcmp(&q, &r, 11)) return 11;}
 	{struct A12 q; garbge(&q, 12); struct A12 r = deref12(&q); if (memcmp(&q, &r, 12)) return 12;}
-	//{struct A13 q; garbge(&q, 13); struct A13 r = deref13(&q); if (memcmp(&q, &r, 13)) return 13;}
-	//{struct A14 q; garbge(&q, 14); struct A14 r = deref14(&q); if (memcmp(&q, &r, 14)) return 14;}
-	//{struct A15 q; garbge(&q, 15); struct A15 r = deref15(&q); if (memcmp(&q, &r, 15)) return 15;}
+	{struct A13 q; garbge(&q, 13); struct A13 r = deref13(&q); if (memcmp(&q, &r, 13)) return 13;}
+	{struct A14 q; garbge(&q, 14); struct A14 r = deref14(&q); if (memcmp(&q, &r, 14)) return 14;}
+	{struct A15 q; garbge(&q, 15); struct A15 r = deref15(&q); if (memcmp(&q, &r, 15)) return 15;}
 	{struct A16 q; garbge(&q, 16); struct A16 r = deref16(&q); if (memcmp(&q, &r, 16)) return 16;}
 
 	return 0;

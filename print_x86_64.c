@@ -50,6 +50,46 @@ void gen_epilogue_nbyte(int n, int label_name)
 	}
 }
 
+static void copy_to_8byte_reg(int size, const char *reg_4byte,
+                              const char *reg_8byte)
+{
+	if (size == 8) {
+		printf("  movq (%%rcx), %%%s\n", reg_8byte);
+		return;
+	}
+	if (size >= 4) {
+		printf("  movl (%%rcx), %%%s\n", reg_4byte);
+		if (size == 4) {
+			return;
+		}
+
+		if (size == 7) {
+			puts("  movzwl 4(%rcx), %edi\n"
+			     "  movzbl 6(%rcx), %esi\n"
+			     "  shll $16, %esi\n"
+			     "  orl %esi,  %edi\n"
+			     "  shlq $32, %rdi");
+		} else if (size == 6) {
+			puts("  movzwl 4(%rcx), %edi\n"
+			     "  shlq $32, %rdi\n");
+		} else if (size == 5) {
+			puts("  movzbl 4(%rcx), %edi\n"
+			     "  shlq $32, %rdi\n");
+		}
+		printf("  orq %%rdi, %%%s\n", reg_8byte);
+	} else if (size == 3) {
+		printf("  movzwl (%%rcx), %%%s\n"
+		       "  movzbl 2(%%rcx), %%edi\n"
+		       "  shll $16, %%edi\n"
+		       "  orl %%edi, %%%s\n",
+		       reg_4byte, reg_4byte);
+	} else if (size == 2) {
+		printf("  movzwl (%%rcx), %%%s\n", reg_4byte);
+	} else if (size == 1) {
+		printf("  movzbl (%%rcx), %%%s\n", reg_4byte);
+	}
+}
+
 /*
 struct Foo *p = pop();
 return *p;
@@ -61,49 +101,13 @@ void gen_epilogue_returning_small_struct(int size, int label)
 
 	puts("  movq (%rsp), %rcx");
 
-	if (size >= 8) {
-		printf("  movq (%%rcx), %%rax\n");
-		if (size == 16) {
-			printf("  movq 8(%%rcx), %%rdx\n");
-		} else if (size == 12) {
-			printf("  movl 8(%%rcx), %%edx\n");
-		} else if (size == 8) {
-			/* do nothing */
-		}
-	} else if (size == 7) {
-		puts("  movl (%rcx), %eax\n"
-		     "  movzwl 4(%rcx), %edi\n"
-		     "  movzbl 6(%rcx), %esi\n"
-		     "  shll $16, %esi\n"
-		     "  orl %esi,  %edi\n"
-		     "  shlq $32, %rdi\n"
-		     "  orq %rdi, %rax\n");
-	} else if (size == 6) {
-		puts("  movl (%rcx), %eax\n"
-		     "  movzwl 4(%rcx), %edi\n"
-		     "  shlq $32, %rdi\n"
-		     "  orq %rdi, %rax\n");
-	} else if (size == 5) {
-		puts("  movl (%rcx), %eax\n"
-		     "  movzbl 4(%rcx), %edi\n"
-		     "  shlq $32, %rdi\n"
-		     "  orq %rdi, %rax\n");
-	} else if (size == 4) {
-		printf("  movl (%%rcx), %%eax\n");
-	} else if (size == 3) {
-		printf("  movzwl (%%rcx), %%eax\n"
-		       "  movzbl 2(%%rcx), %%edi\n"
-		       "  shll $16, %%edi\n"
-		       "  orl %%edi, %%eax\n");
-	} else if (size == 2) {
-		printf("  movzwl (%%rcx), %%eax\n");
-	} else if (size == 1) {
-		printf("  movzbl (%%rcx), %%eax\n");
+	if (size > 8) {
+		printf("  movq (%%rcx), %%rax\n"
+		       "  addq $8, %%rcx\n");
+		copy_to_8byte_reg(size - 8, "edx", "rdx");
 	} else {
-		poison_and_die(
-		    "returning a struct that has alignment 1 is unsupported");
+		copy_to_8byte_reg(size, "eax", "rax");
 	}
-
 	printf("  leave\n"
 	       "  ret\n");
 }
