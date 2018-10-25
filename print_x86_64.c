@@ -573,14 +573,14 @@ void gen_global_declaration(const char *ident, int size)
 
 void gen_pop_to_reg_4byte(const char *str)
 {
-	printf("//gen_pop_to_reg_4byte(%s)\n", str);
+	printf("//gen_pop_to_reg_4byte(\"%s\")\n", str);
 	printf("  movl (%%rsp), %%%s\n", str);
 	printf("  addq $8, %%rsp\n");
 }
 
 void gen_pop_to_reg_8byte(const char *str)
 {
-	printf("//gen_pop_to_reg_8byte(%s)\n", str);
+	printf("//gen_pop_to_reg_8byte(\"%s\")\n", str);
 	printf("  movq (%%rsp), %%%s\n", str);
 	printf("  addq $8, %%rsp\n");
 }
@@ -594,7 +594,7 @@ void gen_pop_to_reg_8byte(const char *str)
 void gen_write_register_to_local_1byte(const char *str, int offset)
 {
 	assert(offset < 0);
-	printf("//gen_write_register_to_local_1byte(%s, %d)\n", str, offset);
+	printf("//gen_write_register_to_local_1byte(\"%s\", %d)\n", str, offset);
 	printf("  movl %%%s, %%eax\n"
 	       "  movb %%al, %d(%%rbp)\n",
 	       str, offset);
@@ -602,14 +602,14 @@ void gen_write_register_to_local_1byte(const char *str, int offset)
 void gen_write_register_to_local_4byte(const char *str, int offset)
 {
 	assert(offset < 0);
-	printf("//gen_write_register_to_local_4byte(%s, %d)\n", str, offset);
+	printf("//gen_write_register_to_local_4byte(\"%s\", %d)\n", str, offset);
 	printf("  movl %%%s, %d(%%rbp)\n", str, offset);
 }
 
 void gen_write_register_to_local_8byte(const char *str, int offset)
 {
 	assert(offset < 0);
-	printf("//gen_write_register_to_local_8byte(%s, %d)\n", str, offset);
+	printf("//gen_write_register_to_local_8byte(\"%s\", %d)\n", str, offset);
 	printf("  movq %%%s, %d(%%rbp)\n", str, offset);
 }
 
@@ -618,7 +618,7 @@ static void gen_memcpy(const char *dst, const char *src, int size);
 void gen_call_and_assign_small_struct_to_local(const char *fname, int offset,
                                                int size)
 {
-	printf("//gen_call_and_assign_small_struct_to_local(%s, %d, %d)\n", fname,
+	printf("//gen_call_and_assign_small_struct_to_local(\"%s\", %d, %d)\n", fname,
 	       offset, size);
 	gen_raw_call(PREFIX, fname);
 	printf("  movq %%rdx, (%%rsp)\n"
