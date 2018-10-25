@@ -613,30 +613,22 @@ void gen_write_register_to_local_8byte(const char *str, int offset)
 	printf("  movq %%%s, %d(%%rbp)\n", str, offset);
 }
 
+static void gen_memcpy(const char *dst, const char *src, int size);
+
 void gen_call_and_assign_small_struct_to_local(const char *fname, int offset,
                                                int size)
 {
 	printf("//gen_call_and_assign_small_struct_to_local(%s, %d, %d)\n", fname,
 	       offset, size);
 	gen_raw_call(PREFIX, fname);
-	switch (size) {
-	case 16:
-		printf("  movq %%rax, %d(%%rbp)\n", offset);
-		printf("  movq %%rdx, %d(%%rbp)\n", offset + 8);
-		break;
-	case 12:
-		printf("  movq %%rax, %d(%%rbp)\n", offset);
-		printf("  movl %%edx, %d(%%rbp)\n", offset + 8);
-		break;
-	case 8:
-		printf("  movq %%rax, %d(%%rbp)\n", offset);
-		break;
-	case 4:
-		printf("  movl %%eax, %d(%%rbp)\n", offset);
-		break;
-	default:
-		poison_and_die("forbidden struct size as a funccall");
-	}
+	printf("  movq %%rdx, (%%rsp)\n"
+	       "  subq $8, %%rsp\n"
+	       "  movq %%rax, (%%rsp)\n"
+	       "  leaq %d(%%rbp), %%rdi\n",
+	       offset);
+	gen_memcpy("%rdi", "%rsp", size);
+
+	gen_discard();
 	gen_discard();
 }
 
@@ -644,7 +636,6 @@ void gen_call_and_assign_small_struct_to_local(const char *fname, int offset,
  *            memcpy                 *
  * pops two pointers and does memcpy *
  *************************************/
-static void gen_memcpy(const char *dst, const char *src, int size);
 
 /*
 struct Foo *dst = pop();
