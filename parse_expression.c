@@ -338,6 +338,8 @@ parse_unary_expression(const struct Token **ptr_tokvec)
 
 static struct UntypedExpr dot(const struct UntypedExpr *ref_expr,
                               const char *name);
+static struct UntypedExpr ampersand_dot(const struct UntypedExpr *ref_expr,
+                              const char *name);
 
 /* LPAREN is already consumed */
 static struct Vector /*<UntypedExpr>*/
@@ -445,7 +447,8 @@ parse_postfix_expression(const struct Token **ptr_tokvec)
 			                   "identifier after a dot operator");
 			const char *name = tokvec[-1].ident_str;
 
-			expr = dot(&expr, name);
+			const struct UntypedExpr f = ampersand_dot(&expr, name);
+			expr = unary_op_untyped(&f, OP_ASTERISK);
 		} else if (tokvec[0].kind == ARROW) {
 			++tokvec;
 
@@ -454,7 +457,8 @@ parse_postfix_expression(const struct Token **ptr_tokvec)
 			const char *name = tokvec[-1].ident_str;
 
 			const struct UntypedExpr e = unary_op_untyped(&expr, OP_ASTERISK);
-			expr = dot(&e, name);
+			const struct UntypedExpr f = ampersand_dot(&e, name);
+			expr = unary_op_untyped(&f, OP_ASTERISK);
 		} else {
 			break;
 		}
@@ -477,6 +481,23 @@ static struct UntypedExpr dot(const struct UntypedExpr *ref_expr,
 	new_expr.ident_after_dot = name;
 	return new_expr;
 }
+
+/* generates `&s.a`. necessary to support an array as a member */
+static struct UntypedExpr ampersand_dot(const struct UntypedExpr *ref_expr,
+                              const char *name)
+{
+	struct UntypedExpr *ptr_expr1 = calloc(1, sizeof(struct UntypedExpr));
+	*ptr_expr1 = *ref_expr;
+
+	struct UntypedExpr new_expr;
+	new_expr.category = AMPERSAND_DOT;
+	new_expr.ptr1 = ptr_expr1;
+	new_expr.ptr2 = 0;
+	new_expr.ptr3 = 0;
+	new_expr.ident_after_dot = name;
+	return new_expr;
+}
+
 
 static struct UntypedExpr
 parse_primary_expression(const struct Token **ptr_tokvec)

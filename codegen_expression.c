@@ -317,6 +317,12 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 		gen_push_nullptr();
 		return;
 	}
+	case PTR_STRUCT_AND_OFFSET: {
+		struct Expr expr2 = expr;
+		expr2.category = STRUCT_AND_OFFSET;
+		print_address_of_lvalue_or_struct(ptr_prs, &expr2, "member access");
+		return;
+	}
 	case STRUCT_AND_OFFSET: {
 		print_expression_as_lvalue(ptr_prs, &expr);
 		gen_discard2nd();

@@ -185,6 +185,7 @@ enum ExprCategory {
 	FPCALL_EXPR,
 	FPCALL_EXPR_RETURNING_INTEGER_CLASS,
 	FPCALL_EXPR_RETURNING_MEMORY_CLASS,
+	PTR_STRUCT_AND_OFFSET,
 };
 
 enum UntypedExprCategory {
@@ -199,7 +200,8 @@ enum UntypedExprCategory {
 	STRING_LITERAL_,
 	SIZEOF_TYPE,
 	ALIGNOF_TYPE,
-	DOT_EXPR
+	DOT_EXPR,
+	AMPERSAND_DOT,
 };
 
 enum SimpleBinOp {
