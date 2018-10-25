@@ -109,10 +109,6 @@ enum SystemVAbiClass system_v_abi_class_of(const struct AnalyzerState *ptr_ps,
 			exit(EXIT_FAILURE);
 		}
 
-		if (align_of(ptr_ps, &type) == 1) {
-			unsupported("passing/returning a struct with alignment 1");
-		}
-
 		if (size_of(ptr_ps, &type) > 2 * 8) {
 			return MEMORY_CLASS;
 		}
