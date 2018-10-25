@@ -69,6 +69,9 @@ void gen_copy_1st_struct_to_2nd_and_discard(int size);
 const char *get_reg_name_from_arg_pos_4byte(int counter);
 const char *get_reg_name_from_arg_pos_8byte(int counter);
 
+/* error */
+_Noreturn void poison_and_die(const char *msg);
+
 #ifdef OSX
 #define PREFIX "_"
 #endif
