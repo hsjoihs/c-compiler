@@ -101,6 +101,12 @@ test_all_:
 	make test_2ndgen_compiler
 	make test_include
 
+struct_test:
+	gcc -Wall -Wextra misc/smallstruct.c print_x86_64.c print_x86_64_unofficial.c $(OSFLAG) -o out/struct_codegen.out
+	echo -e '' | ./out/struct_codegen.out > s/struct.s
+	gcc s/struct.s misc/smallstruct2.c -o out/struct.out
+	./out/struct.out
+
 clean:
 	rm out/*.out s/*.s
 
