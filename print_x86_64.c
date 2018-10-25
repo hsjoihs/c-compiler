@@ -68,7 +68,7 @@ void gen_epilogue_returning_small_struct(int size, int label)
 			printf("  movl 8(%%rcx), %%edx\n");
 		} else if (size == 8) {
 			/* do nothing */
-		} 
+		}
 	} else if (size == 4) {
 		printf("  movl (%%rcx), %%eax\n");
 	} else if (size == 3) {

@@ -236,7 +236,7 @@ static void print_expression_as_lvalue(struct PrinterState *ptr_prs,
 	const struct Expr expr = *ref_expr;
 	print_address_of_lvalue_or_struct(ptr_prs, &expr, "as lvalue");
 	switch (expr.category) {
-	case FPCALL_EXPR_RETURNING_INTEGER_CLASS: 
+	case FPCALL_EXPR_RETURNING_INTEGER_CLASS:
 	case FPCALL_EXPR_RETURNING_MEMORY_CLASS:
 	case FUNCCALL_EXPR_RETURNING_INTEGER_CLASS:
 	case FUNCCALL_EXPR_RETURNING_MEMORY_CLASS: {
