@@ -8,7 +8,7 @@
  *************************/
 void gen_prologue(int alloc_size, const char *fname)
 {
-	printf("//gen_prologue(%d, %s)\n", alloc_size, fname);
+	printf("//gen_prologue(%d, \"%s\")\n", alloc_size, fname);
 	printf(".global " PREFIX "%s\n" PREFIX "%s:\n"
 	       "  pushq %%rbp\n"
 	       "  movq %%rsp, %%rbp\n",
@@ -20,7 +20,7 @@ void gen_prologue(int alloc_size, const char *fname)
 
 void gen_prologue_static(int alloc_size, const char *fname)
 {
-	printf("//gen_prologue_static(%d, %s)\n", alloc_size, fname);
+	printf("//gen_prologue_static(%d, \"%s\")\n", alloc_size, fname);
 	printf(PREFIX "%s:\n"
 	              "  pushq %%rbp\n"
 	              "  movq %%rsp, %%rbp\n",
