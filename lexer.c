@@ -224,12 +224,13 @@ static struct Token get_token_raw(const char **ptr_to_str)
 	}
 
 	if (*str == 39) {
+		str++;
 		if (*str == 92) {
 			unsupported("escape sequence in character literal");
-		} else if (str[2] == 39) {
+		} else if (str[1] == 39) {
 			t.kind = LIT_DEC_INTEGER;
-			t.int_value = str[1];
-			str += 3;
+			t.int_value = str[0];
+			str += 2;
 			*ptr_to_str = str;
 			return t;
 		} else {
