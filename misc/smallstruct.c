@@ -16,7 +16,7 @@ struct A derefn(struct A *p)
 */
 
 	for (int n = 1; n <= 16; n++) {
-		if (n % 4 && n >= 5) { continue; }
+		if (n % 4 && n >= 9) { continue; }
 		char str[8];
 		sprintf(str, "deref%d", n);
 		gen_prologue(8, str);

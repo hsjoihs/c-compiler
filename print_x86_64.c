@@ -60,6 +60,7 @@ void gen_epilogue_returning_small_struct(int size, int label)
 	printf(".L%d:", label);
 
 	puts("  movq (%rsp), %rcx");
+
 	if (size >= 8) {
 		printf("  movq (%%rcx), %%rax\n");
 		if (size == 16) {
@@ -69,20 +70,35 @@ void gen_epilogue_returning_small_struct(int size, int label)
 		} else if (size == 8) {
 			/* do nothing */
 		}
+	} else if (size == 7) {
+		puts("  movl (%rcx), %eax\n"
+		     "  movzwl 4(%rcx), %edi\n"
+		     "  movzbl 6(%rcx), %esi\n"
+		     "  shll $16, %esi\n"
+		     "  orl %esi,  %edi\n"
+		     "  shlq $32, %rdi\n"
+		     "  orq %rdi, %rax\n");
+	} else if (size == 6) {
+		puts("  movl (%rcx), %eax\n"
+		     "  movzwl 4(%rcx), %edi\n"
+		     "  shlq $32, %rdi\n"
+		     "  orq %rdi, %rax\n");
+	} else if (size == 5) {
+		puts("  movl (%rcx), %eax\n"
+		     "  movzbl 4(%rcx), %edi\n"
+		     "  shlq $32, %rdi\n"
+		     "  orq %rdi, %rax\n");
 	} else if (size == 4) {
 		printf("  movl (%%rcx), %%eax\n");
 	} else if (size == 3) {
-		printf(
-			"  movzwl 2(%%rcx), %%edx\n"
-			"  shll $16, %%edx\n"
-			"  movzwl (%%rcx), %%esi\n"
-			"  orl %%edx, %%esi\n"
-			"  movl %%esi, %%eax\n"
-			);
+		printf("  movzwl (%%rcx), %%eax\n"
+		       "  movzbl 2(%%rcx), %%edi\n"
+		       "  shll $16, %%edi\n"
+		       "  orl %%edi, %%eax\n");
 	} else if (size == 2) {
-		printf("  movw (%%rcx), %%ax\n");
+		printf("  movzwl (%%rcx), %%eax\n");
 	} else if (size == 1) {
-		printf("  movb (%%rcx), %%al\n");
+		printf("  movzbl (%%rcx), %%eax\n");
 	} else {
 		poison_and_die(
 		    "returning a struct that has alignment 1 is unsupported");
