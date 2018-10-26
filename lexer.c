@@ -487,48 +487,37 @@ static struct Token get_token_raw(const char **ptr_to_str)
 		if (str[1] == 'x' || str[1] == 'X') {
 			str += 2;
 			/* hexadecimal */
-			do {
-				if (from_hex(*str) == -1) {
-					*ptr_to_str = str;
-					return t;
-				}
+			for (; from_hex(*str) != -1; ++str) {
 				t.int_value *= 16;
 				t.int_value += from_hex(*str);
-				++str;
-			} while (1);
+			}
+			*ptr_to_str = str;
+			return t;
 		} else {
 			++str;
+			/* portable, since it is guaranteed
+			                          that '0' - '9' are consecutive */
 
-			do {
-				if (*str >= '0' &&
-				    *str <= '7') { /* portable, since it is guaranteed
-					                  that '0' - '9' are consecutive */
-					t.int_value *= 8;
-					t.int_value += *str - '0'; /* portable */
-					++str;
-				} else {
-					*ptr_to_str = str;
-					return t;
-				}
-			} while (1);
+			for (; *str >= '0' && *str <= '7'; ++str) {
+				t.int_value *= 8;
+				t.int_value += *str - '0'; /* portable */
+			}
+			*ptr_to_str = str;
+			return t;
 		}
 	}
 
 	if (*str >= '1' && *str <= '9') {
 		t.kind = LIT_DEC_INTEGER;
 		t.int_value = 0;
-		do {
-			if (*str >= '0' &&
-			    *str <= '9') { /* portable, since it is guaranteed that
-				                  '0' - '9' are consecutive */
-				t.int_value *= 10;
-				t.int_value += *str - '0'; /* portable */
-				++str;
-			} else {
-				*ptr_to_str = str;
-				return t;
-			}
-		} while (1);
+		/* portable, since it is guaranteed that
+		                          '0' - '9' are consecutive */
+		for (; *str >= '0' && *str <= '9'; ++str) {
+			t.int_value *= 10;
+			t.int_value += *str - '0'; /* portable */
+		}
+		*ptr_to_str = str;
+		return t;
 	}
 
 	if (strchr("_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", *str) !=
