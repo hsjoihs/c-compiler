@@ -145,7 +145,15 @@ void print_address_of_lvalue_or_struct(struct PrinterState *ptr_prs,
 		return;
 	}
 	case FPCALL_EXPR_RETURNING_INTEGER_CLASS: {
-		unsupported("FPCALL_EXPR_RETURNING_INTEGER_CLASS");
+		print_expression(ptr_prs, expr.ptr1);
+		pass_args(ptr_prs, &expr.args);
+		gen_pop_to_reg_8byte("r11");
+
+		int size = expr.size_info_for_struct_assign;
+		gen_call_reg_and_assign_small_struct_to_local(
+		    "r11", expr.local_var_offset, size);
+		gen_push_address_of_local(expr.local_var_offset);
+		return;
 	}
 	case FPCALL_EXPR_RETURNING_MEMORY_CLASS: {
 		print_expression(ptr_prs, expr.ptr1);

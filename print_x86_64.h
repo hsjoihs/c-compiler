@@ -60,6 +60,8 @@ void gen_write_register_to_local_4byte(const char *str, int offset);
 void gen_write_register_to_local_8byte(const char *str, int offset);
 void gen_call_and_assign_small_struct_to_local(const char *fname, int offset,
                                                int size);
+void gen_call_reg_and_assign_small_struct_to_local(const char *regname,
+                                                   int offset, int size);
 
 /* memcpy: pops two pointers and does memcpy */
 void gen_copy_2nd_struct_to_1st_and_discard(int size);

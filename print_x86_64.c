@@ -618,9 +618,26 @@ static void gen_memcpy(const char *dst, const char *src, int size);
 void gen_call_and_assign_small_struct_to_local(const char *fname, int offset,
                                                int size)
 {
-	printf("//gen_call_and_assign_small_struct_to_local(\"%s\", %d, %d)\n", fname,
-	       offset, size);
+	printf("//gen_call_and_assign_small_struct_to_local(\"%s\", %d, %d)\n",
+	       fname, offset, size);
 	gen_raw_call(PREFIX, fname);
+	printf("  movq %%rdx, (%%rsp)\n"
+	       "  subq $8, %%rsp\n"
+	       "  movq %%rax, (%%rsp)\n"
+	       "  leaq %d(%%rbp), %%rdi\n",
+	       offset);
+	gen_memcpy("%rdi", "%rsp", size);
+
+	gen_discard();
+	gen_discard();
+}
+
+void gen_call_reg_and_assign_small_struct_to_local(const char *regname,
+                                                   int offset, int size)
+{
+	printf("//gen_call_reg_and_assign_small_struct_to_local(\"%s\", %d, %d)\n",
+	       regname, offset, size);
+	gen_raw_call("*%", regname);
 	printf("  movq %%rdx, (%%rsp)\n"
 	       "  subq $8, %%rsp\n"
 	       "  movq %%rax, (%%rsp)\n"
