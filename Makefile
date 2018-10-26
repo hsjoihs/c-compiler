@@ -109,7 +109,7 @@ struct_test:
 	./out/struct.out
 
 clean:
-	rm out/*.out s/*.s
+	rm out/*.out s/*.s self_compile_asm/*.s
 
 verify_typeparse:
 	gcc -Wall -Wextra $(OSFLAG) vector.c verifier/typeparse_checker.c lexer.c type.c parse_type.c error.c map.c file_io.c cpp.c -o out/typeparse_check.out
