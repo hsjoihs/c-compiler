@@ -103,9 +103,9 @@ try_parse_type_specifier_and_semicolon(const struct Token **ptr_tokvec)
 	if (tokvec3[0].kind != SEMICOLON) {
 		return 0;
 	}
-		++tokvec3;
-		*ptr_tokvec = tokvec3;
-		return ptr_type;
+	++tokvec3;
+	*ptr_tokvec = tokvec3;
+	return ptr_type;
 }
 
 struct Type *parse_type_specifier(const struct Token **ptr_tokvec)
