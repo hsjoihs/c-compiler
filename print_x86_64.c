@@ -112,8 +112,9 @@ void gen_epilogue_returning_small_struct(int size, int label)
 	       "  ret\n");
 }
 
-void return_garbage(void)
+void gen_return_garbage(void)
 {
+	printf("//gen_return_garbage()\n");
 	printf("  movl $123, %%eax\n"
 	       "leave\n"
 	       "ret\n");

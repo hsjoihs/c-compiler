@@ -3,7 +3,7 @@ void gen_prologue(int alloc_size, const char *fname);
 void gen_prologue_static(int alloc_size, const char *fname);
 void gen_epilogue_nbyte(int n, int label_name);
 void gen_epilogue_returning_small_struct(int size, int label);
-void return_garbage(void);
+void gen_return_garbage(void);
 
 /* push: decreases stack pointer by 8 */
 void gen_push_int(int num);
