@@ -199,12 +199,10 @@ void print_address_of_lvalue_or_struct(struct PrinterState *ptr_prs,
 		return;
 	}
 	case UNARY_OP_EXPR:
-		switch (expr.unary_operator) {
-		case UNARY_OP_ASTERISK: {
+		if (expr.unary_operator == UNARY_OP_ASTERISK) {
 			print_expression(ptr_prs, expr.ptr1);
 			return;
-		}
-		default:
+		} else {
 			simple_error("the only unary operator that can create "
 			             "lvalue is `*`\n");
 		}
@@ -265,13 +263,11 @@ static void print_expression_as_lvalue(struct PrinterState *ptr_prs,
 		return;
 	}
 	case UNARY_OP_EXPR:
-		switch (expr.unary_operator) {
-		case UNARY_OP_ASTERISK: {
+		if (expr.unary_operator == UNARY_OP_ASTERISK) {
 			gen_peek_deref_push_nbyte(
 			    size_of_basic(&expr.details.type, "*expr as lvalue"));
 			return;
-		}
-		default:
+		} else {
 			simple_error("the only unary operator that can create "
 			             "lvalue is `*`\n");
 		}
@@ -584,12 +580,9 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 		pass_args(ptr_prs, &expr.args);
 		gen_pop_to_reg_8byte("r11");
 
-		int size;
-		if (ret_type.type_category != VOID_) {
-			size = size_of_basic(&ret_type, "return value");
-		} else {
-			size = 4; /* for convenience */
-		}
+		int size = ret_type.type_category == VOID_
+		               ? 4 /* for convenience */
+		               : size_of_basic(&ret_type, "return value");
 
 		gen_call_reg_and_push_ret_of_nbyte(size, "r11");
 
@@ -601,12 +594,10 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 
 		pass_args(ptr_prs, &expr.args);
 
-		int size;
-		if (ret_type.type_category != VOID_) {
-			size = size_of_basic(&ret_type, "return value");
-		} else {
-			size = 4; /* for convenience */
-		}
+		int size = ret_type.type_category == VOID_
+		               ? 4 /* for convenience */
+		               : size_of_basic(&ret_type, "return value");
+
 		gen_push_ret_of_nbyte(size, ident_str);
 
 		return;

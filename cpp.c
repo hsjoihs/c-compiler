@@ -72,13 +72,12 @@ static void skip_till_corresponding_endif(const struct Token **ptr_src)
 			consume_spaces(&src);
 
 			if (src[0].kind == END) {
-				if (ifdef_depth == 1) {
-					*ptr_src = src;
-					return;
-				} else {
+				if (ifdef_depth != 1) {
 					fprintf(stderr, "insufficient `#endif`.\n");
 					exit(EXIT_FAILURE);
 				}
+				*ptr_src = src;
+				return;
 			}
 
 			if (src[0].kind != NEWLINE) {

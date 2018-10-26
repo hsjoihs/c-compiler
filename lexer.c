@@ -484,14 +484,13 @@ static struct Token get_token_raw(const char **ptr_to_str)
 			str += 2;
 			/* hexadecimal */
 			do {
-				if (from_hex(*str) != -1) {
-					t.int_value *= 16;
-					t.int_value += from_hex(*str);
-					++str;
-				} else {
+				if (from_hex(*str) == -1) {
 					*ptr_to_str = str;
 					return t;
 				}
+				t.int_value *= 16;
+				t.int_value += from_hex(*str);
+				++str;
 			} while (1);
 		} else {
 			++str;

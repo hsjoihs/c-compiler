@@ -295,6 +295,7 @@ static void print_toplevel_definition(struct PrinterState *ptr_prs,
 			gen_write_register_to_local_1byte(
 			    /* yes, the register is 4byte */
 			    get_reg_name_from_arg_pos_4byte(counter), offset);
+			break;
 		case 4:
 			gen_write_register_to_local_4byte(
 			    get_reg_name_from_arg_pos_4byte(counter), offset);

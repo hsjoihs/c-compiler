@@ -213,8 +213,6 @@ parse_logical_AND_expression(const struct Token **ptr_tokvec)
 {
 	const struct Token *tokvec = *ptr_tokvec;
 
-	int counter = 0;
-
 	struct UntypedExpr first_expr = parse_inclusive_OR_expression(&tokvec);
 
 	while (1) {
@@ -226,7 +224,6 @@ parse_logical_AND_expression(const struct Token **ptr_tokvec)
 		++tokvec;
 
 		struct UntypedExpr expr2 = parse_inclusive_OR_expression(&tokvec);
-		++counter;
 
 		first_expr = binary_op_untyped(&first_expr, &expr2, OP_AND_AND);
 	}
