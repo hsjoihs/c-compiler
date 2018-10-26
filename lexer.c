@@ -59,6 +59,10 @@ char *unescape(const char *str)
 			case 39:
 				ans[j] = 39;
 				break;
+			default:
+				fprintf(stderr, "unsupported: escape sequence `\\%c`\n",
+				        str[i + 1]);
+				exit(EXIT_FAILURE);
 			}
 			i += 2;
 			j++;
