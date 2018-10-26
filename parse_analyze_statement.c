@@ -110,13 +110,13 @@ struct Statement parse_statement(struct AnalyzerState *ptr_ps,
 			push_vector(&s.statement_vector, ptr_inner_s);
 			push_vector(&s.statement_vector, ptr_inner_s2);
 			return s;
-		} else {
+		} 
 
 			*ptr_tokvec = tokvec;
 			s.category = IF_STATEMENT;
 			s.inner_statement = ptr_inner_s;
 			return s;
-		}
+		
 	}
 
 	if (tokvec[0].kind == RES_SWITCH) {
