@@ -40,5 +40,6 @@ int vprintf(const char *format, struct va_list_tag arg[1]);
 char *fgets(char *buf, int a, struct __FILE *fp);
 int puts(const char *str);
 struct __FILE *fopen(const char *filename, const char *mode);
+int fclose(struct __FILE *stream);
 
 #endif

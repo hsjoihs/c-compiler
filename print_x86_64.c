@@ -2,6 +2,13 @@
 #include "print_x86_64_unofficial.h"
 #include "std.h"
 #include "std_io.h"
+static void memo(const char *msg)
+{
+	struct __FILE *f = fopen("file.txt", "a");
+	fprintf(f, "%s\n", msg);
+	fclose(f);
+}
+
 _Noreturn void poison_and_die(const char *msg)
 {
 	printf(" %%%%%%error detected (%s). Poisoning the assembly:\n", msg);
@@ -13,6 +20,7 @@ _Noreturn void poison_and_die(const char *msg)
  *************************/
 void gen_prologue(int alloc_size, const char *fname)
 {
+	memo(__func__);
 	printf("//gen_prologue(%d, \"%s\")\n", alloc_size, fname);
 	printf(".global " PREFIX "%s\n" PREFIX "%s:\n"
 	       "  pushq %%rbp\n"
@@ -25,6 +33,7 @@ void gen_prologue(int alloc_size, const char *fname)
 
 void gen_prologue_static(int alloc_size, const char *fname)
 {
+	memo(__func__);
 	printf("//gen_prologue_static(%d, \"%s\")\n", alloc_size, fname);
 	printf(PREFIX "%s:\n"
 	              "  pushq %%rbp\n"
@@ -37,6 +46,7 @@ void gen_prologue_static(int alloc_size, const char *fname)
 
 void gen_epilogue_nbyte(int n, int label_name)
 {
+	memo(__func__);
 	switch (n) {
 	case 1:
 	case 4:
@@ -96,6 +106,7 @@ return *p;
 */
 void gen_epilogue_returning_small_struct(int size, int label)
 {
+	memo(__func__);
 	printf("//gen_epilogue_returning_small_struct(%d, %d)\n", size, label);
 	printf(".L%d:", label);
 
@@ -114,6 +125,7 @@ void gen_epilogue_returning_small_struct(int size, int label)
 
 void gen_return_garbage(void)
 {
+	memo(__func__);
 	printf("//gen_return_garbage()\n");
 	printf("  movl $123, %%eax\n"
 	       "  leave\n"
@@ -127,6 +139,7 @@ void gen_return_garbage(void)
 
 void gen_push_int(int num)
 {
+	memo(__func__);
 	printf("//gen_push_int(%d)\n", num);
 	printf("  subq $8, %%rsp\n"
 	       "  movl $%d, (%%rsp)\n",
@@ -135,6 +148,7 @@ void gen_push_int(int num)
 
 void gen_push_address_of_local(int offset)
 {
+	memo(__func__);
 	assert(offset < 0);
 	printf("//gen_push_address_of_local(%d);\n", offset);
 	printf("  subq $8, %%rsp\n"
@@ -145,6 +159,7 @@ void gen_push_address_of_local(int offset)
 
 void gen_push_address_of_str(int strnum)
 {
+	memo(__func__);
 	printf("//gen_push_address_of_str(%d)\n", strnum);
 	printf("  subq $8, %%rsp\n"
 	       "  leaq L_str%d(%%rip), %%rax\n"
@@ -154,6 +169,7 @@ void gen_push_address_of_str(int strnum)
 
 void gen_push_from_local_nbyte(int n, int offset)
 {
+	memo(__func__);
 	switch (n) {
 	case 1:
 		gen_push_from_local_1byte(offset);
@@ -172,6 +188,7 @@ void gen_push_from_local_nbyte(int n, int offset)
 /* confirmed in both environments */
 void gen_push_address_of_global(const char *ident)
 {
+	memo(__func__);
 	printf("//gen_push_address_of_global(\"%s\");\n", ident);
 	printf("  subq $8, %%rsp\n");
 #ifdef OSX
@@ -185,6 +202,7 @@ void gen_push_address_of_global(const char *ident)
 
 void gen_push_ret_of_nbyte(int n, const char *ident_str)
 {
+	memo(__func__);
 	switch (n) {
 	case 1:
 		gen_push_ret_of_1byte(ident_str);
@@ -202,6 +220,7 @@ void gen_push_ret_of_nbyte(int n, const char *ident_str)
 
 void gen_push_nullptr(void)
 {
+	memo(__func__);
 	printf("//gen_push_nullptr()\n");
 	printf("  subq $8, %%rsp\n"
 	       "  movq $0, (%%rsp)\n");
@@ -209,6 +228,7 @@ void gen_push_nullptr(void)
 
 void gen_call_reg_and_push_ret_of_nbyte(int n, const char *reg)
 {
+	memo(__func__);
 	switch (n) {
 	case 1:
 		gen_call_reg_and_push_ret_of_1byte(reg);
@@ -226,6 +246,7 @@ void gen_call_reg_and_push_ret_of_nbyte(int n, const char *reg)
 
 void gen_peek_deref_push_nbyte(int n)
 {
+	memo(__func__);
 	switch (n) {
 	case 1:
 		gen_peek_deref_push_1byte();
@@ -249,6 +270,7 @@ void gen_peek_deref_push_nbyte(int n)
 
 void gen_jump(int label, const char *comment)
 {
+	memo(__func__);
 	printf("//comment: %s\n", comment);
 	printf("  jmp .L%d\n", label);
 }
@@ -269,6 +291,7 @@ static const char *cmp(int n)
 
 void gen_if_zero_jmp_nbyte(int n, int label1, int offset)
 {
+	memo(__func__);
 	printf("//gen_if_zero_jmp_nbyte(%d, %d, %d)\n", n, label1, offset);
 	printf("  %s $0, %d(%%rsp)\n", cmp(n), offset);
 	printf("  je .L%d\n", label1);
@@ -276,6 +299,7 @@ void gen_if_zero_jmp_nbyte(int n, int label1, int offset)
 
 void gen_if_nonzero_jmp_nbyte(int n, int label1, int offset)
 {
+	memo(__func__);
 	printf("//gen_if_nonzero_jmp_1byte(%d, %d, %d)\n", n, label1, offset);
 	printf("  %s $0, %d(%%rsp)\n", cmp(n), offset);
 	printf("  jne .L%d\n", label1);
@@ -283,6 +307,7 @@ void gen_if_nonzero_jmp_nbyte(int n, int label1, int offset)
 
 void gen_if_2nd_matches_int_jmp_4byte(int constant1, int label1)
 {
+	memo(__func__);
 	printf("//gen_if_2nd_matches_int_jmp_4byte(%d, %d)\n", constant1, label1);
 	printf("  cmpl $%d, -8(%%rsp)\n"
 	       "  je .L%d\n",
@@ -291,6 +316,7 @@ void gen_if_2nd_matches_int_jmp_4byte(int constant1, int label1)
 
 void gen_label(int label1)
 {
+	memo(__func__);
 	printf("//gen_label(%d)\n", label1);
 	printf(".L%d:\n", label1);
 }
@@ -303,6 +329,7 @@ void gen_label(int label1)
 
 void gen_op_ints(const char *str)
 {
+	memo(__func__);
 	printf("//gen_op_ints(\"%s\")\n", str);
 	printf("  movl (%%rsp), %%eax\n"
 	       "  %s %%eax, 8(%%rsp)\n"
@@ -318,6 +345,7 @@ setge: greater than or eq
 */
 void gen_compare_ints(const char *str)
 {
+	memo(__func__);
 	printf("//gen_compare_ints(\"%s\")\n", str);
 	printf("  movl 8(%%rsp), %%eax\n"
 	       "  cmpl (%%rsp), %%eax\n"
@@ -330,6 +358,7 @@ void gen_compare_ints(const char *str)
 
 void gen_mul_ints(void)
 {
+	memo(__func__);
 	printf("//gen_mul_ints()\n");
 	printf("  movl 8(%%rsp), %%eax\n"
 	       "  imull (%%rsp), %%eax\n"
@@ -339,6 +368,7 @@ void gen_mul_ints(void)
 
 void gen_div_ints(void)
 {
+	memo(__func__);
 	printf("//gen_div_ints()\n");
 	printf("  movl 8(%%rsp), %%eax\n"
 	       "  cltd\n"
@@ -349,6 +379,7 @@ void gen_div_ints(void)
 
 void gen_rem_ints(void)
 {
+	memo(__func__);
 	printf("//gen_rem_ints()\n");
 	printf("  movl 8(%%rsp), %%eax\n"
 	       "  cltd\n"
@@ -363,6 +394,7 @@ sarl: right shift
 */
 void gen_shift_ints(const char *str)
 {
+	memo(__func__);
 	printf("//gen_shift_ints(\"%s\")\n", str);
 	printf("  movl (%%rsp), %%eax\n"
 	       "  movl %%eax, %%ecx\n"
@@ -373,12 +405,14 @@ void gen_shift_ints(const char *str)
 
 void gen_discard(void)
 {
+	memo(__func__);
 	printf("//gen_discard()\n");
 	printf("  addq $8, %%rsp\n");
 }
 
 void gen_discard2nd(void)
 {
+	memo(__func__);
 	printf("//gen_discard2nd()\n");
 	printf("  movq (%%rsp), %%rax\n"
 	       "  movq %%rax, 8(%%rsp)\n"
@@ -395,6 +429,7 @@ void gen_discard2nd(void)
 */
 void gen_compare_ptrs(const char *str)
 {
+	memo(__func__);
 	printf("//gen_compare_ptrs(\"%s\")\n", str);
 	puts("  movq 8(%rsp), %rax\n"
 	     "  cmpq (%rsp), %rax");
@@ -412,6 +447,7 @@ void gen_compare_ptrs(const char *str)
 */
 void gen_assign_nbyte(int n)
 {
+	memo(__func__);
 	switch (n) {
 	case 1:
 		gen_assign_1byte();
@@ -429,6 +465,7 @@ void gen_assign_nbyte(int n)
 
 void gen_op_8byte(const char *str)
 {
+	memo(__func__);
 	printf("//gen_op_8byte(\"%s\")\n", str);
 	printf("  movq (%%rsp), %%rax\n"
 	       "  %s %%rax, 8(%%rsp)\n"
@@ -444,6 +481,7 @@ void gen_op_8byte(const char *str)
 
 void gen_cltq(void)
 {
+	memo(__func__);
 	printf("//gen_cltq()\n");
 	printf("  movl (%%rsp), %%eax\n"
 	       "  cltq\n"
@@ -452,6 +490,7 @@ void gen_cltq(void)
 
 void gen_unary_not(void)
 {
+	memo(__func__);
 	printf("//gen_unary_not()\n");
 	printf("  cmpl $0, (%%rsp)\n"
 	       "  sete %%al\n"
@@ -465,12 +504,14 @@ negl: integer negation
 */
 void gen_unary(const char *str)
 {
+	memo(__func__);
 	printf("//gen_unary(\"%s\")\n", str);
 	printf("  %s (%%rsp)\n", str);
 }
 
 void gen_extend_to_4byte(void)
 {
+	memo(__func__);
 	printf("//gen_extend_to_4byte()\n");
 	printf("  movsbl (%%rsp), %%eax\n"
 	       "  movl %%eax, (%%rsp)\n");
@@ -478,6 +519,7 @@ void gen_extend_to_4byte(void)
 
 void gen_mul_by_const(int mul)
 {
+	memo(__func__);
 	printf("//gen_mul_by_const(%d)\n", mul);
 	printf("  movq (%%rsp), %%rax\n");
 	printf((mul == 1 || mul == 2 || mul == 4 || mul == 8)
@@ -490,6 +532,7 @@ void gen_mul_by_const(int mul)
 
 void gen_div_by_const(int num)
 {
+	memo(__func__);
 	if (num == 1) { /* do nothing */
 		return;
 	}
@@ -521,6 +564,7 @@ void gen_div_by_const(int num)
 
 void gen_logical_not_of_pointer(void)
 {
+	memo(__func__);
 	printf("//gen_logical_not_of_pointer()\n");
 	puts("  cmpq $0, (%rsp)\n"
 	     "  sete %al\n"
@@ -533,6 +577,7 @@ void gen_logical_not_of_pointer(void)
  */
 void gen_peek_and_dereference_nbyte(int n)
 {
+	memo(__func__);
 	switch (n) {
 	case 1:
 		gen_peek_and_dereference_1byte();
@@ -555,6 +600,7 @@ void gen_peek_and_dereference_nbyte(int n)
 
 void gen_string_literal(int strnum, const char *str)
 {
+	memo(__func__);
 	printf("//gen_string_literal(%d, escape(\"%s\"))\n", strnum, str);
 	printf("L_str%d:\n"
 	       ".asciz \"%s\"\n",
@@ -563,6 +609,7 @@ void gen_string_literal(int strnum, const char *str)
 
 void gen_global_declaration(const char *ident, int size)
 {
+	memo(__func__);
 	printf("//gen_global_declaration(\"%s\", %d)\n", ident, size);
 	printf(".comm " PREFIX "%s,%d\n", ident, size);
 }
@@ -574,6 +621,7 @@ void gen_global_declaration(const char *ident, int size)
 
 void gen_pop_to_reg_4byte(const char *str)
 {
+	memo(__func__);
 	printf("//gen_pop_to_reg_4byte(\"%s\")\n", str);
 	printf("  movl (%%rsp), %%%s\n", str);
 	printf("  addq $8, %%rsp\n");
@@ -581,6 +629,7 @@ void gen_pop_to_reg_4byte(const char *str)
 
 void gen_pop_to_reg_8byte(const char *str)
 {
+	memo(__func__);
 	printf("//gen_pop_to_reg_8byte(\"%s\")\n", str);
 	printf("  movq (%%rsp), %%%s\n", str);
 	printf("  addq $8, %%rsp\n");
@@ -594,6 +643,7 @@ void gen_pop_to_reg_8byte(const char *str)
 /* write to local mem what's in the register */
 void gen_write_register_to_local_1byte(const char *str, int offset)
 {
+	memo(__func__);
 	assert(offset < 0);
 	printf("//gen_write_register_to_local_1byte(\"%s\", %d)\n", str, offset);
 	printf("  movl %%%s, %%eax\n"
@@ -602,6 +652,7 @@ void gen_write_register_to_local_1byte(const char *str, int offset)
 }
 void gen_write_register_to_local_4byte(const char *str, int offset)
 {
+	memo(__func__);
 	assert(offset < 0);
 	printf("//gen_write_register_to_local_4byte(\"%s\", %d)\n", str, offset);
 	printf("  movl %%%s, %d(%%rbp)\n", str, offset);
@@ -609,6 +660,7 @@ void gen_write_register_to_local_4byte(const char *str, int offset)
 
 void gen_write_register_to_local_8byte(const char *str, int offset)
 {
+	memo(__func__);
 	assert(offset < 0);
 	printf("//gen_write_register_to_local_8byte(\"%s\", %d)\n", str, offset);
 	printf("  movq %%%s, %d(%%rbp)\n", str, offset);
@@ -619,6 +671,7 @@ static void gen_memcpy(const char *dst, const char *src, int size);
 void gen_call_and_assign_small_struct_to_local(const char *fname, int offset,
                                                int size)
 {
+	memo(__func__);
 	printf("//gen_call_and_assign_small_struct_to_local(\"%s\", %d, %d)\n",
 	       fname, offset, size);
 	gen_raw_call(PREFIX, fname);
@@ -636,6 +689,7 @@ void gen_call_and_assign_small_struct_to_local(const char *fname, int offset,
 void gen_call_reg_and_assign_small_struct_to_local(const char *regname,
                                                    int offset, int size)
 {
+	memo(__func__);
 	printf("//gen_call_reg_and_assign_small_struct_to_local(\"%s\", %d, %d)\n",
 	       regname, offset, size);
 	gen_raw_call("*%", regname);
@@ -663,6 +717,7 @@ struct Foo *src = pop();
 */
 void gen_copy_2nd_struct_to_1st_and_discard(int size)
 {
+	memo(__func__);
 	printf("//gen_copy_2nd_struct_to_1st_and_discard(%d)\n", size);
 	gen_memcpy("(%rsp)", "8(%rsp)", size);
 	printf("  addq $16, %%rsp\n");
@@ -676,6 +731,7 @@ struct Foo *dst = pop();
 */
 void gen_copy_1st_struct_to_2nd_and_discard(int size)
 {
+	memo(__func__);
 	printf("//gen_copy_1st_struct_to_2nd_and_discard(%d)\n", size);
 	gen_memcpy("8(%rsp)", "(%rsp)", size);
 	printf("  addq $16, %%rsp\n");
@@ -720,6 +776,7 @@ static void gen_memcpy(const char *dst, const char *src, int size)
 
 void gen_write_stack_chk_guard_to_local(int offset)
 {
+	memo(__func__);
 	printf("//%s(%d)\n", __func__, offset);
 #ifdef OSX
 	puts("  movq ___stack_chk_guard@GOTPCREL(%rip), %rax\n"
@@ -738,6 +795,7 @@ void gen_epilogue_nbyte_with_stack_check(int n, int return_label_name,
                                          int checksum_offset,
                                          int failing_label_name)
 {
+	memo(__func__);
 	printf("//%s(%d, %d, %d, %d)\n", __func__, n, return_label_name,
 	       checksum_offset, failing_label_name);
 #ifdef OSX
@@ -760,6 +818,7 @@ void gen_epilogue_nbyte_with_stack_check(int n, int return_label_name,
 
 void gen_store_regs_to_local(int offset, int start_from, int label_name)
 {
+	memo(__func__);
 	printf("//%s(%d, %d, %d)\n", __func__, offset, start_from, label_name);
 	puts("  testb %al, %al");
 	for (int i = start_from; i <= 5; i++) {
@@ -776,6 +835,7 @@ void gen_store_regs_to_local(int offset, int start_from, int label_name)
 /* stack top has va_list, and this function will pour contents to there */
 void gen_va_start(int gp_offset, int fp_offset, int reg_save_area_offset)
 {
+	memo(__func__);
 	printf("//%s(%d, %d, %d)\n", __func__, gp_offset, fp_offset,
 	       reg_save_area_offset);
 	printf("  movq (%%rsp), %%rdx\n");
