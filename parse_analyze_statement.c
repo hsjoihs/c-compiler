@@ -76,11 +76,13 @@ struct Statement parse_statement(struct AnalyzerState *ptr_ps,
 	    (tokvec[0].kind == IDENT_OR_RESERVED && tokvec[1].kind == COLON)) {
 		return parse_labeled_statement(ptr_ps, ptr_tokvec);
 	}
-	if (tokvec[0].kind == LEFT_BRACE) {
+
+	switch(tokvec[0].kind){
+	case LEFT_BRACE: {
 		return parse_compound_statement(ptr_ps, ptr_tokvec);
 	}
 
-	if (tokvec[0].kind == RES_IF) { /* or SWITCH */
+	case RES_IF: {
 		++tokvec;
 		expect_and_consume(&tokvec, LEFT_PAREN,
 		                   "left parenthesis immediately after `if`");
@@ -118,7 +120,7 @@ struct Statement parse_statement(struct AnalyzerState *ptr_ps,
 		return s;
 	}
 
-	if (tokvec[0].kind == RES_SWITCH) {
+	case RES_SWITCH: {
 		++tokvec;
 		expect_and_consume(&tokvec, LEFT_PAREN,
 		                   "left parenthesis immediately after `switch`");
@@ -145,7 +147,7 @@ struct Statement parse_statement(struct AnalyzerState *ptr_ps,
 		return s;
 	}
 
-	if (tokvec[0].kind == RES_RETURN) {
+	case RES_RETURN: {
 		++tokvec;
 		*ptr_tokvec = tokvec;
 		struct Statement s;
@@ -180,7 +182,7 @@ struct Statement parse_statement(struct AnalyzerState *ptr_ps,
 		return s;
 	}
 
-	if (tokvec[0].kind == RES_DO) {
+	case RES_DO: {
 		++tokvec;
 
 		struct Statement inner_s = parse_statement(ptr_ps, &tokvec);
@@ -209,7 +211,7 @@ struct Statement parse_statement(struct AnalyzerState *ptr_ps,
 		return s;
 	}
 
-	if (tokvec[0].kind == RES_WHILE) {
+	case RES_WHILE: {
 		++tokvec;
 
 		expect_and_consume(&tokvec, LEFT_PAREN, "left parenthesis of while");
@@ -236,7 +238,7 @@ struct Statement parse_statement(struct AnalyzerState *ptr_ps,
 		return s;
 	}
 
-	if (tokvec[0].kind == RES_BREAK) {
+	case RES_BREAK: {
 		++tokvec;
 		expect_and_consume(&tokvec, SEMICOLON, "semicolon after `break`");
 		*ptr_tokvec = tokvec;
@@ -247,7 +249,7 @@ struct Statement parse_statement(struct AnalyzerState *ptr_ps,
 		return s;
 	}
 
-	if (tokvec[0].kind == RES_CONTINUE) {
+	case RES_CONTINUE: {
 		++tokvec;
 		expect_and_consume(&tokvec, SEMICOLON, "semicolon after `continue`");
 		*ptr_tokvec = tokvec;
@@ -258,7 +260,7 @@ struct Statement parse_statement(struct AnalyzerState *ptr_ps,
 		return s;
 	}
 
-	if (tokvec[0].kind == RES_FOR) {
+	case RES_FOR: {
 
 		++tokvec;
 		expect_and_consume(&tokvec, LEFT_PAREN, "left parenthesis of `for`");
@@ -337,18 +339,21 @@ struct Statement parse_statement(struct AnalyzerState *ptr_ps,
 		return statement;
 	}
 
-	const struct UntypedExpr uexpr = parse_expression(&tokvec);
-	struct Expr expr = typecheck_expression(ptr_ps, &uexpr);
+	default: {
+		const struct UntypedExpr uexpr = parse_expression(&tokvec);
+		struct Expr expr = typecheck_expression(ptr_ps, &uexpr);
 
-	expect_and_consume(&tokvec, SEMICOLON, "semicolon after an expression");
+		expect_and_consume(&tokvec, SEMICOLON, "semicolon after an expression");
 
-	*ptr_tokvec = tokvec;
+		*ptr_tokvec = tokvec;
 
-	struct Statement s;
-	s.labels = init_vector();
-	s.category = EXPRESSION_STATEMENT;
-	s.expr1 = expr;
-	return s;
+		struct Statement s;
+		s.labels = init_vector();
+		s.category = EXPRESSION_STATEMENT;
+		s.expr1 = expr;
+		return s;
+	}
+	}
 }
 
 static struct Expr *declare_var_and_return_initializer(
