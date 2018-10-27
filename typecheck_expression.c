@@ -573,10 +573,10 @@ struct Expr typecheck_unary_expression(const struct AnalyzerState *ptr_ps,
 }
 
 struct Expr
-foo(struct AnalyzerState *ptr_ps, const struct Type *ref_ret_type,
-
-    const struct Vector /*<TypeAndIdent>*/ *nullable_ref_param_infos,
-    const struct Vector /* <UntypedExpr> */ *ref_arg_exprs_vec, int is_fp_call)
+func_call_expr(struct AnalyzerState *ptr_ps, const struct Type *ref_ret_type,
+               const struct Vector /*<TypeAndIdent>*/ *nullable_ref_param_infos,
+               const struct Vector /* <UntypedExpr> */ *ref_arg_exprs_vec,
+               int is_fp_call)
 {
 	const struct Type ret_type = *ref_ret_type;
 
@@ -820,9 +820,9 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 			param_infos = fn_type.param_infos;
 		}
 
-		struct Expr expr =
-		    foo(ptr_ps, &ret_type, is_param_infos_valid ? &param_infos : 0,
-		        &uexpr.arg_exprs_vec, 1 /* is_fp_call */);
+		struct Expr expr = func_call_expr(
+		    ptr_ps, &ret_type, is_param_infos_valid ? &param_infos : 0,
+		    &uexpr.arg_exprs_vec, 1 /* is_fp_call */);
 
 		struct Expr *ptr_fp_expr = calloc(1, sizeof(struct Expr));
 		*ptr_fp_expr = fp_expr;
@@ -865,9 +865,9 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 			}
 		}
 
-		struct Expr expr =
-		    foo(ptr_ps, &ret_type, is_param_infos_valid ? &param_infos : 0,
-		        &uexpr.arg_exprs_vec, 0 /* is_fp_call */);
+		struct Expr expr = func_call_expr(
+		    ptr_ps, &ret_type, is_param_infos_valid ? &param_infos : 0,
+		    &uexpr.arg_exprs_vec, 0 /* is_fp_call */);
 		expr.global_var_name = ident_str;
 		return expr;
 	}

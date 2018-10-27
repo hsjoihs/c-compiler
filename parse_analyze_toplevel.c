@@ -203,10 +203,10 @@ record_if_global_struct_or_enum_declaration(struct AnalyzerState *ptr_ps,
 	}
 }
 
-int push_offset_and_type(
-    struct AnalyzerState *ptr_ps, const struct Type *ref_type,
-    struct Vector /*<LocalVarInfo>*/ *ptr_offsets_and_types,
-    const char *ident_str);
+static int
+push_offset_and_type(struct AnalyzerState *ptr_ps, const struct Type *ref_type,
+                     struct Vector /*<LocalVarInfo>*/ *ptr_offsets_and_types,
+                     const char *ident_str);
 
 static struct Toplevel
 parse_toplevel_definition(struct AnalyzerState *ptr_ps,
@@ -352,10 +352,10 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 	return def;
 }
 
-int push_offset_and_type(
-    struct AnalyzerState *ptr_ps, const struct Type *ref_type,
-    struct Vector /*<LocalVarInfo>*/ *ptr_offsets_and_types,
-    const char *ident_str)
+static int
+push_offset_and_type(struct AnalyzerState *ptr_ps, const struct Type *ref_type,
+                     struct Vector /*<LocalVarInfo>*/ *ptr_offsets_and_types,
+                     const char *ident_str)
 {
 
 	int offset = add_local_var_to_scope(ptr_ps, ref_type, ident_str);
