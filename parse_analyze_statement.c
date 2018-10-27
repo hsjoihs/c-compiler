@@ -77,7 +77,7 @@ struct Statement parse_statement(struct AnalyzerState *ptr_ps,
 		return parse_labeled_statement(ptr_ps, ptr_tokvec);
 	}
 
-	switch(tokvec[0].kind){
+	switch (tokvec[0].kind) {
 	case LEFT_BRACE: {
 		return parse_compound_statement(ptr_ps, ptr_tokvec);
 	}
