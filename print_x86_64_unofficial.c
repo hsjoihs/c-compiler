@@ -122,10 +122,10 @@ void gen_push_from_local_1byte(int offset)
 void gen_swap(void)
 {
 	printf("//gen_swap()\n");
-	printf("movq (%%rsp), %%rax\n"
-	       "movq 8(%%rsp), %%rdx\n"
-	       "movq %%rdx, (%%rsp)\n"
-	       "movq %%rax, 8(%%rsp)\n");
+	printf("  movq (%%rsp), %%rax\n"
+	       "  movq 8(%%rsp), %%rdx\n"
+	       "  movq %%rdx, (%%rsp)\n"
+	       "  movq %%rax, 8(%%rsp)\n");
 }
 
 void gen_push_ret_of_1byte(const char *fname)

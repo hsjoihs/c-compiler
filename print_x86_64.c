@@ -116,8 +116,8 @@ void gen_return_garbage(void)
 {
 	printf("//gen_return_garbage()\n");
 	printf("  movl $123, %%eax\n"
-	       "leave\n"
-	       "ret\n");
+	       "  leave\n"
+	       "  ret\n");
 }
 
 /********************************
