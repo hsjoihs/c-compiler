@@ -658,8 +658,8 @@ static struct Tokvec remove_spaces_and_newlines(const struct Tokvec *ref_t)
 	struct Token *tokvec_new = calloc(ref_t->tok_num, sizeof(struct Token));
 
 	int j = 0;
-	
-	for (int k = 0;;k++) {
+
+	for (int k = 0;; k++) {
 		if (tokvec[k].kind == NEWLINE || tokvec[k].kind == SPACE) {
 			continue;
 		}

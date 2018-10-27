@@ -724,14 +724,13 @@ static struct Expr string_literal(const char *string)
 {
 	const struct Type char_type = CHAR_TYPE();
 
-		struct Expr expr;
-		expr.details.type = ptr_to_type(&char_type);
-		expr.details.true_type =
-		    arr_of_type(&char_type, strlen(string) + 1);
-		expr.category = STRING_LITERAL;
-		expr.literal_string = string;
+	struct Expr expr;
+	expr.details.type = ptr_to_type(&char_type);
+	expr.details.true_type = arr_of_type(&char_type, strlen(string) + 1);
+	expr.category = STRING_LITERAL;
+	expr.literal_string = string;
 
-		return expr;
+	return expr;
 }
 
 struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
@@ -839,9 +838,10 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 			param_infos = fn_type.param_infos;
 		}
 
-		struct Expr expr = func_call_expr(
-		    ptr_ps, fn_type.derived_from, is_param_infos_valid ? &param_infos : 0,
-		    &uexpr.arg_exprs_vec, 1 /* is_fp_call */);
+		struct Expr expr =
+		    func_call_expr(ptr_ps, fn_type.derived_from,
+		                   is_param_infos_valid ? &param_infos : 0,
+		                   &uexpr.arg_exprs_vec, 1 /* is_fp_call */);
 
 		struct Expr *ptr_fp_expr = calloc(1, sizeof(struct Expr));
 		*ptr_fp_expr = fp_expr;
