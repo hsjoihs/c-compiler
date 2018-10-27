@@ -197,6 +197,15 @@ static struct Token get_token_raw(const char **ptr_to_str)
 		return get_token(ptr_to_str);
 	}
 
+	if (*str == '/' && str[1] == '/') {
+		str += 2;
+		while (*str != '\n' && *str != 0) {
+			str++;
+		}
+		*ptr_to_str = str;
+		return get_token(ptr_to_str);
+	}
+
 	if (*str == 34) {
 		int i = 0;
 		++str;
