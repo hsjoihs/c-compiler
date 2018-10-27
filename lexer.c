@@ -142,8 +142,8 @@ void print_token(const struct Token *ptr_tok, const char *next_token_begins)
 	}
 	for (int i = 0; i < next_token_begins - ptr_tok->token_begins_here; i++) {
 		char c = ptr_tok->token_begins_here[i];
-		if (c == ' ' || c == "\t"[0] || c == "\n"[0] || c == "\v"[0] ||
-		    c == "\f"[0] || c == "\r"[0]) {
+		if (c == ' ' || c == '\t' || c == '\n' || c == '\v' || c == '\f' ||
+		    c == '\r') {
 			break;
 		}
 		fprintf(stderr, "%c", c);
@@ -168,14 +168,14 @@ static struct Token get_token_raw(const char **ptr_to_str)
 		return t;
 	}
 
-	if (*str == ' ' || *str == "\t"[0] || *str == "\v"[0] || *str == "\f"[0] ||
-	    *str == "\r"[0]) {
+	if (*str == ' ' || *str == '\t' || *str == '\v' || *str == '\f' ||
+	    *str == '\r') {
 		++*ptr_to_str;
 		t.kind = SPACE;
 		return t;
 	}
 
-	if (*str == "\n"[0]) {
+	if (*str == '\n') {
 		++*ptr_to_str;
 		t.kind = NEWLINE;
 		return t;
