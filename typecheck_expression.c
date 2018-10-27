@@ -811,8 +811,6 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 			exit(EXIT_FAILURE);
 		}
 
-		struct Type ret_type = *(fn_type.derived_from);
-
 		int is_param_infos_valid = fn_type.is_param_infos_valid;
 		struct Vector /*<TypeAndIdent>*/ param_infos;
 
@@ -821,7 +819,7 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 		}
 
 		struct Expr expr = func_call_expr(
-		    ptr_ps, &ret_type, is_param_infos_valid ? &param_infos : 0,
+		    ptr_ps, fn_type.derived_from, is_param_infos_valid ? &param_infos : 0,
 		    &uexpr.arg_exprs_vec, 1 /* is_fp_call */);
 
 		struct Expr *ptr_fp_expr = calloc(1, sizeof(struct Expr));
