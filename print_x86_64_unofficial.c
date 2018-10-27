@@ -50,7 +50,7 @@ void gen_peek_deref_push_4byte(void)
 	puts("  movq (%rsp), %rax \n"
 	     "  movl (%rax), %edx\n"
 	     "  subq $8, %rsp\n"
-	     "  movq %rdx, (%rsp)\n");
+	     "  movq %rdx, (%rsp)");
 }
 
 void gen_peek_and_dereference_4byte(void)
@@ -78,7 +78,7 @@ void gen_peek_deref_push_8byte(void)
 	puts("  movq (%rsp), %rax \n"
 	     "  movq (%rax), %rdx\n"
 	     "  subq $8, %rsp\n"
-	     "  movq %rdx, (%rsp)\n");
+	     "  movq %rdx, (%rsp)");
 }
 
 void gen_peek_and_dereference_1byte(void)
@@ -95,7 +95,7 @@ void gen_peek_deref_push_1byte(void)
 	puts("  movq (%rsp), %rax \n"
 	     "  movb (%rax), %dl\n"
 	     "  subq $8, %rsp\n"
-	     "  movb %dl, (%rsp)\n");
+	     "  movb %dl, (%rsp)");
 }
 
 /* push what's on local mem */

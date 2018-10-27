@@ -71,10 +71,10 @@ static void copy_to_8byte_reg(int size, const char *reg_4byte,
 			     "  shlq $32, %rdi");
 		} else if (size == 6) {
 			puts("  movzwl 4(%rcx), %edi\n"
-			     "  shlq $32, %rdi\n");
+			     "  shlq $32, %rdi");
 		} else if (size == 5) {
 			puts("  movzbl 4(%rcx), %edi\n"
-			     "  shlq $32, %rdi\n");
+			     "  shlq $32, %rdi");
 		}
 		printf("  orq %%rdi, %%%s\n", reg_8byte);
 	} else if (size == 3) {
@@ -514,7 +514,7 @@ void gen_div_by_const(int num)
 		printf("  movl $%d, %%ecx\n", num);
 		puts("  cqto\n"
 		     "  idivq %rcx\n"
-		     "  movl %eax, (%rsp)\n");
+		     "  movl %eax, (%rsp)");
 		return;
 	}
 }
