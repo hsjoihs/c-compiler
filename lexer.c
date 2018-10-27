@@ -17,11 +17,11 @@ struct Token *read_and_preprocess(const char *str,
 		ptr_token->int_value = 1;
 		insert(def_map, ref_cmdline_macros->vector[i], ptr_token);
 	}
-	struct Tokvec u = preprocess(str, def_map);
+	struct Tokvec vec1 = preprocess(str, def_map);
 
-	const struct Tokvec v = remove_spaces_and_newlines(&u);
+	const struct Tokvec vec2 = remove_spaces_and_newlines(&vec1);
 
-	return concat_str_literals(&v);
+	return concat_str_literals(&vec2);
 }
 
 char *unescape(const char *str)
@@ -649,10 +649,9 @@ static struct Tokvec remove_spaces_and_newlines(const struct Tokvec *ref_t)
 	struct Token *tokvec_new = calloc(ref_t->tok_num, sizeof(struct Token));
 
 	int j = 0;
-	int k = 0;
-	while (1) {
+	
+	for (int k = 0;;k++) {
 		if (tokvec[k].kind == NEWLINE || tokvec[k].kind == SPACE) {
-			k++;
 			continue;
 		}
 
@@ -663,7 +662,6 @@ static struct Tokvec remove_spaces_and_newlines(const struct Tokvec *ref_t)
 		}
 
 		j++;
-		k++;
 	}
 	struct Tokvec t;
 	t.v = tokvec_new;
