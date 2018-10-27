@@ -713,6 +713,20 @@ from_name_to_expr(struct AnalyzerState *ptr_ps, const char *name)
 	}
 }
 
+struct Expr string_literal(const char *string)
+{
+	const struct Type char_type = CHAR_TYPE();
+
+		struct Expr expr;
+		expr.details.type = ptr_to_type(&char_type);
+		expr.details.true_type =
+		    arr_of_type(&char_type, strlen(string) + 1);
+		expr.category = STRING_LITERAL;
+		expr.literal_string = string;
+
+		return expr;
+}
+
 struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
                                  const struct UntypedExpr *ref_uexpr)
 {
@@ -908,16 +922,7 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 		return *p;
 	}
 	case STRING_LITERAL_: {
-		const struct Type char_type = CHAR_TYPE();
-
-		struct Expr expr;
-		expr.details.type = ptr_to_type(&char_type);
-		expr.details.true_type =
-		    arr_of_type(&char_type, strlen(uexpr.literal_string) + 1);
-		expr.category = STRING_LITERAL;
-		expr.literal_string = uexpr.literal_string;
-
-		return expr;
+		return string_literal(uexpr.literal_string);
 	}
 	case CONDITIONAL: {
 		struct Expr expr = typecheck_expression(ptr_ps, uexpr.ptr1);
