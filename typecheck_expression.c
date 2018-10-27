@@ -651,10 +651,17 @@ func_call_expr(struct AnalyzerState *ptr_ps, const struct Type *ref_ret_type,
 	return expr;
 }
 
+static struct Expr string_literal(const char *string);
+
 /* returns null pointer if the name is not found */
 static struct Expr * /* nullable */
 from_name_to_expr(struct AnalyzerState *ptr_ps, const char *name)
 {
+	if (strcmp(name, "__func__") == 0) {
+		struct Expr *p_expr = calloc(1, sizeof(struct Expr));
+		*p_expr = string_literal(ptr_ps->current_function_name);
+		return p_expr;
+	}
 	if (!is_local_var(&ptr_ps->scope_chain, name)) {
 		const struct EnumeratorAndValue *ptr_enum_and_value =
 		    get_global_enumerator(&ptr_ps->global_enumerator_list, name);
@@ -713,7 +720,7 @@ from_name_to_expr(struct AnalyzerState *ptr_ps, const char *name)
 	}
 }
 
-struct Expr string_literal(const char *string)
+static struct Expr string_literal(const char *string)
 {
 	const struct Type char_type = CHAR_TYPE();
 

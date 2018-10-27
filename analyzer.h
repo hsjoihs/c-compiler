@@ -24,6 +24,7 @@ struct AnalyzerState {
 	struct Map2 * /*<StructInternalCompleteInfo>*/ global_struct_tag_map;
 	struct Map2 * /*<struct Vector<EnumeratorAndValue>>*/ global_enum_tag_map;
 	struct Vector /*<EnumeratorAndValue>*/ global_enumerator_list;
+	const char *current_function_name;
 };
 
 struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,

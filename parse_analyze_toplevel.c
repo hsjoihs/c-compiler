@@ -277,6 +277,7 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 	ptr_ps->scope_chain.var_table = init_map();
 	ptr_ps->newest_offset = 0;
 	ptr_ps->func_ret_type = ret_type;
+	ptr_ps->current_function_name = declarator_name;
 
 	const struct Type *ptr_old_func_info =
 	    lookup(ptr_ps->func_info_map, declarator_name);

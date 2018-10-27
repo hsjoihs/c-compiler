@@ -19,6 +19,7 @@ run_test() {
 }
 
 run_test 357 'int main() {return 0;} //nfsjdgkssfdvc' 0
+run_test 358 'int main() {return __func__[1] - 97;} ' 0
 
 run_test 354 'struct A {int k[15];}; struct A f(int a, int b){struct A q; q.k[0] = a; q.k[14] = b; return q;} int main(){struct A (*g)(int a, int b) = f; struct A q = g(10, 11); return q.k[0] + q.k[14]; }' 21
 run_test 355 'struct A3 {char a[3];}; struct A3 deref3(struct A3 *p){ return *p;} int main(){return 3;}' 3
