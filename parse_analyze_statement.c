@@ -292,11 +292,7 @@ struct Statement parse_statement(struct AnalyzerState *ptr_ps,
 			struct Expr *ptr_expr = declare_var_and_return_initializer(
 			    ptr_ps, &vartype, str, ptr_uexpr, &statement);
 
-			if (ptr_expr) {
-				expr1 = *ptr_expr;
-			} else {
-				expr1 = integer_1();
-			}
+			expr1 = ptr_expr ? *ptr_expr : integer_1();
 		} else {
 			const struct UntypedExpr u = parse_expression(&tokvec);
 			expr1 = typecheck_expression(ptr_ps, &u);

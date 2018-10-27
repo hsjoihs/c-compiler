@@ -741,13 +741,9 @@ static int count_all_tokens(const char *str)
 {
 	struct Token tok;
 	int count = 1;
-
-	while (1) {
+	do {
 		tok = get_token(&str);
 		++count;
-		if (tok.kind == END) {
-			break;
-		}
-	}
+	} while (tok.kind != END);
 	return count;
 }
