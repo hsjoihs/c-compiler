@@ -555,7 +555,7 @@ void gen_peek_and_dereference_nbyte(int n)
 
 void gen_string_literal(int strnum, const char *str)
 {
-	printf("//gen_string_literal(%d, \"%s\")\n", strnum, str);
+	printf("//gen_string_literal(%d, escape(\"%s\"))\n", strnum, str);
 	printf("L_str%d:\n"
 	       ".asciz \"%s\"\n",
 	       strnum, str);
