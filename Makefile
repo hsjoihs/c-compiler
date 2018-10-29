@@ -19,7 +19,6 @@ SRC=std.c codegen.c alignment.c parse_analyze_toplevel.c parse_analyze_statement
 CLANG_WARN=-Wall -Wextra -Wimplicit-fallthrough -Weverything -Wno-documentation -Wno-padded -Wno-missing-prototypes -Wno-switch-enum
 
 va:
-	gcc misc/va.c -S -o $(VAPATH) -O2
 	gcc $(VAPATH) misc/call_va.c -o out/va.out
 	./out/va.out
 

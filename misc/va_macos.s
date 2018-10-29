@@ -1,30 +1,16 @@
-	.section	__TEXT,__text,regular,pure_instructions
-	.macosx_version_min 10, 13
 	.globl	_debug_write            ## -- Begin function debug_write
-	.p2align	4, 0x90
 _debug_write:                           ## @debug_write
-	.cfi_startproc
-## %bb.0:
 	pushq	%rbp
-	.cfi_def_cfa_offset 16
-	.cfi_offset %rbp, -16
 	movq	%rsp, %rbp
-	.cfi_def_cfa_register %rbp
 	pushq	%r15
 	pushq	%r14
 	pushq	%r13
 	pushq	%r12
 	pushq	%rbx
 	subq	$216, %rsp
-	.cfi_offset %rbx, -56
-	.cfi_offset %r12, -48
-	.cfi_offset %r13, -40
-	.cfi_offset %r14, -32
-	.cfi_offset %r15, -24
 	movq	%rdi, %rbx
 	testb	%al, %al
 	je	LBB0_2
-## %bb.1:
 	movaps	%xmm0, -208(%rbp)
 	movaps	%xmm1, -192(%rbp)
 	movaps	%xmm2, -176(%rbp)
@@ -64,7 +50,6 @@ LBB0_2:
 	movq	(%rax), %rax
 	cmpq	-48(%rbp), %rax
 	jne	LBB0_4
-## %bb.3:
 	addq	$216, %rsp
 	popq	%rbx
 	popq	%r12
@@ -75,7 +60,6 @@ LBB0_2:
 	retq
 LBB0_4:
 	callq	___stack_chk_fail
-	.cfi_endproc
                                         ## -- End function
 
 .subsections_via_symbols
