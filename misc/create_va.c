@@ -4,12 +4,9 @@
 
 int main()
 {
+    gen_prologue(0, "debug_write");
 #ifdef OSX
 puts(
-"	.globl	_debug_write            ## -- Begin function debug_write\n" 
-"_debug_write:                           ## @debug_write\n" 
-"	pushq	%rbp\n" 
-"	movq	%rsp, %rbp\n" 
 "	pushq	%r15\n" 
 "	pushq	%r14\n" 
 "	pushq	%r13\n" 
@@ -72,10 +69,6 @@ puts(
 
 #ifdef LINUX
 puts(
-"	.globl	debug_write\n" 
-"debug_write:\n" 
-"	pushq	%rbp\n" 
-"	movq	%rsp, %rbp\n" 
 "	pushq	%rbx\n" 
 "	movq	%rdi, %rbx\n" 
 "	subq	$216, %rsp\n" 

@@ -1,7 +1,8 @@
-	.globl	_debug_write            ## -- Begin function debug_write
-_debug_write:                           ## @debug_write
-	pushq	%rbp
-	movq	%rsp, %rbp
+//gen_prologue(0, "debug_write")
+.global _debug_write
+_debug_write:
+  pushq %rbp
+  movq %rsp, %rbp
 	pushq	%r15
 	pushq	%r14
 	pushq	%r13
