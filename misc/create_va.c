@@ -29,18 +29,19 @@ int main()
 	     "	subq	$216, %rsp\n"
 	     "	movq	%rdi, %rbx");
 	gen_store_regs_to_stack(-248, "LBB0_2");
-	puts("	movq	___stack_chk_guard@GOTPCREL(%rip), %rax\n"
-	     "	movq	(%rax), %rax\n"
-	     "	movq	%rax, -48(%rbp)\n"
-	     "	leaq	-256(%rbp), %r15\n"
+	gen_push_address_of_global("__stack_chk_guard");
+	gen_peek_and_dereference_nbyte(8);
+	gen_write_to_local_8byte(-48);
+	gen_discard();
+	puts("	leaq	-256(%rbp), %r15\n"
 	     "	movq	%r15, -64(%rbp)\n"
 	     "	leaq	16(%rbp), %r12\n"
 	     "	movq	%r12, -72(%rbp)\n"
 	     "	movabsq	$206158430216, %r13     ## imm = 0x3000000008\n"
 	     "	movq	%r13, -80(%rbp)");
-    gen_push_address_of_global("__stderrp");
-    gen_peek_and_dereference_nbyte(8);
-    gen_pop_to_reg_8byte("rdi");
+	gen_push_address_of_global("__stderrp");
+	gen_peek_and_dereference_nbyte(8);
+	gen_pop_to_reg_8byte("rdi");
 	puts("	leaq	-80(%rbp), %r14\n"
 	     "	movq	%rbx, %rsi\n"
 	     "	movq	%r14, %rdx\n"
@@ -51,9 +52,9 @@ int main()
 	     "	movq	%rbx, %rdi\n"
 	     "	movq	%r14, %rsi\n"
 	     "	callq	_vprintf");
-    gen_push_address_of_global("__stack_chk_guard");
-    gen_peek_and_dereference_nbyte(8);
-    gen_pop_to_reg_8byte("rax");
+	gen_push_address_of_global("__stack_chk_guard");
+	gen_peek_and_dereference_nbyte(8);
+	gen_pop_to_reg_8byte("rax");
 	puts("	cmpq	-48(%rbp), %rax\n"
 	     "	jne	LBB0_4\n"
 	     "	addq	$216, %rsp\n"
@@ -82,9 +83,8 @@ int main()
 	     "	movq	%rbp, %rcx\n"
 	     "	movl	$1, %esi\n"
 	     "	movq	%rax, 8(%rsp)\n");
-	     gen_push_address_of_global("stderr");
-	     puts(
-	     "  movq  (%rsp), %rax\n"
+	gen_push_address_of_global("stderr");
+	puts("  movq  (%rsp), %rax\n"
 	     "  addq    $8, %rsp\n"
 	     "	movq	(%rax), %rdi\n"
 	     "	leaq	32(%rsp), %rax\n"
@@ -100,7 +100,6 @@ int main()
 	     "	movq	%rbx, %rdx\n"
 	     "	movl	$1, %esi\n"
 	     "	movl	$8, (%rsp)\n"
-	   
 	     "	leaq	32(%rsp), %rax\n"
 	     "	movl	$48, 4(%rsp)\n"
 	     "	movq	%rax, 16(%rsp)\n"

@@ -23,3 +23,6 @@ void gen_peek_deref_push_1byte(void);
 void gen_peek_deref_push_4byte(void);
 void gen_peek_deref_push_8byte(void);
 void gen_swap(void);
+void gen_write_to_local(int offset);
+void gen_write_to_local_8byte(int offset);
+void gen_write_to_local_1byte(int offset);

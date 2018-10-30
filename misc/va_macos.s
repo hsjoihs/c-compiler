@@ -26,9 +26,19 @@ _debug_write:
   movaps %xmm6, -112(%rbp)
   movaps %xmm7, -96(%rbp)
 LBB0_2:
-	movq	___stack_chk_guard@GOTPCREL(%rip), %rax
-	movq	(%rax), %rax
-	movq	%rax, -48(%rbp)
+//gen_push_address_of_global("__stack_chk_guard");
+  subq $8, %rsp
+  movq ___stack_chk_guard@GOTPCREL(%rip), %rax
+  movq %rax, (%rsp)
+//gen_peek_and_dereference_8byte()
+  movq (%rsp), %rax 
+  movq (%rax), %rax
+  movq  %rax, (%rsp)
+//gen_write_to_local_8byte(-48)
+  movq (%rsp), %rax
+  movq %rax, -48(%rbp)
+//gen_discard()
+  addq $8, %rsp
 	leaq	-256(%rbp), %r15
 	movq	%r15, -64(%rbp)
 	leaq	16(%rbp), %r12
