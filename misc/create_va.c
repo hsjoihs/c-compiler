@@ -39,10 +39,9 @@ int main()
 	     "	movabsq	$206158430216, %r13     ## imm = 0x3000000008\n"
 	     "	movq	%r13, -80(%rbp)");
     gen_push_address_of_global("__stderrp");
-	puts("	movq	(%rsp), %rax\n"
-         "  addq $8, %rsp\n"
-	     "	movq	(%rax), %rdi\n"
-	     "	leaq	-80(%rbp), %r14\n"
+    gen_peek_and_dereference_nbyte(8);
+    gen_pop_to_reg_8byte("rdi");
+	puts("	leaq	-80(%rbp), %r14\n"
 	     "	movq	%rbx, %rsi\n"
 	     "	movq	%r14, %rdx\n"
 	     "	callq	_vfprintf\n"
@@ -53,10 +52,9 @@ int main()
 	     "	movq	%r14, %rsi\n"
 	     "	callq	_vprintf");
     gen_push_address_of_global("__stack_chk_guard");
-	puts("	movq	(%rsp), %rax\n"
-	     "  addq $8, %rsp\n"
-	     "	movq	(%rax), %rax\n"
-	     "	cmpq	-48(%rbp), %rax\n"
+    gen_peek_and_dereference_nbyte(8);
+    gen_pop_to_reg_8byte("rax");
+	puts("	cmpq	-48(%rbp), %rax\n"
 	     "	jne	LBB0_4\n"
 	     "	addq	$216, %rsp\n"
 	     "	popq	%rbx\n"

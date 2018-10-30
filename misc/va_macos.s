@@ -39,9 +39,13 @@ LBB0_2:
   subq $8, %rsp
   movq ___stderrp@GOTPCREL(%rip), %rax
   movq %rax, (%rsp)
-	movq	(%rsp), %rax
+//gen_peek_and_dereference_8byte()
+  movq (%rsp), %rax 
+  movq (%rax), %rax
+  movq  %rax, (%rsp)
+//gen_pop_to_reg_8byte("rdi")
+  movq (%rsp), %rdi
   addq $8, %rsp
-	movq	(%rax), %rdi
 	leaq	-80(%rbp), %r14
 	movq	%rbx, %rsi
 	movq	%r14, %rdx
@@ -56,9 +60,13 @@ LBB0_2:
   subq $8, %rsp
   movq ___stack_chk_guard@GOTPCREL(%rip), %rax
   movq %rax, (%rsp)
-	movq	(%rsp), %rax
+//gen_peek_and_dereference_8byte()
+  movq (%rsp), %rax 
+  movq (%rax), %rax
+  movq  %rax, (%rsp)
+//gen_pop_to_reg_8byte("rax")
+  movq (%rsp), %rax
   addq $8, %rsp
-	movq	(%rax), %rax
 	cmpq	-48(%rbp), %rax
 	jne	LBB0_4
 	addq	$216, %rsp
