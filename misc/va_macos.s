@@ -60,6 +60,4 @@ LBB0_2:
 	retq
 LBB0_4:
 	callq	___stack_chk_fail
-                                        ## -- End function
 
-.subsections_via_symbols
