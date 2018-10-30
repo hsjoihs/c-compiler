@@ -4,15 +4,15 @@
 
 void gen_store_regs_to_stack(int offset, const char *label_name)
 {
-	puts("	testb	%al, %al");
-	printf("	movq	%%rsi, %d(%%rbp)\n", offset);
-	printf("	movq	%%rdx, %d(%%rbp)\n", offset + 8);
-	printf("	movq	%%rcx, %d(%%rbp)\n", offset + 16);
-	printf("	movq	%%r8, %d(%%rbp)\n", offset + 24);
-	printf("	movq	%%r9, %d(%%rbp)\n", offset + 32);
-	printf("	je	%s\n", label_name);
+	puts("  testb %al, %al");
+	printf("  movq %%rsi, %d(%%rbp)\n", offset);
+	printf("  movq %%rdx, %d(%%rbp)\n", offset + 8);
+	printf("  movq %%rcx, %d(%%rbp)\n", offset + 16);
+	printf("  movq %%r8, %d(%%rbp)\n", offset + 24);
+	printf("  movq %%r9, %d(%%rbp)\n", offset + 32);
+	printf("  je %s\n", label_name);
 	for (int i = 0; i < 8; i++) {
-		printf("	movaps	%%xmm%d, %d(%%rbp)\n", i, offset + 40 + 16 * i);
+		printf("  movaps %%xmm%d, %d(%%rbp)\n", i, offset + 40 + 16 * i);
 	}
 	printf("%s:\n", label_name);
 }

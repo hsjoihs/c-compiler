@@ -10,21 +10,21 @@ _debug_write:
 	pushq	%rbx
 	subq	$216, %rsp
 	movq	%rdi, %rbx
-	testb	%al, %al
-	movq	%rsi, -248(%rbp)
-	movq	%rdx, -240(%rbp)
-	movq	%rcx, -232(%rbp)
-	movq	%r8, -224(%rbp)
-	movq	%r9, -216(%rbp)
-	je	LBB0_2
-	movaps	%xmm0, -208(%rbp)
-	movaps	%xmm1, -192(%rbp)
-	movaps	%xmm2, -176(%rbp)
-	movaps	%xmm3, -160(%rbp)
-	movaps	%xmm4, -144(%rbp)
-	movaps	%xmm5, -128(%rbp)
-	movaps	%xmm6, -112(%rbp)
-	movaps	%xmm7, -96(%rbp)
+  testb %al, %al
+  movq %rsi, -248(%rbp)
+  movq %rdx, -240(%rbp)
+  movq %rcx, -232(%rbp)
+  movq %r8, -224(%rbp)
+  movq %r9, -216(%rbp)
+  je LBB0_2
+  movaps %xmm0, -208(%rbp)
+  movaps %xmm1, -192(%rbp)
+  movaps %xmm2, -176(%rbp)
+  movaps %xmm3, -160(%rbp)
+  movaps %xmm4, -144(%rbp)
+  movaps %xmm5, -128(%rbp)
+  movaps %xmm6, -112(%rbp)
+  movaps %xmm7, -96(%rbp)
 LBB0_2:
 	movq	___stack_chk_guard@GOTPCREL(%rip), %rax
 	movq	(%rax), %rax
