@@ -2,7 +2,7 @@
 #include "../print_x86_64_unofficial.h"
 #include <stdio.h>
 
-void gen_store_regs_to_stack(int offset, const char *label_name)
+void gen_store_regs_to_local(int offset, const char *label_name)
 {
 	puts("  testb %al, %al");
 	printf("  movq %%rsi, %d(%%rbp)\n", offset);
@@ -21,33 +21,37 @@ int main()
 {
 	gen_prologue(0, "debug_write");
 #ifdef OSX
-	puts("	pushq	%rbx\n"
+	puts("	subq	$8, %rsp\n"
 	     "	subq	$248, %rsp\n"
-	     "	movq	%rdi, %rbx");
-	gen_store_regs_to_stack(-248, "LBB0_2");
+	     "	subq	$8, %rsp\n"
+	     "	movq	%rdi, (%rsp)\n"
+	     "	subq	$32, %rsp\n"
+	     
+	     );
+	gen_store_regs_to_local(-248, "LBB0_2");
 	gen_push_address_of_global("__stack_chk_guard");
 	gen_peek_and_dereference_nbyte(8);
 	gen_write_to_local_8byte(-48);
 	gen_discard();
-	puts("	subq	$24, %rsp\n"
+	puts(
 	     "	leaq	-256(%rbp), %rdx\n"
 	     "	movq	%rdx, -64(%rbp)\n"
 	     "	movq	%rdx, (%rsp)\n"
 	     "	leaq	16(%rbp), %rdx\n"
 	     "	movq	%rdx, -72(%rbp)\n"
 	     "	movq	%rdx, 8(%rsp)\n"
-	     "	movabsq	$206158430216, %rdx     ## imm = 0x3000000008\n"
+	     "	movabsq	$0x3000000008, %rdx\n"
 	     "	movq	%rdx, -80(%rbp)\n"
 	     "	movq	%rdx, 16(%rsp)\n");
 	gen_push_address_of_global("__stderrp");
 	gen_peek_and_dereference_nbyte(8);
 	gen_pop_to_reg_8byte("rdi");
 
-	puts("	subq	$8, %rsp\n"
-	     "	leaq	-80(%rbp), %rax\n"
-	     "	movq	%rax, (%rsp)\n"
-	     "	movq	(%rsp), %rdx\n"
-	     "	movq	%rbx, %rsi\n"
+	gen_push_address_of_local(-80);
+	gen_pop_to_reg_8byte("rdx");
+	puts(
+	     "  subq $8, %rsp\n"
+		 "  movq 40(%rsp), %rsi\n"
 	     "	callq	_vfprintf\n"
 	     "	movq	8(%rsp), %rdx\n"
 	     "	movq	%rdx, -64(%rbp)\n"
@@ -55,9 +59,9 @@ int main()
 	     "	movq	%rdx, -72(%rbp)\n"
 	     "	movq	24(%rsp), %rdx\n"
 	     "	movq	%rdx, -80(%rbp)\n"
-	     "	movq	%rbx, %rdi\n"
+		 "  movq 40(%rsp), %rdi\n"
 	     "	movq	(%rsp), %rsi\n"
-	     "	addq	$32, %rsp\n"
+	     "	addq	$48, %rsp\n"
 	     "	callq	_vprintf");
 	gen_push_address_of_global("__stack_chk_guard");
 	gen_peek_and_dereference_nbyte(8);
@@ -65,7 +69,7 @@ int main()
 	puts("	cmpq	-48(%rbp), %rax\n"
 	     "	jne	LBB0_4\n"
 	     "	addq	$248, %rsp\n"
-	     "	popq	%rbx\n"
+	     "	addq	$8, %rsp\n"
 	     "	popq	%rbp\n"
 	     "	retq\n"
 	     "LBB0_4:\n"
@@ -76,7 +80,7 @@ int main()
 	puts("	pushq	%rbx\n"
 	     "	movq	%rdi, %rbx\n"
 	     "	subq	$216, %rsp\n");
-	gen_store_regs_to_stack(-184, "LBB0_2");
+	gen_store_regs_to_local(-184, "LBB0_2");
 	puts("	movq	%fs:40, %rax\n"
 	     "	movq	%rax, 24(%rsp)\n"
 	     "	xorl	%eax, %eax\n"
