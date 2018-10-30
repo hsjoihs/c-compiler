@@ -37,8 +37,10 @@ int main()
 	     "	leaq	16(%rbp), %r12\n"
 	     "	movq	%r12, -72(%rbp)\n"
 	     "	movabsq	$206158430216, %r13     ## imm = 0x3000000008\n"
-	     "	movq	%r13, -80(%rbp)\n"
-	     "	movq	___stderrp@GOTPCREL(%rip), %rax\n"
+	     "	movq	%r13, -80(%rbp)");
+    gen_push_address_of_global("__stderrp");
+	puts("	movq	(%rsp), %rax\n"
+         "  addq $8, %rsp\n"
 	     "	movq	(%rax), %rdi\n"
 	     "	leaq	-80(%rbp), %r14\n"
 	     "	movq	%rbx, %rsi\n"
@@ -49,8 +51,10 @@ int main()
 	     "	movq	%r13, -80(%rbp)\n"
 	     "	movq	%rbx, %rdi\n"
 	     "	movq	%r14, %rsi\n"
-	     "	callq	_vprintf\n"
-	     "	movq	___stack_chk_guard@GOTPCREL(%rip), %rax\n"
+	     "	callq	_vprintf");
+    gen_push_address_of_global("__stack_chk_guard");
+	puts("	movq	(%rsp), %rax\n"
+	     "  addq $8, %rsp\n"
 	     "	movq	(%rax), %rax\n"
 	     "	cmpq	-48(%rbp), %rax\n"
 	     "	jne	LBB0_4\n"

@@ -35,7 +35,12 @@ LBB0_2:
 	movq	%r12, -72(%rbp)
 	movabsq	$206158430216, %r13     ## imm = 0x3000000008
 	movq	%r13, -80(%rbp)
-	movq	___stderrp@GOTPCREL(%rip), %rax
+//gen_push_address_of_global("__stderrp");
+  subq $8, %rsp
+  movq ___stderrp@GOTPCREL(%rip), %rax
+  movq %rax, (%rsp)
+	movq	(%rsp), %rax
+  addq $8, %rsp
 	movq	(%rax), %rdi
 	leaq	-80(%rbp), %r14
 	movq	%rbx, %rsi
@@ -47,7 +52,12 @@ LBB0_2:
 	movq	%rbx, %rdi
 	movq	%r14, %rsi
 	callq	_vprintf
-	movq	___stack_chk_guard@GOTPCREL(%rip), %rax
+//gen_push_address_of_global("__stack_chk_guard");
+  subq $8, %rsp
+  movq ___stack_chk_guard@GOTPCREL(%rip), %rax
+  movq %rax, (%rsp)
+	movq	(%rsp), %rax
+  addq $8, %rsp
 	movq	(%rax), %rax
 	cmpq	-48(%rbp), %rax
 	jne	LBB0_4
