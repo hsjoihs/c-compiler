@@ -2,6 +2,21 @@
 #include "../print_x86_64_unofficial.h"
 #include <stdio.h>
 
+void gen_store_regs_to_stack(int offset, const char *label_name)
+{
+	puts("	testb	%al, %al");
+	printf("	movq	%%rsi, %d(%%rbp)\n", offset);
+	printf("	movq	%%rdx, %d(%%rbp)\n", offset + 8);
+	printf("	movq	%%rcx, %d(%%rbp)\n", offset + 16);
+	printf("	movq	%%r8, %d(%%rbp)\n", offset + 24);
+	printf("	movq	%%r9, %d(%%rbp)\n", offset + 32);
+	printf("	je	%s\n", label_name);
+	for (int i = 0; i < 8; i++) {
+		printf("	movaps	%%xmm%d, %d(%%rbp)\n", i, offset + 40 + 16 * i);
+	}
+	printf("%s:\n", label_name);
+}
+
 int main()
 {
 	gen_prologue(0, "debug_write");
@@ -12,23 +27,8 @@ int main()
 	     "	pushq	%r12\n"
 	     "	pushq	%rbx\n"
 	     "	subq	$216, %rsp\n"
-	     "	movq	%rdi, %rbx\n");
-	puts("	testb	%al, %al\n"
-	     "	movq	%rsi, -248(%rbp)\n"
-	     "	movq	%rdx, -240(%rbp)\n"
-	     "	movq	%rcx, -232(%rbp)\n"
-	     "	movq	%r8, -224(%rbp)\n"
-	     "	movq	%r9, -216(%rbp)\n"
-	     "	je	LBB0_2\n"
-	     "	movaps	%xmm0, -208(%rbp)\n"
-	     "	movaps	%xmm1, -192(%rbp)\n"
-	     "	movaps	%xmm2, -176(%rbp)\n"
-	     "	movaps	%xmm3, -160(%rbp)\n"
-	     "	movaps	%xmm4, -144(%rbp)\n"
-	     "	movaps	%xmm5, -128(%rbp)\n"
-	     "	movaps	%xmm6, -112(%rbp)\n"
-	     "	movaps	%xmm7, -96(%rbp)\n"
-	     "LBB0_2:\n");
+	     "	movq	%rdi, %rbx");
+	gen_store_regs_to_stack(-248, "LBB0_2");
 	puts("	movq	___stack_chk_guard@GOTPCREL(%rip), %rax\n"
 	     "	movq	(%rax), %rax\n"
 	     "	movq	%rax, -48(%rbp)\n"
@@ -63,29 +63,14 @@ int main()
 	     "	popq	%rbp\n"
 	     "	retq\n"
 	     "LBB0_4:\n"
-	     "	callq	___stack_chk_fail\n");
+	     "	callq	___stack_chk_fail");
 #endif
 
 #ifdef LINUX
 	puts("	pushq	%rbx\n"
 	     "	movq	%rdi, %rbx\n"
 	     "	subq	$216, %rsp\n");
-	puts("	testb	%al, %al\n"
-	     "	movq	%rsi, -184(%rbp)\n"
-	     "	movq	%rdx, -176(%rbp)\n"
-	     "	movq	%rcx, -168(%rbp)\n"
-	     "	movq	%r8, -160(%rbp)\n"
-	     "	movq	%r9, -152(%rbp)\n"
-	     "	je	.L2\n"
-	     "	movaps	%xmm0, -144(%rbp)\n"
-	     "	movaps	%xmm1, -128(%rbp)\n"
-	     "	movaps	%xmm2, -112(%rbp)\n"
-	     "	movaps	%xmm3, -96(%rbp)\n"
-	     "	movaps	%xmm4, -80(%rbp)\n"
-	     "	movaps	%xmm5, -64(%rbp)\n"
-	     "	movaps	%xmm6, -48(%rbp)\n"
-	     "	movaps	%xmm7, -32(%rbp)\n"
-	     ".L2:\n");
+	gen_store_regs_to_stack(-184, "LBB0_2");
 	puts("	movq	%fs:40, %rax\n"
 	     "	movq	%rax, 24(%rsp)\n"
 	     "	xorl	%eax, %eax\n"
@@ -120,6 +105,6 @@ int main()
 	     "	popq	%rbp\n"
 	     "	ret\n"
 	     ".L6:\n"
-	     "	call	__stack_chk_fail@PLT\n");
+	     "	call	__stack_chk_fail@PLT");
 #endif
 }
