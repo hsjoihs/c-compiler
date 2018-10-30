@@ -1,7 +1,8 @@
-	.globl	debug_write
+//gen_prologue(0, "debug_write")
+.global debug_write
 debug_write:
-	pushq	%rbp
-	movq	%rsp, %rbp
+  pushq %rbp
+  movq %rsp, %rbp
 	pushq	%rbx
 	movq	%rdi, %rbx
 	subq	$216, %rsp
