@@ -6,13 +6,14 @@ debug_write:
 	pushq	%rbx
 	movq	%rdi, %rbx
 	subq	$216, %rsp
+
 	testb	%al, %al
 	movq	%rsi, -184(%rbp)
 	movq	%rdx, -176(%rbp)
 	movq	%rcx, -168(%rbp)
 	movq	%r8, -160(%rbp)
 	movq	%r9, -152(%rbp)
-	je	.L2
+	je	LBB0_2
 	movaps	%xmm0, -144(%rbp)
 	movaps	%xmm1, -128(%rbp)
 	movaps	%xmm2, -112(%rbp)
@@ -21,7 +22,7 @@ debug_write:
 	movaps	%xmm5, -64(%rbp)
 	movaps	%xmm6, -48(%rbp)
 	movaps	%xmm7, -32(%rbp)
-.L2:
+LBB0_2:
 	movq	%fs:40, %rax
 	movq	%rax, 24(%rsp)
 	xorl	%eax, %eax
@@ -57,4 +58,3 @@ debug_write:
 	ret
 .L6:
 	call	__stack_chk_fail@PLT
-
