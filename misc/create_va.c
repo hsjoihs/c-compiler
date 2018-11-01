@@ -21,37 +21,39 @@ int main()
 {
 	gen_prologue(0, "debug_write");
 #ifdef OSX
-	puts("	subq	$8, %rsp\n"
-	     "	subq	$248, %rsp\n"
+	puts("	subq	$256, %rsp\n"
 	     "	subq	$8, %rsp\n"
-	     "	movq	%rdi, (%rsp)\n"
-	     "	subq	$32, %rsp\n"
-	     
-	     );
+	     "	movq	%rdi, (%rsp)\n");
 	gen_store_regs_to_local(-248, "LBB0_2");
+
 	gen_push_address_of_global("__stack_chk_guard");
 	gen_peek_and_dereference_nbyte(8);
 	gen_write_to_local_8byte(-48);
 	gen_discard();
-	puts(
-	     "	leaq	-256(%rbp), %rdx\n"
-	     "	movq	%rdx, -64(%rbp)\n"
-	     "	movq	%rdx, (%rsp)\n"
-	     "	leaq	16(%rbp), %rdx\n"
-	     "	movq	%rdx, -72(%rbp)\n"
-	     "	movq	%rdx, 8(%rsp)\n"
+
+	puts("	subq	$8, %rsp\n"
+	     "	subq	$8, %rsp\n"
 	     "	movabsq	$0x3000000008, %rdx\n"
+	     "	movq	%rdx, (%rsp)\n"
+	     "	movq	(%rsp), %rdx\n"
 	     "	movq	%rdx, -80(%rbp)\n"
-	     "	movq	%rdx, 16(%rsp)\n");
+	     );
+
+	gen_push_address_of_local(-8);
+	puts("	addq	$24, (%rsp)\n");
+	gen_write_to_local_8byte(-72);
+
+	gen_push_address_of_local(-256);
+	gen_write_to_local_8byte(-64);
+
 	gen_push_address_of_global("__stderrp");
 	gen_peek_and_dereference_nbyte(8);
 	gen_pop_to_reg_8byte("rdi");
 
 	gen_push_address_of_local(-80);
 	gen_pop_to_reg_8byte("rdx");
-	puts(
-	     "  subq $8, %rsp\n"
-		 "  movq 40(%rsp), %rsi\n"
+	puts("  subq $8, %rsp\n"
+	     "  movq 40(%rsp), %rsi\n"
 	     "	callq	_vfprintf\n"
 	     "	movq	8(%rsp), %rdx\n"
 	     "	movq	%rdx, -64(%rbp)\n"
@@ -59,7 +61,7 @@ int main()
 	     "	movq	%rdx, -72(%rbp)\n"
 	     "	movq	24(%rsp), %rdx\n"
 	     "	movq	%rdx, -80(%rbp)\n"
-		 "  movq 40(%rsp), %rdi\n"
+	     "  movq 40(%rsp), %rdi\n"
 	     "	movq	(%rsp), %rsi\n"
 	     "	addq	$48, %rsp\n"
 	     "	callq	_vprintf");

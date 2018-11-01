@@ -3,11 +3,9 @@
 _debug_write:
   pushq %rbp
   movq %rsp, %rbp
-	subq	$8, %rsp
-	subq	$248, %rsp
+	subq	$256, %rsp
 	subq	$8, %rsp
 	movq	%rdi, (%rsp)
-	subq	$32, %rsp
 
   testb %al, %al
   movq %rsi, -248(%rbp)
@@ -38,16 +36,29 @@ LBB0_2:
   movq %rax, -48(%rbp)
 //gen_discard()
   addq $8, %rsp
-	leaq	-256(%rbp), %rdx
-	movq	%rdx, -64(%rbp)
-	movq	%rdx, (%rsp)
-	leaq	16(%rbp), %rdx
-	movq	%rdx, -72(%rbp)
-	movq	%rdx, 8(%rsp)
+	subq	$8, %rsp
+	subq	$8, %rsp
 	movabsq	$0x3000000008, %rdx
+	movq	%rdx, (%rsp)
+	movq	(%rsp), %rdx
 	movq	%rdx, -80(%rbp)
-	movq	%rdx, 16(%rsp)
 
+//gen_push_address_of_local(-8);
+  subq $8, %rsp
+  leaq -8(%rbp), %rax
+  movq %rax, (%rsp)
+	addq	$24, (%rsp)
+
+//gen_write_to_local_8byte(-72)
+  movq (%rsp), %rax
+  movq %rax, -72(%rbp)
+//gen_push_address_of_local(-256);
+  subq $8, %rsp
+  leaq -256(%rbp), %rax
+  movq %rax, (%rsp)
+//gen_write_to_local_8byte(-64)
+  movq (%rsp), %rax
+  movq %rax, -64(%rbp)
 //gen_push_address_of_global("__stderrp");
   subq $8, %rsp
   movq ___stderrp@GOTPCREL(%rip), %rax
