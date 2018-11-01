@@ -5,19 +5,9 @@
 void gen_store_regs_to_local(int offset, int start_from, const char *label_name)
 {
 	puts("  testb %al, %al");
-	switch (start_from) {
-	case 0:
-		printf("  movq %%rdi, %d(%%rbp)\n", offset);
-	case 1:
-		printf("  movq %%rsi, %d(%%rbp)\n", 8 + offset);
-	case 2:
-		printf("  movq %%rdx, %d(%%rbp)\n", 8 + offset + 8);
-	case 3:
-		printf("  movq %%rcx, %d(%%rbp)\n", 8 + offset + 16);
-	case 4:
-		printf("  movq %%r8, %d(%%rbp)\n", 8 + offset + 24);
-	case 5:
-		printf("  movq %%r9, %d(%%rbp)\n", 8 + offset + 32);
+	for (int i = start_from; i <= 5; i++) {
+		printf("  movq %%%s, %d(%%rbp)\n", get_reg_name_from_arg_pos_8byte(i),
+		 offset + i * 8);
 	}
 	printf("  je %s\n", label_name);
 	for (int i = 0; i < 8; i++) {
