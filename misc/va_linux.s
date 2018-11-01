@@ -25,7 +25,7 @@ debug_write:
 LBB0_2:
 	movq	%fs:40, %rax
 	movq	%rax, 24(%rsp)
-	xorl	%eax, %eax
+	movl	$0, %eax
 	leaq	240(%rsp), %rax
 	movq	%rsp, %rbp
 	movq	%rbx, %rdx

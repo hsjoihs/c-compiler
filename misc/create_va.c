@@ -118,7 +118,7 @@ int main()
 	gen_store_regs_to_local(-192, 1, "LBB0_2");
 	puts("	movq	%fs:40, %rax\n"
 	     "	movq	%rax, 24(%rsp)\n"
-	     "	xorl	%eax, %eax\n"
+	     "	movl	$0, %eax\n"
 	     "	leaq	240(%rsp), %rax\n"
 	     "	movq	%rsp, %rbp\n"
 	     "	movq	%rbx, %rdx\n"
