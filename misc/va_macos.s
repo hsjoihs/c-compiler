@@ -6,10 +6,6 @@ _debug_write:
   subq $304, %rsp
 //gen_write_register_to_local_8byte("rdi", -264)
   movq %rdi, -264(%rbp)
-//gen_push_from_local_8byte(-264)
-  subq $8, %rsp
-  movq -264(%rbp), %rax
-  movq %rax, (%rsp)
   testb %al, %al
   movq %rsi, -248(%rbp)
   movq %rdx, -240(%rbp)
@@ -43,9 +39,6 @@ LBB0_2:
   subq $8, %rsp
   leaq -256(%rbp), %rax
   movq %rax, (%rsp)
-//gen_write_to_local_8byte(-64)
-  movq (%rsp), %rax
-  movq %rax, -64(%rbp)
 //gen_write_to_local_8byte(-272)
   movq (%rsp), %rax
   movq %rax, -272(%rbp)
@@ -57,25 +50,34 @@ LBB0_2:
   movq %rax, (%rsp)
 	addq	$24, (%rsp)
 
-//gen_write_to_local_8byte(-72)
-  movq (%rsp), %rax
-  movq %rax, -72(%rbp)
 //gen_write_to_local_8byte(-280)
   movq (%rsp), %rax
   movq %rax, -280(%rbp)
 //gen_discard()
   addq $8, %rsp
+//gen_push_int(8)
   subq $8, %rsp
-  movq $0x3000000008, %rdx
-  movq %rdx, (%rsp)
-//gen_write_to_local_8byte(-80)
-  movq (%rsp), %rax
-  movq %rax, -80(%rbp)
-//gen_write_to_local_8byte(-288)
-  movq (%rsp), %rax
-  movq %rax, -288(%rbp)
+  movl $8, (%rsp)
+//gen_write_to_local(-288)
+  movl (%rsp), %eax
+  movl %eax, -288(%rbp)
 //gen_discard()
   addq $8, %rsp
+//gen_push_int(48)
+  subq $8, %rsp
+  movl $48, (%rsp)
+//gen_write_to_local(-284)
+  movl (%rsp), %eax
+  movl %eax, -284(%rbp)
+//gen_discard()
+  addq $8, %rsp
+	movq	-272(%rbp), %rdx
+	movq	%rdx, -64(%rbp)
+	movq	-280(%rbp), %rdx
+	movq	%rdx, -72(%rbp)
+	movq	-288(%rbp), %rdx
+	movq	%rdx, -80(%rbp)
+
 //gen_push_address_of_global("__stderrp");
   subq $8, %rsp
   movq ___stderrp@GOTPCREL(%rip), %rax
@@ -92,6 +94,8 @@ LBB0_2:
   leaq -80(%rbp), %rax
   movq %rax, (%rsp)
   movq (%rsp), %rdx
+//gen_discard()
+  addq $8, %rsp
   movq -264(%rbp), %rsi
 	callq	_vfprintf
 	movq	-272(%rbp), %rdx
@@ -109,7 +113,6 @@ LBB0_2:
 //gen_pop_to_reg_8byte("rsi")
   movq (%rsp), %rsi
   addq $8, %rsp
-	addq	$16, %rsp
 	callq	_vprintf
 //gen_push_address_of_global("__stack_chk_guard");
   subq $8, %rsp
@@ -124,11 +127,13 @@ LBB0_2:
   addq $8, %rsp
 	cmpq	-48(%rbp), %rax
 	jne	LBB0_4
-	addq	$248, %rsp
-	addq	$16, %rsp
-	addq	$32, %rsp
-	addq	$8, %rsp
-	popq	%rbp
-	retq
+
+//gen_push_int(3)
+  subq $8, %rsp
+  movl $3, (%rsp)
+//gen_epilogue(2314)
+.L2314:  movl (%rsp), %eax
+  leave
+  ret
 LBB0_4:
 	callq	___stack_chk_fail
