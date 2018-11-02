@@ -145,13 +145,13 @@ int main()
 	
 	gen_initialize_va_list(-224, 8, 48, -192);
 	
+	puts("	call	vfprintf\n");
+	     
 	puts(
-	     "	call	vfprintf\n"
 	     "	movq	-200(%rbp), %rax\n"
-	     "	xorq	%fs:40, %rax\n"
+	     "	cmpq	%fs:40, %rax\n"
 	     "	jne	.L6\n"
-	     "	addq	$240, %rsp\n"
-	     "	popq	%rbp\n"
+	     "	leave\n"
 	     "	ret\n"
 	     ".L6:\n"
 	     "	call	__stack_chk_fail");

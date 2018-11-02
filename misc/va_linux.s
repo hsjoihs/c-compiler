@@ -78,11 +78,11 @@ LBB0_2:
   leaq -192(%rbp), %rax
   movq %rax, -208(%rbp)
 	call	vfprintf
+
 	movq	-200(%rbp), %rax
-	xorq	%fs:40, %rax
+	cmpq	%fs:40, %rax
 	jne	.L6
-	addq	$240, %rsp
-	popq	%rbp
+	leave
 	ret
 .L6:
 	call	__stack_chk_fail
