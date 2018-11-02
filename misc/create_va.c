@@ -143,30 +143,13 @@ int main()
 	puts("	call	" PREFIX "vfprintf");
 
 	gen_initialize_va_list(ap, 8, 48, reg_save_area);
-#ifdef OSX
-
-	gen_write_local_to_register_8byte(fmt, "rdi"); /* %rdi <- fmt */
-
+	
 	gen_push_address_of_local(ap);
 	gen_pop_to_reg_8byte("rsi"); /* %rsi <- ap */
 
-	puts("	callq	" PREFIX "vprintf");
-#endif
+	gen_write_local_to_register_8byte(fmt, "rdi"); /* %rdi <- fmt */
 
-#ifdef LINUX
-	gen_push_address_of_global("stdout");
-	gen_peek_and_dereference_nbyte(8);
-	gen_pop_to_reg_8byte("rdi");
-
-	gen_push_address_of_local(ap);
-	gen_pop_to_reg_8byte("rdx"); /* %rdx <- ap */
-
-	gen_write_local_to_register_8byte(fmt, "rsi"); /* %rsi <- fmt */
-
-
-	puts("	call	vfprintf\n");
-#endif
-
+	puts("	call	" PREFIX "vprintf");
 	gen_push_int(123);
 	gen_epilogue_nbyte_with_stack_check(4, 5421, stack_check, 6);
 }

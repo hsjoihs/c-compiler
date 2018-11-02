@@ -56,27 +56,15 @@ LBB0_2:
   movq %rax, -216(%rbp)
   leaq -192(%rbp), %rax
   movq %rax, -208(%rbp)
-//gen_push_address_of_global("stdout");
-  subq $8, %rsp
-  leaq stdout(%rip), %rax
-  movq %rax, (%rsp)
-//gen_peek_and_dereference_8byte()
-  movq (%rsp), %rax 
-  movq (%rax), %rax
-  movq  %rax, (%rsp)
-//gen_pop_to_reg_8byte("rdi")
-  movq (%rsp), %rdi
-  addq $8, %rsp
 //gen_push_address_of_local(-224);
   subq $8, %rsp
   leaq -224(%rbp), %rax
   movq %rax, (%rsp)
-//gen_pop_to_reg_8byte("rdx")
-  movq (%rsp), %rdx
+//gen_pop_to_reg_8byte("rsi")
+  movq (%rsp), %rsi
   addq $8, %rsp
-  movq -232(%rbp), %rsi
-	call	vfprintf
-
+  movq -232(%rbp), %rdi
+	call	vprintf
 //gen_push_int(123)
   subq $8, %rsp
   movl $123, (%rsp)
