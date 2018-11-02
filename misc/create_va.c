@@ -37,37 +37,29 @@ void gen_write_to_reg_8byte(const char *str)
 void gen_initialize_va_list(int dst_struct_offset, int gp_offset, int fp_offset,
                             int reg_save_area_offset)
 {
-	gen_push_int(gp_offset);
-	gen_write_to_local(dst_struct_offset);
-	gen_discard();
+	printf("  movl $%d,  %d(%%rbp)\n", gp_offset, dst_struct_offset);
+	printf("  movl $%d,  %d(%%rbp)\n", fp_offset, dst_struct_offset + 4);
 
-	gen_push_int(fp_offset);
-	gen_write_to_local(dst_struct_offset + 4);
-	gen_discard();
+	printf("  leaq 16(%%rbp), %%rax\n"
+	       "  movq %%rax, %d(%%rbp)\n",
+	       dst_struct_offset + 8);
 
-	printf("  subq $8, %%rsp\n"
-	       "  leaq 16(%%rbp), %%rax\n"
-	       "  movq %%rax, (%%rsp)\n");
-	gen_write_to_local_8byte(dst_struct_offset + 8);
-	gen_discard();
-
-	gen_push_address_of_local(reg_save_area_offset);
-	gen_write_to_local_8byte(dst_struct_offset + 16);
-	gen_discard();
+	printf("  leaq %d(%%rbp), %%rax\n", reg_save_area_offset);
+	printf("  movq %%rax, %d(%%rbp)\n", dst_struct_offset + 16);
 }
 
 /*
 
 void debug_write(const char *fmt, ...)
 {
-	va_list ap;
-	va_start(ap, fmt);
-	vfprintf(stderr, fmt, ap);
-	va_end(ap);
+    va_list ap;
+    va_start(ap, fmt);
+    vfprintf(stderr, fmt, ap);
+    va_end(ap);
 
-	va_start(ap, fmt);
-	vprintf(fmt, ap);
-	va_end(ap);
+    va_start(ap, fmt);
+    vprintf(fmt, ap);
+    va_end(ap);
 }
 
 */
@@ -85,7 +77,8 @@ int main()
 	gen_write_to_local_8byte(-48);
 	gen_discard();
 
-	gen_initialize_va_list(-80, 8, 0x30, -256); /* va_list ap; va_start(ap, fmt) */
+	gen_initialize_va_list(-80, 8, 0x30,
+	                       -256); /* va_list ap; va_start(ap, fmt) */
 
 	gen_push_address_of_global("__stderrp");
 	gen_peek_and_dereference_nbyte(8);
@@ -126,27 +119,24 @@ int main()
 	gen_store_regs_to_local(-192, 1, "LBB0_2");
 	puts("	movq	%fs:40, %rax\n"
 	     "	movq	%rax, -200(%rbp)\n"
-	     "	leaq	16(%rbp), %rax\n"   
+	     "	leaq	16(%rbp), %rax\n"
 	     "	movq	%rax, -216(%rbp)\n"
 	     "	leaq	-192(%rbp), %rax\n"
 	     "	movq	%rax, -208(%rbp)\n"
 	     "	movl	$8, -224(%rbp)\n"
 	     "	movl	$48, -220(%rbp)\n"
-	     
-	     );
-	
+
+	);
+
 	gen_push_address_of_global("stderr");
 	gen_peek_and_dereference_nbyte(8);
 	gen_pop_to_reg_8byte("rdi");
-	
-	//puts("	movl	$1, %esi");
-	
-	gen_write_local_to_register_8byte(-232, "rsi"); /* %rdx <- fmt */
-	
+
+	gen_write_local_to_register_8byte(-232, "rsi"); /* %rsi <- fmt */
+
 	gen_push_address_of_local(-224);
-	gen_pop_to_reg_8byte("rdx"); /* %rcx <- ap */
-	
-   
+	gen_pop_to_reg_8byte("rdx"); /* %rdx <- ap */
+
 	puts("	call	vfprintf\n"
 	     "	leaq	16(%rbp), %rax\n"
 	     "	movq	%rax, -216(%rbp)\n"
@@ -154,7 +144,7 @@ int main()
 	     "  movq	(%rax), %rdi\n"
 	     "	leaq	-224(%rbp), %rdx\n"
 	     "	movq	-232(%rbp), %rsi\n"
-	     
+
 	     "	movl	$8, -224(%rbp)\n"
 	     "	leaq	-192(%rbp), %rax\n"
 	     "	movl	$48, -220(%rbp)\n"
