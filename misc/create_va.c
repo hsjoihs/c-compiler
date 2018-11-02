@@ -79,6 +79,25 @@ void gen_write_stack_chk_guard_to_local(int offset)
 #endif
 }
 
+void gen_epilogue_nbyte_with_stack_check(int n, int return_label_name,
+                                         int checksum_offset,
+                                         int failing_label_name)
+{
+#ifdef OSX
+	gen_push_address_of_global("__stack_chk_guard");
+	gen_peek_and_dereference_nbyte(8);
+	gen_pop_to_reg_8byte("rax");
+	printf("  cmpq %d(%%rbp), %%rax\n", checksum_offset);
+	printf("  jne .L%d\n", failing_label_name);
+
+	gen_epilogue_nbyte(n, return_label_name);
+
+	printf(".L%d:\n"
+	       "  callq " PREFIX "__stack_chk_fail\n",
+	       failing_label_name);
+#endif
+}
+
 int main()
 {
 #ifdef OSX
@@ -112,17 +131,9 @@ int main()
 
 	puts("	callq	" PREFIX "vprintf");
 
-	gen_push_address_of_global("__stack_chk_guard");
-	gen_peek_and_dereference_nbyte(8);
-	gen_pop_to_reg_8byte("rax");
-	puts("	cmpq	-48(%rbp), %rax\n"
-	     "	jne	LBB0_4\n");
+	gen_push_int(123);
 
-	gen_push_int(3);
-	gen_epilogue(2314);
-
-	puts("LBB0_4:\n"
-	     "	callq	" PREFIX "__stack_chk_fail");
+	gen_epilogue_nbyte_with_stack_check(4, 2314, -48, 1532);
 #endif
 
 #ifdef LINUX
@@ -163,8 +174,7 @@ int main()
 	     "	jne	.L6");
 	gen_push_int(123);
 	gen_epilogue_nbyte(4, 5421);
-	puts(
-	     ".L6:\n"
+	puts(".L6:\n"
 	     "	call	__stack_chk_fail");
 #endif
 }

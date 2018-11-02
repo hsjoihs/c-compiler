@@ -76,6 +76,9 @@ LBB0_2:
   movq (%rsp), %rsi
   addq $8, %rsp
 	callq	_vprintf
+//gen_push_int(123)
+  subq $8, %rsp
+  movl $123, (%rsp)
 //gen_push_address_of_global("__stack_chk_guard");
   subq $8, %rsp
   movq ___stack_chk_guard@GOTPCREL(%rip), %rax
@@ -87,15 +90,11 @@ LBB0_2:
 //gen_pop_to_reg_8byte("rax")
   movq (%rsp), %rax
   addq $8, %rsp
-	cmpq	-48(%rbp), %rax
-	jne	LBB0_4
-
-//gen_push_int(3)
-  subq $8, %rsp
-  movl $3, (%rsp)
+  cmpq -48(%rbp), %rax
+  jne .L1532
 //gen_epilogue(2314)
 .L2314:  movl (%rsp), %eax
   leave
   ret
-LBB0_4:
-	callq	___stack_chk_fail
+.L1532:
+  callq ___stack_chk_fail
