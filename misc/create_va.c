@@ -117,36 +117,38 @@ int main()
 	     "	subq	$216, %rsp\n");
 	gen_store_regs_to_local(-192, 1, "LBB0_2");
 	puts("	movq	%fs:40, %rax\n"
-	     "	movq	%rax, 24(%rsp)\n"
-	     "	movl	$0, %eax\n"
-	     "	leaq	240(%rsp), %rax\n"
-	     "	movq	%rsp, %rbp\n"
+	     "	movq	%rax, -200(%rbp)\n"
+	     "	leaq	16(%rbp), %rax\n"
+	     "	movq	%rsp, %rcx\n"
 	     "	movq	%rbx, %rdx\n"
-	     "	movq	%rbp, %rcx\n"
 	     "	movl	$1, %esi\n"
-	     "	movq	%rax, 8(%rsp)\n");
+	     "	movq	%rax, -216(%rbp)\n");
+	     
 	gen_push_address_of_global("stderr");
-	puts("  movq  (%rsp), %rax\n"
-	     "  addq    $8, %rsp\n"
-	     "	movq	(%rax), %rdi\n"
-	     "	leaq	32(%rsp), %rax\n"
-	     "	movl	$8, (%rsp)\n"
-	     "	movl	$48, 4(%rsp)\n"
-	     "	movq	%rax, 16(%rsp)\n"
+	gen_peek_and_dereference_nbyte(8);
+	gen_pop_to_reg_8byte("rdi");
+	
+	puts(
+	     "	leaq	-192(%rbp), %rax\n"
+	     "	movq	%rax, -208(%rbp)\n"
+	     
+	     "	movl	$8, -224(%rbp)\n"
+	     "	movl	$48, -220(%rbp)\n"
+	     
 	     "	call	__vfprintf_chk@PLT\n"
-	     "	leaq	240(%rsp), %rax\n"
-	     "	movq	%rax, 8(%rsp)\n"
+	     "	leaq	16(%rbp), %rax\n"
+	     "	movq	%rax, -216(%rbp)\n"
 	     "	leaq	stdout(%rip), %rax\n"
 	     "  movq	(%rax), %rdi\n"
-	     "	movq	%rbp, %rcx\n"
+	     "	movq	%rsp, %rcx\n"
 	     "	movq	%rbx, %rdx\n"
 	     "	movl	$1, %esi\n"
-	     "	movl	$8, (%rsp)\n"
-	     "	leaq	32(%rsp), %rax\n"
-	     "	movl	$48, 4(%rsp)\n"
-	     "	movq	%rax, 16(%rsp)\n"
+	     "	movl	$8, -224(%rbp)\n"
+	     "	leaq	-192(%rbp), %rax\n"
+	     "	movl	$48, -220(%rbp)\n"
+	     "	movq	%rax, -208(%rbp)\n"
 	     "	call	__vfprintf_chk@PLT\n"
-	     "	movq	24(%rsp), %rax\n"
+	     "	movq	-200(%rbp), %rax\n"
 	     "	xorq	%fs:40, %rax\n"
 	     "	jne	.L6\n"
 	     "	addq	$216, %rsp\n"

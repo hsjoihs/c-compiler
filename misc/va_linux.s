@@ -24,40 +24,42 @@ debug_write:
   movaps %xmm7, -32(%rbp)
 LBB0_2:
 	movq	%fs:40, %rax
-	movq	%rax, 24(%rsp)
-	movl	$0, %eax
-	leaq	240(%rsp), %rax
-	movq	%rsp, %rbp
+	movq	%rax, -200(%rbp)
+	leaq	16(%rbp), %rax
+	movq	%rsp, %rcx
 	movq	%rbx, %rdx
-	movq	%rbp, %rcx
 	movl	$1, %esi
-	movq	%rax, 8(%rsp)
+	movq	%rax, -216(%rbp)
 
 //gen_push_address_of_global("stderr");
   subq $8, %rsp
   leaq stderr(%rip), %rax
   movq %rax, (%rsp)
-  movq  (%rsp), %rax
-  addq    $8, %rsp
-	movq	(%rax), %rdi
-	leaq	32(%rsp), %rax
-	movl	$8, (%rsp)
-	movl	$48, 4(%rsp)
-	movq	%rax, 16(%rsp)
+//gen_peek_and_dereference_8byte()
+  movq (%rsp), %rax 
+  movq (%rax), %rax
+  movq  %rax, (%rsp)
+//gen_pop_to_reg_8byte("rdi")
+  movq (%rsp), %rdi
+  addq $8, %rsp
+	leaq	-192(%rbp), %rax
+	movq	%rax, -208(%rbp)
+	movl	$8, -224(%rbp)
+	movl	$48, -220(%rbp)
 	call	__vfprintf_chk@PLT
-	leaq	240(%rsp), %rax
-	movq	%rax, 8(%rsp)
+	leaq	16(%rbp), %rax
+	movq	%rax, -216(%rbp)
 	leaq	stdout(%rip), %rax
   movq	(%rax), %rdi
-	movq	%rbp, %rcx
+	movq	%rsp, %rcx
 	movq	%rbx, %rdx
 	movl	$1, %esi
-	movl	$8, (%rsp)
-	leaq	32(%rsp), %rax
-	movl	$48, 4(%rsp)
-	movq	%rax, 16(%rsp)
+	movl	$8, -224(%rbp)
+	leaq	-192(%rbp), %rax
+	movl	$48, -220(%rbp)
+	movq	%rax, -208(%rbp)
 	call	__vfprintf_chk@PLT
-	movq	24(%rsp), %rax
+	movq	-200(%rbp), %rax
 	xorq	%fs:40, %rax
 	jne	.L6
 	addq	$216, %rsp
