@@ -98,13 +98,13 @@ void gen_epilogue_nbyte_with_stack_check(int n, int return_label_name,
 #endif
 
 #ifdef LINUX
-	printf("  movq	%d(%%rbp), %%rax\n", checksum_offset);puts(
-	     "	cmpq	%fs:40, %rax\n" );printf(
-	     "	jne	.L%d\n", failing_label_name);
-	
+	printf("  movq	%d(%%rbp), %%rax\n", checksum_offset);
+	puts("	cmpq	%fs:40, %rax\n");
+	printf("	jne	.L%d\n", failing_label_name);
+
 	gen_epilogue_nbyte(n, return_label_name);
-	printf(".L%d:\n", failing_label_name);puts(
-	     "	call	__stack_chk_fail");
+	printf(".L%d:\n", failing_label_name);
+	puts("	call	__stack_chk_fail");
 #endif
 }
 
@@ -179,9 +179,8 @@ int main()
 
 	puts("	call	vfprintf\n");
 
-    gen_push_int(123);
+	gen_push_int(123);
 
-
-    gen_epilogue_nbyte_with_stack_check(4, 5421, -200, 6);
+	gen_epilogue_nbyte_with_stack_check(4, 5421, -200, 6);
 #endif
 }
