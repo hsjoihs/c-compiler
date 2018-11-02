@@ -103,18 +103,10 @@ void gen_epilogue_nbyte_with_stack_check(int n, int return_label_name,
 
 int main()
 {
-#ifdef OSX
-	int fmt = -264;
-	int reg_save_area = -256;
-	int stack_check = -48;
-	int ap = -80;
-#endif
-#ifdef LINUX
 	int fmt = -232;
 	int reg_save_area = -192;
 	int stack_check = -200;
 	int ap = -224;
-#endif
 
 	gen_prologue(304, "debug_write");
 
@@ -140,7 +132,7 @@ int main()
 
 	gen_write_local_to_register_8byte(fmt, "rsi"); /* %rsi <- fmt */
 
-	puts("	call	" PREFIX "vfprintf");
+	puts("  call " PREFIX "vfprintf");
 
 	gen_initialize_va_list(ap, 8, 48, reg_save_area);
 	
@@ -149,7 +141,7 @@ int main()
 
 	gen_write_local_to_register_8byte(fmt, "rdi"); /* %rdi <- fmt */
 
-	puts("	call	" PREFIX "vprintf");
+	puts("  call " PREFIX "vprintf");
 	gen_push_int(123);
 	gen_epilogue_nbyte_with_stack_check(4, 5421, stack_check, 6);
 }
