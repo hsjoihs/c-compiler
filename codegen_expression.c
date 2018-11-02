@@ -276,6 +276,17 @@ static void print_expression_as_lvalue(struct PrinterState *ptr_prs,
 	}
 }
 
+void handle_builtin(struct PrinterState *ptr_prs, const char *ident_str)
+{
+	if (strcmp(ident_str, "__builtin_va_end") == 0) {
+		printf("// do nothing for %s\n", ident_str);
+		return;
+	}
+
+	printf("***** Help me: %s\n", ident_str);
+
+}
+
 void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 {
 	const struct Expr expr = *ref_expr;
@@ -610,7 +621,10 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 
 			print_expression(ptr_prs, ptr_expr_);
 		}
-		printf("/////// %s\n", ident_str);
+
+		handle_builtin(ptr_prs, ident_str);
+
+		
 
 		for (int counter = expr.args.length - 1; counter >= 0; counter--) {
 			gen_discard();
