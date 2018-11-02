@@ -755,7 +755,6 @@ void gen_epilogue_nbyte_with_stack_check(int n, int return_label_name,
 	printf("  call " PREFIX "__stack_chk_fail\n");
 }
 
-
 void gen_store_regs_to_local(int offset, int start_from, const char *label_name)
 {
 	puts("  testb %al, %al");
