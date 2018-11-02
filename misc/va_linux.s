@@ -78,12 +78,13 @@ LBB0_2:
   movq %rax, -208(%rbp)
 	call	vfprintf
 
-	movq	-200(%rbp), %rax
-	cmpq	%fs:40, %rax
-	jne	.L6
 //gen_push_int(123)
   subq $8, %rsp
   movl $123, (%rsp)
+  movq	-200(%rbp), %rax
+	cmpq	%fs:40, %rax
+
+	jne	.L6
 //gen_epilogue(5421)
 .L5421:  movl (%rsp), %eax
   leave
