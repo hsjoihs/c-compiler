@@ -67,6 +67,15 @@ void gen_call_reg_and_assign_small_struct_to_local(const char *regname,
 void gen_copy_2nd_struct_to_1st_and_discard(int size);
 void gen_copy_1st_struct_to_2nd_and_discard(int size);
 
+/* va_list */
+void gen_write_stack_chk_guard_to_local(int offset);
+void gen_epilogue_nbyte_with_stack_check(int n, int return_label_name,
+                                         int checksum_offset,
+                                         int failing_label_name);
+void gen_store_regs_to_local(int offset, int start_from, const char *label_name);
+void gen_initialize_va_list(int dst_struct_offset, int gp_offset, int fp_offset,
+                            int reg_save_area_offset);
+
 /* regname */
 const char *get_reg_name_from_arg_pos_4byte(int counter);
 const char *get_reg_name_from_arg_pos_8byte(int counter);

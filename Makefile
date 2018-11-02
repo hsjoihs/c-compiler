@@ -6,9 +6,23 @@ ifeq ($(UNAME_S),Darwin)
     OSFLAG += -DOSX
 endif
 
+ifeq ($(UNAME_S),Linux)
+	VAPATH = misc/va_linux.s
+endif
+ifeq ($(UNAME_S),Darwin)
+    VAPATH = misc/va_macos.s
+endif
+
+
 SRC=std.c codegen.c alignment.c parse_analyze_toplevel.c parse_analyze_statement.c codegen_expression.c main.c vector.c typecheck_expression.c parse_expression.c error.c type.c parse_type.c map.c print_x86_64.c print_x86_64_unofficial.c lexer.c codegen_switch.c file_io.c cpp.c
 
 CLANG_WARN=-Wall -Wextra -Wimplicit-fallthrough -Weverything -Wno-documentation -Wno-padded -Wno-missing-prototypes -Wno-switch-enum
+
+va:
+	gcc -Wall -Wextra misc/create_va.c print_x86_64.c print_x86_64_unofficial.c $(OSFLAG) -o out/create_va.out
+	./out/create_va.out > $(VAPATH)
+	gcc $(VAPATH) misc/call_va.c -o out/va.out -no-pie
+	./out/va.out
 
 # out/compiler.out is purely from clang/gcc
 1stgen:
