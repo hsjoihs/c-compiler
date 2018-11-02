@@ -74,8 +74,7 @@ void gen_epilogue_nbyte_with_stack_check(int n, int return_label_name,
                                          int failing_label_name);
 void gen_store_regs_to_local(int offset, int start_from,
                              const char *label_name);
-void gen_initialize_va_list(int dst_struct_offset, int gp_offset, int fp_offset,
-                            int reg_save_area_offset);
+void gen_va_start(int gp_offset, int fp_offset, int reg_save_area_offset);
 
 /* regname */
 const char *get_reg_name_from_arg_pos_4byte(int counter);

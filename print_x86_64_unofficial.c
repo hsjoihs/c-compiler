@@ -296,3 +296,17 @@ void gen_assign_1byte(void)
 	printf("  addq $8, %%rsp\n");
 	printf("  movb %%al, (%%rsp)\n");
 }
+
+void gen_initialize_va_list(int dst_struct_offset, int gp_offset, int fp_offset,
+                            int reg_save_area_offset)
+{
+	printf("  movl $%d,  %d(%%rbp)\n", gp_offset, dst_struct_offset);
+	printf("  movl $%d,  %d(%%rbp)\n", fp_offset, dst_struct_offset + 4);
+
+	printf("  leaq 16(%%rbp), %%rax\n"
+	       "  movq %%rax, %d(%%rbp)\n",
+	       dst_struct_offset + 8);
+
+	printf("  leaq %d(%%rbp), %%rax\n", reg_save_area_offset);
+	printf("  movq %%rax, %d(%%rbp)\n", dst_struct_offset + 16);
+}

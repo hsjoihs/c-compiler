@@ -769,18 +769,21 @@ void gen_store_regs_to_local(int offset, int start_from, const char *label_name)
 	printf("%s:\n", label_name);
 }
 
-void gen_initialize_va_list(int dst_struct_offset, int gp_offset, int fp_offset,
+
+
+/* stack top has va_list, and this function will pour contents to there */
+void gen_va_start(int gp_offset, int fp_offset,
                             int reg_save_area_offset)
 {
-	printf("  movl $%d,  %d(%%rbp)\n", gp_offset, dst_struct_offset);
-	printf("  movl $%d,  %d(%%rbp)\n", fp_offset, dst_struct_offset + 4);
+	printf("  movq (%%rsp), %%rdx\n");
+	printf("  movl $%d,  (%%rdx)\n", gp_offset);
+	printf("  movl $%d,  4(%%rdx)\n", fp_offset);
 
 	printf("  leaq 16(%%rbp), %%rax\n"
-	       "  movq %%rax, %d(%%rbp)\n",
-	       dst_struct_offset + 8);
+	       "  movq %%rax, 8(%%rdx)\n");
 
 	printf("  leaq %d(%%rbp), %%rax\n", reg_save_area_offset);
-	printf("  movq %%rax, %d(%%rbp)\n", dst_struct_offset + 16);
+	printf("  movq %%rax, 16(%%rdx)\n");
 }
 
 /***********
