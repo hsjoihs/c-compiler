@@ -48,8 +48,14 @@ LBB0_2:
 //gen_pop_to_reg_8byte("rdx")
   movq (%rsp), %rdx
   addq $8, %rsp
-  movq -232(%rbp), %rsi
-	call	vfprintf
+//gen_push_from_local_8byte(-232)
+  subq $8, %rsp
+  movq -232(%rbp), %rax
+  movq %rax, (%rsp)
+//gen_pop_to_reg_8byte("rsi")
+  movq (%rsp), %rsi
+  addq $8, %rsp
+  call vfprintf
   movl $8,  -224(%rbp)
   movl $48,  -220(%rbp)
   leaq 16(%rbp), %rax
@@ -63,8 +69,14 @@ LBB0_2:
 //gen_pop_to_reg_8byte("rsi")
   movq (%rsp), %rsi
   addq $8, %rsp
-  movq -232(%rbp), %rdi
-	call	vprintf
+//gen_push_from_local_8byte(-232)
+  subq $8, %rsp
+  movq -232(%rbp), %rax
+  movq %rax, (%rsp)
+//gen_pop_to_reg_8byte("rdi")
+  movq (%rsp), %rdi
+  addq $8, %rsp
+  call vprintf
 //gen_push_int(123)
   subq $8, %rsp
   movl $123, (%rsp)
