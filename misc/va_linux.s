@@ -24,13 +24,13 @@ debug_write:
 LBB0_2:
 	movq	%fs:40, %rax
 	movq	%rax, -200(%rbp)
-	leaq	16(%rbp), %rax
-	movq	%rax, -216(%rbp)
-	leaq	-192(%rbp), %rax
-	movq	%rax, -208(%rbp)
-	movl	$8, -224(%rbp)
-	movl	$48, -220(%rbp)
 
+  movl $8,  -224(%rbp)
+  movl $48,  -220(%rbp)
+  leaq 16(%rbp), %rax
+  movq %rax, -216(%rbp)
+  leaq -192(%rbp), %rax
+  movq %rax, -208(%rbp)
 //gen_push_address_of_global("stderr");
   subq $8, %rsp
   leaq stderr(%rip), %rax
@@ -51,16 +51,32 @@ LBB0_2:
   movq (%rsp), %rdx
   addq $8, %rsp
 	call	vfprintf
-	leaq	16(%rbp), %rax
-	movq	%rax, -216(%rbp)
-	leaq	stdout(%rip), %rax
-  movq	(%rax), %rdi
-	leaq	-224(%rbp), %rdx
-	movq	-232(%rbp), %rsi
-	movl	$8, -224(%rbp)
-	leaq	-192(%rbp), %rax
-	movl	$48, -220(%rbp)
-	movq	%rax, -208(%rbp)
+
+//gen_push_address_of_global("stdout");
+  subq $8, %rsp
+  leaq stdout(%rip), %rax
+  movq %rax, (%rsp)
+//gen_peek_and_dereference_8byte()
+  movq (%rsp), %rax 
+  movq (%rax), %rax
+  movq  %rax, (%rsp)
+//gen_pop_to_reg_8byte("rdi")
+  movq (%rsp), %rdi
+  addq $8, %rsp
+//gen_push_address_of_local(-224);
+  subq $8, %rsp
+  leaq -224(%rbp), %rax
+  movq %rax, (%rsp)
+//gen_pop_to_reg_8byte("rdx")
+  movq (%rsp), %rdx
+  addq $8, %rsp
+  movq -232(%rbp), %rsi
+  movl $8,  -224(%rbp)
+  movl $48,  -220(%rbp)
+  leaq 16(%rbp), %rax
+  movq %rax, -216(%rbp)
+  leaq -192(%rbp), %rax
+  movq %rax, -208(%rbp)
 	call	vfprintf
 	movq	-200(%rbp), %rax
 	xorq	%fs:40, %rax
@@ -69,4 +85,4 @@ LBB0_2:
 	popq	%rbp
 	ret
 .L6:
-	call	__stack_chk_fail@PLT
+	call	__stack_chk_fail
