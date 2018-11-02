@@ -64,6 +64,21 @@ void debug_write(const char *fmt, ...)
 
 */
 
+void gen_write_stack_chk_guard_to_local(int offset)
+{
+#ifdef OSX
+	gen_push_address_of_global("__stack_chk_guard");
+	gen_peek_and_dereference_nbyte(8);
+	gen_write_to_local_8byte(offset);
+	gen_discard();
+#endif
+
+#ifdef LINUX
+	printf("	movq	%%fs:40, %%rax\n");
+	printf("	movq	%%rax, %d(%%rbp)\n", offset);
+#endif
+}
+
 int main()
 {
 #ifdef OSX
@@ -72,10 +87,7 @@ int main()
 
 	gen_store_regs_to_local(-256, 1, "LBB0_2"); /* va_start(ap, fmt) */
 
-	gen_push_address_of_global("__stack_chk_guard");
-	gen_peek_and_dereference_nbyte(8);
-	gen_write_to_local_8byte(-48);
-	gen_discard();
+	gen_write_stack_chk_guard_to_local(-48);
 
 	gen_initialize_va_list(-80, 8, 0x30,
 	                       -256); /* va_list ap; va_start(ap, fmt) */
@@ -117,8 +129,8 @@ int main()
 	gen_prologue(240, "debug_write");
 	gen_write_register_to_local_8byte("rdi", -232); /* fmt */
 	gen_store_regs_to_local(-192, 1, "LBB0_2");
-	puts("	movq	%fs:40, %rax\n"
-	     "	movq	%rax, -200(%rbp)\n");
+
+	gen_write_stack_chk_guard_to_local(-200);
 
 	gen_initialize_va_list(-224, 8, 48, -192);
 
