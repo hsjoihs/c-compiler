@@ -1,35 +1,6 @@
 #include "../print_x86_64.h"
 #include "../print_x86_64_unofficial.h"
 #include <stdio.h>
-
-void gen_store_regs_to_local(int offset, int start_from, const char *label_name)
-{
-	puts("  testb %al, %al");
-	for (int i = start_from; i <= 5; i++) {
-		printf("  movq %%%s, %d(%%rbp)\n", get_reg_name_from_arg_pos_8byte(i),
-		       offset + i * 8);
-	}
-	printf("  je %s\n", label_name);
-	for (int i = 0; i < 8; i++) {
-		printf("  movaps %%xmm%d, %d(%%rbp)\n", i, 8 + offset + 40 + 16 * i);
-	}
-	printf("%s:\n", label_name);
-}
-
-void gen_initialize_va_list(int dst_struct_offset, int gp_offset, int fp_offset,
-                            int reg_save_area_offset)
-{
-	printf("  movl $%d,  %d(%%rbp)\n", gp_offset, dst_struct_offset);
-	printf("  movl $%d,  %d(%%rbp)\n", fp_offset, dst_struct_offset + 4);
-
-	printf("  leaq 16(%%rbp), %%rax\n"
-	       "  movq %%rax, %d(%%rbp)\n",
-	       dst_struct_offset + 8);
-
-	printf("  leaq %d(%%rbp), %%rax\n", reg_save_area_offset);
-	printf("  movq %%rax, %d(%%rbp)\n", dst_struct_offset + 16);
-}
-
 /*
 
 void debug_write(const char *fmt, ...)
@@ -45,43 +16,6 @@ void debug_write(const char *fmt, ...)
 }
 
 */
-
-static void gen_write_stack_chk_guard_to_local(int offset)
-{
-#ifdef OSX
-	gen_push_address_of_global("__stack_chk_guard");
-	gen_peek_and_dereference_nbyte(8);
-	gen_write_to_local_8byte(offset);
-	gen_discard();
-#endif
-
-#ifdef LINUX
-	printf("  movq %%fs:40, %%rax\n");
-	printf("  movq %%rax, %d(%%rbp)\n", offset);
-#endif
-}
-
-static void gen_epilogue_nbyte_with_stack_check(int n, int return_label_name,
-                                         int checksum_offset,
-                                         int failing_label_name)
-{
-#ifdef OSX
-	gen_push_address_of_global("__stack_chk_guard");
-	gen_peek_and_dereference_nbyte(8);
-	gen_pop_to_reg_8byte("rax");
-	printf("  cmpq %d(%%rbp), %%rax\n", checksum_offset);
-#endif
-
-#ifdef LINUX
-	printf("  movq %d(%%rbp), %%rax\n", checksum_offset);
-	printf("  cmpq %%fs:40, %%rax\n");
-#endif
-
-	printf("  jne .L%d\n", failing_label_name);
-	gen_epilogue_nbyte(n, return_label_name);
-	printf(".L%d:\n", failing_label_name);
-	printf("  call " PREFIX "__stack_chk_fail\n");
-}
 
 int main()
 {
