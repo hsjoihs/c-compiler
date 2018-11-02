@@ -29,8 +29,10 @@ int main()
 	gen_write_register_to_local_8byte("rdi", fmt);       /* fmt */
 	gen_store_regs_to_local(reg_save_area, 1, "LBB0_2"); /* va_start(ap, fmt) */
 	gen_write_stack_chk_guard_to_local(stack_check);
-	gen_initialize_va_list(ap, 8, 0x30,
-	                       reg_save_area); /* va_list ap; va_start(ap, fmt) */
+
+	gen_push_address_of_local(ap);
+	gen_va_start(8, 0x30, reg_save_area); /* va_list ap; va_start(ap, fmt) */
+	gen_discard();
 
 	gen_push_address_of_global(
 #ifdef OSX
@@ -51,7 +53,9 @@ int main()
 
 	puts("  call " PREFIX "vfprintf");
 
-	gen_initialize_va_list(ap, 8, 48, reg_save_area);
+	gen_push_address_of_local(ap);
+	gen_va_start(8, 0x30, reg_save_area); /* va_list ap; va_start(ap, fmt) */
+	gen_discard();
 
 	gen_push_address_of_local(ap);
 	gen_pop_to_reg_8byte("rsi"); /* %rsi <- ap */

@@ -35,12 +35,19 @@ LBB0_2:
   movq %rax, -200(%rbp)
 //gen_discard()
   addq $8, %rsp
-  movl $8,  -224(%rbp)
-  movl $48,  -220(%rbp)
+//gen_push_address_of_local(-224);
+  subq $8, %rsp
+  leaq -224(%rbp), %rax
+  movq %rax, (%rsp)
+  movq (%rsp), %rdx
+  movl $8,  (%rdx)
+  movl $48,  4(%rdx)
   leaq 16(%rbp), %rax
-  movq %rax, -216(%rbp)
+  movq %rax, 8(%rdx)
   leaq -192(%rbp), %rax
-  movq %rax, -208(%rbp)
+  movq %rax, 16(%rdx)
+//gen_discard()
+  addq $8, %rsp
 //gen_push_address_of_global("__stderrp");
   subq $8, %rsp
   movq ___stderrp@GOTPCREL(%rip), %rax
@@ -67,12 +74,19 @@ LBB0_2:
   movq (%rsp), %rsi
   addq $8, %rsp
   call _vfprintf
-  movl $8,  -224(%rbp)
-  movl $48,  -220(%rbp)
+//gen_push_address_of_local(-224);
+  subq $8, %rsp
+  leaq -224(%rbp), %rax
+  movq %rax, (%rsp)
+  movq (%rsp), %rdx
+  movl $8,  (%rdx)
+  movl $48,  4(%rdx)
   leaq 16(%rbp), %rax
-  movq %rax, -216(%rbp)
+  movq %rax, 8(%rdx)
   leaq -192(%rbp), %rax
-  movq %rax, -208(%rbp)
+  movq %rax, 16(%rdx)
+//gen_discard()
+  addq $8, %rsp
 //gen_push_address_of_local(-224);
   subq $8, %rsp
   leaq -224(%rbp), %rax
