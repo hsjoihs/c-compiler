@@ -35,49 +35,39 @@ LBB0_2:
   movq %rax, -48(%rbp)
 //gen_discard()
   addq $8, %rsp
-//gen_push_address_of_local(-256);
-  subq $8, %rsp
-  leaq -256(%rbp), %rax
-  movq %rax, (%rsp)
-//gen_write_to_local_8byte(-272)
-  movq (%rsp), %rax
-  movq %rax, -272(%rbp)
-//gen_discard()
-  addq $8, %rsp
-//gen_push_address_of_local(-8);
-  subq $8, %rsp
-  leaq -8(%rbp), %rax
-  movq %rax, (%rsp)
-	addq	$24, (%rsp)
-
-//gen_write_to_local_8byte(-280)
-  movq (%rsp), %rax
-  movq %rax, -280(%rbp)
-//gen_discard()
-  addq $8, %rsp
 //gen_push_int(8)
   subq $8, %rsp
   movl $8, (%rsp)
-//gen_write_to_local(-288)
+//gen_write_to_local(-80)
   movl (%rsp), %eax
-  movl %eax, -288(%rbp)
+  movl %eax, -80(%rbp)
 //gen_discard()
   addq $8, %rsp
 //gen_push_int(48)
   subq $8, %rsp
   movl $48, (%rsp)
-//gen_write_to_local(-284)
+//gen_write_to_local(-76)
   movl (%rsp), %eax
-  movl %eax, -284(%rbp)
+  movl %eax, -76(%rbp)
 //gen_discard()
   addq $8, %rsp
-	movq	-272(%rbp), %rdx
-	movq	%rdx, -64(%rbp)
-	movq	-280(%rbp), %rdx
-	movq	%rdx, -72(%rbp)
-	movq	-288(%rbp), %rdx
-	movq	%rdx, -80(%rbp)
-
+  subq $8, %rsp
+  leaq 16(%rbp), %rax
+  movq %rax, (%rsp)
+//gen_write_to_local_8byte(-72)
+  movq (%rsp), %rax
+  movq %rax, -72(%rbp)
+//gen_discard()
+  addq $8, %rsp
+//gen_push_address_of_local(-256);
+  subq $8, %rsp
+  leaq -256(%rbp), %rax
+  movq %rax, (%rsp)
+//gen_write_to_local_8byte(-64)
+  movq (%rsp), %rax
+  movq %rax, -64(%rbp)
+//gen_discard()
+  addq $8, %rsp
 //gen_push_address_of_global("__stderrp");
   subq $8, %rsp
   movq ___stderrp@GOTPCREL(%rip), %rax
@@ -93,18 +83,44 @@ LBB0_2:
   subq $8, %rsp
   leaq -80(%rbp), %rax
   movq %rax, (%rsp)
+//gen_pop_to_reg_8byte("rdx")
   movq (%rsp), %rdx
-//gen_discard()
   addq $8, %rsp
   movq -264(%rbp), %rsi
 	callq	_vfprintf
-	movq	-272(%rbp), %rdx
-	movq	%rdx, -64(%rbp)
-	movq	-280(%rbp), %rdx
-	movq	%rdx, -72(%rbp)
-	movq	-288(%rbp), %rdx
-	movq	%rdx, -80(%rbp)
-
+//gen_push_int(8)
+  subq $8, %rsp
+  movl $8, (%rsp)
+//gen_write_to_local(-80)
+  movl (%rsp), %eax
+  movl %eax, -80(%rbp)
+//gen_discard()
+  addq $8, %rsp
+//gen_push_int(48)
+  subq $8, %rsp
+  movl $48, (%rsp)
+//gen_write_to_local(-76)
+  movl (%rsp), %eax
+  movl %eax, -76(%rbp)
+//gen_discard()
+  addq $8, %rsp
+  subq $8, %rsp
+  leaq 16(%rbp), %rax
+  movq %rax, (%rsp)
+//gen_write_to_local_8byte(-72)
+  movq (%rsp), %rax
+  movq %rax, -72(%rbp)
+//gen_discard()
+  addq $8, %rsp
+//gen_push_address_of_local(-256);
+  subq $8, %rsp
+  leaq -256(%rbp), %rax
+  movq %rax, (%rsp)
+//gen_write_to_local_8byte(-64)
+  movq (%rsp), %rax
+  movq %rax, -64(%rbp)
+//gen_discard()
+  addq $8, %rsp
   movq -264(%rbp), %rdi
 //gen_push_address_of_local(-80);
   subq $8, %rsp
