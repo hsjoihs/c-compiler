@@ -97,4 +97,4 @@ LBB0_2:
   leave
   ret
 .L1532:
-  callq ___stack_chk_fail
+  call ___stack_chk_fail

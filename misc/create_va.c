@@ -74,8 +74,8 @@ void gen_write_stack_chk_guard_to_local(int offset)
 #endif
 
 #ifdef LINUX
-	printf("	movq	%%fs:40, %%rax\n");
-	printf("	movq	%%rax, %d(%%rbp)\n", offset);
+	printf("  movq %%fs:40, %%rax\n");
+	printf("  movq %%rax, %d(%%rbp)\n", offset);
 #endif
 }
 
@@ -88,24 +88,17 @@ void gen_epilogue_nbyte_with_stack_check(int n, int return_label_name,
 	gen_peek_and_dereference_nbyte(8);
 	gen_pop_to_reg_8byte("rax");
 	printf("  cmpq %d(%%rbp), %%rax\n", checksum_offset);
-	printf("  jne .L%d\n", failing_label_name);
-
-	gen_epilogue_nbyte(n, return_label_name);
-
-	printf(".L%d:\n"
-	       "  callq " PREFIX "__stack_chk_fail\n",
-	       failing_label_name);
 #endif
 
 #ifdef LINUX
-	printf("  movq	%d(%%rbp), %%rax\n", checksum_offset);
-	puts("	cmpq	%fs:40, %rax\n");
-	printf("	jne	.L%d\n", failing_label_name);
+	printf("  movq %d(%%rbp), %%rax\n", checksum_offset);
+	printf("  cmpq %%fs:40, %%rax\n");
+#endif
 
+	printf("  jne .L%d\n", failing_label_name);
 	gen_epilogue_nbyte(n, return_label_name);
 	printf(".L%d:\n", failing_label_name);
-	puts("	call	__stack_chk_fail");
-#endif
+	printf("  call " PREFIX "__stack_chk_fail\n");
 }
 
 int main()
