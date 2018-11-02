@@ -22,8 +22,8 @@ debug_write:
   movaps %xmm6, -48(%rbp)
   movaps %xmm7, -32(%rbp)
 LBB0_2:
-	movq	%fs:40, %rax
-	movq	%rax, -200(%rbp)
+  movq %fs:40, %rax
+  movq %rax, -200(%rbp)
   movl $8,  -224(%rbp)
   movl $48,  -220(%rbp)
   leaq 16(%rbp), %rax
@@ -81,13 +81,12 @@ LBB0_2:
 //gen_push_int(123)
   subq $8, %rsp
   movl $123, (%rsp)
-  movq	-200(%rbp), %rax
-	cmpq	%fs:40, %rax
-
-	jne	.L6
+  movq -200(%rbp), %rax
+  cmpq %fs:40, %rax
+  jne .L6
 //gen_epilogue(5421)
 .L5421:  movl (%rsp), %eax
   leave
   ret
 .L6:
-	call	__stack_chk_fail
+  call __stack_chk_fail
