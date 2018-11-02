@@ -384,8 +384,13 @@ parse_postfix_expression(const struct Token **ptr_tokvec)
 
 		struct Vector /*<UntypedExpr>*/ arguments = parse_arguments(&tokvec);
 
-		expr.category =
-		    FUNCCALL; /* later gets treated as FUNC_PTR_CALL if fp */
+		if (strncmp("__builtin", ident_str, strlen("__builtin")) == 0) {
+			expr.category = BUILTIN_FUNCCALL;
+		} else {
+			expr.category =
+			    FUNCCALL; /* later gets treated as FUNC_PTR_CALL if fp */
+		}
+
 		expr.arg_exprs_vec = arguments;
 		expr.var_name = ident_str;
 	} else {

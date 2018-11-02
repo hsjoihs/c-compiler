@@ -602,6 +602,23 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 
 		return;
 	}
+	case BUILTIN_FUNCCALL_EXPR: {
+		const char *ident_str = expr.global_var_name;
+
+		for (int counter = expr.args.length - 1; counter >= 0; counter--) {
+			const struct Expr *ptr_expr_ = expr.args.vector[counter];
+
+			print_expression(ptr_prs, ptr_expr_);
+		}
+		printf("/////// %s\n", ident_str);
+
+		for (int counter = expr.args.length - 1; counter >= 0; counter--) {
+			gen_discard();
+		}
+		gen_push_int(5432); /* a dummy value to be discarded */
+
+		return;
+	}
 
 	case STRING_LITERAL: {
 		const char *str = expr.literal_string;

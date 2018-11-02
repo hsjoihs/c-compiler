@@ -572,6 +572,30 @@ struct Expr typecheck_unary_expression(const struct AnalyzerState *ptr_ps,
 	}
 }
 
+struct Expr builtin_func_call_expr(
+    struct AnalyzerState *ptr_ps,
+    const struct Vector /* <UntypedExpr> */ *ref_arg_exprs_vec)
+{
+	struct Type ret_type;
+	ret_type.type_category = VOID_;
+
+	struct Expr expr;
+	expr.args = init_vector();
+	expr.category = BUILTIN_FUNCCALL_EXPR;
+
+	for (int counter = 0; counter < ref_arg_exprs_vec->length; counter++) {
+		const struct UntypedExpr *ptr = ref_arg_exprs_vec->vector[counter];
+
+		struct Expr *ptr_arg = calloc(1, sizeof(struct Expr));
+		*ptr_arg = typecheck_expression(ptr_ps, ptr);
+
+		push_vector(&expr.args, ptr_arg);
+	}
+
+	expr.details.type = ret_type;
+	return expr;
+}
+
 struct Expr
 func_call_expr(struct AnalyzerState *ptr_ps, const struct Type *ref_ret_type,
                const struct Vector /*<TypeAndIdent>*/ *nullable_ref_param_infos,
@@ -847,6 +871,12 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 		*ptr_fp_expr = fp_expr;
 		expr.ptr1 = ptr_fp_expr;
 
+		return expr;
+	}
+	case BUILTIN_FUNCCALL: {
+		const char *ident_str = uexpr.var_name;
+		struct Expr expr = builtin_func_call_expr(ptr_ps, &uexpr.arg_exprs_vec);
+		expr.global_var_name = ident_str;
 		return expr;
 	}
 	case FUNCCALL: {
