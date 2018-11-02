@@ -16,24 +16,6 @@ void gen_store_regs_to_local(int offset, int start_from, const char *label_name)
 	printf("%s:\n", label_name);
 }
 
-void gen_push_8byte(const char *num_as_str)
-{
-	printf("  subq $8, %%rsp\n"
-	       "  movq $%s, %%rdx\n"
-	       "  movq %%rdx, (%%rsp)\n",
-	       num_as_str);
-}
-
-void gen_write_local_to_register_8byte(int offset, const char *str)
-{
-	printf("  movq %d(%%rbp), %%%s\n", offset, str);
-}
-
-void gen_write_to_reg_8byte(const char *str)
-{
-	printf("  movq (%%rsp), %%%s\n", str);
-}
-
 void gen_initialize_va_list(int dst_struct_offset, int gp_offset, int fp_offset,
                             int reg_save_area_offset)
 {
@@ -64,7 +46,7 @@ void debug_write(const char *fmt, ...)
 
 */
 
-void gen_write_stack_chk_guard_to_local(int offset)
+static void gen_write_stack_chk_guard_to_local(int offset)
 {
 #ifdef OSX
 	gen_push_address_of_global("__stack_chk_guard");
@@ -79,7 +61,7 @@ void gen_write_stack_chk_guard_to_local(int offset)
 #endif
 }
 
-void gen_epilogue_nbyte_with_stack_check(int n, int return_label_name,
+static void gen_epilogue_nbyte_with_stack_check(int n, int return_label_name,
                                          int checksum_offset,
                                          int failing_label_name)
 {
@@ -130,7 +112,8 @@ int main()
 	gen_push_address_of_local(ap);
 	gen_pop_to_reg_8byte("rdx"); /* %rdx <- ap */
 
-	gen_write_local_to_register_8byte(fmt, "rsi"); /* %rsi <- fmt */
+	gen_push_from_local_8byte(fmt);
+	gen_pop_to_reg_8byte("rsi"); /* %rsi <- fmt */
 
 	puts("  call " PREFIX "vfprintf");
 
@@ -139,7 +122,8 @@ int main()
 	gen_push_address_of_local(ap);
 	gen_pop_to_reg_8byte("rsi"); /* %rsi <- ap */
 
-	gen_write_local_to_register_8byte(fmt, "rdi"); /* %rdi <- fmt */
+	gen_push_from_local_8byte(fmt);
+	gen_pop_to_reg_8byte("rdi"); /* %rdi <- fmt */
 
 	puts("  call " PREFIX "vprintf");
 	gen_push_int(123);
