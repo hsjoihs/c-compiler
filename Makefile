@@ -21,7 +21,7 @@ CLANG_WARN=-Wall -Wextra -Wimplicit-fallthrough -Weverything -Wno-documentation 
 va:
 	gcc -Wall -Wextra misc/create_va.c print_x86_64.c print_x86_64_unofficial.c $(OSFLAG) -o out/create_va.out
 	./out/create_va.out > $(VAPATH)
-	gcc $(VAPATH) misc/call_va.c -o out/va.out
+	gcc $(VAPATH) misc/call_va.c -o out/va.out -no-pie
 	./out/va.out
 
 # out/compiler.out is purely from clang/gcc

@@ -121,47 +121,49 @@ int main()
 #endif
 
 #ifdef LINUX
-	gen_prologue(0, "debug_write");
-	puts("	pushq	%rbx\n"
-	     "	movq	%rdi, %rbx\n"
-	     "	subq	$216, %rsp\n");
+	gen_prologue(240, "debug_write");
+	gen_write_register_to_local_8byte("rdi", -232); /* fmt */
 	gen_store_regs_to_local(-192, 1, "LBB0_2");
 	puts("	movq	%fs:40, %rax\n"
 	     "	movq	%rax, -200(%rbp)\n"
-	     "	leaq	16(%rbp), %rax\n"
-	     "	movq	%rsp, %rcx\n"
-	     "	movq	%rbx, %rdx\n"
-	     "	movl	$1, %esi\n"
-	     "	movq	%rax, -216(%rbp)\n");
-
+	     "	leaq	16(%rbp), %rax\n"   
+	     "	movq	%rax, -216(%rbp)\n"
+	     "	leaq	-192(%rbp), %rax\n"
+	     "	movq	%rax, -208(%rbp)\n"
+	     "	movl	$8, -224(%rbp)\n"
+	     "	movl	$48, -220(%rbp)\n"
+	     
+	     );
+	
 	gen_push_address_of_global("stderr");
 	gen_peek_and_dereference_nbyte(8);
 	gen_pop_to_reg_8byte("rdi");
-
-	puts("	leaq	-192(%rbp), %rax\n"
-	     "	movq	%rax, -208(%rbp)\n"
-
-	     "	movl	$8, -224(%rbp)\n"
-	     "	movl	$48, -220(%rbp)\n"
-
-	     "	call	__vfprintf_chk@PLT\n"
+	
+	//puts("	movl	$1, %esi");
+	
+	gen_write_local_to_register_8byte(-232, "rsi"); /* %rdx <- fmt */
+	
+	gen_push_address_of_local(-224);
+	gen_pop_to_reg_8byte("rdx"); /* %rcx <- ap */
+	
+   
+	puts("	call	vfprintf\n"
 	     "	leaq	16(%rbp), %rax\n"
 	     "	movq	%rax, -216(%rbp)\n"
 	     "	leaq	stdout(%rip), %rax\n"
 	     "  movq	(%rax), %rdi\n"
-	     "	movq	%rsp, %rcx\n"
-	     "	movq	%rbx, %rdx\n"
-	     "	movl	$1, %esi\n"
+	     "	leaq	-224(%rbp), %rdx\n"
+	     "	movq	-232(%rbp), %rsi\n"
+	     
 	     "	movl	$8, -224(%rbp)\n"
 	     "	leaq	-192(%rbp), %rax\n"
 	     "	movl	$48, -220(%rbp)\n"
 	     "	movq	%rax, -208(%rbp)\n"
-	     "	call	__vfprintf_chk@PLT\n"
+	     "	call	vfprintf\n"
 	     "	movq	-200(%rbp), %rax\n"
 	     "	xorq	%fs:40, %rax\n"
 	     "	jne	.L6\n"
-	     "	addq	$216, %rsp\n"
-	     "	popq	%rbx\n"
+	     "	addq	$240, %rsp\n"
 	     "	popq	%rbp\n"
 	     "	ret\n"
 	     ".L6:\n"
