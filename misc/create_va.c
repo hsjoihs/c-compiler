@@ -103,8 +103,9 @@ void gen_epilogue_nbyte_with_stack_check(int n, int return_label_name,
 
 int main()
 {
-#ifdef OSX
 	gen_prologue(304, "debug_write");
+#ifdef OSX
+	
 	gen_write_register_to_local_8byte("rdi", -264); /* fmt */
 
 	gen_store_regs_to_local(-256, 1, "LBB0_2"); /* va_start(ap, fmt) */
@@ -140,7 +141,6 @@ int main()
 #endif
 
 #ifdef LINUX
-	gen_prologue(240, "debug_write");
 	gen_write_register_to_local_8byte("rdi", -232); /* fmt */
 	gen_store_regs_to_local(-192, 1, "LBB0_2");
 

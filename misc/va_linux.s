@@ -1,9 +1,9 @@
-//gen_prologue(240, "debug_write")
+//gen_prologue(304, "debug_write")
 .global debug_write
 debug_write:
   pushq %rbp
   movq %rsp, %rbp
-  subq $240, %rsp
+  subq $304, %rsp
 //gen_write_register_to_local_8byte("rdi", -232)
   movq %rdi, -232(%rbp)
   testb %al, %al
