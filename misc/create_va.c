@@ -119,9 +119,9 @@ int main()
 	gen_store_regs_to_local(-192, 1, "LBB0_2");
 	puts("	movq	%fs:40, %rax\n"
 	     "	movq	%rax, -200(%rbp)\n");
-	     
+
 	gen_initialize_va_list(-224, 8, 48, -192);
-	
+
 	gen_push_address_of_global("stderr");
 	gen_peek_and_dereference_nbyte(8);
 	gen_pop_to_reg_8byte("rdi");
@@ -132,23 +132,21 @@ int main()
 	gen_pop_to_reg_8byte("rdx"); /* %rdx <- ap */
 
 	puts("	call	vfprintf\n");
-	
-	
+
 	gen_push_address_of_global("stdout");
 	gen_peek_and_dereference_nbyte(8);
 	gen_pop_to_reg_8byte("rdi");
-	
+
 	gen_push_address_of_local(-224);
 	gen_pop_to_reg_8byte("rdx"); /* %rdx <- ap */
-	
+
 	gen_write_local_to_register_8byte(-232, "rsi"); /* %rsi <- fmt */
-	
+
 	gen_initialize_va_list(-224, 8, 48, -192);
-	
+
 	puts("	call	vfprintf\n");
-	     
-	puts(
-	     "	movq	-200(%rbp), %rax\n"
+
+	puts("	movq	-200(%rbp), %rax\n"
 	     "	cmpq	%fs:40, %rax\n"
 	     "	jne	.L6\n"
 	     "	leave\n"
