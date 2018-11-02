@@ -20,16 +20,20 @@ to compile.
 The compiler can be run as 
 
 ```
-$ cat input.c | ./out/compiler.out > s/output.s
+$ cat input.c | ./out/compiler.out -DOSX -DOVERRIDE_STD > s/output.s
 ```
 
 or as
 
 ```
-$ ./out/compiler.out input.c > s/output.s
+$ ./out/compiler.out -DOSX -DOVERRIDE_STD input.c > s/output.s
 ```
 
-. To self-compile, run 
+for macOS; replace `-DOSX` with `-DLINUX` for Ubuntu. Note that, in Ubuntu, the generated assembly requires
+`-no-pie` to be passed to gcc in order for the linking to succeed.
+
+
+To self-compile, run 
 
 ```
 $ make 2ndgen
