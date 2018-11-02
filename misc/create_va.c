@@ -160,9 +160,10 @@ int main()
 
 	puts("	movq	-200(%rbp), %rax\n"
 	     "	cmpq	%fs:40, %rax\n"
-	     "	jne	.L6\n"
-	     "	leave\n"
-	     "	ret\n"
+	     "	jne	.L6");
+	gen_push_int(123);
+	gen_epilogue_nbyte(4, 5421);
+	puts(
 	     ".L6:\n"
 	     "	call	__stack_chk_fail");
 #endif

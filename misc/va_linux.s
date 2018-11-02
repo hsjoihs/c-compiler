@@ -24,7 +24,6 @@ debug_write:
 LBB0_2:
 	movq	%fs:40, %rax
 	movq	%rax, -200(%rbp)
-
   movl $8,  -224(%rbp)
   movl $48,  -220(%rbp)
   leaq 16(%rbp), %rax
@@ -82,7 +81,12 @@ LBB0_2:
 	movq	-200(%rbp), %rax
 	cmpq	%fs:40, %rax
 	jne	.L6
-	leave
-	ret
+//gen_push_int(123)
+  subq $8, %rsp
+  movl $123, (%rsp)
+//gen_epilogue(5421)
+.L5421:  movl (%rsp), %eax
+  leave
+  ret
 .L6:
 	call	__stack_chk_fail
