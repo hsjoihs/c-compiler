@@ -74,6 +74,7 @@ enum TokenKind {
 	RES_NORETURN,
 	RES_EXTERN,
 	RES_STATIC,
+	TRIPLE_DOT,
 
 	/* preprocessor */
 	HASH,

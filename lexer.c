@@ -485,9 +485,15 @@ static struct Token get_token_raw(const char **ptr_to_str)
 		++*ptr_to_str;
 		return t;
 	} else if (*str == '.') {
-		t.kind = DOT;
-		++*ptr_to_str;
-		return t;
+		if (str[1] == '.' && str[2] == '.') {
+			t.kind = TRIPLE_DOT;
+			*ptr_to_str += 3;
+			return t;
+		} else {
+			t.kind = DOT;
+			++*ptr_to_str;
+			return t;
+		}
 	}
 
 	if (*str == '0') {
