@@ -103,77 +103,70 @@ void gen_epilogue_nbyte_with_stack_check(int n, int return_label_name,
 
 int main()
 {
-	gen_prologue(304, "debug_write");
 #ifdef OSX
-	
-	gen_write_register_to_local_8byte("rdi", -264); /* fmt */
+	int fmt = -264;
+	int reg_save_area = -256;
+	int stack_check = -48;
+	int ap = -80;
+#endif
+#ifdef LINUX
+	int fmt = -232;
+	int reg_save_area = -192;
+	int stack_check = -200;
+	int ap = -224;
+#endif
 
-	gen_store_regs_to_local(-256, 1, "LBB0_2"); /* va_start(ap, fmt) */
+	gen_prologue(304, "debug_write");
 
-	gen_write_stack_chk_guard_to_local(-48);
+	gen_write_register_to_local_8byte("rdi", fmt); /* fmt */
+	gen_store_regs_to_local(reg_save_area, 1, "LBB0_2"); /* va_start(ap, fmt) */
+	gen_write_stack_chk_guard_to_local(stack_check);
+	gen_initialize_va_list(ap, 8, 0x30,
+	                       reg_save_area); /* va_list ap; va_start(ap, fmt) */
 
-	gen_initialize_va_list(-80, 8, 0x30,
-	                       -256); /* va_list ap; va_start(ap, fmt) */
-
-	gen_push_address_of_global("__stderrp");
+	gen_push_address_of_global(
+#ifdef OSX
+		"__stderrp"
+#endif
+#ifdef LINUX
+		"stderr"
+#endif
+		);
 	gen_peek_and_dereference_nbyte(8);
 	gen_pop_to_reg_8byte("rdi"); /* %rdi <- __stderrp */
 
-	gen_push_address_of_local(-80);
+	gen_push_address_of_local(ap);
 	gen_pop_to_reg_8byte("rdx"); /* %rdx <- ap */
 
-	gen_write_local_to_register_8byte(-264, "rsi"); /* %rsi <- fmt */
+	gen_write_local_to_register_8byte(fmt, "rsi"); /* %rsi <- fmt */
 
-	puts("	callq	" PREFIX "vfprintf");
+	puts("	call	" PREFIX "vfprintf");
 
-	gen_initialize_va_list(-80, 8, 0x30, -256);
+	gen_initialize_va_list(ap, 8, 48, reg_save_area);
+#ifdef OSX
 
-	gen_write_local_to_register_8byte(-264, "rdi"); /* %rdi <- fmt */
+	gen_write_local_to_register_8byte(fmt, "rdi"); /* %rdi <- fmt */
 
-	gen_push_address_of_local(-80);
+	gen_push_address_of_local(ap);
 	gen_pop_to_reg_8byte("rsi"); /* %rsi <- ap */
 
 	puts("	callq	" PREFIX "vprintf");
-
-	gen_push_int(123);
-
-	gen_epilogue_nbyte_with_stack_check(4, 2314, -48, 1532);
 #endif
 
 #ifdef LINUX
-	gen_write_register_to_local_8byte("rdi", -232); /* fmt */
-	gen_store_regs_to_local(-192, 1, "LBB0_2");
-
-	gen_write_stack_chk_guard_to_local(-200);
-
-	gen_initialize_va_list(-224, 8, 48, -192);
-
-	gen_push_address_of_global("stderr");
-	gen_peek_and_dereference_nbyte(8);
-	gen_pop_to_reg_8byte("rdi");
-
-	gen_write_local_to_register_8byte(-232, "rsi"); /* %rsi <- fmt */
-
-	gen_push_address_of_local(-224);
-	gen_pop_to_reg_8byte("rdx"); /* %rdx <- ap */
-
-	puts("	call	vfprintf\n");
-
 	gen_push_address_of_global("stdout");
 	gen_peek_and_dereference_nbyte(8);
 	gen_pop_to_reg_8byte("rdi");
 
-	gen_push_address_of_local(-224);
+	gen_push_address_of_local(ap);
 	gen_pop_to_reg_8byte("rdx"); /* %rdx <- ap */
 
-	gen_write_local_to_register_8byte(-232, "rsi"); /* %rsi <- fmt */
+	gen_write_local_to_register_8byte(fmt, "rsi"); /* %rsi <- fmt */
 
-	gen_initialize_va_list(-224, 8, 48, -192);
 
 	puts("	call	vfprintf\n");
+#endif
 
 	gen_push_int(123);
-
-	gen_epilogue_nbyte_with_stack_check(4, 5421, -200, 6);
-#endif
+	gen_epilogue_nbyte_with_stack_check(4, 5421, stack_check, 6);
 }

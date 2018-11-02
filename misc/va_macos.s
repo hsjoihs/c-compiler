@@ -60,7 +60,7 @@ LBB0_2:
   movq (%rsp), %rdx
   addq $8, %rsp
   movq -264(%rbp), %rsi
-	callq	_vfprintf
+	call	_vfprintf
   movl $8,  -80(%rbp)
   movl $48,  -76(%rbp)
   leaq 16(%rbp), %rax
@@ -91,10 +91,10 @@ LBB0_2:
   movq (%rsp), %rax
   addq $8, %rsp
   cmpq -48(%rbp), %rax
-  jne .L1532
-//gen_epilogue(2314)
-.L2314:  movl (%rsp), %eax
+  jne .L6
+//gen_epilogue(5421)
+.L5421:  movl (%rsp), %eax
   leave
   ret
-.L1532:
+.L6:
   call ___stack_chk_fail
