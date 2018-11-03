@@ -321,7 +321,7 @@ static void print_toplevel_definition(struct PrinterState *ptr_prs,
 
 	if (ref_def->func.is_va) {
 		int another_label = get_new_label_name(ptr_prs);
-		ptr_prs->reg_save_area = -capacity - 8;
+		ptr_prs->reg_save_area = -capacity + 8;
 		ptr_prs->stack_chk_offset = -capacity;
 		gen_store_regs_to_local(ptr_prs->reg_save_area, 1, another_label);
 		gen_write_stack_chk_guard_to_local(ptr_prs->stack_chk_offset);
