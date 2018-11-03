@@ -720,6 +720,7 @@ static void gen_memcpy(const char *dst, const char *src, int size)
 
 void gen_write_stack_chk_guard_to_local(int offset)
 {
+	printf("//%s(%d)\n", __func__, offset);
 #ifdef OSX
 	gen_push_address_of_global("__stack_chk_guard");
 	gen_peek_and_dereference_nbyte(8);
@@ -737,6 +738,8 @@ void gen_epilogue_nbyte_with_stack_check(int n, int return_label_name,
                                          int checksum_offset,
                                          int failing_label_name)
 {
+	printf("//%s(%d, %d, %d, %d)\n", __func__, n, return_label_name,
+	       checksum_offset, failing_label_name);
 #ifdef OSX
 	gen_push_address_of_global("__stack_chk_guard");
 	gen_peek_and_dereference_nbyte(8);
@@ -757,6 +760,8 @@ void gen_epilogue_nbyte_with_stack_check(int n, int return_label_name,
 
 void gen_store_regs_to_local(int offset, int start_from, int label_name)
 {
+	printf("//%s(%d, %d, %d)\n", __func__, offset, start_from,
+	       label_name);
 	puts("  testb %al, %al");
 	for (int i = start_from; i <= 5; i++) {
 		printf("  movq %%%s, %d(%%rbp)\n", get_reg_name_from_arg_pos_8byte(i),
@@ -772,6 +777,8 @@ void gen_store_regs_to_local(int offset, int start_from, int label_name)
 /* stack top has va_list, and this function will pour contents to there */
 void gen_va_start(int gp_offset, int fp_offset, int reg_save_area_offset)
 {
+	printf("//%s(%d, %d, %d)\n", __func__, gp_offset, fp_offset,
+	       reg_save_area_offset);
 	printf("  movq (%%rsp), %%rdx\n");
 	printf("  movl $%d,  (%%rdx)\n", gp_offset);
 	printf("  movl $%d,  4(%%rdx)\n", fp_offset);
