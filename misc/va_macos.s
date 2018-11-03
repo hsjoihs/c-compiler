@@ -12,7 +12,7 @@ _debug_write:
   movq %rcx, -168(%rbp)
   movq %r8, -160(%rbp)
   movq %r9, -152(%rbp)
-  je LBB0_2
+  je .L23
   movaps %xmm0, -144(%rbp)
   movaps %xmm1, -128(%rbp)
   movaps %xmm2, -112(%rbp)
@@ -21,7 +21,7 @@ _debug_write:
   movaps %xmm5, -64(%rbp)
   movaps %xmm6, -48(%rbp)
   movaps %xmm7, -32(%rbp)
-LBB0_2:
+.L23:
 //gen_push_address_of_global("__stack_chk_guard");
   subq $8, %rsp
   movq ___stack_chk_guard@GOTPCREL(%rip), %rax

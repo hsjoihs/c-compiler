@@ -72,8 +72,7 @@ void gen_write_stack_chk_guard_to_local(int offset);
 void gen_epilogue_nbyte_with_stack_check(int n, int return_label_name,
                                          int checksum_offset,
                                          int failing_label_name);
-void gen_store_regs_to_local(int offset, int start_from,
-                             const char *label_name);
+void gen_store_regs_to_local(int offset, int start_from, int label_name);
 void gen_va_start(int gp_offset, int fp_offset, int reg_save_area_offset);
 
 /* regname */

@@ -755,25 +755,22 @@ void gen_epilogue_nbyte_with_stack_check(int n, int return_label_name,
 	printf("  call " PREFIX "__stack_chk_fail\n");
 }
 
-void gen_store_regs_to_local(int offset, int start_from, const char *label_name)
+void gen_store_regs_to_local(int offset, int start_from, int label_name)
 {
 	puts("  testb %al, %al");
 	for (int i = start_from; i <= 5; i++) {
 		printf("  movq %%%s, %d(%%rbp)\n", get_reg_name_from_arg_pos_8byte(i),
 		       offset + i * 8);
 	}
-	printf("  je %s\n", label_name);
+	printf("  je .L%d\n", label_name);
 	for (int i = 0; i < 8; i++) {
 		printf("  movaps %%xmm%d, %d(%%rbp)\n", i, 8 + offset + 40 + 16 * i);
 	}
-	printf("%s:\n", label_name);
+	printf(".L%d:\n", label_name);
 }
 
-
-
 /* stack top has va_list, and this function will pour contents to there */
-void gen_va_start(int gp_offset, int fp_offset,
-                            int reg_save_area_offset)
+void gen_va_start(int gp_offset, int fp_offset, int reg_save_area_offset)
 {
 	printf("  movq (%%rsp), %%rdx\n");
 	printf("  movl $%d,  (%%rdx)\n", gp_offset);

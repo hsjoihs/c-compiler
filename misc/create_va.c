@@ -27,7 +27,7 @@ int main()
 	gen_prologue(304, "debug_write");
 
 	gen_write_register_to_local_8byte("rdi", fmt);       /* fmt */
-	gen_store_regs_to_local(reg_save_area, 1, "LBB0_2"); /* va_start(ap, fmt) */
+	gen_store_regs_to_local(reg_save_area, 1, 23); /* va_start(ap, fmt) */
 	gen_write_stack_chk_guard_to_local(stack_check);
 
 	gen_push_address_of_local(ap);
