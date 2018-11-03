@@ -8,6 +8,13 @@ struct PrinterState {
 	int pool_largest_id;
 	int is_inside_switch;
 	struct Vector /*<Label>*/ case_default_vec;
+
+	int is_va;
+
+	/* only valid when is_va is set */
+	int integral_explicit_arg_num;
+	int reg_save_area;
+	int stack_chk_offset;
 };
 
 int get_new_label_name(struct PrinterState *ptr_prs);

@@ -273,6 +273,10 @@ static void print_toplevel_definition(struct PrinterState *ptr_prs,
 	ptr_prs->return_label_name = -1;   /* -1 means invalid */
 	ptr_prs->break_label_name = -1;    /* -1 means invalid */
 	ptr_prs->continue_label_name = -1; /* -1 means invalid */
+	ptr_prs->is_va = ref_def->func.is_va;
+	if (ref_def->func.is_va) {
+		ptr_prs->integral_explicit_arg_num = offsets_and_types.length;
+	}
 	int label1;
 	int label2;
 	label1 = get_new_label_name(ptr_prs);
@@ -317,8 +321,10 @@ static void print_toplevel_definition(struct PrinterState *ptr_prs,
 
 	if (ref_def->func.is_va) {
 		int another_label = get_new_label_name(ptr_prs);
-		gen_store_regs_to_local(-capacity - 8, 1, another_label);
-		gen_write_stack_chk_guard_to_local(-capacity);
+		ptr_prs->reg_save_area = -capacity - 8;
+		ptr_prs->stack_chk_offset = -capacity;
+		gen_store_regs_to_local(ptr_prs->reg_save_area, 1, another_label);
+		gen_write_stack_chk_guard_to_local(ptr_prs->stack_chk_offset);
 	}
 
 	print_statement(ptr_prs, &sta);

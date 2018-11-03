@@ -281,6 +281,12 @@ void handle_builtin(struct PrinterState *ptr_prs, const char *ident_str)
 	if (strcmp(ident_str, "__builtin_va_end") == 0) {
 		printf("// do nothing for %s\n", ident_str);
 		return;
+	} else if (strcmp(ident_str, "__builtin_va_start") == 0) {
+		int float_arg_num = 0; /* since we still cannot handle them */
+
+		gen_va_start(8 * ptr_prs->integral_explicit_arg_num,
+		             48 * (1 + float_arg_num), ptr_prs->reg_save_area);
+		return;
 	}
 
 	printf("***** Help me: %s\n", ident_str);
