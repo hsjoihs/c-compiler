@@ -281,7 +281,7 @@ static void print_toplevel_definition(struct PrinterState *ptr_prs,
 	int capacity = ref_def->func.capacity;
 	if (ref_def->func.is_va) {
 		capacity += 8 /* stack_check */ + 8 * 6 + 16 * 8 /* reg_save_area */
-		            + 8;                                  /* just to be safe */
+		            + 8;                                 /* just to be safe */
 	}
 	if (ref_def->func.is_static_function) {
 		gen_prologue_static(capacity, declarator_name);

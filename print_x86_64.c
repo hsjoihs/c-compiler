@@ -760,8 +760,7 @@ void gen_epilogue_nbyte_with_stack_check(int n, int return_label_name,
 
 void gen_store_regs_to_local(int offset, int start_from, int label_name)
 {
-	printf("//%s(%d, %d, %d)\n", __func__, offset, start_from,
-	       label_name);
+	printf("//%s(%d, %d, %d)\n", __func__, offset, start_from, label_name);
 	puts("  testb %al, %al");
 	for (int i = start_from; i <= 5; i++) {
 		printf("  movq %%%s, %d(%%rbp)\n", get_reg_name_from_arg_pos_8byte(i),
