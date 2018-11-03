@@ -3,6 +3,7 @@
 
 #ifndef OVERRIDE_STD
 #include <assert.h>
+#include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
 #define assert0 assert
@@ -30,6 +31,14 @@ char *strcat(char *s1, const char *s2);
 char *strchr(const char *s, int c);
 int strncmp(const char *s1, const char *s2, size_t2 n);
 char *strndup(const char *str, size_t2 size);
+
+#ifdef __STDC__
+#undef va_start
+#undef va_end
+#endif
+
+#define va_start __builtin_va_start
+#define va_end __builtin_va_end
 
 #define EXIT_FAILURE 1
 #endif

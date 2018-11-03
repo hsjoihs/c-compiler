@@ -31,6 +31,13 @@ va:
 	gcc $(VAPATH) misc/call_va.c -o out/va.out -no-pie
 	./out/va.out
 
+va2:
+	make 1stgen
+	./out/compiler.out $(OSFLAG) -DOVERRIDE_STD __va.c > s/__va.s
+	gcc s/__va.s test/call_va_.c -o out/va2.out -no-pie
+	./out/va2.out
+
+
 test_include:
 	make 1stgen
 	./compile2.sh map $(OSFLAG)
@@ -117,6 +124,7 @@ test_all_:
 	make test_2ndgen_compiler
 	make test_include
 	make struct_test
+	make va2
 
 struct_test:
 	gcc -Wall -Wextra misc/smallstruct.c print_x86_64.c print_x86_64_unofficial.c $(OSFLAG) -o out/struct_codegen.out
