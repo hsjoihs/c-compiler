@@ -6,6 +6,7 @@ _debug_write:
   subq $304, %rsp
 //gen_write_register_to_local_8byte("rdi", -232)
   movq %rdi, -232(%rbp)
+//gen_store_regs_to_local(-192, 1, 23)
   testb %al, %al
   movq %rsi, -184(%rbp)
   movq %rdx, -176(%rbp)
@@ -22,23 +23,15 @@ _debug_write:
   movaps %xmm6, -48(%rbp)
   movaps %xmm7, -32(%rbp)
 .L23:
-//gen_push_address_of_global("__stack_chk_guard");
-  subq $8, %rsp
+//gen_write_stack_chk_guard_to_local(-200)
   movq ___stack_chk_guard@GOTPCREL(%rip), %rax
-  movq %rax, (%rsp)
-//gen_peek_and_dereference_8byte()
-  movq (%rsp), %rax 
   movq (%rax), %rax
-  movq  %rax, (%rsp)
-//gen_write_to_local_8byte(-200)
-  movq (%rsp), %rax
   movq %rax, -200(%rbp)
-//gen_discard()
-  addq $8, %rsp
 //gen_push_address_of_local(-224);
   subq $8, %rsp
   leaq -224(%rbp), %rax
   movq %rax, (%rsp)
+//gen_va_start(8, 48, -192)
   movq (%rsp), %rdx
   movl $8,  (%rdx)
   movl $48,  4(%rdx)
@@ -78,6 +71,7 @@ _debug_write:
   subq $8, %rsp
   leaq -224(%rbp), %rax
   movq %rax, (%rsp)
+//gen_va_start(8, 48, -192)
   movq (%rsp), %rdx
   movl $8,  (%rdx)
   movl $48,  4(%rdx)
@@ -105,6 +99,7 @@ _debug_write:
 //gen_push_int(123)
   subq $8, %rsp
   movl $123, (%rsp)
+//gen_epilogue_nbyte_with_stack_check(4, 5421, -200, 6)
 //gen_push_address_of_global("__stack_chk_guard");
   subq $8, %rsp
   movq ___stack_chk_guard@GOTPCREL(%rip), %rax

@@ -722,10 +722,10 @@ void gen_write_stack_chk_guard_to_local(int offset)
 {
 	printf("//%s(%d)\n", __func__, offset);
 #ifdef OSX
-	gen_push_address_of_global("__stack_chk_guard");
-	gen_peek_and_dereference_nbyte(8);
-	gen_write_to_local_8byte(offset);
-	gen_discard();
+	puts("  movq ___stack_chk_guard@GOTPCREL(%rip), %rax\n"
+	     "  movq (%rax), %rax");
+	printf("  movq %%rax, %d(%%rbp)\n", offset);
+
 #endif
 
 #ifdef LINUX
