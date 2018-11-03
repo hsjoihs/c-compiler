@@ -325,8 +325,10 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 		}
 	}
 
+	def.func.is_va = 0;
 	switch (param_infos_validity) {
 	case VALID:
+	case VA_ARGS: {
 		for (int counter = 0; counter < param_infos.length; ++counter) {
 
 			const struct TypeAndIdent *ptr_param_info =
@@ -342,8 +344,15 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 			push_offset_and_type(ptr_ps, &type, &offsets_and_types,
 			                     param_info.ident_str);
 		}
+
+		if (param_infos_validity == VA_ARGS) {
+			def.func.is_va = 1;
+		}
 		break;
-		case INVALID: break;
+	}
+
+	case INVALID:
+		break;
 	}
 
 	struct Statement sta = parse_compound_statement(ptr_ps, &tokvec2);

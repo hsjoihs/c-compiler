@@ -277,10 +277,16 @@ static void print_toplevel_definition(struct PrinterState *ptr_prs,
 	int label2;
 	label1 = get_new_label_name(ptr_prs);
 	label2 = get_new_label_name(ptr_prs);
+
+	int capacity = ref_def->func.capacity;
+	if (ref_def->func.is_va) {
+		capacity += 8 /* stack_check */ + 8 * 6 + 16 * 8 /* reg_save_area */
+		            + 8;                                  /* just to be safe */
+	}
 	if (ref_def->func.is_static_function) {
-		gen_prologue_static(ref_def->func.capacity, declarator_name);
+		gen_prologue_static(capacity, declarator_name);
 	} else {
-		gen_prologue(ref_def->func.capacity, declarator_name);
+		gen_prologue(capacity, declarator_name);
 	}
 	for (int counter = 0; counter < offsets_and_types.length; ++counter) {
 		if (counter >= 6) {
@@ -308,6 +314,13 @@ static void print_toplevel_definition(struct PrinterState *ptr_prs,
 			unsupported("Unsupported width in function parameter");
 		}
 	}
+
+	if (ref_def->func.is_va) {
+		int another_label = get_new_label_name(ptr_prs);
+		gen_store_regs_to_local(-capacity - 8, 1, another_label);
+		gen_write_stack_chk_guard_to_local(-capacity);
+	}
+
 	print_statement(ptr_prs, &sta);
 
 	if (ret_type.type_category == VOID_) {

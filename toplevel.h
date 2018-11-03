@@ -14,6 +14,9 @@ struct ToplevelFuncInfo {
 
 	/* valid only when ret_type is a struct of MEMORY_CLASS */
 	int hidden_var_offset;
+
+	/* initialized if the function has variable args */
+	int is_va;
 };
 
 enum ToplevelCategory {
