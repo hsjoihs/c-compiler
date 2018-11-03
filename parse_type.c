@@ -255,8 +255,6 @@ parse_parameter_type_list(const struct Token **ptr_tokvec,
 					push_vector(&f.param_infos,
 					            parse_parameter_declaration(&tokvec));
 				}
-
-				
 			}
 
 			struct TypeNode *ptr = calloc(1, sizeof(struct TypeNode));

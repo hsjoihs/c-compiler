@@ -134,8 +134,7 @@ struct Type {
 	struct Type *derived_from;
 	int array_length; /* only when type_category is ARRAY */
 	struct Vector /*<TypeAndIdent>*/ param_infos;
-	enum ParamInfosValidity
-	    param_infos_validity;
+	enum ParamInfosValidity param_infos_validity;
 
 	struct StructTagAndInfo s;
 	struct EnumTagAndInfo e;

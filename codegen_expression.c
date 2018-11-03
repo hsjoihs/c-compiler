@@ -284,7 +284,6 @@ void handle_builtin(struct PrinterState *ptr_prs, const char *ident_str)
 	}
 
 	printf("***** Help me: %s\n", ident_str);
-
 }
 
 void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
@@ -623,8 +622,6 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 		}
 
 		handle_builtin(ptr_prs, ident_str);
-
-		
 
 		for (int counter = expr.args.length - 1; counter >= 0; counter--) {
 			gen_discard();

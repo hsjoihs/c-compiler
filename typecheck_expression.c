@@ -116,7 +116,8 @@ static int is_strictly_equal(const struct AnalyzerState *ptr_ps,
 			return 0;
 		}
 
-		if (t1.param_infos_validity == VALID && t2.param_infos_validity == VALID) {
+		if (t1.param_infos_validity == VALID &&
+		    t2.param_infos_validity == VALID) {
 			if (t1.param_infos.length != t2.param_infos.length) {
 				return 0;
 			}
@@ -206,7 +207,8 @@ static int is_compatible(const struct AnalyzerState *ptr_ps,
 			return 0;
 		}
 
-		if (t1.param_infos_validity == INVALID || t2.param_infos_validity == INVALID) {
+		if (t1.param_infos_validity == INVALID ||
+		    t2.param_infos_validity == INVALID) {
 			return 1;
 		}
 
@@ -916,9 +918,10 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 			}
 		}
 
-		struct Expr expr = func_call_expr(
-		    ptr_ps, &ret_type, param_infos_validity != INVALID ? &param_infos : 0,
-		    &uexpr.arg_exprs_vec, 0 /* is_fp_call */);
+		struct Expr expr =
+		    func_call_expr(ptr_ps, &ret_type,
+		                   param_infos_validity != INVALID ? &param_infos : 0,
+		                   &uexpr.arg_exprs_vec, 0 /* is_fp_call */);
 		expr.global_var_name = ident_str;
 		return expr;
 	}

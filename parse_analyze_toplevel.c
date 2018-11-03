@@ -326,7 +326,7 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 	}
 
 	switch (param_infos_validity) {
-		case VALID:
+	case VALID:
 		for (int counter = 0; counter < param_infos.length; ++counter) {
 
 			const struct TypeAndIdent *ptr_param_info =
@@ -334,8 +334,8 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 			struct TypeAndIdent param_info = *ptr_param_info;
 			const struct Type type = param_info.type;
 
-			if (counter > 5) { /* silently fails when there is 6 params and 1
-				                  implicit param*/
+			if (counter > 5) { /* silently fails when there is 6 params and
+				                  1 implicit param*/
 				unsupported("7-or-more parameters");
 			}
 

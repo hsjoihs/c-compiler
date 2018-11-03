@@ -68,7 +68,7 @@ void debug_print_type(const struct Type *ref_type)
 		return;
 	case FN:
 		fprintf(stderr, "function (");
-		switch(type.param_infos_validity) {
+		switch (type.param_infos_validity) {
 		case INVALID: {
 			fprintf(stderr, "param: no info");
 			break;
