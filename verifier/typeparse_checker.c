@@ -60,6 +60,7 @@ int main()
 	check_declaration("char (*(*x[3])[2])[4]");
 	check_declaration("int atexit(int (*func)(int))");
 	check_declaration("int (*signal(int, int (*func)(int)))(int)");
+	check_declaration("int *comp(int a, int b, ...)");
 
 	check_typename("int **");
 	check_typename("int [13]");

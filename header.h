@@ -123,12 +123,19 @@ struct EnumTagAndInfo {
 	struct Enumerators enum_info;
 };
 
+enum ParamInfosValidity {
+	INVALID,
+	VALID,
+	VA_ARGS,
+};
+
 struct Type {
 	enum TypeCategory type_category;
 	struct Type *derived_from;
 	int array_length; /* only when type_category is ARRAY */
 	struct Vector /*<TypeAndIdent>*/ param_infos;
-	int is_param_infos_valid; /* zero when there is no info of parameters*/
+	enum ParamInfosValidity
+	    param_infos_validity;
 
 	struct StructTagAndInfo s;
 	struct EnumTagAndInfo e;

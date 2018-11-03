@@ -217,7 +217,7 @@ parse_parameter_type_list(const struct Token **ptr_tokvec,
 		if (tokvec[0].kind == RIGHT_PAREN) { /* NO INFO */
 			struct TypeNode f;
 			f.type_category = FN;
-			f.is_param_infos_valid = 0;
+			f.param_infos_validity = INVALID;
 			f.param_infos = init_vector();
 			struct TypeNode *ptr = calloc(1, sizeof(struct TypeNode));
 			*ptr = f;
@@ -227,7 +227,7 @@ parse_parameter_type_list(const struct Token **ptr_tokvec,
 			tokvec += 1;
 			struct TypeNode f;
 			f.type_category = FN;
-			f.is_param_infos_valid = 1;
+			f.param_infos_validity = VALID;
 			f.param_infos = init_vector();
 			struct TypeNode *ptr = calloc(1, sizeof(struct TypeNode));
 			*ptr = f;
@@ -235,7 +235,7 @@ parse_parameter_type_list(const struct Token **ptr_tokvec,
 		} else if (can_start_a_type(tokvec)) {
 			struct TypeNode f;
 			f.type_category = FN;
-			f.is_param_infos_valid = 1;
+			f.param_infos_validity = VALID;
 			f.param_infos = init_vector();
 
 			push_vector(&f.param_infos, parse_parameter_declaration(&tokvec));
@@ -247,8 +247,16 @@ parse_parameter_type_list(const struct Token **ptr_tokvec,
 				}
 				++tokvec;
 
-				push_vector(&f.param_infos,
-				            parse_parameter_declaration(&tokvec));
+				if (tokvec[0].kind == TRIPLE_DOT) {
+					f.param_infos_validity = VA_ARGS;
+					++tokvec;
+					break;
+				} else {
+					push_vector(&f.param_infos,
+					            parse_parameter_declaration(&tokvec));
+				}
+
+				
 			}
 
 			struct TypeNode *ptr = calloc(1, sizeof(struct TypeNode));

@@ -68,9 +68,12 @@ void debug_print_type(const struct Type *ref_type)
 		return;
 	case FN:
 		fprintf(stderr, "function (");
-		if (!type.is_param_infos_valid) {
+		switch(type.param_infos_validity) {
+		case INVALID: {
 			fprintf(stderr, "param: no info");
-		} else {
+			break;
+		}
+		case VALID: {
 			if (type.param_infos.length == 0) {
 				fprintf(stderr, "no params");
 			} else if (type.param_infos.length < 2) {
@@ -90,6 +93,26 @@ void debug_print_type(const struct Type *ref_type)
 					fprintf(stderr, "\n");
 				}
 			}
+			break;
+		}
+		case VA_ARGS: {
+			if (type.param_infos.length == 0) {
+				fprintf(stderr, "no params varg");
+			} else {
+				fprintf(stderr, "params: \n");
+				for (int i = 0; i < type.param_infos.length; i++) {
+					const struct TypeAndIdent *ptr_paraminfo =
+					    type.param_infos.vector[i];
+					fprintf(stderr, "  %s: ",
+					        ptr_paraminfo->ident_str ? ptr_paraminfo->ident_str
+					                                 : "@anon");
+					debug_print_type(&ptr_paraminfo->type);
+					fprintf(stderr, "\n");
+				}
+				fprintf(stderr, ", ...");
+			}
+			break;
+		}
 		}
 		fprintf(stderr, ") returning ");
 		debug_print_type(type.derived_from);

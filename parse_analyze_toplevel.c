@@ -269,7 +269,7 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 	}
 
 	struct Vector /*<TypeAndIdent>*/ param_infos = declarator_type.param_infos;
-	int is_param_infos_valid = declarator_type.is_param_infos_valid;
+	int param_infos_validity = declarator_type.param_infos_validity;
 	struct Type *derived_from = declarator_type.derived_from;
 	struct Type ret_type = *derived_from;
 
@@ -290,8 +290,8 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 	} else {
 		expect_type(ptr_ps, &declarator_type, ptr_old_func_info,
 		            "conflicting function definition");
-		if (!(ptr_old_func_info->is_param_infos_valid) &&
-		    declarator_type.is_param_infos_valid) {
+		if (ptr_old_func_info->param_infos_validity == INVALID &&
+		    declarator_type.param_infos_validity != INVALID) {
 			insert(ptr_ps->func_info_map, declarator_name, ptr_func_info);
 		}
 	}
@@ -325,7 +325,8 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 		}
 	}
 
-	if (is_param_infos_valid) { /* parameter is not empty */
+	switch (param_infos_validity) {
+		case VALID:
 		for (int counter = 0; counter < param_infos.length; ++counter) {
 
 			const struct TypeAndIdent *ptr_param_info =
@@ -341,6 +342,8 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 			push_offset_and_type(ptr_ps, &type, &offsets_and_types,
 			                     param_info.ident_str);
 		}
+		break;
+		case INVALID: break;
 	}
 
 	struct Statement sta = parse_compound_statement(ptr_ps, &tokvec2);

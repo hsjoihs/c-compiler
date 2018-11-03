@@ -116,7 +116,7 @@ static int is_strictly_equal(const struct AnalyzerState *ptr_ps,
 			return 0;
 		}
 
-		if (t1.is_param_infos_valid && t2.is_param_infos_valid) {
+		if (t1.param_infos_validity == VALID && t2.param_infos_validity == VALID) {
 			if (t1.param_infos.length != t2.param_infos.length) {
 				return 0;
 			}
@@ -128,7 +128,9 @@ static int is_strictly_equal(const struct AnalyzerState *ptr_ps,
 				}
 			}
 			return 1;
-		} else { /* when invalid, it matches no matter what */
+		} else if (t1.param_infos_validity == INVALID ||
+		           t2.param_infos_validity ==
+		               INVALID) { /* when invalid, it matches no matter what */
 			return 1;
 		}
 	}
@@ -204,7 +206,7 @@ static int is_compatible(const struct AnalyzerState *ptr_ps,
 			return 0;
 		}
 
-		if (!t1.is_param_infos_valid || !t2.is_param_infos_valid) {
+		if (t1.param_infos_validity == INVALID || t2.param_infos_validity == INVALID) {
 			return 1;
 		}
 
@@ -855,16 +857,16 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 			exit(EXIT_FAILURE);
 		}
 
-		int is_param_infos_valid = fn_type.is_param_infos_valid;
+		int param_infos_validity = fn_type.param_infos_validity;
 		struct Vector /*<TypeAndIdent>*/ param_infos;
 
-		if (is_param_infos_valid) {
+		if (param_infos_validity != INVALID) {
 			param_infos = fn_type.param_infos;
 		}
 
 		struct Expr expr =
 		    func_call_expr(ptr_ps, fn_type.derived_from,
-		                   is_param_infos_valid ? &param_infos : 0,
+		                   param_infos_validity != INVALID ? &param_infos : 0,
 		                   &uexpr.arg_exprs_vec, 1 /* is_fp_call */);
 
 		struct Expr *ptr_fp_expr = calloc(1, sizeof(struct Expr));
@@ -884,7 +886,7 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 
 		struct Type ret_type;
 
-		int is_param_infos_valid;
+		int param_infos_validity;
 		struct Vector /*<TypeAndIdent>*/ param_infos;
 		if (!isElem(ptr_ps->func_info_map, ident_str)) {
 			if (from_name_to_expr(ptr_ps, ident_str)) {
@@ -903,19 +905,19 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 			        ident_str);
 			fprintf(stderr, "Assumes that `%s()` returns `int`\n", ident_str);
 			ret_type = INT_TYPE();
-			is_param_infos_valid = 0;
+			param_infos_validity = INVALID;
 		} else {
 			struct Type *ptr_func_info =
 			    lookup(ptr_ps->func_info_map, ident_str);
 			ret_type = *(ptr_func_info->derived_from);
-			is_param_infos_valid = ptr_func_info->is_param_infos_valid;
-			if (is_param_infos_valid) {
+			param_infos_validity = ptr_func_info->param_infos_validity;
+			if (param_infos_validity != INVALID) {
 				param_infos = ptr_func_info->param_infos;
 			}
 		}
 
 		struct Expr expr = func_call_expr(
-		    ptr_ps, &ret_type, is_param_infos_valid ? &param_infos : 0,
+		    ptr_ps, &ret_type, param_infos_validity != INVALID ? &param_infos : 0,
 		    &uexpr.arg_exprs_vec, 0 /* is_fp_call */);
 		expr.global_var_name = ident_str;
 		return expr;
