@@ -132,6 +132,7 @@ test_all_:
 	make test_include
 	make struct_test
 	make va2
+	make va3
 
 struct_test:
 	gcc -Wall -Wextra misc/smallstruct.c print_x86_64.c print_x86_64_unofficial.c $(OSFLAG) -o out/struct_codegen.out
