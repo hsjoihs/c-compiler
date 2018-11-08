@@ -2,11 +2,14 @@
 #include "print_x86_64_unofficial.h"
 #include "std.h"
 #include "std_io.h"
+
+struct __FILE *global_stat_log;
+
 static void memo(const char *msg)
 {
-	struct __FILE *f = fopen("file.txt", "a");
-	fprintf(f, "%s\n", msg);
-	fclose(f);
+	if (global_stat_log) {
+		fprintf(global_stat_log, "%s\n", msg);
+	}
 }
 
 _Noreturn void poison_and_die(const char *msg)
