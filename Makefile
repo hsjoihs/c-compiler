@@ -18,6 +18,9 @@ SRC=std.c codegen.c alignment.c parse_analyze_toplevel.c parse_analyze_statement
 
 CLANG_WARN=-Wall -Wextra -Wimplicit-fallthrough -Weverything -Wno-documentation -Wno-padded -Wno-missing-prototypes -Wno-switch-enum
 
+LINKER=gcc -no-pie -Wno-unused-command-line-argument
+
+TYPECHECKSRC=vector.c verifier/typeparse_checker.c lexer.c type.c parse_type.c error.c map.c file_io.c cpp.c
 
 
 # out/compiler.out is purely from clang/gcc
@@ -28,20 +31,20 @@ CLANG_WARN=-Wall -Wextra -Wimplicit-fallthrough -Weverything -Wno-documentation 
 va:
 	gcc -Wall -Wextra misc/create_va.c print_x86_64.c print_x86_64_unofficial.c $(OSFLAG) -o out/create_va.out
 	./out/create_va.out > $(VAPATH)
-	gcc $(VAPATH) misc/call_va.c -o out/va.out -no-pie
+	$(LINKER) $(VAPATH) misc/call_va.c -o out/va.out
 	./out/va.out
 
 va2:
 	make 1stgen
 	./out/compiler.out $(OSFLAG) -DOVERRIDE_STD __va.c > s/__va.s
-	gcc s/__va.s test/call_va_.c -o out/va2.out -no-pie
+	$(LINKER) s/__va.s test/call_va_.c -o out/va2.out
 	./out/va2.out
 
 va3:
 	make 1stgen
 	./out/compiler.out $(OSFLAG) -DOVERRIDE_STD __va.c > s/__va.s
 	./out/compiler.out $(OSFLAG) -DOVERRIDE_STD test/call_va_.c > s/call_va_.s
-	gcc s/__va.s s/call_va_.s -o out/va3.out -no-pie
+	$(LINKER) s/__va.s s/call_va_.s -o out/va3.out
 	./out/va3.out
 
 
@@ -49,7 +52,7 @@ test_include:
 	make 1stgen
 	./compile2.sh map $(OSFLAG)
 	./out/compiler.out __.c > self_compile_asm/__.s
-	gcc -Wall -Wextra -DOVERRIDE_STD self_compile_asm/__.s self_compile_asm/map.s -o out/test_include.out -no-pie -Wno-unused-command-line-argument
+	$(LINKER) self_compile_asm/__.s self_compile_asm/map.s -o out/test_include.out
 	./out/test_include.out
 
 2ndgen:
@@ -74,7 +77,7 @@ test_include:
 	./compile2.sh main $(OSFLAG)
 	./compile2.sh lexer $(OSFLAG)
 	./compile2.sh cpp $(OSFLAG)
-	gcc -Wall -Wextra -DOVERRIDE_STD self_compile_asm/std.s self_compile_asm/codegen.s self_compile_asm/alignment.s self_compile_asm/parse_analyze_toplevel.s self_compile_asm/lexer.s self_compile_asm/codegen_expression.s self_compile_asm/main.s self_compile_asm/vector.s self_compile_asm/typecheck_expression.s self_compile_asm/parse_expression.s self_compile_asm/error.s self_compile_asm/type.s self_compile_asm/parse_type.s self_compile_asm/map.s self_compile_asm/print_x86_64.s self_compile_asm/print_x86_64_unofficial.s self_compile_asm/codegen_switch.s self_compile_asm/file_io.s $(OSFLAG) self_compile_asm/parse_analyze_statement.s self_compile_asm/cpp.s -o out/compiler.out -no-pie -Wno-unused-command-line-argument
+	$(LINKER) self_compile_asm/std.s self_compile_asm/codegen.s self_compile_asm/alignment.s self_compile_asm/parse_analyze_toplevel.s self_compile_asm/lexer.s self_compile_asm/codegen_expression.s self_compile_asm/main.s self_compile_asm/vector.s self_compile_asm/typecheck_expression.s self_compile_asm/parse_expression.s self_compile_asm/error.s self_compile_asm/type.s self_compile_asm/parse_type.s self_compile_asm/map.s self_compile_asm/print_x86_64.s self_compile_asm/print_x86_64_unofficial.s self_compile_asm/codegen_switch.s self_compile_asm/file_io.s $(OSFLAG) self_compile_asm/parse_analyze_statement.s self_compile_asm/cpp.s -o out/compiler.out
 	cp -p out/compiler.out out/compiler_2ndgen.out
 
 test_2ndgen_compiler:
@@ -102,7 +105,7 @@ test_2ndgen_compiler:
 	./compile2.sh main $(OSFLAG) __with2nd
 	./compile2.sh lexer $(OSFLAG) __with2nd
 	./compile2.sh cpp $(OSFLAG) __with2nd
-	gcc -Wall -Wextra -DOVERRIDE_STD self_compile_asm/std__with2nd.s self_compile_asm/codegen__with2nd.s self_compile_asm/alignment__with2nd.s self_compile_asm/parse_analyze_toplevel__with2nd.s self_compile_asm/lexer.s self_compile_asm/codegen_expression__with2nd.s self_compile_asm/main__with2nd.s self_compile_asm/vector__with2nd.s self_compile_asm/typecheck_expression__with2nd.s self_compile_asm/parse_expression__with2nd.s self_compile_asm/error__with2nd.s self_compile_asm/type__with2nd.s self_compile_asm/parse_type__with2nd.s self_compile_asm/map__with2nd.s self_compile_asm/print_x86_64__with2nd.s self_compile_asm/print_x86_64_unofficial__with2nd.s self_compile_asm/codegen_switch__with2nd.s $(OSFLAG) self_compile_asm/parse_analyze_statement__with2nd.s self_compile_asm/file_io__with2nd.s self_compile_asm/cpp__with2nd.s -o out/compiler_gen3.out -no-pie -Wno-unused-command-line-argument
+	$(LINKER) self_compile_asm/std__with2nd.s self_compile_asm/codegen__with2nd.s self_compile_asm/alignment__with2nd.s self_compile_asm/parse_analyze_toplevel__with2nd.s self_compile_asm/lexer.s self_compile_asm/codegen_expression__with2nd.s self_compile_asm/main__with2nd.s self_compile_asm/vector__with2nd.s self_compile_asm/typecheck_expression__with2nd.s self_compile_asm/parse_expression__with2nd.s self_compile_asm/error__with2nd.s self_compile_asm/type__with2nd.s self_compile_asm/parse_type__with2nd.s self_compile_asm/map__with2nd.s self_compile_asm/print_x86_64__with2nd.s self_compile_asm/print_x86_64_unofficial__with2nd.s self_compile_asm/codegen_switch__with2nd.s $(OSFLAG) self_compile_asm/parse_analyze_statement__with2nd.s self_compile_asm/file_io__with2nd.s self_compile_asm/cpp__with2nd.s -o out/compiler_gen3.out
 	diff self_compile_asm/vector.s self_compile_asm/vector__with2nd.s
 	diff self_compile_asm/map.s self_compile_asm/map__with2nd.s
 	diff self_compile_asm/print_x86_64.s self_compile_asm/print_x86_64__with2nd.s
@@ -144,7 +147,7 @@ clean:
 	rm out/*.out s/*.s self_compile_asm/*.s
 
 verify_typeparse:
-	gcc -Wall -Wextra $(OSFLAG) vector.c verifier/typeparse_checker.c lexer.c type.c parse_type.c error.c map.c file_io.c cpp.c -o out/typeparse_check.out
+	gcc -Wall -Wextra $(OSFLAG) $(TYPECHECKSRC) -o out/typeparse_check.out
 	./out/typeparse_check.out
 
 assembly_sandbox:
@@ -158,11 +161,11 @@ compile_files:
 	make 1stgen
 	./build_files.sh
 	cat test/quine.c | ./out/compiler.out > s/quine.s
-	gcc s/quine.s -o out/quine.out -no-pie -Wno-unused-command-line-argument
+	$(LINKER) s/quine.s -o out/quine.out
 	./out/quine.out > test/quine_res.c
 	diff test/quine.c test/quine_res.c
 	cat test/quine2.c | ./out/compiler.out > s/quine2.s
-	gcc s/quine2.s -o out/quine2.out -no-pie -Wno-unused-command-line-argument
+	$(LINKER) s/quine2.s -o out/quine2.out
 	./out/quine2.out > test/quine2_res.c
 	diff test/quine2.c test/quine2_res.c
 	cat test/vector_test.c | ./out/compiler.out > s/vector_test.s
@@ -175,7 +178,7 @@ compile_files:
 	gcc s/vector_test4.s -c
 	./out/compiler.out test/link1.c > s/link1.s
 	./out/compiler.out test/link2.c > s/link2.s
-	gcc s/link1.s s/link2.s -o out/link.out -no-pie -Wno-unused-command-line-argument
+	$(LINKER) s/link1.s s/link2.s -o out/link.out
 	./out/link.out; test $$? -eq 174 
 
 
@@ -197,8 +200,8 @@ notest:
 warn:
 	make format
 	clang $(CLANG_WARN) -DOVERRIDE_STD $(SRC) $(OSFLAG) -o out/compiler.out 
-	clang $(CLANG_WARN) misc/assembly_sandbox.c print_x86_64.c $(OSFLAG) -o out/assembly_sandbox.out
-	clang -Wall -Wextra -Wimplicit-fallthrough $(OSFLAG) vector.c verifier/typeparse_checker.c lexer.c type.c parse_type.c error.c file_io.c -o out/typeparse_check.out
+	clang $(CLANG_WARN) misc/assembly_sandbox.c print_x86_64.c  print_x86_64_unofficial.c $(OSFLAG) -o out/assembly_sandbox.out
+	clang -Wall -Wextra -Wimplicit-fallthrough $(OSFLAG) $(TYPECHECKSRC) -o out/typeparse_check.out
 
 f:
 	make format
