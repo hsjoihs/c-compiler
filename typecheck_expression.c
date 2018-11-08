@@ -133,6 +133,11 @@ static int is_strictly_equal(const struct AnalyzerState *ptr_ps,
 		           t2.param_infos_validity ==
 		               INVALID) { /* when invalid, it matches no matter what */
 			return 1;
+		} else { /* one is VA_ARGS, the other is valid */
+#ifdef __STDC__
+#warning should typecheck
+#endif
+			return 1;
 		}
 	}
 
@@ -209,6 +214,14 @@ static int is_compatible(const struct AnalyzerState *ptr_ps,
 
 		if (t1.param_infos_validity == INVALID ||
 		    t2.param_infos_validity == INVALID) {
+			return 1;
+		}
+
+		if (t1.param_infos_validity == VA_ARGS ||
+		    t2.param_infos_validity == VA_ARGS) {
+#ifdef __STDC__
+#warning should typecheck
+#endif
 			return 1;
 		}
 
@@ -649,13 +662,24 @@ func_call_expr(struct AnalyzerState *ptr_ps, const struct Type *ref_ret_type,
 		expr.category = is_fp_call ? FPCALL_EXPR : FUNCCALL_EXPR;
 	}
 
+	if (nullable_ref_param_infos &&
+	    nullable_ref_param_infos->length > ref_arg_exprs_vec->length) {
+		simple_error("the number of argument that is passed is less than the "
+		             "expected number of parameters");
+	}
+
 	for (int counter = 0; counter < ref_arg_exprs_vec->length; counter++) {
 		const struct UntypedExpr *ptr = ref_arg_exprs_vec->vector[counter];
 
 		struct Expr *ptr_arg = calloc(1, sizeof(struct Expr));
 		*ptr_arg = typecheck_expression(ptr_ps, ptr);
 
-		if (nullable_ref_param_infos) {
+		/* Note that `nullable_ref_param_infos->length` can be smaller than
+		 * `ref_arg_exprs_vec->length` if you are calling a variable-argument
+		 * function. In that case we ignore the typecheck. */
+
+		if (nullable_ref_param_infos &&
+		    counter < nullable_ref_param_infos->length) {
 			const struct TypeAndIdent *pti =
 			    nullable_ref_param_infos->vector[counter];
 			if (!is_compatible(ptr_ps, &pti->type, &ptr_arg->details.type)) {
