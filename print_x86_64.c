@@ -12,6 +12,25 @@ static void memo(const char *msg)
 	}
 }
 
+static void memo2(const char *funcname, const char *fmt, ...)
+{
+	memo(funcname);
+	printf("//%s(", funcname);
+
+#ifdef __STDC__
+	va_list ap;
+#endif
+#ifndef __STDC__
+	struct va_list_tag ap[1];
+#endif
+
+	va_start(ap, fmt);
+	vprintf(fmt, ap);
+	va_end(ap);
+
+	printf(");\n");
+}
+
 _Noreturn void poison_and_die(const char *msg)
 {
 	printf(" %%%%%%error detected (%s). Poisoning the assembly:\n", msg);
@@ -23,8 +42,7 @@ _Noreturn void poison_and_die(const char *msg)
  *************************/
 void gen_prologue(int alloc_size, const char *fname)
 {
-	memo(__func__);
-	printf("//gen_prologue(%d, \"%s\")\n", alloc_size, fname);
+	memo2(__func__, "%d, \"%s\"", alloc_size, fname);
 	printf(".global " PREFIX "%s\n" PREFIX "%s:\n"
 	       "  pushq %%rbp\n"
 	       "  movq %%rsp, %%rbp\n",
@@ -36,8 +54,7 @@ void gen_prologue(int alloc_size, const char *fname)
 
 void gen_prologue_static(int alloc_size, const char *fname)
 {
-	memo(__func__);
-	printf("//gen_prologue_static(%d, \"%s\")\n", alloc_size, fname);
+	memo2(__func__, "%d, \"%s\"", alloc_size, fname);
 	printf(PREFIX "%s:\n"
 	              "  pushq %%rbp\n"
 	              "  movq %%rsp, %%rbp\n",
@@ -49,7 +66,7 @@ void gen_prologue_static(int alloc_size, const char *fname)
 
 void gen_epilogue_nbyte(int n, int label_name)
 {
-	memo(__func__);
+	memo2(__func__, "%d, %d", n, label_name);
 	switch (n) {
 	case 1:
 	case 4:
@@ -109,8 +126,7 @@ return *p;
 */
 void gen_epilogue_returning_small_struct(int size, int label)
 {
-	memo(__func__);
-	printf("//gen_epilogue_returning_small_struct(%d, %d)\n", size, label);
+	memo2(__func__, "%d, %d", size, label);
 	printf(".L%d:", label);
 
 	puts("  movq (%rsp), %rcx");
@@ -128,8 +144,7 @@ void gen_epilogue_returning_small_struct(int size, int label)
 
 void gen_return_garbage(void)
 {
-	memo(__func__);
-	printf("//gen_return_garbage()\n");
+	memo2(__func__, "");
 	printf("  movl $123, %%eax\n"
 	       "  leave\n"
 	       "  ret\n");
@@ -142,8 +157,7 @@ void gen_return_garbage(void)
 
 void gen_push_int(int num)
 {
-	memo(__func__);
-	printf("//gen_push_int(%d)\n", num);
+	memo2(__func__, "%d", num);
 	printf("  subq $8, %%rsp\n"
 	       "  movl $%d, (%%rsp)\n",
 	       num);
@@ -151,9 +165,8 @@ void gen_push_int(int num)
 
 void gen_push_address_of_local(int offset)
 {
-	memo(__func__);
+	memo2(__func__, "%d", offset);
 	assert(offset < 0);
-	printf("//gen_push_address_of_local(%d);\n", offset);
 	printf("  subq $8, %%rsp\n"
 	       "  leaq %d(%%rbp), %%rax\n"
 	       "  movq %%rax, (%%rsp)\n",
@@ -162,8 +175,7 @@ void gen_push_address_of_local(int offset)
 
 void gen_push_address_of_str(int strnum)
 {
-	memo(__func__);
-	printf("//gen_push_address_of_str(%d)\n", strnum);
+	memo2(__func__, "%d", strnum);
 	printf("  subq $8, %%rsp\n"
 	       "  leaq L_str%d(%%rip), %%rax\n"
 	       "  movq %%rax, (%%rsp)\n",
@@ -172,7 +184,7 @@ void gen_push_address_of_str(int strnum)
 
 void gen_push_from_local_nbyte(int n, int offset)
 {
-	memo(__func__);
+	memo2(__func__, "%d", n, offset);
 	switch (n) {
 	case 1:
 		gen_push_from_local_1byte(offset);
@@ -191,8 +203,7 @@ void gen_push_from_local_nbyte(int n, int offset)
 /* confirmed in both environments */
 void gen_push_address_of_global(const char *ident)
 {
-	memo(__func__);
-	printf("//gen_push_address_of_global(\"%s\");\n", ident);
+	memo2(__func__, "\"%s\"", ident);
 	printf("  subq $8, %%rsp\n");
 #ifdef OSX
 	printf("  movq " PREFIX "%s@GOTPCREL(%%rip), %%rax\n", ident);
@@ -205,7 +216,7 @@ void gen_push_address_of_global(const char *ident)
 
 void gen_push_ret_of_nbyte(int n, const char *ident_str)
 {
-	memo(__func__);
+	memo2(__func__, "%d, \"%s\"", n, ident_str);
 	switch (n) {
 	case 1:
 		gen_push_ret_of_1byte(ident_str);
@@ -223,15 +234,14 @@ void gen_push_ret_of_nbyte(int n, const char *ident_str)
 
 void gen_push_nullptr(void)
 {
-	memo(__func__);
-	printf("//gen_push_nullptr()\n");
+	memo2(__func__, "");
 	printf("  subq $8, %%rsp\n"
 	       "  movq $0, (%%rsp)\n");
 }
 
 void gen_call_reg_and_push_ret_of_nbyte(int n, const char *reg)
 {
-	memo(__func__);
+	memo2(__func__, "%d, \"%s\"", n, reg);
 	switch (n) {
 	case 1:
 		gen_call_reg_and_push_ret_of_1byte(reg);
