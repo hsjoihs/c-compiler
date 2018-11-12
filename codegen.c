@@ -344,6 +344,10 @@ static void print_toplevel_definition(struct PrinterState *ptr_prs,
 		enum SystemVAbiClass abi_class = ref_def->func.abi_class;
 		int ret_struct_size = ref_def->func.ret_struct_size;
 
+		if (ref_def->func.is_va) {
+			unsupported("variable argument function that returns a struct");
+		}
+
 		if (abi_class == INTEGER_CLASS) {
 			gen_epilogue_returning_small_struct(ret_struct_size,
 			                                    ptr_prs->return_label_name);
@@ -354,8 +358,15 @@ static void print_toplevel_definition(struct PrinterState *ptr_prs,
 			gen_return_garbage();
 		}
 	} else {
-		gen_epilogue_nbyte(size_of_basic(&ret_type, "return value"),
-		                   ptr_prs->return_label_name);
+		if (ref_def->func.is_va) {
+			int label = get_new_label_name(ptr_prs);
+			gen_epilogue_nbyte_with_stack_check(
+			    size_of_basic(&ret_type, "return value"),
+			    ptr_prs->return_label_name, ptr_prs->stack_chk_offset, label);
+		} else {
+			gen_epilogue_nbyte(size_of_basic(&ret_type, "return value"),
+			                   ptr_prs->return_label_name);
+		}
 	}
 }
 
