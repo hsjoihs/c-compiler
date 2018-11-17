@@ -10,8 +10,6 @@ int main(int argc, char const **argv)
 
 	struct Vector macros = init_vector();
 
-	const char *file_name_dbg = "<stdin>";
-
 	for (int i = 1; i < argc; i++) {
 		if (strncmp(argv[i], "-D", 2) == 0) {
 			push_vector(&macros, argv[i] + 2);
@@ -29,7 +27,6 @@ int main(int argc, char const **argv)
 				fprintf(stderr, "failed to open file `%s`.\n", filename);
 				exit(EXIT_FAILURE);
 			}
-			file_name_dbg = filename;
 		}
 	}
 
