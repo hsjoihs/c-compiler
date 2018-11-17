@@ -4,10 +4,6 @@
 #include "std_io.h"
 #include "toplevel.h"
 
-int mkstemp(char *template);
-struct __FILE *fdopen(int desc, const char *mode);
-char *strdup(const char *str1);
-
 int main(int argc, char const **argv)
 {
 	struct __FILE *fp = stdin;
