@@ -58,3 +58,4 @@ ir/file*
 ir/stat*
 
 self_compile_asm/*.s
+ir/_*.txt

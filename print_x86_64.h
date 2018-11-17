@@ -83,6 +83,7 @@ const char *get_reg_name_from_arg_pos_8byte(int counter);
 _Noreturn void poison_and_die(const char *msg);
 
 extern struct __FILE *global_stat_log;
+extern struct __FILE *global_ir;
 
 #ifdef OSX
 #define PREFIX "_"

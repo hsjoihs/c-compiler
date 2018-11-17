@@ -4,6 +4,7 @@
 #include "std_io.h"
 
 struct __FILE *global_stat_log;
+struct __FILE *global_ir;
 
 static void memo2(const char *funcname, const char *fmt, ...)
 {
@@ -24,6 +25,15 @@ static void memo2(const char *funcname, const char *fmt, ...)
 	va_end(ap);
 
 	printf(");\n");
+
+	if (global_ir) {
+		fprintf(global_ir, "%s(", funcname);
+		va_start(ap, fmt);
+		vfprintf(global_ir, fmt, ap);
+		va_end(ap);
+
+		fprintf(global_ir, ");\n");
+	}
 }
 
 _Noreturn void poison_and_die(const char *msg)
