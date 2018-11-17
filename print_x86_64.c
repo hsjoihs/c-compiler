@@ -776,7 +776,7 @@ void gen_epilogue_nbyte_with_stack_check(int n, int return_label_name,
                                          int failing_label_name)
 {
 	memo2(__func__, "%d, %d, %d, %d", n, return_label_name, checksum_offset,
-	     failing_label_name);
+	      failing_label_name);
 #ifdef OSX
 	gen_push_address_of_global("__stack_chk_guard");
 	gen_peek_and_dereference_nbyte(8);

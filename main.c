@@ -1,8 +1,8 @@
 #include "file_io.h"
+#include "print_x86_64.h"
 #include "std.h"
 #include "std_io.h"
 #include "toplevel.h"
-#include "print_x86_64.h"
 
 int mkstemp(char *template);
 struct __FILE *fdopen(int desc, const char *mode);
