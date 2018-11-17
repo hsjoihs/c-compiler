@@ -56,3 +56,4 @@ s/*.s
 template/
 
 self_compile_asm/*.s
+ir/_*.txt
