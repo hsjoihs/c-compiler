@@ -45,13 +45,7 @@ int main(int argc, char const **argv)
 
 	const struct Vector /*<Toplevel>*/ vec = parse(tokvec);
 
-	char *stat_template = strdup("./ir/statXXXXXX");
-	int stat_fd = mkstemp(stat_template);
-
-	global_stat_log = fdopen(stat_fd, "w");
-	fprintf(global_stat_log, "IR for %s: \n", file_name_dbg);
 	generate(&vec);
-	fclose(global_stat_log);
 
 	return 0;
 }

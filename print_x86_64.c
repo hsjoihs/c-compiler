@@ -3,14 +3,10 @@
 #include "std.h"
 #include "std_io.h"
 
-struct __FILE *global_stat_log;
 struct __FILE *global_ir;
 
 static void memo2(const char *funcname, const char *fmt, ...)
 {
-	if (global_stat_log) {
-		fprintf(global_stat_log, "%s\n", funcname);
-	}
 	printf("//%s(", funcname);
 
 #ifdef __STDC__
