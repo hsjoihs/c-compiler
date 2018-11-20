@@ -121,16 +121,14 @@ void debug_print_type(const struct Type *ref_type)
 
 struct Type deref_type(const struct Type *ref_type)
 {
-	switch (ref_type->type_category) {
-	case PTR_:
+	if (ref_type->type_category == PTR_) {
 		return *ref_type->derived_from;
-
-	default:
-		fprintf(stderr, "Unmatched type: expected a pointer, but got `");
-		debug_print_type(ref_type);
-		fprintf(stderr, "`.\n");
-		exit(EXIT_FAILURE);
 	}
+
+	fprintf(stderr, "Unmatched type: expected a pointer, but got `");
+	debug_print_type(ref_type);
+	fprintf(stderr, "`.\n");
+	exit(EXIT_FAILURE);
 }
 
 void if_array_convert_to_ptr_(struct Type *ptr_type)

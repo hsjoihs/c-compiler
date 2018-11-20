@@ -7,8 +7,9 @@ static struct Token *concat_str_literals(const struct Tokvec *ref_v);
 static struct Token get_token(const char **ptr_to_str);
 static struct Tokvec remove_spaces_and_newlines(const struct Tokvec *ref_t);
 
-struct Token *read_and_preprocess(const char *str,
-                                  struct Vector *ref_cmdline_macros)
+struct Token *
+read_and_preprocess(const char *str,
+                    struct Vector /*<struct Token>*/ *ref_cmdline_macros)
 {
 	struct Map2 *def_map = init_map();
 	for (int i = 0; i < ref_cmdline_macros->length; i++) {
@@ -74,7 +75,8 @@ char *unescape(const char *str)
 
 char *escape(const char *str)
 {
-	char *ans = calloc(strlen(str) * 4 + 1, sizeof(char));
+	char *ans =
+	    calloc(strlen(str) * 4 /* length of "\\013" */ + 1, sizeof(char));
 	int j = 0;
 	for (int i = 0; str[i]; i++) {
 		switch (str[i]) {
