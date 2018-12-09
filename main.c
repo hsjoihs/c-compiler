@@ -7,7 +7,6 @@
 int main(int argc, char const **argv)
 {
 	struct __FILE *fp = stdin;
-
 	struct Vector macros = init_vector();
 
 	for (int i = 1; i < argc; i++) {
@@ -31,14 +30,9 @@ int main(int argc, char const **argv)
 	}
 
 	char *str = read_from_file(fp);
-
 	const struct Token *tokvec = read_and_preprocess(str, &macros);
-
 	++tokvec; /* skip the dummy token BEGINNING */
-
 	const struct Vector /*<Toplevel>*/ vec = parse(tokvec);
-
 	generate(&vec);
-
 	return 0;
 }
