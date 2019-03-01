@@ -248,6 +248,47 @@ void print_statement(struct PrinterState *ptr_prs,
 	assert0("nljsdgfs" && 0);
 }
 
+static struct Vector /*<SourceLabel>*/
+collect_named_labels(const struct Statement *ptr_sta)
+{
+	struct Statement sta = *ptr_sta;
+	struct Vector /*<SourceLabel>*/ ans = init_vector();
+	concat_vector(&ans, &sta.labels);
+	switch (sta.category) {
+	case RETURN_STATEMENT:
+	case BREAK_STATEMENT:
+	case CONTINUE_STATEMENT:
+	case EXPRESSION_STATEMENT:
+	case DECLARATION_STATEMENT:
+		/* nothing */
+		break;
+
+	case SWITCH_STATEMENT: /* do peek labels */
+	case IF_STATEMENT:
+	case FOR_STATEMENT:
+	case WHILE_STATEMENT:
+	case DO_WHILE_STATEMENT: {
+		const struct Vector /*<SourceLabel>*/ inner_vec =
+		    collect_named_labels(sta.inner_statement);
+		concat_vector(&ans, &inner_vec);
+		break;
+	}
+
+	case COMPOUND_STATEMENT:
+	case IF_ELSE_STATEMENT: {
+		struct Vector /*<Statement>*/ statement_vec = sta.statement_vector;
+		for (int counter = 0; counter != statement_vec.length; ++counter) {
+			const struct Statement *ptr_ith = statement_vec.vector[counter];
+			const struct Vector /*<SourceLabel>*/ inner_vec =
+			    collect_named_labels(ptr_ith);
+			concat_vector(&ans, &inner_vec);
+		}
+		break;
+	}
+	}
+	return ans;
+}
+
 static void print_toplevel_definition(struct PrinterState *ptr_prs,
                                       const struct Toplevel *ref_def)
 {
