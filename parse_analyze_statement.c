@@ -52,7 +52,8 @@ struct Statement parse_labeled_statement(struct AnalyzerState *ptr_ps,
 		++tokvec;
 		l.category = IDENT_LABEL;
 	}
-	expect_and_consume(&tokvec, COLON, "colon of `default:`");
+	expect_and_consume(&tokvec, COLON,
+	                   "colon of `default:`, `case VALUE:`, or `ident:`");
 
 	struct Statement s = parse_statement(ptr_ps, &tokvec);
 
