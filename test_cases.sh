@@ -19,6 +19,7 @@ run_test() {
 }
 
 run_test 359 'int main() {goto a; return 3; a: return 0;} ' 0
+run_test 360 'int main(){ int i = 3; goto a; for (i = 0; i < 10; i++) { a: return i; } }' 3
 
 run_test 357 'int main() {return 0;} //nfsjdgkssfdvc' 0
 run_test 358 'int main() {return __func__[1] - 97;} ' 0
