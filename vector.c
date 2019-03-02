@@ -43,12 +43,17 @@ const void *pop_vector(struct Vector *ptr)
 void concat_vector(struct Vector *ptr_ans, const struct Vector *ptr_vec)
 {
 	if(!ptr_ans) {
-		fprintf(stderr, "NULL POINTER IN THE FIRST ARGUMENT");
+		fprintf(stderr, "NULL POINTER IN THE FIRST ARGUMENT\n");
 		exit(1);
 	}
 
 	if (!ptr_vec) {
-		fprintf(stderr, "NULL POINTER IN THE SECOND ARGUMENT");
+		fprintf(stderr, "NULL POINTER IN THE SECOND ARGUMENT\n");
+		exit(1);
+	}
+
+	if (!ptr_vec->vector) {
+		fprintf(stderr, "OH MY GOD: INVALID VECTOR IN THE SECOND ARGUMENT:\n");
 		exit(1);
 	}
 
