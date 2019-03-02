@@ -356,7 +356,6 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 	}
 
 	struct Statement sta = parse_compound_statement(ptr_ps, &tokvec2);
-
 	*ptr_tokvec = tokvec2;
 	/* parse finished */
 
