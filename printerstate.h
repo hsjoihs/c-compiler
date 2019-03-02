@@ -8,6 +8,8 @@ struct PrinterState {
 	int pool_largest_id;
 	int is_inside_switch;
 	struct Vector /*<Label>*/ case_default_vec;
+	struct Map2 /*<SourceLabelAndAssemblyLabel>*/
+	    *source_label_to_assembly_label;
 
 	int is_va;
 

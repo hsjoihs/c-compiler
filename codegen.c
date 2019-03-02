@@ -368,6 +368,28 @@ static void print_toplevel_definition(struct PrinterState *ptr_prs,
 		gen_write_stack_chk_guard_to_local(ptr_prs->stack_chk_offset);
 	}
 
+	struct Vector /*<SourceLabel>*/ source_labels = collect_named_labels(&sta);
+
+	struct Map2 /*<SourceLabelAndAssemblyLabel>*/
+	    *source_label_to_assembly_label = init_map();
+	for (int i = 0; i < source_labels.length; i++) {
+		const struct SourceLabel *ptr = source_labels.vector[i];
+		switch (ptr->category) {
+		case DEFAULT_LABEL:
+		case CASE_LABEL:
+			continue;
+		case IDENT_LABEL: {
+			struct SourceLabelAndAssemblyLabel *p =
+			    calloc(1, sizeof(struct SourceLabelAndAssemblyLabel));
+			p->assembly_label = get_new_label_name(ptr_prs);
+			p->source_label = *ptr;
+			insert(source_label_to_assembly_label, ptr->ident_str, p);
+		}
+		}
+	}
+
+	ptr_prs->source_label_to_assembly_label = source_label_to_assembly_label;
+
 	print_statement(ptr_prs, &sta);
 
 	if (ret_type.type_category == VOID_) {
