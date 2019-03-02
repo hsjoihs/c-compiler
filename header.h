@@ -75,6 +75,7 @@ enum TokenKind {
 	RES_EXTERN,
 	RES_STATIC,
 	TRIPLE_DOT,
+	RES_GOTO,
 
 	/* preprocessor */
 	HASH,
@@ -306,7 +307,8 @@ enum StatementCategory {
 	CONTINUE_STATEMENT,
 	EXPRESSION_STATEMENT,
 	DECLARATION_STATEMENT,
-	SWITCH_STATEMENT
+	SWITCH_STATEMENT,
+	GOTO_STATEMENT
 };
 
 enum SourceLabelCategory { DEFAULT_LABEL, CASE_LABEL, IDENT_LABEL };
@@ -326,6 +328,7 @@ struct Statement {
 	struct Statement *inner_statement;
 	struct TypeAndIdent declaration;
 	struct Vector /*<SourceLabel>*/ labels;
+	const char *destination; /* used solely for goto */
 };
 
 struct UntypedExpr parse_expression(const struct Token **ptr_tokvec);

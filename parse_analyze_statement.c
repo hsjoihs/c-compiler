@@ -261,6 +261,22 @@ struct Statement parse_statement(struct AnalyzerState *ptr_ps,
 		return s;
 	}
 
+	case RES_GOTO: {
+		++tokvec;
+		expect_and_consume(&tokvec, IDENT_OR_RESERVED,
+		                   "identifier after `goto`");
+		const char *ident = tokvec[-1].ident_str;
+		expect_and_consume(&tokvec, SEMICOLON,
+		                   "semicolon after `goto identifier`");
+		*ptr_tokvec = tokvec;
+
+		struct Statement s;
+		s.labels = init_vector();
+		s.category = GOTO_STATEMENT;
+		s.destination = ident;
+		return s;
+	}
+
 	case RES_FOR: {
 
 		++tokvec;
@@ -429,6 +445,7 @@ struct Statement parse_compound_statement(struct AnalyzerState *ptr_ps,
 					s.category = DECLARATION_STATEMENT;
 					s.declaration.type = *optional_ptr_type;
 					s.declaration.ident_str = 0;
+					s.labels = init_vector(); /* must initialize this, since it is used in goto traversal */
 					struct Statement *ptr_s =
 					    calloc(1, sizeof(struct Statement));
 					*ptr_s = s;

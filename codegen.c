@@ -33,6 +33,13 @@ void print_statement(struct PrinterState *ptr_prs,
 			const struct SourceLabel *ptr_label = ref_sta->labels.vector[j];
 
 			if (ptr_label->category == IDENT_LABEL) {
+				const struct SourceLabelAndAssemblyLabel *p = lookup(
+				    ptr_prs->source_label_to_assembly_label, ptr_label->ident_str);
+				if (!p) {
+					fprintf(stderr, "oh my\n\n");
+					assert0("cannot happen" && 0);
+				}
+				gen_label(p->assembly_label);		
 				continue;
 			}
 
@@ -82,6 +89,17 @@ void print_statement(struct PrinterState *ptr_prs,
 			gen_jump(ptr_prs->return_label_name, "return");
 		}
 
+		return;
+	}
+	case GOTO_STATEMENT: {
+		const char *destination = ref_sta->destination;
+		const struct SourceLabelAndAssemblyLabel *p =
+		    lookup(ptr_prs->source_label_to_assembly_label, destination);
+		if (!p) {
+			fprintf(stderr, "undefined label `%s` used in `goto`", destination);
+			exit(EXIT_FAILURE);
+		}
+		gen_jump(p->assembly_label, "goto");
 		return;
 	}
 	case CONTINUE_STATEMENT: {
@@ -260,6 +278,7 @@ collect_named_labels(const struct Statement *ptr_sta)
 	case CONTINUE_STATEMENT:
 	case EXPRESSION_STATEMENT:
 	case DECLARATION_STATEMENT:
+	case GOTO_STATEMENT:
 		/* nothing */
 		break;
 

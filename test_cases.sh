@@ -18,6 +18,8 @@ run_test() {
 	if [ $res -ne $3 ]; then { echo "got:" $res; echo "expected:" $3; echo -e "\033[31mFAIL\033[m, at test case" $1: $2; exit 1; }; else echo -e "\033[32mPASS\033[m"; fi
 }
 
+run_test 359 'int main() {goto a; return 3; a: return 0;} ' 0
+
 run_test 357 'int main() {return 0;} //nfsjdgkssfdvc' 0
 run_test 358 'int main() {return __func__[1] - 97;} ' 0
 

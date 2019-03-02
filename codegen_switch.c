@@ -13,6 +13,7 @@ collect_labels_visible_from_switch(const struct Statement *ptr_sta)
 	case RETURN_STATEMENT:
 	case BREAK_STATEMENT:
 	case CONTINUE_STATEMENT:
+	case GOTO_STATEMENT:
 	case EXPRESSION_STATEMENT:
 	case DECLARATION_STATEMENT:
 		/* nothing */
