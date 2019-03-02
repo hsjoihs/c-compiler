@@ -174,7 +174,7 @@ static void record_global_enum_declaration(struct AnalyzerState *ptr_ps,
 		push_vector(ptr_e_and_v_vec, ptr_e_and_v);
 	}
 
-	concat_vector(&ptr_ps->global_enumerator_list, ptr_e_and_v_vec, __func__);
+	concat_vector(&ptr_ps->global_enumerator_list, ptr_e_and_v_vec);
 
 	insert(ptr_ps->global_enum_tag_map, type.e.enum_tag, ptr_e_and_v_vec);
 }
