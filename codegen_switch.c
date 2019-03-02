@@ -52,7 +52,7 @@ void codegen_switch(struct PrinterState *ptr_prs,
 	const struct Statement sta = *ptr_sta;
 	int stashed_break_label = ptr_prs->break_label_name;
 	int stashed_is_inside_switch = ptr_prs->is_inside_switch;
-	struct Vector /*<Label>*/ stashed_case_default_vec =
+	struct Vector /*<SourceLabelAndAssemblyLabel>*/ stashed_case_default_vec =
 	    ptr_prs->case_default_vec;
 
 	int break_label = get_new_label_name(ptr_prs);
