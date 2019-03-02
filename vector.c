@@ -1,5 +1,6 @@
 #include "vector.h"
 #include "std.h"
+#include "std_io.h"
 
 struct Vector init_vector(void) { return *init_vector_(); }
 
@@ -41,6 +42,16 @@ const void *pop_vector(struct Vector *ptr)
 
 void concat_vector(struct Vector *ptr_ans, const struct Vector *ptr_vec)
 {
+	if(!ptr_ans) {
+		fprintf(stderr, "NULL POINTER IN THE FIRST ARGUMENT");
+		exit(1);
+	}
+
+	if (!ptr_vec) {
+		fprintf(stderr, "NULL POINTER IN THE SECOND ARGUMENT");
+		exit(1);
+	}
+
 	for (int i = 0; i < ptr_vec->length; i++) {
 		push_vector(ptr_ans, ptr_vec->vector[i]);
 	}
