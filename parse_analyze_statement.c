@@ -445,6 +445,7 @@ struct Statement parse_compound_statement(struct AnalyzerState *ptr_ps,
 					s.category = DECLARATION_STATEMENT;
 					s.declaration.type = *optional_ptr_type;
 					s.declaration.ident_str = 0;
+					s.labels = init_vector(); /* must initialize this, since it is used in goto traversal */
 					struct Statement *ptr_s =
 					    calloc(1, sizeof(struct Statement));
 					*ptr_s = s;

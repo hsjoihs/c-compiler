@@ -8,7 +8,7 @@ collect_labels_visible_from_switch(const struct Statement *ptr_sta)
 {
 	struct Statement sta = *ptr_sta;
 	struct Vector /*<SourceLabel>*/ ans = init_vector();
-	concat_vector(&ans, &sta.labels);
+	concat_vector(&ans, &sta.labels, "collect_labels_visible_from_switch 1");
 	switch (sta.category) {
 	case RETURN_STATEMENT:
 	case BREAK_STATEMENT:
@@ -28,7 +28,7 @@ collect_labels_visible_from_switch(const struct Statement *ptr_sta)
 	case DO_WHILE_STATEMENT: {
 		const struct Vector /*<SourceLabel>*/ inner_vec =
 		    collect_labels_visible_from_switch(sta.inner_statement);
-		concat_vector(&ans, &inner_vec);
+		concat_vector(&ans, &inner_vec, "collect_labels_visible_from_switch 2");
 		break;
 	}
 
@@ -39,7 +39,8 @@ collect_labels_visible_from_switch(const struct Statement *ptr_sta)
 			const struct Statement *ptr_ith = statement_vec.vector[counter];
 			const struct Vector /*<SourceLabel>*/ inner_vec =
 			    collect_labels_visible_from_switch(ptr_ith);
-			concat_vector(&ans, &inner_vec);
+			concat_vector(&ans, &inner_vec,
+			              "collect_labels_visible_from_switch 3");
 		}
 		break;
 	}

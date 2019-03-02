@@ -271,7 +271,7 @@ collect_named_labels(const struct Statement *ptr_sta)
 {
 	struct Statement sta = *ptr_sta;
 	struct Vector /*<SourceLabel>*/ ans = init_vector();
-	concat_vector(&ans, &sta.labels);
+	concat_vector(&ans, &sta.labels, "collect_named_labels 1");
 	switch (sta.category) {
 	case RETURN_STATEMENT:
 	case BREAK_STATEMENT:
@@ -289,7 +289,7 @@ collect_named_labels(const struct Statement *ptr_sta)
 	case DO_WHILE_STATEMENT: {
 		const struct Vector /*<SourceLabel>*/ inner_vec =
 		    collect_named_labels(sta.inner_statement);
-		concat_vector(&ans, &inner_vec);
+		concat_vector(&ans, &inner_vec, "collect_named_labels 2");
 		break;
 	}
 
@@ -300,7 +300,7 @@ collect_named_labels(const struct Statement *ptr_sta)
 			const struct Statement *ptr_ith = statement_vec.vector[counter];
 			const struct Vector /*<SourceLabel>*/ inner_vec =
 			    collect_named_labels(ptr_ith);
-			concat_vector(&ans, &inner_vec);
+			concat_vector(&ans, &inner_vec, "collect_named_labels 3");
 		}
 		break;
 	}
