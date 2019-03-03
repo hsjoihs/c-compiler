@@ -33,13 +33,14 @@ void print_statement(struct PrinterState *ptr_prs,
 			const struct SourceLabel *ptr_label = ref_sta->labels.vector[j];
 
 			if (ptr_label->category == IDENT_LABEL) {
-				const struct SourceLabelAndAssemblyLabel *p = lookup(
-				    ptr_prs->source_label_to_assembly_label, ptr_label->ident_str);
+				const struct SourceLabelAndAssemblyLabel *p =
+				    lookup(ptr_prs->source_label_to_assembly_label,
+				           ptr_label->ident_str);
 				if (!p) {
 					fprintf(stderr, "oh my\n\n");
 					assert0("cannot happen" && 0);
 				}
-				gen_label(p->assembly_label);		
+				gen_label(p->assembly_label);
 				continue;
 			}
 
