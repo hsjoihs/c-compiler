@@ -617,13 +617,13 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 
 		int arg_stacksize = count_args(ptr_prs, &expr.args) * 8;
 		assert(arg_stacksize == 0);
+		gen_raw_call_partA();
 		pass_args(ptr_prs, &expr.args);
 
 		int size = ret_type.type_category == VOID_
 		               ? 4 /* for convenience */
 		               : size_of_basic(&ret_type, "return value");
 
-		gen_raw_call_partA();
 		gen_push_ret_of_nbyte(size, ident_str);
 
 		return;
