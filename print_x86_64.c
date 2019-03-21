@@ -659,7 +659,9 @@ void gen_call_and_assign_small_struct_to_local(const char *fname, int offset,
                                                int size)
 {
 	memo2(__func__, "\"%s\", %d, %d", fname, offset, size);
-	gen_raw_call(PREFIX, fname);
+	gen_raw_call_partA();
+	gen_raw_call_partB(PREFIX, fname);
+	gen_raw_call_partC();
 	printf("  movq %%rdx, (%%rsp)\n"
 	       "  subq $8, %%rsp\n"
 	       "  movq %%rax, (%%rsp)\n"
@@ -675,7 +677,9 @@ void gen_call_reg_and_assign_small_struct_to_local(const char *regname,
                                                    int offset, int size)
 {
 	memo2(__func__, "\"%s\", %d, %d", regname, offset, size);
-	gen_raw_call("*%", regname);
+	gen_raw_call_partA();
+	gen_raw_call_partB("*%", regname);
+	gen_raw_call_partC();
 	printf("  movq %%rdx, (%%rsp)\n"
 	       "  subq $8, %%rsp\n"
 	       "  movq %%rax, (%%rsp)\n"
