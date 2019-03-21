@@ -130,7 +130,7 @@ void gen_swap(void)
 
 void gen_push_ret_of_1byte(const char *fname)
 {
-	printf("//gen_push_ret_of_1byte(\"%s\")\n", fname);	
+	printf("//gen_push_ret_of_1byte(\"%s\")\n", fname);
 	gen_raw_call_partB(PREFIX, fname);
 	gen_raw_call_partC();
 
@@ -148,7 +148,7 @@ void gen_push_ret_of_4byte(const char *fname)
 
 void gen_push_ret_of_8byte(const char *fname)
 {
-	printf("//gen_push_ret_of_8byte(\"%s\")\n", fname);	
+	printf("//gen_push_ret_of_8byte(\"%s\")\n", fname);
 	gen_raw_call_partB(PREFIX, fname);
 	gen_raw_call_partC();
 	printf("  movq %%rax, (%%rsp)\n");
@@ -178,7 +178,6 @@ void gen_call_reg_and_push_ret_of_8byte(const char *reg)
 	gen_raw_call_partC();
 	printf("  movq %%rax, (%%rsp)\n");
 }
-
 
 void gen_raw_call_partA()
 {

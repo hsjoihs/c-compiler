@@ -218,7 +218,7 @@ void gen_push_address_of_global(const char *ident)
 void gen_push_ret_of_nbyte(int n, const char *ident_str)
 {
 	memo2(__func__, "%d, \"%s\"", n, ident_str);
-	
+
 	switch (n) {
 	case 1:
 		gen_push_ret_of_1byte(ident_str);
@@ -244,7 +244,7 @@ void gen_push_nullptr(void)
 void gen_call_reg_and_push_ret_of_nbyte(int n, const char *reg)
 {
 	memo2(__func__, "%d, \"%s\"", n, reg);
-	
+
 	switch (n) {
 	case 1:
 		gen_call_reg_and_push_ret_of_1byte(reg);
@@ -661,7 +661,7 @@ void gen_call_and_assign_small_struct_to_local(const char *fname, int offset,
                                                int size)
 {
 	memo2(__func__, "\"%s\", %d, %d", fname, offset, size);
-	
+
 	gen_raw_call_partB(PREFIX, fname);
 	gen_raw_call_partC();
 	printf("  movq %%rdx, (%%rsp)\n"
@@ -679,7 +679,7 @@ void gen_call_reg_and_assign_small_struct_to_local(const char *regname,
                                                    int offset, int size)
 {
 	memo2(__func__, "\"%s\", %d, %d", regname, offset, size);
-	
+
 	gen_raw_call_partB("*%", regname);
 	gen_raw_call_partC();
 	printf("  movq %%rdx, (%%rsp)\n"
