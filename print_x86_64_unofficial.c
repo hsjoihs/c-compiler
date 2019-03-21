@@ -173,9 +173,9 @@ void gen_call_reg_and_push_ret_of_8byte(const char *reg)
 	printf("  movq %%rax, (%%rsp)\n");
 }
 
-void gen_raw_call(const char *s1, const char *s2)
-{
 
+void gen_raw_call_partA()
+{
 	/* alignment */
 
 	/*
@@ -198,8 +198,16 @@ void gen_raw_call(const char *s1, const char *s2)
 	       "  movq %%rax, (%%rsp)\n"
 	       "  movb $0, %%al\n" /* printf */
 	);
-	printf("  call %s%s\n", s1, s2);
+}
 
+void gen_raw_call_partB(const char *s1, const char *s2)
+{
+
+	printf("  call %s%s\n", s1, s2);
+}
+
+void gen_raw_call_partC()
+{
 	/*
 	if it was already aligned:
 	    the top contains 8, and you must add 16 to the stack in order to resume.
@@ -213,6 +221,13 @@ void gen_raw_call(const char *s1, const char *s2)
 	returned value. Hence, you only need to add 0.
 	*/
 	printf("  addq (%%rsp), %%rsp\n");
+}
+
+void gen_raw_call(const char *s1, const char *s2)
+{
+	gen_raw_call_partA();
+	gen_raw_call_partB(s1, s2);
+	gen_raw_call_partC();
 }
 
 void gen_discard3rd(void)
