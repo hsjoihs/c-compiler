@@ -201,13 +201,13 @@ void gen_raw_call_partA()
 	       "  andq $15, %%rax\n"
 	       "  subq %%rax, %%rsp\n"
 	       "  movq %%rax, (%%rsp)\n"
-	       "  movb $0, %%al\n" /* printf */
 	);
 }
 
 void gen_raw_call_partB(const char *s1, const char *s2)
 {
 
+	printf("  movb $0, %%al\n"); /* printf */
 	printf("  call %s%s\n", s1, s2);
 }
 
