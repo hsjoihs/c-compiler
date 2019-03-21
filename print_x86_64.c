@@ -218,6 +218,7 @@ void gen_push_address_of_global(const char *ident)
 void gen_push_ret_of_nbyte(int n, const char *ident_str)
 {
 	memo2(__func__, "%d, \"%s\"", n, ident_str);
+	gen_raw_call_partA();
 	switch (n) {
 	case 1:
 		gen_push_ret_of_1byte(ident_str);
@@ -243,6 +244,7 @@ void gen_push_nullptr(void)
 void gen_call_reg_and_push_ret_of_nbyte(int n, const char *reg)
 {
 	memo2(__func__, "%d, \"%s\"", n, reg);
+	gen_raw_call_partA();
 	switch (n) {
 	case 1:
 		gen_call_reg_and_push_ret_of_1byte(reg);

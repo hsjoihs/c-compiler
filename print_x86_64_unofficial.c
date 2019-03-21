@@ -130,8 +130,7 @@ void gen_swap(void)
 
 void gen_push_ret_of_1byte(const char *fname)
 {
-	printf("//gen_push_ret_of_1byte(\"%s\")\n", fname);
-	gen_raw_call_partA();
+	printf("//gen_push_ret_of_1byte(\"%s\")\n", fname);	
 	gen_raw_call_partB(PREFIX, fname);
 	gen_raw_call_partC();
 
@@ -142,7 +141,6 @@ void gen_push_ret_of_1byte(const char *fname)
 void gen_push_ret_of_4byte(const char *fname)
 {
 	printf("//gen_push_ret_of_4byte(\"%s\")\n", fname);
-	gen_raw_call_partA();
 	gen_raw_call_partB(PREFIX, fname);
 	gen_raw_call_partC();
 	printf("  movl %%eax, (%%rsp)\n");
@@ -150,8 +148,7 @@ void gen_push_ret_of_4byte(const char *fname)
 
 void gen_push_ret_of_8byte(const char *fname)
 {
-	printf("//gen_push_ret_of_8byte(\"%s\")\n", fname);
-	gen_raw_call_partA();
+	printf("//gen_push_ret_of_8byte(\"%s\")\n", fname);	
 	gen_raw_call_partB(PREFIX, fname);
 	gen_raw_call_partC();
 	printf("  movq %%rax, (%%rsp)\n");
@@ -160,7 +157,6 @@ void gen_push_ret_of_8byte(const char *fname)
 void gen_call_reg_and_push_ret_of_1byte(const char *reg)
 {
 	printf("//gen_call_reg_and_push_ret_of_1byte(\"%s\")\n", reg);
-	gen_raw_call_partA();
 	gen_raw_call_partB("*%", reg);
 	gen_raw_call_partC();
 	printf("  movsbl %%al, %%eax\n"
@@ -170,7 +166,6 @@ void gen_call_reg_and_push_ret_of_1byte(const char *reg)
 void gen_call_reg_and_push_ret_of_4byte(const char *reg)
 {
 	printf("//gen_call_reg_and_push_ret_of_4byte(\"%s\")\n", reg);
-	gen_raw_call_partA();
 	gen_raw_call_partB("*%", reg);
 	gen_raw_call_partC();
 	printf("  movl %%eax, (%%rsp)\n");
@@ -179,7 +174,6 @@ void gen_call_reg_and_push_ret_of_4byte(const char *reg)
 void gen_call_reg_and_push_ret_of_8byte(const char *reg)
 {
 	printf("//gen_call_reg_and_push_ret_of_8byte(\"%s\")\n", reg);
-	gen_raw_call_partA();
 	gen_raw_call_partB("*%", reg);
 	gen_raw_call_partC();
 	printf("  movq %%rax, (%%rsp)\n");
