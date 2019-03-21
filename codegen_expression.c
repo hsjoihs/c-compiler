@@ -4,6 +4,8 @@
 #include "std.h"
 #include "std_io.h"
 
+static int count_args(struct PrinterState *ptr_prs,
+                      const struct Vector /*<Expr>*/ *ref_args);
 static void pass_args(struct PrinterState *ptr_prs,
                       const struct Vector /*<Expr>*/ *ref_args);
 
@@ -613,6 +615,8 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 		const char *ident_str = expr.global_var_name;
 		struct Type ret_type = expr.details.type;
 
+		int arg_stacksize = count_args(ptr_prs, &expr.args) * 8;
+		assert(arg_stacksize == 0);
 		pass_args(ptr_prs, &expr.args);
 
 		int size = ret_type.type_category == VOID_
@@ -649,6 +653,34 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 		gen_push_address_of_str(ptr_prs->string_constant_pool.length - 1);
 	}
 	}
+}
+
+static int count_args(struct PrinterState *ptr_prs,
+                      const struct Vector /*<Expr>*/ *ref_args)
+{
+	int ans = 0;
+	for (int counter = ref_args->length - 1; counter >= 0; counter--) {
+		ans++;
+	}
+
+	for (int counter = 0; counter < ref_args->length; counter++) {
+		if (counter >= 6) {
+			unsupported("7 or more arguments in codegen");
+			/* because of this, this function always return 0 for the present */
+		}
+		const struct Expr *ptr_expr_ = ref_args->vector[counter];
+
+		switch (size_of_basic(&ptr_expr_->details.type, "argument")) {
+		case 1:
+		case 4:
+		case 8:
+			ans--;
+			break;
+		default:
+			unsupported("Unsupported width in function argument");
+		}
+	}
+	return ans;
 }
 
 static void pass_args(struct PrinterState *ptr_prs,
