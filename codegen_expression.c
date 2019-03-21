@@ -150,6 +150,7 @@ void print_address_of_lvalue_or_struct(struct PrinterState *ptr_prs,
 		gen_pop_to_reg_8byte("r11");
 
 		int size = expr.size_info_for_struct_assign;
+		gen_raw_call_partA();
 		gen_call_reg_and_assign_small_struct_to_local(
 		    "r11", expr.local_var_offset, size);
 		gen_push_address_of_local(expr.local_var_offset);
@@ -161,6 +162,7 @@ void print_address_of_lvalue_or_struct(struct PrinterState *ptr_prs,
 		gen_pop_to_reg_8byte("r11");
 
 		/* call a function that returns a void */
+		gen_raw_call_partA();
 		gen_call_reg_and_push_ret_of_nbyte(4, "r11");
 		gen_discard();
 
@@ -172,6 +174,7 @@ void print_address_of_lvalue_or_struct(struct PrinterState *ptr_prs,
 		pass_args(ptr_prs, &expr.args);
 
 		int size = expr.size_info_for_struct_assign;
+		gen_raw_call_partA();
 		gen_call_and_assign_small_struct_to_local(expr.global_var_name,
 		                                          expr.local_var_offset, size);
 		gen_push_address_of_local(expr.local_var_offset);
@@ -182,6 +185,7 @@ void print_address_of_lvalue_or_struct(struct PrinterState *ptr_prs,
 		pass_args(ptr_prs, &expr.args);
 
 		/* call a function that returns a void */
+		gen_raw_call_partA();
 		gen_push_ret_of_nbyte(4, expr.global_var_name);
 		gen_discard();
 
@@ -600,6 +604,7 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 		               ? 4 /* for convenience */
 		               : size_of_basic(&ret_type, "return value");
 
+		gen_raw_call_partA();
 		gen_call_reg_and_push_ret_of_nbyte(size, "r11");
 
 		return;
@@ -614,6 +619,7 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 		               ? 4 /* for convenience */
 		               : size_of_basic(&ret_type, "return value");
 
+		gen_raw_call_partA();
 		gen_push_ret_of_nbyte(size, ident_str);
 
 		return;
