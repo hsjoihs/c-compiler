@@ -183,10 +183,12 @@ void print_address_of_lvalue_or_struct(struct PrinterState *ptr_prs,
 	}
 	case FUNCCALL_EXPR_RETURNING_MEMORY_CLASS: {
 
+		int arg_stacksize = count_args(&expr.args) * 8;
+		assert(arg_stacksize == 0);
+		gen_raw_call_partA();
 		pass_args(ptr_prs, &expr.args);
 
 		/* call a function that returns a void */
-		gen_raw_call_partA();
 		gen_push_ret_of_nbyte(4, expr.global_var_name);
 		gen_discard();
 
