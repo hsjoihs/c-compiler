@@ -184,15 +184,15 @@ void print_address_of_lvalue_or_struct(struct PrinterState *ptr_prs,
 	case FUNCCALL_EXPR_RETURNING_MEMORY_CLASS: {
 
 		int arg_stacksize = count_args(&expr.args) * 8;
-		assert(arg_stacksize == 0);
+		if (arg_stacksize % 16 != 0) {
+			unsupported("misaligned stack");
+		}
+		fprintf(stderr, "passed here");
 		gen_raw_call_partA();
 		pass_args(ptr_prs, &expr.args);
 
-#define ARG_STACKSIZE 16
-		printf("  subq $%d, %%rsp\n", ARG_STACKSIZE);
-
 		/* call a function that returns a void */
-		gen_push_ret_of_nbyte(4, expr.global_var_name, 16);
+		gen_push_ret_of_nbyte(4, expr.global_var_name, arg_stacksize);
 		gen_discard();
 
 		gen_push_address_of_local(expr.local_var_offset);
