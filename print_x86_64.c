@@ -215,19 +215,19 @@ void gen_push_address_of_global(const char *ident)
 	printf("  movq %%rax, (%%rsp)\n");
 }
 
-void gen_push_ret_of_nbyte(int n, const char *ident_str)
+void gen_push_ret_of_nbyte(int n, const char *ident_str, int arg_stacksize)
 {
 	memo2(__func__, "%d, \"%s\"", n, ident_str);
 
 	switch (n) {
 	case 1:
-		gen_push_ret_of_1byte(ident_str);
+		gen_push_ret_of_1byte(ident_str, arg_stacksize);
 		break;
 	case 4:
-		gen_push_ret_of_4byte(ident_str);
+		gen_push_ret_of_4byte(ident_str, arg_stacksize);
 		break;
 	case 8:
-		gen_push_ret_of_8byte(ident_str);
+		gen_push_ret_of_8byte(ident_str, arg_stacksize);
 		break;
 	default:
 		poison_and_die("Unsupported width; cannot happen");

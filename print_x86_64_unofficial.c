@@ -3,6 +3,8 @@
 #include "std.h"
 #include "std_io.h"
 
+static void gen_raw_call_partC_with_stacksize(int arg_stacksize);
+
 /*******************
  * unofficial APIs *
  *******************/
@@ -128,29 +130,29 @@ void gen_swap(void)
 	       "  movq %%rax, 8(%%rsp)\n");
 }
 
-void gen_push_ret_of_1byte(const char *fname)
+void gen_push_ret_of_1byte(const char *fname, int arg_stacksize)
 {
 	printf("//gen_push_ret_of_1byte(\"%s\")\n", fname);
 	gen_raw_call_partB(PREFIX, fname);
-	gen_raw_call_partC();
+	gen_raw_call_partC_with_stacksize(arg_stacksize);
 
 	printf("  movsbl %%al, %%eax\n"
 	       "  movl %%eax, (%%rsp)\n");
 }
 
-void gen_push_ret_of_4byte(const char *fname)
+void gen_push_ret_of_4byte(const char *fname, int arg_stacksize)
 {
 	printf("//gen_push_ret_of_4byte(\"%s\")\n", fname);
 	gen_raw_call_partB(PREFIX, fname);
-	gen_raw_call_partC();
+	gen_raw_call_partC_with_stacksize(arg_stacksize);
 	printf("  movl %%eax, (%%rsp)\n");
 }
 
-void gen_push_ret_of_8byte(const char *fname)
+void gen_push_ret_of_8byte(const char *fname, int arg_stacksize)
 {
 	printf("//gen_push_ret_of_8byte(\"%s\")\n", fname);
 	gen_raw_call_partB(PREFIX, fname);
-	gen_raw_call_partC();
+	gen_raw_call_partC_with_stacksize(arg_stacksize);
 	printf("  movq %%rax, (%%rsp)\n");
 }
 
@@ -200,8 +202,7 @@ void gen_raw_call_partA()
 	       "  movq %%rsp, %%rax\n"
 	       "  andq $15, %%rax\n"
 	       "  subq %%rax, %%rsp\n"
-	       "  movq %%rax, (%%rsp)\n"
-	);
+	       "  movq %%rax, (%%rsp)\n");
 }
 
 void gen_raw_call_partB(const char *s1, const char *s2)
@@ -211,8 +212,10 @@ void gen_raw_call_partB(const char *s1, const char *s2)
 	printf("  call %s%s\n", s1, s2);
 }
 
-void gen_raw_call_partC()
+static void gen_raw_call_partC_with_stacksize(int arg_stacksize)
 {
+	printf("  addq $%d, %%rsp\n", arg_stacksize);
+
 	/*
 	if it was already aligned:
 	    the top contains 8, and you must add 16 to the stack in order to resume.
@@ -227,6 +230,8 @@ void gen_raw_call_partC()
 	*/
 	printf("  addq (%%rsp), %%rsp\n");
 }
+
+void gen_raw_call_partC() { gen_raw_call_partC_with_stacksize(0); }
 
 void gen_discard3rd(void)
 {

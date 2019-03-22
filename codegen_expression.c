@@ -188,8 +188,11 @@ void print_address_of_lvalue_or_struct(struct PrinterState *ptr_prs,
 		gen_raw_call_partA();
 		pass_args(ptr_prs, &expr.args);
 
+#define ARG_STACKSIZE 16
+		printf("  subq $%d, %%rsp\n", ARG_STACKSIZE);
+
 		/* call a function that returns a void */
-		gen_push_ret_of_nbyte(4, expr.global_var_name);
+		gen_push_ret_of_nbyte(4, expr.global_var_name, 16);
 		gen_discard();
 
 		gen_push_address_of_local(expr.local_var_offset);
@@ -621,11 +624,14 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 		gen_raw_call_partA();
 		pass_args(ptr_prs, &expr.args);
 
+		//#define ARG_STACKSIZE 16
+		printf("  subq $%d, %%rsp\n", ARG_STACKSIZE);
+
 		int size = ret_type.type_category == VOID_
 		               ? 4 /* for convenience */
 		               : size_of_basic(&ret_type, "return value");
 
-		gen_push_ret_of_nbyte(size, ident_str);
+		gen_push_ret_of_nbyte(size, ident_str, ARG_STACKSIZE);
 
 		return;
 	}

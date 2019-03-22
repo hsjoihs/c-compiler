@@ -11,7 +11,7 @@ void gen_push_address_of_local(int offset);
 void gen_push_address_of_str(int strnum);
 void gen_push_from_local_nbyte(int n, int offset);
 void gen_push_address_of_global(const char *ident);
-void gen_push_ret_of_nbyte(int n, const char *ident_str);
+void gen_push_ret_of_nbyte(int n, const char *ident_str, int arg_stacksize);
 void gen_push_nullptr(void);
 void gen_call_reg_and_push_ret_of_nbyte(int n, const char *reg);
 void gen_peek_deref_push_nbyte(int n);
