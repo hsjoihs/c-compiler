@@ -694,9 +694,7 @@ func_call_expr(struct AnalyzerState *ptr_ps, const struct Type *ref_ret_type,
 		}
 
 		push_vector(&expr.args, ptr_arg);
-		if (counter > 5) {
-			unsupported("calling with 7 or more arguments");
-		}
+		
 	}
 
 	expr.details.type = ret_type;

@@ -620,18 +620,17 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 		struct Type ret_type = expr.details.type;
 
 		int arg_stacksize = count_args(&expr.args) * 8;
-		assert(arg_stacksize == 0);
+		if (arg_stacksize % 16 != 0) {
+			unsupported("misaligned stack");
+		}
 		gen_raw_call_partA();
 		pass_args(ptr_prs, &expr.args);
-
-		//#define ARG_STACKSIZE 16
-		printf("  subq $%d, %%rsp\n", ARG_STACKSIZE);
 
 		int size = ret_type.type_category == VOID_
 		               ? 4 /* for convenience */
 		               : size_of_basic(&ret_type, "return value");
 
-		gen_push_ret_of_nbyte(size, ident_str, ARG_STACKSIZE);
+		gen_push_ret_of_nbyte(size, ident_str, arg_stacksize);
 
 		return;
 	}
@@ -671,8 +670,7 @@ static int count_args(const struct Vector /*<Expr>*/ *ref_args)
 
 	for (int counter = 0; counter < ref_args->length; counter++) {
 		if (counter >= 6) {
-			unsupported("7 or more arguments in codegen");
-			/* because of this, this function always return 0 for the present */
+			break;
 		}
 		const struct Expr *ptr_expr_ = ref_args->vector[counter];
 
@@ -700,7 +698,7 @@ static void pass_args(struct PrinterState *ptr_prs,
 
 	for (int counter = 0; counter < ref_args->length; counter++) {
 		if (counter >= 6) {
-			unsupported("7 or more arguments in codegen");
+			break;
 		}
 		const struct Expr *ptr_expr_ = ref_args->vector[counter];
 

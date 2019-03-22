@@ -36,4 +36,18 @@ struct INT_CHAR_CHAR_INT *get_struct_pointer(int a, int b)
 	return p;
 }
 
+int add8(int a, int b, int c, int d, int e, int f, int g, int h)
+{
+	return a + b + c + d + e + f + g + h;
+}
 
+struct INT_CHAR_CHAR_INT merge7(int a, int b, int c, int d, int e, int f, int g
+                            )
+{
+	struct INT_CHAR_CHAR_INT st;
+	st.a = a + b;
+	st.b = c + d;
+	st.c = e + f;
+	st.d = g;
+	return st;
+}
