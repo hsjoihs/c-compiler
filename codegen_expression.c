@@ -4,8 +4,7 @@
 #include "std.h"
 #include "std_io.h"
 
-static int count_args(struct PrinterState *ptr_prs,
-                      const struct Vector /*<Expr>*/ *ref_args);
+static int count_args(const struct Vector /*<Expr>*/ *ref_args);
 static void pass_args(struct PrinterState *ptr_prs,
                       const struct Vector /*<Expr>*/ *ref_args);
 
@@ -615,7 +614,7 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 		const char *ident_str = expr.global_var_name;
 		struct Type ret_type = expr.details.type;
 
-		int arg_stacksize = count_args(ptr_prs, &expr.args) * 8;
+		int arg_stacksize = count_args(&expr.args) * 8;
 		assert(arg_stacksize == 0);
 		gen_raw_call_partA();
 		pass_args(ptr_prs, &expr.args);
@@ -655,8 +654,7 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 	}
 }
 
-static int count_args(struct PrinterState *ptr_prs,
-                      const struct Vector /*<Expr>*/ *ref_args)
+static int count_args(const struct Vector /*<Expr>*/ *ref_args)
 {
 	int ans = 0;
 	for (int counter = ref_args->length - 1; counter >= 0; counter--) {
