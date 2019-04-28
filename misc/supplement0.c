@@ -41,13 +41,19 @@ int add8(int a, int b, int c, int d, int e, int f, int g, int h)
 	return a + b + c + d + e + f + g + h;
 }
 
-struct INT_CHAR_CHAR_INT merge7(int a, int b, int c, int d, int e, int f, int g
+struct INT_CHARS_INT {
+	int a;
+	char c[100];
+	int b;
+};
+
+struct INT_CHARS_INT merge7(int a, int b, int c, int d, int e, int f, int g
                             )
 {
-	struct INT_CHAR_CHAR_INT st;
+	struct INT_CHARS_INT st;
 	st.a = a + b;
 	st.b = c + d;
-	st.c = e + f;
-	st.d = g;
+	st.c[0] = e + f;
+	st.c[1] = g;
 	return st;
 }
