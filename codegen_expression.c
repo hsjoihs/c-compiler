@@ -187,7 +187,6 @@ void print_address_of_lvalue_or_struct(struct PrinterState *ptr_prs,
 		if (arg_stacksize % 16 != 0) {
 			unsupported("misaligned stack");
 		}
-		fprintf(stderr, "passed here");
 		gen_raw_call_partA();
 		pass_args(ptr_prs, &expr.args);
 

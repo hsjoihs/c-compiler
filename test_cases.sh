@@ -19,7 +19,7 @@ run_test() {
 }
 
 run_test0 361 'int add8(); int main(){ return add8(-1,-2,3,-4,5,6,-7,8); }' 8
-#run_test0 362 'struct INT_CHAR_CHAR_INT {int a; char c; char d; int b;};struct INT_CHAR_CHAR_INT merge7(); int main(){ struct INT_CHAR_CHAR_INT st = merge7(1,2,3,4,5,6,7); return st.b - st.a; }' 4
+run_test0 362 'struct INT_CHARS_INT { int a; char c[100]; int b; };struct INT_CHARS_INT merge7(); int main(){ struct INT_CHARS_INT st = merge7(1,2,3,4,5,6,7); return st.b - st.a; }' 4
 
 run_test 359 'int main() {goto a; return 3; a: return 0;} ' 0
 run_test 360 'int main(){ int i = 3; goto a; for (i = 0; i < 10; i++) { a: return i; } }' 3
