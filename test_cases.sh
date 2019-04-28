@@ -18,6 +18,10 @@ run_test() {
 	if [ $res -ne $3 ]; then { echo "got:" $res; echo "expected:" $3; echo -e "\033[31mFAIL\033[m, at test case" $1: $2; exit 1; }; else echo -e "\033[32mPASS\033[m"; fi
 }
 
+#failing
+run_test0 1000 'struct INT_CHAR_CHAR_INT {int a; char c; char d; int b;};struct INT_CHAR_CHAR_INT merge7_(); int main(){ struct INT_CHAR_CHAR_INT st = merge7_(1,2,3,4,5,6,7); return st.b - st.a; }' 4
+
+
 run_test0 361 'int add8(); int main(){ return add8(-1,-2,3,-4,5,6,-7,8); }' 8
 run_test0 362 'struct INT_CHARS_INT { int a; char c[100]; int b; };struct INT_CHARS_INT merge7(); int main(){ struct INT_CHARS_INT st = merge7(1,2,3,4,5,6,7); return st.b - st.a; }' 4
 

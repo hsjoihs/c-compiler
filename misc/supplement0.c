@@ -57,3 +57,13 @@ struct INT_CHARS_INT merge7(int a, int b, int c, int d, int e, int f, int g
 	st.c[1] = g;
 	return st;
 }
+
+struct INT_CHAR_CHAR_INT merge7_(int a, int b, int c, int d, int e, int f, int g)
+{
+	struct INT_CHAR_CHAR_INT st;
+	st.a = a + b;
+	st.b = c + d;
+	st.c = e + f;
+	st.d = g;
+	return st;
+}
