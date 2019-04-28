@@ -358,10 +358,10 @@ parse_arguments(const struct Token **ptr_tokvec)
 			}
 			++tokvec;
 
-			struct UntypedExpr e = parse_assignment_expression(&tokvec);
-			struct UntypedExpr *ptr_e = calloc(1, sizeof(struct UntypedExpr));
-			*ptr_e = e;
-			push_vector(&arguments, ptr_e);
+			struct UntypedExpr e2 = parse_assignment_expression(&tokvec);
+			struct UntypedExpr *ptr_e2 = calloc(1, sizeof(struct UntypedExpr));
+			*ptr_e2 = e2;
+			push_vector(&arguments, ptr_e2);
 		}
 
 		expect_and_consume(&tokvec, RIGHT_PAREN,

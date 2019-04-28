@@ -16,7 +16,7 @@ endif
 
 SRC=std.c codegen.c alignment.c parse_analyze_toplevel.c parse_analyze_statement.c codegen_expression.c main.c vector.c typecheck_expression.c parse_expression.c error.c type.c parse_type.c map.c print_x86_64.c print_x86_64_unofficial.c lexer.c codegen_switch.c file_io.c cpp.c
 
-CLANG_WARN=-Wall -Wextra -Wimplicit-fallthrough -Weverything -Wno-documentation -Wno-padded -Wno-missing-prototypes -Wno-switch-enum
+CLANG_WARN=-Wall -Wextra -Wimplicit-fallthrough -Weverything -Wno-documentation -Wno-padded -Wno-missing-prototypes -Wno-switch-enum -Wno-sign-conversion -Wno-format-nonliteral
 
 LINKER=gcc -no-pie -Wno-unused-command-line-argument
 

@@ -83,7 +83,7 @@ const char *get_reg_name_from_arg_pos_8byte(int counter);
 _Noreturn void poison_and_die(const char *msg);
 
 /* under construction */
-void gen_raw_call_partA();
+void gen_raw_call_partA(void);
 
 extern struct __FILE *global_ir;
 

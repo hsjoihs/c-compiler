@@ -269,7 +269,8 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 	}
 
 	struct Vector /*<TypeAndIdent>*/ param_infos = declarator_type.param_infos;
-	int param_infos_validity = declarator_type.param_infos_validity;
+	enum ParamInfosValidity param_infos_validity =
+	    declarator_type.param_infos_validity;
 	struct Type *derived_from = declarator_type.derived_from;
 	struct Type ret_type = *derived_from;
 

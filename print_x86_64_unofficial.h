@@ -1,7 +1,7 @@
 /* auxiliary functions to implement the API */
 
 void gen_raw_call_partB(const char *s1, const char *s2);
-void gen_raw_call_partC();
+void gen_raw_call_partC(void);
 
 /* unofficial API */
 void gen_epilogue(int label);
