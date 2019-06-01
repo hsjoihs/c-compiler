@@ -11,12 +11,17 @@ struct Token *
 read_and_preprocess(const char *str,
                     struct Vector /*<struct Token>*/ *ref_cmdline_macros)
 {
-	struct Map2 *def_map = init_map();
+	struct Map2 /*<struct Vector<struct Token>*/ *def_map = init_map();
 	for (int i = 0; i < ref_cmdline_macros->length; i++) {
+		struct Vector *p = init_vector_();
+
 		struct Token *ptr_token = calloc(1, sizeof(struct Token));
 		ptr_token->kind = LIT_DEC_INTEGER;
 		ptr_token->int_value = 1;
-		insert(def_map, ref_cmdline_macros->vector[i], ptr_token);
+
+		push_vector(p, ptr_token);
+
+		insert(def_map, ref_cmdline_macros->vector[i], p);
 	}
 	struct Tokvec vec1 = preprocess(str, def_map);
 

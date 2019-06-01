@@ -379,6 +379,7 @@ struct Tokvec {
 	struct Token *v;
 };
 
-struct Tokvec preprocess(const char *str, struct Map2 *def_map);
+struct Tokvec preprocess(const char *str,
+                         struct Map2 /*<struct Vector<struct Token>*/ *def_map);
 
 struct Tokvec read_all_tokens(const char *str);

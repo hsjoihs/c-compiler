@@ -16,10 +16,10 @@ static void set_line_state(enum LineState *ps, enum TokenKind kind)
 	}
 }
 
-static void replace_recursively(const struct Map2 *def_map,
-                                struct Map2 *used_map,
-                                const struct Token *ref_src,
-                                struct Token *ptr_dst);
+static void
+replace_recursively(const struct Map2 /*<struct Vector<struct Token>*/ *def_map,
+                    struct Map2 *used_map, const struct Token *ref_src,
+                    struct Token *ptr_dst);
 
 static void consume_spaces(const struct Token **ptr_src)
 {
@@ -102,7 +102,8 @@ static void skip_till_corresponding_endif(const struct Token **ptr_src)
  *    when returning, NEWLINE is consumed if it exists (return 1 => continue)
  *    if nonexistent, it will return 0 and fallthru.
  */
-static int handle_define(const struct Token **ptr_src, struct Map2 *def_map)
+static int handle_define(const struct Token **ptr_src,
+                         struct Map2 /*<struct Vector<struct Token>*/ *def_map)
 {
 	expect_and_consume(ptr_src, IDENT_OR_RESERVED,
 	                   "macro name after `#define`");
@@ -123,7 +124,9 @@ static int handle_define(const struct Token **ptr_src, struct Map2 *def_map)
 	if ((*ptr_src)[0].kind == NEWLINE) {
 		(*ptr_src)++;
 		ptr_token->kind = SPACE;
-		insert(def_map, macro_name, ptr_token);
+		struct Vector *p = init_vector_();
+		push_vector(p, ptr_token);
+		insert(def_map, macro_name, p); /*<struct Vector<struct Token>*/
 		return 1;
 	}
 
@@ -133,7 +136,9 @@ static int handle_define(const struct Token **ptr_src, struct Map2 *def_map)
 
 	/* one-token replacement */
 	*ptr_token = **ptr_src;
-	insert(def_map, macro_name, ptr_token);
+	struct Vector *p = init_vector_();
+	push_vector(p, ptr_token);
+	insert(def_map, macro_name, p);
 	(*ptr_src)++;
 
 	if ((*ptr_src)[0].kind == NEWLINE) {
@@ -149,9 +154,11 @@ static int handle_define(const struct Token **ptr_src, struct Map2 *def_map)
  *    when returning, NEWLINE is consumed if it exists (return 1 => continue)
  *    if nonexistent, it will throw an error.
  */
-static void handle_include(struct Token **ptr_dst, const struct Token **ptr_src,
-                           int *ref_dst_offset, struct Map2 *def_map,
-                           int *ptr_total_token_num)
+static void
+handle_include(struct Token **ptr_dst, const struct Token **ptr_src,
+               int *ref_dst_offset,
+               struct Map2 /*<struct Vector<struct Token>*/ *def_map,
+               int *ptr_total_token_num)
 {
 	const struct Token *src = *ptr_src;
 	int dst_offset = *ref_dst_offset;
@@ -207,7 +214,8 @@ static void handle_include(struct Token **ptr_dst, const struct Token **ptr_src,
 }
 
 static int handle_ifdef(int is_ifdef, const struct Token **ptr_src,
-                        struct Map2 *def_map, int *ptr_ifdef_depth)
+                        struct Map2 /*<struct Vector<struct Token>*/ *def_map,
+                        int *ptr_ifdef_depth)
 {
 	expect_and_consume(ptr_src, IDENT_OR_RESERVED,
 	                   is_ifdef ? "identifier after `#ifdef`"
@@ -232,7 +240,8 @@ static int handle_ifdef(int is_ifdef, const struct Token **ptr_src,
 }
 
 /* lexer inserts a NEWLINE before END; hence, END can mostly be ignored */
-struct Tokvec preprocess(const char *str, struct Map2 *def_map)
+struct Tokvec preprocess(const char *str,
+                         struct Map2 /*<struct Vector<struct Token>*/ *def_map)
 {
 	const struct Tokvec t = read_all_tokens(str);
 	const struct Token *src = t.v;
@@ -316,13 +325,20 @@ struct Tokvec preprocess(const char *str, struct Map2 *def_map)
 	}
 }
 
-static void replace_recursively(const struct Map2 *def_map,
-                                struct Map2 *used_map, const struct Token *src,
-                                struct Token *ptr_dst)
+static void
+replace_recursively(const struct Map2 /*<struct Vector<struct Token>*/ *def_map,
+                    struct Map2 *used_map, const struct Token *src,
+                    struct Token *ptr_dst)
 {
 	if (src[0].kind == IDENT_OR_RESERVED && isElem(def_map, src[0].ident_str) &&
 	    !isElem(used_map, src[0].ident_str)) {
-		struct Token *replace_with = lookup(def_map, src[0].ident_str);
+		struct Vector /*<struct Token>*/ *p = lookup(def_map, src[0].ident_str);
+
+#ifdef __STDC__
+#warning only one token
+#endif
+
+		const struct Token *replace_with = p->vector[0];
 
 		int u;
 		insert(used_map, src[0].ident_str,
