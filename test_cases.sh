@@ -1,6 +1,6 @@
 #!/bin/bash
 
-run_test0() {
+run_test_with_supplement0() {
 	echo -e $2 | ./out/compiler.out > s/full_compile$1.s
 	gcc misc/supplement0.c -S -o s/supplement0.s
 	gcc s/full_compile$1.s s/supplement0.s -o out/task$1.out -no-pie -Wno-unused-command-line-argument
@@ -11,15 +11,23 @@ run_test0() {
 
 run_test() {
 	echo -e $2 | ./out/compiler.out > s/full_compile$1.s
-	./out/compiler.out misc/supplement.c > s/supplement.s
-	gcc s/full_compile$1.s s/supplement.s -o out/task$1.out -no-pie -Wno-unused-command-line-argument
+	gcc s/full_compile$1.s -o out/task$1.out -no-pie -Wno-unused-command-line-argument
 	./out/task$1.out
 	res=$?
 	if [ $res -ne $3 ]; then { echo "got:" $res; echo "expected:" $3; echo -e "\033[31mFAIL\033[m, at test case" $1: $2; exit 1; }; else echo -e "\033[32mPASS\033[m"; fi
 }
 
-run_test0 361 'int add8(); int main(){ return add8(-1,-2,3,-4,5,6,-7,8); }' 8
-run_test0 362 'struct INT_CHARS_INT { int a; char c[100]; int b; };struct INT_CHARS_INT merge7(); int main(){ struct INT_CHARS_INT st = merge7(1,2,3,4,5,6,7); return st.b - st.a; }' 4
+run_test_with_supplement1() {
+	echo -e $2 | ./out/compiler.out > s/full_compile$1.s
+	./out/compiler.out misc/supplement1.c > s/supplement1.s
+	gcc s/full_compile$1.s s/supplement1.s -o out/task$1.out -no-pie -Wno-unused-command-line-argument
+	./out/task$1.out
+	res=$?
+	if [ $res -ne $3 ]; then { echo "got:" $res; echo "expected:" $3; echo -e "\033[31mFAIL\033[m, at test case" $1: $2; exit 1; }; else echo -e "\033[32mPASS\033[m"; fi
+}
+
+run_test_with_supplement0 361 'int add8(); int main(){ return add8(-1,-2,3,-4,5,6,-7,8); }' 8
+run_test_with_supplement0 362 'struct INT_CHARS_INT { int a; char c[100]; int b; };struct INT_CHARS_INT merge7(); int main(){ struct INT_CHARS_INT st = merge7(1,2,3,4,5,6,7); return st.b - st.a; }' 4
 
 run_test 359 'int main() {goto a; return 3; a: return 0;} ' 0
 run_test 360 'int main(){ int i = 3; goto a; for (i = 0; i < 10; i++) { a: return i; } }' 3
@@ -42,17 +50,17 @@ run_test 351 'struct A {int k[15];}; int main(){struct A s; s.k[3] = 35; return 
 run_test 352 'struct A {int a; int b; int c;}; int main(){struct A a[5]; return a + 3 - a;}' 3
 run_test 353 'struct A {int k[15];}; int main(){struct A a[5]; return a + 3 - a;}' 3
 
-run_test 331 'void *return_fp(void); int call_fp(void* q); int main(){return call_fp(return_fp());}' 174
+run_test_with_supplement1 331 'void *return_fp(void); int call_fp(void* q); int main(){return call_fp(return_fp());}' 174
 run_test 332 'int main(){int a = 1; int *b = a?&a : 0; return 123;}' 123
 run_test 333 'int main(){int a = 1; int *b = a? 0 :&a; return 123;}' 123
 run_test 334 'int main(){int a = 0; int *b = a?&a : 0; return 123;}' 123
 run_test 335 'int main(){int a = 0; int *b = a? 0 :&a; return 123;}' 123
-run_test 336 'void *return_fp(void); int call_fp_(void* q){int (*p)(int) = q;return (p)(171);} int main(){return call_fp_(return_fp());}' 174
-run_test 337 'void *return_fp(void); int call_fp_(void* q){int (*p)(int) = q;return (*p)(171);} int main(){return call_fp_(return_fp());}' 174
-run_test 338 'void *return_fp(void); int call_fp_(void* q){int (*p)(int) = q;return (***********************p)(171);} int main(){return call_fp_(return_fp());}' 174
-run_test 339 'void *return_fp(void); int call_fp_(void* q){int (*p)(int) = q;return p(171);} int main(){return call_fp_(return_fp());}' 174
-run_test 340 'int add_3_(int a){return 3 + a;} void *return_fp_(void){return &add_3_;} int call_fp_(void* q){int (*p)(int) = q;return p(171);} int main(){return call_fp_(return_fp_());}' 174
-run_test 341 'int add_3_(int a){return 3 + a;} int (*return_fp_(void))(int){return &add_3_;} int call_fp_(int (*q)(int)){int (*p)(int) = q;return p(171);} int main(){return call_fp_(return_fp_());}' 174
+run_test_with_supplement1 336 'void *return_fp(void); int call_fp_(void* q){int (*p)(int) = q;return (p)(171);} int main(){return call_fp_(return_fp());}' 174
+run_test_with_supplement1 337 'void *return_fp(void); int call_fp_(void* q){int (*p)(int) = q;return (*p)(171);} int main(){return call_fp_(return_fp());}' 174
+run_test_with_supplement1 338 'void *return_fp(void); int call_fp_(void* q){int (*p)(int) = q;return (***********************p)(171);} int main(){return call_fp_(return_fp());}' 174
+run_test_with_supplement1 339 'void *return_fp(void); int call_fp_(void* q){int (*p)(int) = q;return p(171);} int main(){return call_fp_(return_fp());}' 174
+run_test_with_supplement1 340 'int add_3_(int a){return 3 + a;} void *return_fp_(void){return &add_3_;} int call_fp_(void* q){int (*p)(int) = q;return p(171);} int main(){return call_fp_(return_fp_());}' 174
+run_test_with_supplement1 341 'int add_3_(int a){return 3 + a;} int (*return_fp_(void))(int){return &add_3_;} int call_fp_(int (*q)(int)){int (*p)(int) = q;return p(171);} int main(){return call_fp_(return_fp_());}' 174
 run_test 342 'int printf(); int main(){(**************printf)("Hello, World!"); return 0;}' 0
 run_test 343 'int puts(const char *str); int atoi(const char *str); int f(int a){int (*arr[2])(const char *str);arr[0] = &puts;arr[1] = &atoi;return arr[a]("123");} int main(){f(0); return f(1);}' 123
 run_test 344 'int puts(const char *str); int atoi(const char *str); int f(int a){int (*arr[2])(const char *str);arr[0] = puts;arr[1] = atoi;return arr[a]("123");} int main(){f(0); return f(1);}' 123
@@ -72,14 +80,14 @@ run_test 323 'struct A{int a; int b; int *q; int *r; int *s; int *t; int *p;}; s
 
 run_test 316 'struct A{int a; int b; int *p;}; struct A f(void) {struct A u; u.a = 100; u.b = 74; u.p = 0; return u;} int main(void){struct A u = f(); struct A *p = &u; if (u.p) {return 3;} else {return p->a + p->b;}}' 174
 run_test 317 'struct A{int a; int b; int *p;}; struct A f(void) {struct A u; u.a = 100; u.b = 74; u.p = 0; return u;} int g (struct A *p) {return p->a + p->b;} int main(void){struct A u = f(); struct A *p = &u; if (u.p) {return 3;} else {return g(p);}}' 174
-run_test 318 'struct A{int a; int b; int *p;}; struct A q(void); int g (struct A *p) {return p->a + p->b;} int main(void){struct A u = q(); struct A *p = &u; if (u.p) {return 3;} else {return g(p);}}' 174
-run_test 319 'struct A{int a; int b; int *p;}; struct A q(void); int r(struct A *p); int main(void){struct A u = q(); struct A *p = &u; if (u.p) {return 3;} else {return r(p);}}' 174
+run_test_with_supplement1 318 'struct A{int a; int b; int *p;}; struct A q(void); int g (struct A *p) {return p->a + p->b;} int main(void){struct A u = q(); struct A *p = &u; if (u.p) {return 3;} else {return g(p);}}' 174
+run_test_with_supplement1 319 'struct A{int a; int b; int *p;}; struct A q(void); int r(struct A *p); int main(void){struct A u = q(); struct A *p = &u; if (u.p) {return 3;} else {return r(p);}}' 174
 run_test 320 'struct A{int a; int b; int *p;}; struct A f(int j) {struct A u; u.a = 100; u.b = 72 + j; u.p = 0; return u;} int g (struct A *p) {return p->a + p->b;} int main(void){struct A u = f(2); struct A *p = &u; if (u.p) {return 3;} else {return g(p);}}' 174
 
-run_test 321 'struct A{int a; int b; int *p; int *q; int *r; int *s;}; struct A test_(int *s); int main(void){int k; k = 100; struct A u = test_(&k); return u.a + *(u.s);}' 174
+run_test_with_supplement1 321 'struct A{int a; int b; int *p; int *q; int *r; int *s;}; struct A test_(int *s); int main(void){int k; k = 100; struct A u = test_(&k); return u.a + *(u.s);}' 174
 
 
-run_test0 203 'int ptrdiff(); int main(){int *p; p = 0; return ptrdiff(p+1, p);}' 4
+run_test_with_supplement0 203 'int ptrdiff(); int main(){int *p; p = 0; return ptrdiff(p+1, p);}' 4
 run_test 204 'int main(){int *p; p = 0; if(p) {return 4; } return 174;}' 174
 run_test 205 'int main(){int *p; int a; p = &a; if(p) {return 4; } return 174;}' 4
 run_test 206 'int main(){int *p; int a; p = &a; return p && &p;}' 1
@@ -135,7 +143,7 @@ run_test 305 'int main(void) {int a[5]; a[3] = 174; int (*p)[5] = &a; return (*p
 run_test 306 'int main(void) {char a = 74; char *p = &a; return *p+100;} ' 174
 
 
-run_test0 302 'extern int GLOBAL_VAR; int main(){return 171 + GLOBAL_VAR;}' 174
+run_test_with_supplement0 302 'extern int GLOBAL_VAR; int main(){return 171 + GLOBAL_VAR;}' 174
 run_test 303 'static int hidden() { return 3;} int main(){return 171 + hidden();}' 174
 
 run_test 292 'struct A{char a; int b;}; int main(){struct A a; a.a = 74; struct A b; b = a; return b.a;}' 74
@@ -143,11 +151,11 @@ run_test 293 'struct A{char a; int b;}; int main(){struct A a; a.a = 74; struct 
 run_test 294 'struct A{int a; int b;}; int main(){struct A a; a.a = 174; struct A b = a; return b.a;}' 174
 run_test 295 'struct A{int a; int b;}; int main(){struct A a; a.a = 174; struct A b = a; return b.a;}' 174
 run_test 296 'struct A{char a; int b; char c;}; int main(){struct A a; a.c = 74; struct A b = a; return b.c;}' 74
-run_test 297 'int add_two_ints(); struct A{int a; int b;}; int main(){struct A a; a.a = 100; a.b = 74; struct A b = a; return add_two_ints(&b);}' 174
-run_test 298 'int add_two_ints2(); struct A{int a; char c; char d; int b;}; int main(){struct A a; a.a = 100; a.b = 74; struct A b = a; return add_two_ints2(&b);}' 174
-run_test0 299 'struct A{int a; char c; char d; int b;}; struct A *get_struct_pointer(); int main(){ struct A *p; p = get_struct_pointer(100, 74); struct A a = *p; return a.a + a.b;  }' 174
-run_test0 300 'struct A{int a; char c; char d; int b;}; struct A *get_struct_pointer(); int main(){ struct A *p = get_struct_pointer(100, 74); struct A a = *p; return a.a + a.b;  }' 174
-run_test0 301 'struct A{int a; char c; char d; int b;}; struct A *get_struct_pointer(); int main(){ struct A a = *get_struct_pointer(100, 74); return a.a + a.b;  }' 174
+run_test_with_supplement1 297 'int add_two_ints(); struct A{int a; int b;}; int main(){struct A a; a.a = 100; a.b = 74; struct A b = a; return add_two_ints(&b);}' 174
+run_test_with_supplement1 298 'int add_two_ints2(); struct A{int a; char c; char d; int b;}; int main(){struct A a; a.a = 100; a.b = 74; struct A b = a; return add_two_ints2(&b);}' 174
+run_test_with_supplement0 299 'struct A{int a; char c; char d; int b;}; struct A *get_struct_pointer(); int main(){ struct A *p; p = get_struct_pointer(100, 74); struct A a = *p; return a.a + a.b;  }' 174
+run_test_with_supplement0 300 'struct A{int a; char c; char d; int b;}; struct A *get_struct_pointer(); int main(){ struct A *p = get_struct_pointer(100, 74); struct A a = *p; return a.a + a.b;  }' 174
+run_test_with_supplement0 301 'struct A{int a; char c; char d; int b;}; struct A *get_struct_pointer(); int main(){ struct A a = *get_struct_pointer(100, 74); return a.a + a.b;  }' 174
 
 
 run_test 291 'int *foo(){return 0;} int main(){int *p = foo(); if (p == 0) {return 174;} else {return 1;} }' 174
@@ -173,7 +181,7 @@ run_test 284 'int main(){int a[5];int *p = a;int *q = a+3;if (p == q) {return 17
 run_test 285 'int main(){int a[5];int *p = a;int *q = a+3;if (p != q) {return 174;} else {return 1;}}' 174
 
 
-run_test 263 'int add6();int main(void){return add6(add6(1,2,3,4,5,6),7,8,9,10,174-55);}' 174
+run_test_with_supplement1 263 'int add6();int main(void){return add6(add6(1,2,3,4,5,6),7,8,9,10,174-55);}' 174
 run_test 264 'int main(void){int a[5]; a[3] = 174; int *p = a; p += 3; return *p;}' 174
 run_test 265 'int a[10][10]; int foo(int p[10][10]){int q;q = ((p+=1)-1)[0][0]; return q+p[0][0];} int main(){a[0][0] = 100; a[1][0] = 74; return foo(a);}' 174
 run_test 266 'int main(void){int a[5]; a[1] = 174; int *p = a + 3; p -= 2; return *p;}' 174
@@ -225,9 +233,9 @@ run_test 196 'int *f(int *p){return p;} int main(){int a[4]; a[0] = 1; f(a)[0]++
 run_test 197 'struct A{char a; int b;}; int main(){struct A a; a.a = 74; return a.a;}' 74
 run_test 198 'struct A{int a; int b;}; int main(){struct A a; a.a = 174; return a.a;}' 174
 run_test 199 'struct A{int a; int b;}; int main(){struct A a; a.a = 174; return a.a;}' 174
-run_test 200 'int add_two_ints(); struct A{int a; int b;}; int main(){struct A a; a.a = 100; a.b = 74; return add_two_ints(&a);}' 174
-run_test 201 'int add_two_ints2(); struct A{int a; char c; char d; int b;}; int main(){struct A a; a.a = 100; a.b = 74; return add_two_ints2(&a);}' 174
-run_test0 202 'struct A{int a; char c; char d; int b;}; struct A *get_struct_pointer(); int main(){ struct A *p; p = get_struct_pointer(100, 74); return p->a + p->b;  }' 174
+run_test_with_supplement1 200 'int add_two_ints(); struct A{int a; int b;}; int main(){struct A a; a.a = 100; a.b = 74; return add_two_ints(&a);}' 174
+run_test_with_supplement1 201 'int add_two_ints2(); struct A{int a; char c; char d; int b;}; int main(){struct A a; a.a = 100; a.b = 74; return add_two_ints2(&a);}' 174
+run_test_with_supplement0 202 'struct A{int a; char c; char d; int b;}; struct A *get_struct_pointer(); int main(){ struct A *p; p = get_struct_pointer(100, 74); return p->a + p->b;  }' 174
 
 
 run_test 169 'int a(int b){ return b; }int main(){int i; i=1; a(i == 1? 1 : 2); return 0;}' 0
@@ -249,15 +257,15 @@ run_test 183 'struct A{int a; int b;}; int main(){ struct A; return 174;}' 174
 run_test 184 'struct A{int a; int b;}; int main(){ struct A a; return 174;}' 174
 run_test 185 'struct A{int a; int b;}; int main(){ struct A a[10]; return 174;}' 174
 run_test 186 'struct A{int a; int b;};  struct A a[10]; int main(){return 174;}' 174
-run_test0 187 'int ptrdiff();struct A{int a; int b;}; int main(){ struct A *p; return ptrdiff(p+1, p);}' 8
-run_test0 188 'int ptrdiff();struct A{int a; char c; char d; int b;}; int main(){ struct A *p; return ptrdiff(p+1, p);}' 12
-run_test0 189 'int ptrdiff();struct A{int a; int *b; int c;};  struct A a[1][5]; int main(){return ptrdiff(a+1, a);}' 120
+run_test_with_supplement0 187 'int ptrdiff();struct A{int a; int b;}; int main(){ struct A *p; return ptrdiff(p+1, p);}' 8
+run_test_with_supplement0 188 'int ptrdiff();struct A{int a; char c; char d; int b;}; int main(){ struct A *p; return ptrdiff(p+1, p);}' 12
+run_test_with_supplement0 189 'int ptrdiff();struct A{int a; int *b; int c;};  struct A a[1][5]; int main(){return ptrdiff(a+1, a);}' 120
 
 
 
 run_test 162 'int printf();int a() {return 3;}int main() {int i; printf("%d %d", i, a()); return 0;}' 0
 run_test 163 'int foo(char *a, int b, int c){return 0;} int a(int N) {return 3;}int main() {int i; foo("%d %d", i, a(i)); return 0;}' 0
-run_test0 164 'int foobar();int a(int N) {return 3;}int main() {int i; foobar("%d %d", i, a(i)); return 0;}' 0
+run_test_with_supplement0 164 'int foobar();int a(int N) {return 3;}int main() {int i; foobar("%d %d", i, a(i)); return 0;}' 0
 run_test 165 'int printf();int a(int N) {return 3;}int main() {int i; printf("%d %d", i, a(i)); return 0;}' 0
 run_test 166 'int printf();int puts();int a(int N) {return 3;}int main() {int i; for (i = 1; i <= 12; i++) { printf("%d %d", i, a(i)); puts("");} return 0;}' 0
 run_test 167 'int printf();int puts();int A[200][200];int a(int row, int N) {return 3;}int main() {int i; for (i = 1; i <= 12; i++) { printf("%d %d", i, a(0, i)); puts("");} return 0;}' 0
@@ -272,8 +280,8 @@ run_test 137 'char foo(char *p){*p = 5; char a;a = 3; return a;} int main(){char
 run_test 138 'char a;char foo(char *p){*p = 5; a = 3; return a;} int main(){char q; char r; r = foo(&q); return 172-r+q;}' 174
 run_test 139 'int foo(char a){int d;d = 3;char c;c = a+d;return c;} int main(){char f;f=3;return foo(f)*4+150;}' 174
 run_test 140 'int foo(char a){int d;d = 3;char c;c = a+d;return c*4;} int main(){char f;f=3;return foo(f)+150;}' 174
-run_test 141 'int qwerty(); int main(){char f;f=3;return qwerty(f,4)+150;}' 174
-run_test 142 'int qwer(); int main(){char f;f=3;return qwer(f,4)+150;}' 174
+run_test_with_supplement1 141 'int qwerty(); int main(){char f;f=3;return qwerty(f,4)+150;}' 174
+run_test_with_supplement1 142 'int qwer(); int main(){char f;f=3;return qwer(f,4)+150;}' 174
 run_test 143 'int foo(char a, char b){return 23;} int main(){char f;f=3;return foo(f,4)+151;}' 174
 run_test 144 'int foo(char a, char b){return a*4+11;} int main(){char f;f=3;return foo(f,4)+151;}' 174
 run_test 145 'int foo(char a, char b){return a*4+12;} int main(){char f;f=3;return foo(f,4)+150;}' 174
@@ -338,13 +346,13 @@ run_test 023 'int main(){int a; int b; int c; int d; int _q432; a = b = c = 9; d
 run_test 024 'int main(){return 175^1;}' 174
 run_test 025 'int main(){return 2 + (1? 100 + 72 : 17);}' 174
 run_test 026 'int main(){return (0? 234 : 2) + (1? 100 + 72 : 17);}' 174
-run_test 027 'int always87(); int main(){return (3, always87() + always87());}' 174
-run_test 028 'int always87();int always8();int main(){return always87() + ((always8()* 11) -1);}' 174
-run_test 029 'int add();int main(){return add(170,4);}' 174
-run_test 030 'int always87();int always8();int add();int main(){return always87() + ((always8()* add(4,7)) -1);}' 174
-run_test 031 'int always87();int always8();int subtract();int main(){return always87() + ((always8()* subtract(12,1)) -1);}' 174
+run_test_with_supplement1 027 'int always87(); int main(){return (3, always87() + always87());}' 174
+run_test_with_supplement1 028 'int always87();int always8();int main(){return always87() + ((always8()* 11) -1);}' 174
+run_test_with_supplement1 029 'int add();int main(){return add(170,4);}' 174
+run_test_with_supplement1 030 'int always87();int always8();int add();int main(){return always87() + ((always8()* add(4,7)) -1);}' 174
+run_test_with_supplement1 031 'int always87();int always8();int subtract();int main(){return always87() + ((always8()* subtract(12,1)) -1);}' 174
 run_test 032 'int main(){3; {5; 7; 11; } return 175^1;}' 174
-run_test 033 'int always87();int always87_(){return 87;} int main(){return (3, always87() + always87_());}' 174
+run_test_with_supplement1 033 'int always87();int always87_(){return 87;} int main(){return (3, always87() + always87_());}' 174
 run_test 034 'int add_(int x, int y){4; return x+y;} int main(){3; return add_(87,87);}' 174
 run_test 035 'int fib(int n){ return n < 2? n : fib(n - 1) + fib(n - 2); } int main(){3; return fib(10);}' 55
 run_test 036 'int tarai(int x,int y,int z){ return x <= y? y : tarai(tarai(x-1, y, z), tarai(y-1, z, x), tarai(z-1, x, y)); } int main(){return tarai(12,6,0);}' 12
@@ -414,16 +422,16 @@ run_test 099 'int foo(int* p){return *p;} int main(){int x; x = 174; return foo(
 run_test 100 'int foo(int* p){*p = 172; return *p+2;} int main(){int x; return foo(&x);}' 174
 run_test 101 'int *foo(int *p){*p = 4;return p;} int main(){int x;int *y;y = foo(&x); *y+= 170;return x;}' 174
 run_test 102 'int *foo(int *p){*p = 4;return p;} int main(){int x;int y;*foo(&x) += 170;return x;}' 174
-run_test0 103 'int *alloc4();int main(){int *p;p = alloc4(62, 8, 31, 85);return *p;}' 62
-run_test0 104 'int *alloc4();int main(){int *p;int *r;p = alloc4(62, 8, 31, 85);int *q;q = p;return *q;}' 62
-run_test0 105 'int *alloc4();int main(){int *p;int *r;p = alloc4(62, 8, 31, 85);int *q;q = p + 2;return *q;}' 31
-run_test0 106 'int *alloc4();int main(){int *p;int c;int e;c = 2;int d;d = 1;p = alloc4(62, 8, 31, 85);int *q;q = p + c;return *(q+d) - *q + (*p-2)*2;}' 174
-run_test0 107 'int *alloc4();int main(){int *p;p = alloc4(62, 8, 31, 85);int *q;q = p;return *q;}' 62
-run_test0 108 'int *alloc4();int main(){int *p;p = alloc4(62, 8, 31, 85);int *q;q = p + 2;return *q;}' 31
-run_test0 109 'int *alloc4();int main(){int *p;int c;c = 2;int d;d = 1;p = alloc4(62, 8, 31, 85);int *q;q = p + c;return *(q+d) - *q + (*p-2)*2;}' 174
-run_test0 110 'int *alloc4();int main(){int *p;int c;c = 2;int d;d = 1;p = alloc4(62, 8, 31, 85);int *q;q = c + p;return *(d+q) - *q + (*p-2)*2;}' 174
-run_test0 111 'int *alloc4();int main(){int *p;int c;c = -2;int d;d = 1;p = alloc4(62, 8, 31, 85);int *q;q = p - c;return *(d+q) - *q + (*p-2)*2;}' 174
-run_test0 112 'int *alloc4();int main(){int *p; int *q; q = p+174; return q-p;}' 174
+run_test_with_supplement0 103 'int *alloc4();int main(){int *p;p = alloc4(62, 8, 31, 85);return *p;}' 62
+run_test_with_supplement0 104 'int *alloc4();int main(){int *p;int *r;p = alloc4(62, 8, 31, 85);int *q;q = p;return *q;}' 62
+run_test_with_supplement0 105 'int *alloc4();int main(){int *p;int *r;p = alloc4(62, 8, 31, 85);int *q;q = p + 2;return *q;}' 31
+run_test_with_supplement0 106 'int *alloc4();int main(){int *p;int c;int e;c = 2;int d;d = 1;p = alloc4(62, 8, 31, 85);int *q;q = p + c;return *(q+d) - *q + (*p-2)*2;}' 174
+run_test_with_supplement0 107 'int *alloc4();int main(){int *p;p = alloc4(62, 8, 31, 85);int *q;q = p;return *q;}' 62
+run_test_with_supplement0 108 'int *alloc4();int main(){int *p;p = alloc4(62, 8, 31, 85);int *q;q = p + 2;return *q;}' 31
+run_test_with_supplement0 109 'int *alloc4();int main(){int *p;int c;c = 2;int d;d = 1;p = alloc4(62, 8, 31, 85);int *q;q = p + c;return *(q+d) - *q + (*p-2)*2;}' 174
+run_test_with_supplement0 110 'int *alloc4();int main(){int *p;int c;c = 2;int d;d = 1;p = alloc4(62, 8, 31, 85);int *q;q = c + p;return *(d+q) - *q + (*p-2)*2;}' 174
+run_test_with_supplement0 111 'int *alloc4();int main(){int *p;int c;c = -2;int d;d = 1;p = alloc4(62, 8, 31, 85);int *q;q = p - c;return *(d+q) - *q + (*p-2)*2;}' 174
+run_test_with_supplement0 112 'int *alloc4();int main(){int *p; int *q; q = p+174; return q-p;}' 174
 run_test 113 'int *foo(int *p){*p = 4;return p;} int main(){int x;int y; int **z; *foo(&x) += 170;return x;}' 174
 run_test 114 'int main(){int a[2][3]; return 174;}' 174
 run_test 115 'int x; int *y; int main(){return 174;}' 174

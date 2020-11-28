@@ -3,6 +3,8 @@ seccamp2018 c compiler
 
 [日記](https://github.com/hsjoihs/c-compiler/blob/master/misc/diary.md)
 
+In case you are also making a toy c compiler, feel free to use [my test cases](./test_cases.sh) to test yours.
+
 ## Environment
 
 Tested on both macOS (High Sierra) and Ubuntu (18.04.1 LTS).
