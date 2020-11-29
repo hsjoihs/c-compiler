@@ -7,7 +7,7 @@ In case you are also making a toy c compiler, feel free to use [my test cases](.
 
 ## Environment
 
-Tested on both macOS (Catalina) and Ubuntu (20.04.1 LTS).
+Tested on macOS (Catalina), Ubuntu (20.04.1 LTS) and Debian (10.5).
 
 ## How to run
 
