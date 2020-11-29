@@ -338,10 +338,10 @@ static void print_toplevel_definition(struct PrinterState *ptr_prs,
 	if (ref_def->func.is_va) {
 		ptr_prs->integral_explicit_arg_num = offsets_and_types.length;
 	}
-	int label1;
-	int label2;
-	label1 = get_new_label_name(ptr_prs);
-	label2 = get_new_label_name(ptr_prs);
+	// int label1;
+	// int label2;
+	// label1 = get_new_label_name(ptr_prs);
+	// label2 = get_new_label_name(ptr_prs);
 
 	int capacity = ref_def->func.capacity;
 	if (ref_def->func.is_va) {
