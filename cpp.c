@@ -46,7 +46,7 @@ static void skip_till_corresponding_endif(const struct Token **ptr_src)
 			set_line_state(&s, src[0].kind);
 
 			if (src[0].kind == END) {
-				fprintf(stderr, "insufficient `#endif`.\n");
+				fprintf(stderr, "insufficient number of `#endif`.\n");
 				exit(EXIT_FAILURE);
 			}
 		}
@@ -73,7 +73,7 @@ static void skip_till_corresponding_endif(const struct Token **ptr_src)
 
 			if (src[0].kind == END) {
 				if (ifdef_depth != 1) {
-					fprintf(stderr, "insufficient `#endif`.\n");
+					fprintf(stderr, "insufficient number of `#endif`.\n");
 					exit(EXIT_FAILURE);
 				}
 				*ptr_src = src;

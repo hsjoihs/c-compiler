@@ -15,7 +15,7 @@ int size_of(const struct AnalyzerState *ptr_ps, const struct Type *ref_type)
 	case ARRAY:
 		return type.array_length * size_of(ptr_ps, type.derived_from);
 	case FN:
-		fprintf(stderr, "function type does not have size\n");
+		fprintf(stderr, "function type does not have a size\n");
 		exit(EXIT_FAILURE);
 	case STRUCT_:
 		if ((0)) { /* is local struct */
@@ -26,13 +26,13 @@ int size_of(const struct AnalyzerState *ptr_ps, const struct Type *ref_type)
 		    lookup(ptr_ps->global_struct_tag_map, tag);
 		if (!ptr_info) {
 			fprintf(stderr,
-			        "tried to take the size of incomplete type `struct %s`\n",
+			        "tried to take the size of an incomplete type `struct %s`\n",
 			        type.s.struct_tag);
 			exit(EXIT_FAILURE);
 		}
 		return ptr_info->s_and_a.size;
 	case VOID_:
-		fprintf(stderr, "size of type `void` is never known\n");
+		fprintf(stderr, "the size of type `void` is never known\n");
 		exit(EXIT_FAILURE);
 	case ENUM_:
 		return 4;
@@ -52,7 +52,7 @@ int align_of(const struct AnalyzerState *ptr_ps, const struct Type *ref_type)
 	case ARRAY:
 		return align_of(ptr_ps, type.derived_from);
 	case FN:
-		fprintf(stderr, "function type does not have size or alignment\n");
+		fprintf(stderr, "a function type does not have a size or an alignment\n");
 		exit(EXIT_FAILURE);
 	case STRUCT_:
 		if ((0)) { /* is local struct */
@@ -63,7 +63,7 @@ int align_of(const struct AnalyzerState *ptr_ps, const struct Type *ref_type)
 		    lookup(ptr_ps->global_struct_tag_map, tag);
 		if (!ptr_info) {
 			fprintf(stderr,
-			        "tried to find the alignment of incomplete type "
+			        "tried to find the alignment of an incomplete type "
 			        "`struct %s`\n",
 			        type.s.struct_tag);
 			exit(EXIT_FAILURE);

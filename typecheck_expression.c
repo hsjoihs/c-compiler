@@ -876,7 +876,7 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 			    "function call operator was applied to something of type `");
 			debug_print_type(&fp_expr.details.type);
 			fprintf(stderr,
-			        "`, which is neither function nor function pointer\n");
+			        "`, which is neither a function nor a function pointer\n");
 			exit(EXIT_FAILURE);
 		}
 
@@ -1002,7 +1002,7 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 
 		expect_type(ptr_ps, &false_branch.details.type,
 		            &true_branch.details.type,
-		            "mismatch of type in the false branch and the true branch");
+		            "mismatch of type between the false branch and the true branch of a conditional operator");
 		struct Expr *ptr_expr1 = calloc(1, sizeof(struct Expr));
 		struct Expr *ptr_expr2 = calloc(1, sizeof(struct Expr));
 		struct Expr *ptr_expr3 = calloc(1, sizeof(struct Expr));

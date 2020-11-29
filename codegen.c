@@ -97,7 +97,7 @@ void print_statement(struct PrinterState *ptr_prs,
 		const struct SourceLabelAndAssemblyLabel *p =
 		    lookup(ptr_prs->source_label_to_assembly_label, destination);
 		if (!p) {
-			fprintf(stderr, "undefined label `%s` used in `goto`", destination);
+			fprintf(stderr, "undefined label `%s` used in `goto`\n", destination);
 			exit(EXIT_FAILURE);
 		}
 		gen_jump(p->assembly_label, "goto");
