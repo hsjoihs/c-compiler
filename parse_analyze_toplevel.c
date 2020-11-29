@@ -37,6 +37,12 @@ int size_of(const struct AnalyzerState *ptr_ps, const struct Type *ref_type)
 	case ENUM_:
 		return 4;
 	}
+
+	fprintf(stderr,
+	        "INTERNAL COMPILER ERROR: unexpected value in type_category, in "
+	        "function %s\n",
+	        __func__);
+	exit(EXIT_FAILURE);
 }
 
 int align_of(const struct AnalyzerState *ptr_ps, const struct Type *ref_type)
@@ -75,6 +81,12 @@ int align_of(const struct AnalyzerState *ptr_ps, const struct Type *ref_type)
 	case ENUM_:
 		return 4;
 	}
+
+	fprintf(stderr,
+	        "INTERNAL COMPILER ERROR: unexpected value in type_category, in "
+	        "function %s\n",
+	        __func__);
+	exit(EXIT_FAILURE);
 }
 
 enum SystemVAbiClass system_v_abi_class_of(const struct AnalyzerState *ptr_ps,
@@ -114,6 +126,12 @@ enum SystemVAbiClass system_v_abi_class_of(const struct AnalyzerState *ptr_ps,
 		}
 		return INTEGER_CLASS;
 	}
+
+	fprintf(stderr,
+	        "INTERNAL COMPILER ERROR: unexpected value in type_category, in "
+	        "function %s\n",
+	        __func__);
+	exit(EXIT_FAILURE);
 }
 
 static void record_global_struct_declaration(struct AnalyzerState *ptr_ps,
@@ -201,6 +219,12 @@ record_if_global_struct_or_enum_declaration(struct AnalyzerState *ptr_ps,
 		record_global_enum_declaration(ptr_ps, ref_type);
 		return;
 	}
+
+	fprintf(stderr,
+	        "INTERNAL COMPILER ERROR: unexpected value in type_category, in "
+	        "function %s\n",
+	        __func__);
+	exit(EXIT_FAILURE);
 }
 
 static int

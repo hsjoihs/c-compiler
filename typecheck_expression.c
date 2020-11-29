@@ -1171,6 +1171,11 @@ struct Expr typecheck_binary_expression(const struct AnalyzerState *ptr_ps,
 				fprintf(stderr, "cannot subtract a pointer "
 				                "from an integer.\n");
 				exit(EXIT_FAILURE);
+			} else {
+				fprintf(stderr, "invalid type `");
+				debug_print_type(&type2);
+				fprintf(stderr, "`as the right operand of binary -\n");
+				exit(EXIT_FAILURE);
 			}
 
 		} else if (type1.type_category == PTR_) {
