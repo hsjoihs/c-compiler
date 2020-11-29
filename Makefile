@@ -154,7 +154,7 @@ assembly_sandbox:
 	gcc -Wall -Wextra misc/assembly_sandbox.c print_x86_64.c print_x86_64_unofficial.c $(OSFLAG) -o out/assembly_sandbox.out
 	echo -e '' | ./out/assembly_sandbox.out > s/assembly_sandbox.s
 	gcc misc/supplement1.c -S -o s/supplement1.s
-	gcc s/assembly_sandbox.s s/supplement.s -o out/sandbox.out
+	gcc s/assembly_sandbox.s s/supplement1.s -o out/sandbox.out
 	./out/sandbox.out || if [ $$? -ne 174 ]; then { echo "\n\033[31mFAIL\033[m"; exit 1; }; else echo "\n\033[32mPASS\033[m"; fi
 
 compile_files:
