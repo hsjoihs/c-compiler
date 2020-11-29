@@ -241,7 +241,7 @@ void gen_call(const char *fname)
 	       "  subq %%rax, %%rsp\n"
 	       "  movq %%rax, (%%rsp)\n"
 	       "  movb $0, %%al\n" /* printf */
-	);
+	       );
 	printf("  call " PREFIX "%s\n", fname);
 
 	/*

@@ -4,7 +4,7 @@
 #include "toplevel.h"
 
 static struct Vector /*<SourceLabel>*/
-collect_labels(const struct Statement *ptr_sta)
+    collect_labels(const struct Statement *ptr_sta)
 {
 	struct Statement sta = *ptr_sta;
 	struct Vector /*<SourceLabel>*/ ans = init_vector();

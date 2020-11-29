@@ -470,7 +470,7 @@ static struct Token get_token_raw(const char **ptr_to_str)
 			do {
 				if (*str >= '0' &&
 				    *str <= '7') { /* portable, since it is guaranteed
-					                  that '0' - '9' are consecutive */
+				                      that '0' - '9' are consecutive */
 					t.int_value *= 8;
 					t.int_value += *str - '0'; /* portable */
 					++str;
@@ -488,7 +488,7 @@ static struct Token get_token_raw(const char **ptr_to_str)
 		do {
 			if (*str >= '0' &&
 			    *str <= '9') { /* portable, since it is guaranteed that
-				                  '0' - '9' are consecutive */
+			                      '0' - '9' are consecutive */
 				t.int_value *= 10;
 				t.int_value += *str - '0'; /* portable */
 				++str;

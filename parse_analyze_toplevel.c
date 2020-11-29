@@ -62,9 +62,8 @@ int align_of(const struct AnalyzerState *ptr_ps, const struct Type *ref_type)
 		const struct StructInternalCompleteInfo *ptr_info =
 		    lookup(ptr_ps->global_struct_tag_map, tag);
 		if (!ptr_info) {
-			fprintf(stderr,
-			        "tried to find the alignment of incomplete type "
-			        "`struct %s`\n",
+			fprintf(stderr, "tried to find the alignment of incomplete type "
+			                "`struct %s`\n",
 			        type.s.struct_tag);
 			exit(EXIT_FAILURE);
 		}
@@ -337,7 +336,7 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 			const struct Type type = param_info.type;
 
 			if (counter > 5) { /* silently fails when there is 6 params and 1
-				                  implicit param*/
+			                      implicit param*/
 				unsupported("7-or-more parameters");
 			}
 
