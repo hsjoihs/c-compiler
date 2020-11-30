@@ -48,7 +48,11 @@ static struct Type from_type3_to_type(const void **type3)
 		return type;
 	}
 	}
-	assert("unmatched case" && 0);
+	fprintf(stderr,
+	        "INTERNAL COMPILER ERROR: unexpected value in type_category, in "
+	        "function %s\n",
+	        __func__);
+	exit(EXIT_FAILURE);
 }
 
 /*

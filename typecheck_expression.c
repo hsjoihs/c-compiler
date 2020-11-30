@@ -1025,7 +1025,11 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 		                                   uexpr.operator_);
 	}
 	}
-	assert("should not pass here" && 0);
+	fprintf(stderr,
+	        "INTERNAL COMPILER ERROR: unexpected value in UntypedExpr category, in "
+	        "function %s\n",
+	        __func__);
+	exit(EXIT_FAILURE);
 }
 
 struct Expr typecheck_binary_expression(const struct AnalyzerState *ptr_ps,
