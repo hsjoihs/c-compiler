@@ -647,7 +647,7 @@ func_call_expr(struct AnalyzerState *ptr_ps, const struct Type *ref_ret_type,
 
 	if (ret_type.type_category == STRUCT_NOT_UNION ||
 	    ret_type.type_category == UNION) {
-		expr.size_info_for_struct_assign = size_of(ptr_ps, &ret_type);
+		expr.size_info_for_struct_or_union_assign = size_of(ptr_ps, &ret_type);
 		char *str = calloc(20, sizeof(char));
 		sprintf(str, "@anon%d", -ptr_ps->newest_offset);
 
@@ -810,22 +810,22 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 	const struct UntypedExpr uexpr = *ref_uexpr;
 	switch (uexpr.category) {
 	case AMPERSAND_DOT: {
-		struct Expr struct_expr = typecheck_expression(ptr_ps, uexpr.ptr1);
+		struct Expr struct_or_union_expr = typecheck_expression(ptr_ps, uexpr.ptr1);
 		const char *ident_after_dot = uexpr.ident_after_dot;
-		if (struct_expr.details.type.type_category != STRUCT_NOT_UNION &&
-		    struct_expr.details.type.type_category != UNION) {
+		if (struct_or_union_expr.details.type.type_category != STRUCT_NOT_UNION &&
+		    struct_or_union_expr.details.type.type_category != UNION) {
 			fprintf(stderr, "member is requested but the left operand is "
 			                "neither a struct nor a union\n");
 			exit(EXIT_FAILURE);
 		}
 
-		const char *tag = struct_expr.details.type.s.struct_or_union_tag;
+		const char *tag = struct_or_union_expr.details.type.s.struct_or_union_tag;
 		const struct StructOrUnionInternalCompleteInfo *ptr_info =
 		    lookup(ptr_ps->global_struct_or_union_tag_map, tag);
 		if (!ptr_info) {
 			fprintf(stderr,
-			        "tried to use a member of incomplete type `struct %s`\n",
-			        tag);
+			        "tried to use a member of incomplete type `struct %s` / `union %s`\n",
+			        tag, tag);
 			exit(EXIT_FAILURE);
 		}
 
@@ -855,12 +855,12 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 
 		int offset = ptr_info->offset_vec[nth_member];
 
-		struct Expr *ptr_struct_expr = calloc(1, sizeof(struct Expr));
-		*ptr_struct_expr = struct_expr;
+		struct Expr *ptr_struct_or_union_expr = calloc(1, sizeof(struct Expr));
+		*ptr_struct_or_union_expr = struct_or_union_expr;
 
 		expr.category = PTR_STRUCT_AND_OFFSET;
 		expr.struct_offset = offset;
-		expr.ptr1 = ptr_struct_expr;
+		expr.ptr1 = ptr_struct_or_union_expr;
 		expr.ptr2 = 0;
 		expr.ptr3 = 0;
 		return expr;
@@ -1102,7 +1102,7 @@ struct Expr typecheck_binary_expression(const struct AnalyzerState *ptr_ps,
 			if (expr.details.type.type_category == STRUCT_NOT_UNION ||
 			    expr.details.type.type_category == UNION) {
 				new_expr.category = STRUCT_OR_UNION_ASSIGNMENT_EXPR;
-				new_expr.size_info_for_struct_assign =
+				new_expr.size_info_for_struct_or_union_assign =
 				    size_of(ptr_ps, &expr.details.type);
 			} else {
 				new_expr.category = ASSIGNMENT_EXPR;

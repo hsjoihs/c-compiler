@@ -297,7 +297,7 @@ struct Expr {
 	int size_info_for_pointer_arith;
 
 	/* used in STRUCT_OR_UNION_ASSIGNMENT_EXPR */
-	int size_info_for_struct_assign;
+	int size_info_for_struct_or_union_assign;
 
 	int struct_offset;
 };

@@ -356,7 +356,7 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 		enum SystemVAbiClass abi_class =
 		    system_v_abi_class_of(ptr_ps, &ret_type);
 		def.func.abi_class = abi_class;
-		def.func.ret_struct_size = size_of(ptr_ps, &ret_type);
+		def.func.ret_struct_or_union_size = size_of(ptr_ps, &ret_type);
 		if (abi_class == MEMORY_CLASS) {
 			const struct Type type = ptr_to_type(&ret_type);
 			int hidden_var_offset = push_offset_and_type(

@@ -2,7 +2,7 @@
 void gen_prologue(int alloc_size, const char *fname);
 void gen_prologue_static(int alloc_size, const char *fname);
 void gen_epilogue_nbyte(int n, int label_name);
-void gen_epilogue_returning_small_struct(int size, int label);
+void gen_epilogue_returning_integerclass_struct_or_union(int size, int label);
 void gen_return_garbage(void);
 
 /* push: decreases stack pointer by 8 */
@@ -58,13 +58,13 @@ void gen_pop_to_reg_8byte(const char *str);
 void gen_write_register_to_local_1byte(const char *str, int offset);
 void gen_write_register_to_local_4byte(const char *str, int offset);
 void gen_write_register_to_local_8byte(const char *str, int offset);
-void gen_call_and_assign_small_struct_to_local(const char *fname, int offset,
+void gen_call_and_assign_integerclass_struct_or_union_to_local(const char *fname, int offset,
                                                int size);
-void gen_call_reg_and_assign_small_struct_to_local(const char *regname,
+void gen_call_reg_and_assign_integerclass_struct_or_union_or_union_to_local(const char *regname,
                                                    int offset, int size);
 
 /* memcpy: pops two pointers and does memcpy */
-void gen_copy_2nd_struct_to_1st_and_discard(int size);
+void gen_copy_2nd_struct_or_union_to_1st_and_discard(int size);
 void gen_copy_1st_struct_or_union_to_2nd_and_discard(int size);
 
 /* va_list */

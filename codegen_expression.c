@@ -141,7 +141,7 @@ void print_address_of_lvalue_or_struct_or_union(struct PrinterState *ptr_prs,
 		    ptr_prs, expr.ptr1, "left hand of struct assignment");
 		print_address_of_lvalue_or_struct_or_union(
 		    ptr_prs, expr.ptr2, "right hand of struct assignment");
-		int size = expr.size_info_for_struct_assign;
+		int size = expr.size_info_for_struct_or_union_assign;
 		gen_copy_1st_struct_or_union_to_2nd_and_discard(size);
 		print_address_of_lvalue_or_struct_or_union(
 		    ptr_prs, expr.ptr1, "left hand of struct assignment");
@@ -152,9 +152,9 @@ void print_address_of_lvalue_or_struct_or_union(struct PrinterState *ptr_prs,
 		pass_args(ptr_prs, &expr.args);
 		gen_pop_to_reg_8byte("r11");
 
-		int size = expr.size_info_for_struct_assign;
+		int size = expr.size_info_for_struct_or_union_assign;
 		gen_raw_call_partA();
-		gen_call_reg_and_assign_small_struct_to_local(
+		gen_call_reg_and_assign_integerclass_struct_or_union_or_union_to_local(
 		    "r11", expr.local_var_offset, size);
 		gen_push_address_of_local(expr.local_var_offset);
 		return;
@@ -176,9 +176,9 @@ void print_address_of_lvalue_or_struct_or_union(struct PrinterState *ptr_prs,
 
 		pass_args(ptr_prs, &expr.args);
 
-		int size = expr.size_info_for_struct_assign;
+		int size = expr.size_info_for_struct_or_union_assign;
 		gen_raw_call_partA();
-		gen_call_and_assign_small_struct_to_local(expr.global_var_name,
+		gen_call_and_assign_integerclass_struct_or_union_to_local(expr.global_var_name,
 		                                          expr.local_var_offset, size);
 		gen_push_address_of_local(expr.local_var_offset);
 		return;
@@ -319,7 +319,7 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 		    ptr_prs, expr.ptr1, "left hand of struct/union assignment");
 		print_address_of_lvalue_or_struct_or_union(
 		    ptr_prs, expr.ptr2, "right hand of struct/union assignment");
-		int size = expr.size_info_for_struct_assign;
+		int size = expr.size_info_for_struct_or_union_assign;
 		gen_copy_1st_struct_or_union_to_2nd_and_discard(size);
 		gen_push_int(143253); /* random garbage */
 		return;

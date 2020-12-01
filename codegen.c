@@ -427,7 +427,7 @@ static void print_toplevel_definition(struct PrinterState *ptr_prs,
 	if (ret_type.type_category == STRUCT_NOT_UNION ||
 	    ret_type.type_category == UNION) {
 		enum SystemVAbiClass abi_class = ref_def->func.abi_class;
-		int ret_struct_size = ref_def->func.ret_struct_size;
+		int ret_struct_or_union_size = ref_def->func.ret_struct_or_union_size;
 
 		if (ref_def->func.is_va) {
 			unsupported(
@@ -435,12 +435,12 @@ static void print_toplevel_definition(struct PrinterState *ptr_prs,
 		}
 
 		if (abi_class == INTEGER_CLASS) {
-			gen_epilogue_returning_small_struct(ret_struct_size,
+			gen_epilogue_returning_integerclass_struct_or_union(ret_struct_or_union_size,
 			                                    ptr_prs->return_label_name);
 		} else {
 			gen_label(ptr_prs->return_label_name);
 			gen_push_from_local_nbyte(8, ref_def->func.hidden_var_offset);
-			gen_copy_2nd_struct_to_1st_and_discard(ret_struct_size);
+			gen_copy_2nd_struct_or_union_to_1st_and_discard(ret_struct_or_union_size);
 			gen_return_garbage();
 		}
 	} else {

@@ -8,11 +8,11 @@ struct ToplevelFuncInfo {
 	int capacity;
 	int is_static_function;
 
-	/* valid only when ret_type is a struct */
+	/* valid only when ret_type is a struct/union */
 	enum SystemVAbiClass abi_class;
-	int ret_struct_size;
+	int ret_struct_or_union_size;
 
-	/* valid only when ret_type is a struct of MEMORY_CLASS */
+	/* valid only when ret_type is a struct/union of MEMORY_CLASS */
 	int hidden_var_offset;
 
 	/* initialized if the function has variable args */

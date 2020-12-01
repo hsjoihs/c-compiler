@@ -125,7 +125,7 @@ static void copy_to_8byte_reg(int size, const char *reg_4byte,
 struct Foo *p = pop();
 return *p;
 */
-void gen_epilogue_returning_small_struct(int size, int label)
+void gen_epilogue_returning_integerclass_struct_or_union(int size, int label)
 {
 	memo2(__func__, "%d, %d", size, label);
 	printf(".L%d:", label);
@@ -657,7 +657,7 @@ void gen_write_register_to_local_8byte(const char *str, int offset)
 
 static void gen_memcpy(const char *dst, const char *src, int size);
 
-void gen_call_and_assign_small_struct_to_local(const char *fname, int offset,
+void gen_call_and_assign_integerclass_struct_or_union_to_local(const char *fname, int offset,
                                                int size)
 {
 	memo2(__func__, "\"%s\", %d, %d", fname, offset, size);
@@ -675,7 +675,7 @@ void gen_call_and_assign_small_struct_to_local(const char *fname, int offset,
 	gen_discard();
 }
 
-void gen_call_reg_and_assign_small_struct_to_local(const char *regname,
+void gen_call_reg_and_assign_integerclass_struct_or_union_or_union_to_local(const char *regname,
                                                    int offset, int size)
 {
 	memo2(__func__, "\"%s\", %d, %d", regname, offset, size);
@@ -704,7 +704,7 @@ struct Foo *src = pop();
 
 *dst = *src;
 */
-void gen_copy_2nd_struct_to_1st_and_discard(int size)
+void gen_copy_2nd_struct_or_union_to_1st_and_discard(int size)
 {
 	memo2(__func__, "%d", size);
 	gen_memcpy("(%rsp)", "8(%rsp)", size);
