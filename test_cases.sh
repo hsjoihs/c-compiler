@@ -27,7 +27,9 @@ run_test_with_supplement1() {
 }
 
 run_test 365 'int foo(void) { return 3; } int bar(void) { return 5;} int main(void) { int (*foo1)(void) = foo; int (*bar1)(void) = bar; return (1? foo1 : bar1)(); }' 3
-# run_test 366 'int foo(void) { return 3; } int bar(void) { return 5;} int main(void) { return (1? foo : bar)(); }' 3
+run_test 366 'int foo(void) { return 3; } int main(void) { return (1? foo : 0)(); }' 3
+run_test 367 'int foo(void) { return 3; } int bar(void) { return 5;} int main(void) { return (1? foo : bar)(); }' 3
+run_test 368 'int foo(void) { return 3; } int bar(void) { return 5;} int main(void) { return (0? foo : bar)(); }' 5
 
 run_test 363 'union A { char a[7]; int b; }; int main(void) { return sizeof(union A); }' 8
 run_test 364 'union A { char a[4]; int b; }; int main(void) { union A x; x.a[0] = 0x4b; x.a[1] = 0x6f; x.a[2] = 0x72; x.a[3] = 0x79; return x.b - 0x79726f4b; }' 0

@@ -1015,6 +1015,9 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 		struct Expr true_branch = typecheck_expression(ptr_ps, uexpr.ptr2);
 		struct Expr false_branch = typecheck_expression(ptr_ps, uexpr.ptr3);
 
+		if_function_cast_to_pointer(&true_branch);
+		if_function_cast_to_pointer(&false_branch);
+
 		if (false_branch.details.type.type_category == PTR_) {
 			cast_to_null_pointer_if_possible(&true_branch,
 			                                 &false_branch.details);
