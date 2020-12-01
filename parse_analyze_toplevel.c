@@ -26,10 +26,9 @@ int size_of(const struct AnalyzerState *ptr_ps, const struct Type *ref_type)
 		const struct StructOrUnionInternalCompleteInfo *ptr_info =
 		    lookup(ptr_ps->global_struct_or_union_tag_map, tag);
 		if (!ptr_info) {
-			fprintf(stderr,
-			        "tried to take the size of an incomplete type `%s %s`\n",
-			        type.type_category == STRUCT_NOT_UNION ? "struct" : "union",
-			        type.s.struct_or_union_tag);
+			fprintf(stderr, "tried to take the size of an incomplete type `");
+			debug_print_type(&type);
+			fprintf(stderr, "`\n");
 			exit(EXIT_FAILURE);
 		}
 		return ptr_info->s_and_a.size;
@@ -73,10 +72,9 @@ int align_of(const struct AnalyzerState *ptr_ps, const struct Type *ref_type)
 		    lookup(ptr_ps->global_struct_or_union_tag_map, tag);
 		if (!ptr_info) {
 			fprintf(stderr,
-			        "tried to find the alignment of an incomplete type "
-			        "`%s %s`\n",
-			        type.type_category == STRUCT_NOT_UNION ? "struct" : "union",
-			        type.s.struct_or_union_tag);
+			        "tried to find the alignment of an incomplete type `");
+			debug_print_type(&type);
+			fprintf(stderr, "`\n");
 			exit(EXIT_FAILURE);
 		}
 		return ptr_info->s_and_a.alignment;
@@ -120,11 +118,11 @@ enum SystemVAbiClass system_v_abi_class_of(const struct AnalyzerState *ptr_ps,
 		const struct StructOrUnionInternalCompleteInfo *ptr_info =
 		    lookup(ptr_ps->global_struct_or_union_tag_map, tag);
 		if (!ptr_info) {
-			fprintf(stderr,
-			        "tried to find the System V ABI class of incomplete type "
-			        "`%s %s`\n",
-			        type.type_category == STRUCT_NOT_UNION ? "struct" : "union",
-			        type.s.struct_or_union_tag);
+			fprintf(
+			    stderr,
+			    "tried to find the System V ABI class of incomplete type `");
+			debug_print_type(&type);
+			fprintf(stderr, "`\n");
 			exit(EXIT_FAILURE);
 		}
 

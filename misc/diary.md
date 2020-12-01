@@ -1681,3 +1681,5 @@ int (*func(int a[3][5]))[5]
 - structなんちゃらとなっている関数をだいたいstruct_or_unionという名前に改名。
 
 - `type_category` が `STRUCT_NOT_UNION` であるかそれとも `UNION` であるか、を毎回書くのはめんどいので、 `is_struct_or_union` という関数を定義することでボイラープレート削減。
+
+- エラーメッセージにおいて `struct` と `union` で条件分岐しているところを、 `debug_print_type` でスッキリさせた。過去の自分の書いているコードって便利。

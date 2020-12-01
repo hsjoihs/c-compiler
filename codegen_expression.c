@@ -309,7 +309,7 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 	case FPCALL_EXPR_RETURNING_MEMORY_CLASS:
 	case FUNCCALL_EXPR_RETURNING_INTEGER_CLASS:
 	case FUNCCALL_EXPR_RETURNING_MEMORY_CLASS: {
-		unsupported("struct returned by function used as a pure rvalue");
+		unsupported("struct/union returned by function used as a pure rvalue");
 	}
 	case STRUCT_OR_UNION_ASSIGNMENT_EXPR: {
 		print_address_of_lvalue_or_struct_or_union(

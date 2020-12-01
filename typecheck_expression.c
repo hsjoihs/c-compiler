@@ -1112,8 +1112,10 @@ struct Expr typecheck_binary_expression(const struct AnalyzerState *ptr_ps,
 
 		/* op != OP_EQ */
 		if (is_struct_or_union(&expr.details.type)) {
-			fprintf(stderr, "invalid compound assignment operator "
-			                "used on a struct/union\n");
+			fprintf(stderr, "invalid compound assignment operator used on a "
+			                "value of type `");
+			debug_print_type(&expr.details.type);
+			fprintf(stderr, "`\n");
 			exit(EXIT_FAILURE);
 		}
 
@@ -1176,7 +1178,7 @@ struct Expr typecheck_binary_expression(const struct AnalyzerState *ptr_ps,
 			} else {
 				fprintf(stderr, "invalid type `");
 				debug_print_type(&type2);
-				fprintf(stderr, "`as the right operand of binary +\n");
+				fprintf(stderr, "` as the right operand of a binary +\n");
 				exit(EXIT_FAILURE);
 			}
 		} else if (type1.type_category == PTR_) {
@@ -1207,7 +1209,7 @@ struct Expr typecheck_binary_expression(const struct AnalyzerState *ptr_ps,
 			} else {
 				fprintf(stderr, "invalid type `");
 				debug_print_type(&type2);
-				fprintf(stderr, "`as the right operand of binary -\n");
+				fprintf(stderr, "` as the right operand of a binary -\n");
 				exit(EXIT_FAILURE);
 			}
 
