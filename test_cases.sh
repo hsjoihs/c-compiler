@@ -26,6 +26,9 @@ run_test_with_supplement1() {
 	if [ $res -ne $3 ]; then { echo "got:" $res; echo "expected:" $3; echo -e "\033[31mFAIL\033[m, at test case" $1: $2; exit 1; }; else echo -e "\033[32mPASS\033[m"; fi
 }
 
+run_test 363 'union A { char a[7]; int b; }; int main(void) { return sizeof(union A); }' 8
+run_test 364 'union A { char a[4]; int b; }; int main(void) { union A x; x.a[0] = 0x4b; x.a[1] = 0x6f; x.a[2] = 0x72; x.a[3] = 0x79; return x.b - 0x79726f4b; }' 0
+
 run_test_with_supplement0 361 'int add8(); int main(){ return add8(-1,-2,3,-4,5,6,-7,8); }' 8
 run_test_with_supplement0 362 'struct INT_CHARS_INT { int a; char c[100]; int b; };struct INT_CHARS_INT merge7(); int main(){ struct INT_CHARS_INT st = merge7(1,2,3,4,5,6,7); return st.b - st.a; }' 4
 

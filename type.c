@@ -27,9 +27,11 @@ int size_of_basic(const struct Type *ref_type, const char *msg)
 		return 1;
 	case ARRAY:
 	case FN:
-	case STRUCT_:
-		fprintf(stderr,
-		        "array, function or struct type is not a basic type.\n");
+	case STRUCT_NOT_UNION:
+	case UNION:
+		fprintf(
+		    stderr,
+		    "array, function, struct, or union type is not a basic type.\n");
 		fprintf(stderr, "context: %s\n", msg);
 		exit(EXIT_FAILURE);
 	case VOID_:
@@ -62,8 +64,11 @@ void debug_print_type(const struct Type *ref_type)
 	case CHAR_:
 		fprintf(stderr, "char");
 		return;
-	case STRUCT_:
-		fprintf(stderr, "struct %s", type.s.struct_tag);
+	case STRUCT_NOT_UNION:
+		fprintf(stderr, "struct %s", type.s.struct_or_union_tag);
+		return;
+	case UNION:
+		fprintf(stderr, "union %s", type.s.struct_or_union_tag);
 		return;
 	case ENUM_:
 		fprintf(stderr, "enum %s", type.e.enum_tag);

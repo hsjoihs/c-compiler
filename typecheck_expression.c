@@ -81,10 +81,18 @@ static int is_strictly_equal(const struct AnalyzerState *ptr_ps,
 	if (t1.type_category == PTR_ && t2.type_category == PTR_) {
 
 		/* pointer to incomplete types */
-		if (t1.derived_from->type_category == STRUCT_ &&
-		    t2.derived_from->type_category == STRUCT_ &&
-		    strcmp(t1.derived_from->s.struct_tag,
-		           t2.derived_from->s.struct_tag) == 0) {
+		if (t1.derived_from->type_category == STRUCT_NOT_UNION &&
+		    t2.derived_from->type_category == STRUCT_NOT_UNION &&
+		    strcmp(t1.derived_from->s.struct_or_union_tag,
+		           t2.derived_from->s.struct_or_union_tag) == 0) {
+			return 1;
+		}
+
+		/* pointer to incomplete types */
+		if (t1.derived_from->type_category == UNION &&
+		    t2.derived_from->type_category == UNION &&
+		    strcmp(t1.derived_from->s.struct_or_union_tag,
+		           t2.derived_from->s.struct_or_union_tag) == 0) {
 			return 1;
 		}
 
@@ -96,12 +104,25 @@ static int is_strictly_equal(const struct AnalyzerState *ptr_ps,
 		       (t1.array_length == t2.array_length);
 	}
 
-	if (t1.type_category == STRUCT_ && t2.type_category == STRUCT_) {
+	if (t1.type_category == STRUCT_NOT_UNION &&
+	    t2.type_category == STRUCT_NOT_UNION) {
 		if ((0)) { /* both are local */
 			unsupported("struct type declared locally");
 		}
-		return strcmp(t1.s.struct_tag, t2.s.struct_tag) == 0 &&
-		       lookup(ptr_ps->global_struct_tag_map, t1.s.struct_tag);
+		return strcmp(t1.s.struct_or_union_tag, t2.s.struct_or_union_tag) ==
+		           0 &&
+		       lookup(ptr_ps->global_struct_or_union_tag_map,
+		              t1.s.struct_or_union_tag);
+	}
+
+	if (t1.type_category == UNION && t2.type_category == UNION) {
+		if ((0)) { /* both are local */
+			unsupported("union type declared locally");
+		}
+		return strcmp(t1.s.struct_or_union_tag, t2.s.struct_or_union_tag) ==
+		           0 &&
+		       lookup(ptr_ps->global_struct_or_union_tag_map,
+		              t1.s.struct_or_union_tag);
 	}
 
 	if (t1.type_category == ENUM_ && t2.type_category == ENUM_) {
@@ -624,7 +645,8 @@ func_call_expr(struct AnalyzerState *ptr_ps, const struct Type *ref_ret_type,
 	struct Expr expr;
 	expr.args = init_vector();
 
-	if (ret_type.type_category == STRUCT_) {
+	if (ret_type.type_category == STRUCT_NOT_UNION ||
+	    ret_type.type_category == UNION) {
 		expr.size_info_for_struct_assign = size_of(ptr_ps, &ret_type);
 		char *str = calloc(20, sizeof(char));
 		sprintf(str, "@anon%d", -ptr_ps->newest_offset);
@@ -790,15 +812,16 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 	case AMPERSAND_DOT: {
 		struct Expr struct_expr = typecheck_expression(ptr_ps, uexpr.ptr1);
 		const char *ident_after_dot = uexpr.ident_after_dot;
-		if (struct_expr.details.type.type_category != STRUCT_) {
+		if (struct_expr.details.type.type_category != STRUCT_NOT_UNION &&
+		    struct_expr.details.type.type_category != UNION) {
 			fprintf(stderr, "member is requested but the left operand is "
-			                "not a struct\n");
+			                "neither a struct nor a union\n");
 			exit(EXIT_FAILURE);
 		}
 
-		const char *tag = struct_expr.details.type.s.struct_tag;
-		const struct StructInternalCompleteInfo *ptr_info =
-		    lookup(ptr_ps->global_struct_tag_map, tag);
+		const char *tag = struct_expr.details.type.s.struct_or_union_tag;
+		const struct StructOrUnionInternalCompleteInfo *ptr_info =
+		    lookup(ptr_ps->global_struct_or_union_tag_map, tag);
 		if (!ptr_info) {
 			fprintf(stderr,
 			        "tried to use a member of incomplete type `struct %s`\n",
@@ -1002,7 +1025,8 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 
 		expect_type(ptr_ps, &false_branch.details.type,
 		            &true_branch.details.type,
-		            "mismatch of type between the false branch and the true branch of a conditional operator");
+		            "mismatch of type between the false branch and the true "
+		            "branch of a conditional operator");
 		struct Expr *ptr_expr1 = calloc(1, sizeof(struct Expr));
 		struct Expr *ptr_expr2 = calloc(1, sizeof(struct Expr));
 		struct Expr *ptr_expr3 = calloc(1, sizeof(struct Expr));
@@ -1025,10 +1049,11 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 		                                   uexpr.operator_);
 	}
 	}
-	fprintf(stderr,
-	        "INTERNAL COMPILER ERROR: unexpected value in UntypedExpr category, in "
-	        "function %s\n",
-	        __func__);
+	fprintf(
+	    stderr,
+	    "INTERNAL COMPILER ERROR: unexpected value in UntypedExpr category, in "
+	    "function %s\n",
+	    __func__);
 	exit(EXIT_FAILURE);
 }
 
@@ -1071,8 +1096,9 @@ struct Expr typecheck_binary_expression(const struct AnalyzerState *ptr_ps,
 			*ptr_expr2 = expr2_new;
 			new_expr.ptr2 = ptr_expr2;
 
-			if (expr.details.type.type_category == STRUCT_) {
-				new_expr.category = STRUCT_ASSIGNMENT_EXPR;
+			if (expr.details.type.type_category == STRUCT_NOT_UNION ||
+			    expr.details.type.type_category == UNION) {
+				new_expr.category = STRUCT_OR_UNION_ASSIGNMENT_EXPR;
 				new_expr.size_info_for_struct_assign =
 				    size_of(ptr_ps, &expr.details.type);
 			} else {
@@ -1082,9 +1108,10 @@ struct Expr typecheck_binary_expression(const struct AnalyzerState *ptr_ps,
 		}
 
 		/* op != OP_EQ */
-		if (expr.details.type.type_category == STRUCT_) {
+		if (expr.details.type.type_category == STRUCT_NOT_UNION ||
+		    expr.details.type.type_category == UNION) {
 			fprintf(stderr, "invalid compound assignment operator "
-			                "used on a struct\n");
+			                "used on a struct/union\n");
 			exit(EXIT_FAILURE);
 		}
 

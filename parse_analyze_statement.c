@@ -462,7 +462,8 @@ struct Statement parse_compound_statement(struct AnalyzerState *ptr_ps,
 				/* while function prototypes are also allowed here in C, I will
 				 * not implement it here */
 				if (vartype.type_category == FN) {
-					unsupported("declaring a function inside a compound statement\n");
+					unsupported(
+					    "declaring a function inside a compound statement\n");
 					exit(EXIT_FAILURE);
 				}
 

@@ -78,8 +78,8 @@ void print_statement(struct PrinterState *ptr_prs,
 	}
 	case RETURN_STATEMENT: {
 
-		print_expression_or_addr_of_struct(ptr_prs, &ref_sta->expr1,
-		                                   "returning a struct");
+		print_expression_or_addr_of_struct_or_union(ptr_prs, &ref_sta->expr1,
+		                                            "returning a struct");
 
 		/* the first occurrence of return within a function */
 		if (ptr_prs->return_label_name == -1) {
@@ -97,7 +97,8 @@ void print_statement(struct PrinterState *ptr_prs,
 		const struct SourceLabelAndAssemblyLabel *p =
 		    lookup(ptr_prs->source_label_to_assembly_label, destination);
 		if (!p) {
-			fprintf(stderr, "undefined label `%s` used in `goto`\n", destination);
+			fprintf(stderr, "undefined label `%s` used in `goto`\n",
+			        destination);
 			exit(EXIT_FAILURE);
 		}
 		gen_jump(p->assembly_label, "goto");
@@ -423,12 +424,14 @@ static void print_toplevel_definition(struct PrinterState *ptr_prs,
 	if (ptr_prs->return_label_name == -1) {
 		simple_error("the return type is not void, but `return` is not found");
 	}
-	if (ret_type.type_category == STRUCT_) {
+	if (ret_type.type_category == STRUCT_NOT_UNION ||
+	    ret_type.type_category == UNION) {
 		enum SystemVAbiClass abi_class = ref_def->func.abi_class;
 		int ret_struct_size = ref_def->func.ret_struct_size;
 
 		if (ref_def->func.is_va) {
-			unsupported("variable argument function that returns a struct");
+			unsupported(
+			    "variable argument function that returns a struct/union");
 		}
 
 		if (abi_class == INTEGER_CLASS) {

@@ -76,6 +76,7 @@ enum TokenKind {
 	RES_STATIC,
 	TRIPLE_DOT,
 	RES_GOTO,
+	RES_UNION,
 
 	/* preprocessor */
 	HASH,
@@ -91,7 +92,17 @@ struct Token {
 	const char *token_begins_here;
 };
 
-enum TypeCategory { INT_, PTR_, ARRAY, FN, CHAR_, STRUCT_, VOID_, ENUM_ };
+enum TypeCategory {
+	INT_,
+	PTR_,
+	ARRAY,
+	FN,
+	CHAR_,
+	STRUCT_NOT_UNION,
+	UNION,
+	VOID_,
+	ENUM_
+};
 
 struct TypeAndIdent;
 
@@ -104,7 +115,7 @@ struct SizeAndAlignment {
 	int alignment;
 };
 
-struct StructInternalCompleteInfo {
+struct StructOrUnionInternalCompleteInfo {
 	struct StructInternalInfo info;
 	int *offset_vec;
 	struct SizeAndAlignment s_and_a;
@@ -115,8 +126,8 @@ struct Enumerators {
 };
 
 struct StructTagAndInfo {
-	const char *struct_tag;
-	struct StructInternalInfo struct_info;
+	const char *struct_or_union_tag;
+	struct StructInternalInfo struct_or_union_info;
 };
 
 struct EnumTagAndInfo {
@@ -186,7 +197,7 @@ enum ExprCategory {
 	STRING_LITERAL,
 	NULLPTR,
 	VOID_EXPR,
-	STRUCT_ASSIGNMENT_EXPR,
+	STRUCT_OR_UNION_ASSIGNMENT_EXPR,
 	FUNCCALL_EXPR_RETURNING_INTEGER_CLASS,
 	FUNCCALL_EXPR_RETURNING_MEMORY_CLASS,
 	FPCALL_EXPR,
@@ -285,7 +296,7 @@ struct Expr {
 	/* used in POINTER_PLUS_INT, POINTER_MINUS_INT and POINTER_MINUS_POINTER */
 	int size_info_for_pointer_arith;
 
-	/* used in STRUCT_ASSIGNMENT_EXPR */
+	/* used in STRUCT_OR_UNION_ASSIGNMENT_EXPR */
 	int size_info_for_struct_assign;
 
 	int struct_offset;
@@ -335,9 +346,13 @@ struct UntypedExpr parse_expression(const struct Token **ptr_tokvec);
 int isAssign(enum TokenKind opkind);
 struct Type *parse_type_specifier(const struct Token **ptr_tokvec);
 
-struct SizeAndAlignment
-get_size_alignment_offsets(const struct SizeAndAlignment *inner_type_vec,
-                           int **ptr_offset_vec, int length);
+struct SizeAndAlignment get_size_alignment_offsets_for_struct_not_union(
+    const struct SizeAndAlignment *inner_type_vec, int **ptr_offset_vec,
+    int length);
+
+struct SizeAndAlignment get_size_alignment_offsets_for_union(
+    const struct SizeAndAlignment *inner_type_vec, int **ptr_offset_vec,
+    int length);
 
 struct Type *
 try_parse_type_specifier_and_semicolon(const struct Token **ptr_tokvec);

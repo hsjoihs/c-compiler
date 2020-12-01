@@ -17,17 +17,19 @@ int size_of(const struct AnalyzerState *ptr_ps, const struct Type *ref_type)
 	case FN:
 		fprintf(stderr, "function type does not have a size\n");
 		exit(EXIT_FAILURE);
-	case STRUCT_:
-		if ((0)) { /* is local struct */
-			unsupported("struct type declared locally");
+	case STRUCT_NOT_UNION:
+	case UNION:
+		if ((0)) { /* is local struct/union */
+			unsupported("struct/union type declared locally");
 		}
-		const char *tag = type.s.struct_tag;
-		const struct StructInternalCompleteInfo *ptr_info =
-		    lookup(ptr_ps->global_struct_tag_map, tag);
+		const char *tag = type.s.struct_or_union_tag;
+		const struct StructOrUnionInternalCompleteInfo *ptr_info =
+		    lookup(ptr_ps->global_struct_or_union_tag_map, tag);
 		if (!ptr_info) {
 			fprintf(stderr,
-			        "tried to take the size of an incomplete type `struct %s`\n",
-			        type.s.struct_tag);
+			        "tried to take the size of an incomplete type `%s %s`\n",
+			        type.type_category == STRUCT_NOT_UNION ? "struct" : "union",
+			        type.s.struct_or_union_tag);
 			exit(EXIT_FAILURE);
 		}
 		return ptr_info->s_and_a.size;
@@ -58,20 +60,23 @@ int align_of(const struct AnalyzerState *ptr_ps, const struct Type *ref_type)
 	case ARRAY:
 		return align_of(ptr_ps, type.derived_from);
 	case FN:
-		fprintf(stderr, "a function type does not have a size or an alignment\n");
+		fprintf(stderr,
+		        "a function type does not have a size or an alignment\n");
 		exit(EXIT_FAILURE);
-	case STRUCT_:
-		if ((0)) { /* is local struct */
-			unsupported("struct type declared locally");
+	case STRUCT_NOT_UNION:
+	case UNION:
+		if ((0)) { /* is local struct/union */
+			unsupported("struct/union type declared locally");
 		}
-		const char *tag = type.s.struct_tag;
-		const struct StructInternalCompleteInfo *ptr_info =
-		    lookup(ptr_ps->global_struct_tag_map, tag);
+		const char *tag = type.s.struct_or_union_tag;
+		const struct StructOrUnionInternalCompleteInfo *ptr_info =
+		    lookup(ptr_ps->global_struct_or_union_tag_map, tag);
 		if (!ptr_info) {
 			fprintf(stderr,
 			        "tried to find the alignment of an incomplete type "
-			        "`struct %s`\n",
-			        type.s.struct_tag);
+			        "`%s %s`\n",
+			        type.type_category == STRUCT_NOT_UNION ? "struct" : "union",
+			        type.s.struct_or_union_tag);
 			exit(EXIT_FAILURE);
 		}
 		return ptr_info->s_and_a.alignment;
@@ -106,18 +111,20 @@ enum SystemVAbiClass system_v_abi_class_of(const struct AnalyzerState *ptr_ps,
 	case VOID_:
 		fprintf(stderr, "type `void` does not have System V ABI class\n");
 		exit(EXIT_FAILURE);
-	case STRUCT_:
-		if ((0)) { /* is local struct */
-			unsupported("struct type declared locally");
+	case STRUCT_NOT_UNION:
+	case UNION:
+		if ((0)) { /* is local struct/union */
+			unsupported("struct/union type declared locally");
 		}
-		const char *tag = type.s.struct_tag;
-		const struct StructInternalCompleteInfo *ptr_info =
-		    lookup(ptr_ps->global_struct_tag_map, tag);
+		const char *tag = type.s.struct_or_union_tag;
+		const struct StructOrUnionInternalCompleteInfo *ptr_info =
+		    lookup(ptr_ps->global_struct_or_union_tag_map, tag);
 		if (!ptr_info) {
 			fprintf(stderr,
 			        "tried to find the System V ABI class of incomplete type "
-			        "`struct %s`\n",
-			        type.s.struct_tag);
+			        "`%s %s`\n",
+			        type.type_category == STRUCT_NOT_UNION ? "struct" : "union",
+			        type.s.struct_or_union_tag);
 			exit(EXIT_FAILURE);
 		}
 
@@ -134,12 +141,14 @@ enum SystemVAbiClass system_v_abi_class_of(const struct AnalyzerState *ptr_ps,
 	exit(EXIT_FAILURE);
 }
 
-static void record_global_struct_declaration(struct AnalyzerState *ptr_ps,
-                                             const struct Type *ref_struct_type)
+static void record_global_struct_or_union_declaration(
+    struct AnalyzerState *ptr_ps, const struct Type *ref_struct_or_union_type)
 {
-	const struct Type struct_type = *ref_struct_type;
-	assert(struct_type.type_category == STRUCT_);
-	struct StructInternalInfo info = struct_type.s.struct_info;
+	const struct Type struct_or_union_type = *ref_struct_or_union_type;
+	assert(struct_or_union_type.type_category == STRUCT_NOT_UNION ||
+	       struct_or_union_type.type_category == UNION);
+	struct StructInternalInfo info =
+	    struct_or_union_type.s.struct_or_union_info;
 	if (!info.ptr_types_and_idents) { /* null; incomplete type */
 		return;
 	}
@@ -158,16 +167,20 @@ static void record_global_struct_declaration(struct AnalyzerState *ptr_ps,
 
 	int *offset_vec;
 	struct SizeAndAlignment outer_s_and_a =
-	    get_size_alignment_offsets(inner_type_vec, &offset_vec, i);
+	    (struct_or_union_type.type_category == STRUCT_NOT_UNION
+	         ? get_size_alignment_offsets_for_struct_not_union(inner_type_vec,
+	                                                           &offset_vec, i)
+	         : get_size_alignment_offsets_for_union(inner_type_vec, &offset_vec,
+	                                                i));
 
-	struct StructInternalCompleteInfo *ptr_complete =
-	    calloc(1, sizeof(struct StructInternalCompleteInfo));
+	struct StructOrUnionInternalCompleteInfo *ptr_complete =
+	    calloc(1, sizeof(struct StructOrUnionInternalCompleteInfo));
 	ptr_complete->info = info;
 	ptr_complete->offset_vec = offset_vec;
 	ptr_complete->s_and_a = outer_s_and_a;
 
-	insert(ptr_ps->global_struct_tag_map, struct_type.s.struct_tag,
-	       ptr_complete);
+	insert(ptr_ps->global_struct_or_union_tag_map,
+	       struct_or_union_type.s.struct_or_union_tag, ptr_complete);
 }
 
 static void record_global_enum_declaration(struct AnalyzerState *ptr_ps,
@@ -212,8 +225,9 @@ record_if_global_struct_or_enum_declaration(struct AnalyzerState *ptr_ps,
 	case INT_:
 	case CHAR_:
 		return;
-	case STRUCT_:
-		record_global_struct_declaration(ptr_ps, ref_type);
+	case STRUCT_NOT_UNION:
+	case UNION:
+		record_global_struct_or_union_declaration(ptr_ps, ref_type);
 		return;
 	case ENUM_:
 		record_global_enum_declaration(ptr_ps, ref_type);
@@ -337,7 +351,8 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 	def.declarator_name = declarator_name;
 	def.func.is_static_function = is_static_function;
 	def.func.ret_type = ret_type;
-	if (ret_type.type_category == STRUCT_) {
+	if (ret_type.type_category == STRUCT_NOT_UNION ||
+	    ret_type.type_category == UNION) {
 		enum SystemVAbiClass abi_class =
 		    system_v_abi_class_of(ptr_ps, &ret_type);
 		def.func.abi_class = abi_class;
@@ -414,7 +429,7 @@ struct Vector /*<Toplevel>*/ parse(const struct Token *tokvec)
 	struct AnalyzerState ps;
 	ps.func_info_map = init_map();
 	ps.global_vars_type_map = init_map();
-	ps.global_struct_tag_map = init_map();
+	ps.global_struct_or_union_tag_map = init_map();
 	ps.global_enum_tag_map = init_map();
 	ps.global_enumerator_list = init_vector();
 

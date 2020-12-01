@@ -20,7 +20,8 @@ static void print_simple_binary_op(enum SimpleBinOp kind,
                                    const struct Type *ref_left_type, int size)
 {
 	const struct Type left_type = *ref_left_type;
-	assert(left_type.type_category != STRUCT_);
+	assert(left_type.type_category != STRUCT_NOT_UNION);
+	assert(left_type.type_category != UNION);
 	if (left_type.type_category == PTR_) {
 		switch (kind) {
 		case SIMPLE_BIN_OP_PLUS:
@@ -104,9 +105,9 @@ static void print_simple_binary_op(enum SimpleBinOp kind,
 	}
 }
 
-void print_address_of_lvalue_or_struct(struct PrinterState *ptr_prs,
-                                       const struct Expr *ref_expr,
-                                       const char *msg)
+void print_address_of_lvalue_or_struct_or_union(struct PrinterState *ptr_prs,
+                                                const struct Expr *ref_expr,
+                                                const char *msg)
 {
 	const struct Expr expr = *ref_expr;
 	switch (expr.category) {
@@ -120,29 +121,30 @@ void print_address_of_lvalue_or_struct(struct PrinterState *ptr_prs,
 		                  "condition of conditional expression"),
 		    label1, 0);
 
-		if (expr.ptr2->details.type.type_category != STRUCT_) {
+		if (expr.ptr2->details.type.type_category != STRUCT_NOT_UNION &&
+		    expr.ptr2->details.type.type_category != UNION) {
 			simple_error("the conditional operator is used as lvalue");
 		}
 
-		print_address_of_lvalue_or_struct(ptr_prs, expr.ptr2,
-		                                  "true branch of ternary operator");
+		print_address_of_lvalue_or_struct_or_union(
+		    ptr_prs, expr.ptr2, "true branch of ternary operator");
 		gen_jump(label2, "ternary operator");
 		gen_label(label1);
-		print_address_of_lvalue_or_struct(ptr_prs, expr.ptr3,
-		                                  "false branch of ternary operator");
+		print_address_of_lvalue_or_struct_or_union(
+		    ptr_prs, expr.ptr3, "false branch of ternary operator");
 		gen_label(label2);
 		gen_discard2nd();
 		return;
 	}
-	case STRUCT_ASSIGNMENT_EXPR: {
-		print_address_of_lvalue_or_struct(ptr_prs, expr.ptr1,
-		                                  "left hand of struct assignment");
-		print_address_of_lvalue_or_struct(ptr_prs, expr.ptr2,
-		                                  "right hand of struct assignment");
+	case STRUCT_OR_UNION_ASSIGNMENT_EXPR: {
+		print_address_of_lvalue_or_struct_or_union(
+		    ptr_prs, expr.ptr1, "left hand of struct assignment");
+		print_address_of_lvalue_or_struct_or_union(
+		    ptr_prs, expr.ptr2, "right hand of struct assignment");
 		int size = expr.size_info_for_struct_assign;
-		gen_copy_1st_struct_to_2nd_and_discard(size);
-		print_address_of_lvalue_or_struct(ptr_prs, expr.ptr1,
-		                                  "left hand of struct assignment");
+		gen_copy_1st_struct_or_union_to_2nd_and_discard(size);
+		print_address_of_lvalue_or_struct_or_union(
+		    ptr_prs, expr.ptr1, "left hand of struct assignment");
 		return;
 	}
 	case FPCALL_EXPR_RETURNING_INTEGER_CLASS: {
@@ -219,17 +221,18 @@ void print_address_of_lvalue_or_struct(struct PrinterState *ptr_prs,
 		fprintf(stderr, "context: %s\n", msg);
 		simple_error("doesn't seem like an lvalue; it is a void expr.\n");
 	case COMMA_EXPR: {
-		print_expression_or_addr_of_struct(
+		print_expression_or_addr_of_struct_or_union(
 		    ptr_prs, expr.ptr1, "struct as the first operand of comma");
 
-		if (expr.ptr2->details.type.type_category != STRUCT_) {
+		if (expr.ptr2->details.type.type_category != STRUCT_NOT_UNION &&
+		    expr.ptr2->details.type.type_category != UNION) {
 			simple_error(
 			    "either the result of comma expression is used as an "
 			    "lvalue, or the comma expression is used as if it were a "
-			    "struct though the second operand of comma isn't.\n");
+			    "struct/union though the second operand of comma isn't.\n");
 		}
-		print_address_of_lvalue_or_struct(
-		    ptr_prs, expr.ptr2, "struct as the second operand of comma");
+		print_address_of_lvalue_or_struct_or_union(
+		    ptr_prs, expr.ptr2, "struct/union as the second operand of comma");
 
 		gen_discard2nd();
 		return;
@@ -249,7 +252,7 @@ static void print_expression_as_lvalue(struct PrinterState *ptr_prs,
                                        const struct Expr *ref_expr)
 {
 	const struct Expr expr = *ref_expr;
-	print_address_of_lvalue_or_struct(ptr_prs, &expr, "as lvalue");
+	print_address_of_lvalue_or_struct_or_union(ptr_prs, &expr, "as lvalue");
 	switch (expr.category) {
 	case FPCALL_EXPR_RETURNING_INTEGER_CLASS:
 	case FPCALL_EXPR_RETURNING_MEMORY_CLASS:
@@ -311,13 +314,13 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 	case FUNCCALL_EXPR_RETURNING_MEMORY_CLASS: {
 		unsupported("struct returned by function used as a pure rvalue");
 	}
-	case STRUCT_ASSIGNMENT_EXPR: {
-		print_address_of_lvalue_or_struct(ptr_prs, expr.ptr1,
-		                                  "left hand of struct assignment");
-		print_address_of_lvalue_or_struct(ptr_prs, expr.ptr2,
-		                                  "right hand of struct assignment");
+	case STRUCT_OR_UNION_ASSIGNMENT_EXPR: {
+		print_address_of_lvalue_or_struct_or_union(
+		    ptr_prs, expr.ptr1, "left hand of struct/union assignment");
+		print_address_of_lvalue_or_struct_or_union(
+		    ptr_prs, expr.ptr2, "right hand of struct/union assignment");
 		int size = expr.size_info_for_struct_assign;
-		gen_copy_1st_struct_to_2nd_and_discard(size);
+		gen_copy_1st_struct_or_union_to_2nd_and_discard(size);
 		gen_push_int(143253); /* random garbage */
 		return;
 	}
@@ -330,8 +333,8 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 		return;
 	}
 	case PTR_STRUCT_AND_OFFSET: {
-		print_address_of_lvalue_or_struct(
-		    ptr_prs, expr.ptr1, "struct whose member is to be accessed");
+		print_address_of_lvalue_or_struct_or_union(
+		    ptr_prs, expr.ptr1, "struct/union whose member is to be accessed");
 		int offset = expr.struct_offset;
 		if (offset) {
 			gen_push_int(offset);
@@ -416,13 +419,14 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 	}
 
 	case COMMA_EXPR: {
-		print_expression_or_addr_of_struct(
+		print_expression_or_addr_of_struct_or_union(
 		    ptr_prs, expr.ptr1, "struct as the first operand of comma");
 
-		if (expr.ptr2->details.type.type_category == STRUCT_) {
-			simple_error("struct is used as the right operand of comma "
+		if (expr.ptr2->details.type.type_category == STRUCT_NOT_UNION ||
+		    expr.ptr2->details.type.type_category == UNION) {
+			simple_error("struct/union is used as the right operand of comma "
 			             "operator, but the result of comma expression is used "
-			             "in a non-struct manner.\n");
+			             "in a non-struct/non-union manner.\n");
 
 		} else {
 			print_expression(ptr_prs, expr.ptr2);
@@ -558,7 +562,7 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 			    true_type.type_category == ARRAY) {
 				print_expression(ptr_prs, expr.ptr1);
 			} else {
-				print_address_of_lvalue_or_struct(
+				print_address_of_lvalue_or_struct_or_union(
 				    ptr_prs, expr.ptr1, "address requested by & operator");
 			}
 			return;
@@ -715,12 +719,13 @@ static void pass_args(struct PrinterState *ptr_prs,
 	}
 }
 
-void print_expression_or_addr_of_struct(struct PrinterState *ptr_prs,
-                                        const struct Expr *ref_expr,
-                                        const char *msg)
+void print_expression_or_addr_of_struct_or_union(struct PrinterState *ptr_prs,
+                                                 const struct Expr *ref_expr,
+                                                 const char *msg)
 {
-	if (ref_expr->details.type.type_category == STRUCT_) {
-		print_address_of_lvalue_or_struct(ptr_prs, ref_expr, msg);
+	if (ref_expr->details.type.type_category == STRUCT_NOT_UNION ||
+	    ref_expr->details.type.type_category == UNION) {
+		print_address_of_lvalue_or_struct_or_union(ptr_prs, ref_expr, msg);
 	} else {
 		print_expression(ptr_prs, ref_expr);
 	}

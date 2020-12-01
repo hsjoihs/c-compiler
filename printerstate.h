@@ -23,10 +23,10 @@ int get_new_label_name(struct PrinterState *ptr_prs);
 void print_expression(struct PrinterState *ptr_prs,
                       const struct Expr *ref_expr);
 
-void print_address_of_lvalue_or_struct(struct PrinterState *ptr_prs,
-                                       const struct Expr *ref_expr,
-                                       const char *msg);
+void print_address_of_lvalue_or_struct_or_union(struct PrinterState *ptr_prs,
+                                                const struct Expr *ref_expr,
+                                                const char *msg);
 
-void print_expression_or_addr_of_struct(struct PrinterState *ptr_prs,
-                                        const struct Expr *ref_expr,
-                                        const char *msg);
+void print_expression_or_addr_of_struct_or_union(struct PrinterState *ptr_prs,
+                                                 const struct Expr *ref_expr,
+                                                 const char *msg);

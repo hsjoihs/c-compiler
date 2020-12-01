@@ -21,7 +21,8 @@ struct AnalyzerState {
 	struct Map2 * /*<Type>*/ func_info_map;
 	struct Type func_ret_type;
 	int newest_offset;
-	struct Map2 * /*<StructInternalCompleteInfo>*/ global_struct_tag_map;
+	struct Map2 * /*<StructOrUnionInternalCompleteInfo>*/
+	    global_struct_or_union_tag_map;
 	struct Map2 * /*<struct Vector<EnumeratorAndValue>>*/ global_enum_tag_map;
 	struct Vector /*<EnumeratorAndValue>*/ global_enumerator_list;
 	const char *current_function_name;

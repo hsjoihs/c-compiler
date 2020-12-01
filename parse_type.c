@@ -33,7 +33,8 @@ static struct Type from_type3_to_type(const void **type3)
 	switch (elem.type_category) {
 	case INT_:
 	case CHAR_:
-	case STRUCT_:
+	case STRUCT_NOT_UNION:
+	case UNION:
 	case VOID_:
 	case ENUM_:
 		return type;
@@ -130,22 +131,23 @@ struct Type *parse_type_specifier(const struct Token **ptr_tokvec)
 	} else if (tok == RES_VOID) {
 		ptr->type_category = VOID_;
 		++tokvec;
-	} else if (tok == RES_STRUCT) {
+	} else if (tok == RES_STRUCT || tok == RES_UNION) {
 		++tokvec;
 		expect_and_consume(&tokvec, IDENT_OR_RESERVED,
-		                   "identifier after `struct`");
+		                   "identifier after `struct` or `union`");
 		const char *ident = tokvec[-1].ident_str;
 
-		ptr->type_category = STRUCT_;
-		ptr->s.struct_tag = ident;
+		ptr->type_category = tok == RES_STRUCT ? STRUCT_NOT_UNION : UNION;
+		ptr->s.struct_or_union_tag = ident;
 		if (tokvec[0].kind != LEFT_BRACE) {
-			ptr->s.struct_info.ptr_types_and_idents = 0; /* crucial; no info */
+			ptr->s.struct_or_union_info.ptr_types_and_idents =
+			    0; /* crucial; no info */
 			skip_consts_or_noreturns(&tokvec);
 			*ptr_tokvec = tokvec;
 			return ptr;
 		}
 		++tokvec;
-		ptr->s.struct_info.ptr_types_and_idents = init_vector_();
+		ptr->s.struct_or_union_info.ptr_types_and_idents = init_vector_();
 
 		while (1) {
 			if (tokvec[0].kind == RIGHT_BRACE) {
@@ -154,14 +156,16 @@ struct Type *parse_type_specifier(const struct Token **ptr_tokvec)
 			}
 			const char *ident_str;
 			struct Type t = parse_struct_declaration(&tokvec, &ident_str);
-			expect_and_consume(&tokvec, SEMICOLON,
-			                   "semicolon after the declarator inside struct");
+			expect_and_consume(
+			    &tokvec, SEMICOLON,
+			    "semicolon after the declarator inside struct or union");
 			struct TypeAndIdent *ptr_t_and_i =
 			    calloc(1, sizeof(struct TypeAndIdent));
 			ptr_t_and_i->type = t;
 			ptr_t_and_i->ident_str = ident_str;
 
-			push_vector(ptr->s.struct_info.ptr_types_and_idents, ptr_t_and_i);
+			push_vector(ptr->s.struct_or_union_info.ptr_types_and_idents,
+			            ptr_t_and_i);
 		}
 	} else if (tok == RES_ENUM) {
 		++tokvec;
@@ -376,7 +380,7 @@ int can_start_a_type(const struct Token *tokvec)
 	return tokvec[0].kind == RES_INT || tokvec[0].kind == RES_CHAR ||
 	       tokvec[0].kind == RES_STRUCT || tokvec[0].kind == RES_VOID ||
 	       tokvec[0].kind == RES_ENUM || tokvec[0].kind == RES_CONST ||
-	       tokvec[0].kind == RES_NORETURN;
+	       tokvec[0].kind == RES_NORETURN || tokvec[0].kind == RES_UNION;
 }
 
 /* `int a`, `int *a` */

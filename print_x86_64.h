@@ -65,7 +65,7 @@ void gen_call_reg_and_assign_small_struct_to_local(const char *regname,
 
 /* memcpy: pops two pointers and does memcpy */
 void gen_copy_2nd_struct_to_1st_and_discard(int size);
-void gen_copy_1st_struct_to_2nd_and_discard(int size);
+void gen_copy_1st_struct_or_union_to_2nd_and_discard(int size);
 
 /* va_list */
 void gen_write_stack_chk_guard_to_local(int offset);

@@ -623,6 +623,8 @@ static struct Token get_token(const char **ptr_to_str)
 		t.kind = RES_STATIC;
 	} else if (strcmp(new_str, "goto") == 0) {
 		t.kind = RES_GOTO;
+	} else if (strcmp(new_str, "union") == 0) {
+		t.kind = RES_UNION;
 	}
 	return t;
 }

@@ -717,7 +717,7 @@ struct Foo *dst = pop();
 
 *dst = *src;
 */
-void gen_copy_1st_struct_to_2nd_and_discard(int size)
+void gen_copy_1st_struct_or_union_to_2nd_and_discard(int size)
 {
 	memo2(__func__, "%d", size);
 	gen_memcpy("8(%rsp)", "(%rsp)", size);
