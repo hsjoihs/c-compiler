@@ -1655,3 +1655,13 @@ int (*func(int a[3][5]))[5]
 - `union` のテストを足さないと。
 
 - 足した。 `char[4]` で `'K', 'o', 'r', 'y'` を詰めるとちゃんと `0x79726f4b` が `int` 側から取れる。
+
+### サニタイザ
+
+- Ubuntuだと `make test_sanitized_1stgen` でメモリリークを検出して落ちる。このコンパイラは全てのヒープ領域をリークする設計になっているので、それでは困る。
+
+- 調べてみると、[Linuxではclangはデフォルトでメモリリーク検出をオン](https://clang.llvm.org/docs/AddressSanitizer.html#memory-leak-detection)にするらしい。なるほど。オフにするには環境変数を `ASAN_OPTIONS=detect_leaks=0` するとよいらしい。
+
+- あれ〜うまくいかないぞ〜
+
+- なるほど、clangではなく実行ファイルが環境変数を呼ぶのか。ということで `compile2.sh` に追加して解決。
