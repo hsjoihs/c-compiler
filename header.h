@@ -157,6 +157,8 @@ struct TypeAndIdent {
 	const char *ident_str;
 };
 
+int is_struct_or_union(const struct Type *t);
+
 int size_of_basic(const struct Type *ref_type, const char *msg);
 
 struct Type INT_TYPE(void);

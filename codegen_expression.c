@@ -20,8 +20,7 @@ static void print_simple_binary_op(enum SimpleBinOp kind,
                                    const struct Type *ref_left_type, int size)
 {
 	const struct Type left_type = *ref_left_type;
-	assert(left_type.type_category != STRUCT_NOT_UNION);
-	assert(left_type.type_category != UNION);
+	assert(!is_struct_or_union(&left_type));
 	if (left_type.type_category == PTR_) {
 		switch (kind) {
 		case SIMPLE_BIN_OP_PLUS:
@@ -121,8 +120,7 @@ void print_address_of_lvalue_or_struct_or_union(struct PrinterState *ptr_prs,
 		                  "condition of conditional expression"),
 		    label1, 0);
 
-		if (expr.ptr2->details.type.type_category != STRUCT_NOT_UNION &&
-		    expr.ptr2->details.type.type_category != UNION) {
+		if (!is_struct_or_union(&expr.ptr2->details.type)) {
 			simple_error("the conditional operator is used as lvalue");
 		}
 
@@ -178,8 +176,8 @@ void print_address_of_lvalue_or_struct_or_union(struct PrinterState *ptr_prs,
 
 		int size = expr.size_info_for_struct_or_union_assign;
 		gen_raw_call_partA();
-		gen_call_and_assign_integerclass_struct_or_union_to_local(expr.global_var_name,
-		                                          expr.local_var_offset, size);
+		gen_call_and_assign_integerclass_struct_or_union_to_local(
+		    expr.global_var_name, expr.local_var_offset, size);
 		gen_push_address_of_local(expr.local_var_offset);
 		return;
 	}
@@ -224,8 +222,7 @@ void print_address_of_lvalue_or_struct_or_union(struct PrinterState *ptr_prs,
 		print_expression_or_addr_of_struct_or_union(
 		    ptr_prs, expr.ptr1, "struct as the first operand of comma");
 
-		if (expr.ptr2->details.type.type_category != STRUCT_NOT_UNION &&
-		    expr.ptr2->details.type.type_category != UNION) {
+		if (!is_struct_or_union(&expr.ptr2->details.type)) {
 			simple_error(
 			    "either the result of comma expression is used as an "
 			    "lvalue, or the comma expression is used as if it were a "
@@ -422,8 +419,7 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 		print_expression_or_addr_of_struct_or_union(
 		    ptr_prs, expr.ptr1, "struct as the first operand of comma");
 
-		if (expr.ptr2->details.type.type_category == STRUCT_NOT_UNION ||
-		    expr.ptr2->details.type.type_category == UNION) {
+		if (is_struct_or_union(&expr.ptr2->details.type)) {
 			simple_error("struct/union is used as the right operand of comma "
 			             "operator, but the result of comma expression is used "
 			             "in a non-struct/non-union manner.\n");
@@ -723,8 +719,7 @@ void print_expression_or_addr_of_struct_or_union(struct PrinterState *ptr_prs,
                                                  const struct Expr *ref_expr,
                                                  const char *msg)
 {
-	if (ref_expr->details.type.type_category == STRUCT_NOT_UNION ||
-	    ref_expr->details.type.type_category == UNION) {
+	if (is_struct_or_union(&ref_expr->details.type)) {
 		print_address_of_lvalue_or_struct_or_union(ptr_prs, ref_expr, msg);
 	} else {
 		print_expression(ptr_prs, ref_expr);

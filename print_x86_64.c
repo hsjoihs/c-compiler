@@ -657,8 +657,8 @@ void gen_write_register_to_local_8byte(const char *str, int offset)
 
 static void gen_memcpy(const char *dst, const char *src, int size);
 
-void gen_call_and_assign_integerclass_struct_or_union_to_local(const char *fname, int offset,
-                                               int size)
+void gen_call_and_assign_integerclass_struct_or_union_to_local(
+    const char *fname, int offset, int size)
 {
 	memo2(__func__, "\"%s\", %d, %d", fname, offset, size);
 
@@ -675,8 +675,8 @@ void gen_call_and_assign_integerclass_struct_or_union_to_local(const char *fname
 	gen_discard();
 }
 
-void gen_call_reg_and_assign_integerclass_struct_or_union_or_union_to_local(const char *regname,
-                                                   int offset, int size)
+void gen_call_reg_and_assign_integerclass_struct_or_union_or_union_to_local(
+    const char *regname, int offset, int size)
 {
 	memo2(__func__, "\"%s\", %d, %d", regname, offset, size);
 

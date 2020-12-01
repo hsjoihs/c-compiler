@@ -645,8 +645,7 @@ func_call_expr(struct AnalyzerState *ptr_ps, const struct Type *ref_ret_type,
 	struct Expr expr;
 	expr.args = init_vector();
 
-	if (ret_type.type_category == STRUCT_NOT_UNION ||
-	    ret_type.type_category == UNION) {
+	if (is_struct_or_union(&ret_type)) {
 		expr.size_info_for_struct_or_union_assign = size_of(ptr_ps, &ret_type);
 		char *str = calloc(20, sizeof(char));
 		sprintf(str, "@anon%d", -ptr_ps->newest_offset);
@@ -810,21 +809,23 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 	const struct UntypedExpr uexpr = *ref_uexpr;
 	switch (uexpr.category) {
 	case AMPERSAND_DOT: {
-		struct Expr struct_or_union_expr = typecheck_expression(ptr_ps, uexpr.ptr1);
+		struct Expr struct_or_union_expr =
+		    typecheck_expression(ptr_ps, uexpr.ptr1);
 		const char *ident_after_dot = uexpr.ident_after_dot;
-		if (struct_or_union_expr.details.type.type_category != STRUCT_NOT_UNION &&
-		    struct_or_union_expr.details.type.type_category != UNION) {
+		if (!is_struct_or_union(&struct_or_union_expr.details.type)) {
 			fprintf(stderr, "member is requested but the left operand is "
 			                "neither a struct nor a union\n");
 			exit(EXIT_FAILURE);
 		}
 
-		const char *tag = struct_or_union_expr.details.type.s.struct_or_union_tag;
+		const char *tag =
+		    struct_or_union_expr.details.type.s.struct_or_union_tag;
 		const struct StructOrUnionInternalCompleteInfo *ptr_info =
 		    lookup(ptr_ps->global_struct_or_union_tag_map, tag);
 		if (!ptr_info) {
 			fprintf(stderr,
-			        "tried to use a member of incomplete type `struct %s` / `union %s`\n",
+			        "tried to use a member of incomplete type `struct %s` / "
+			        "`union %s`\n",
 			        tag, tag);
 			exit(EXIT_FAILURE);
 		}
@@ -1099,8 +1100,7 @@ struct Expr typecheck_binary_expression(const struct AnalyzerState *ptr_ps,
 			*ptr_expr2 = expr2_new;
 			new_expr.ptr2 = ptr_expr2;
 
-			if (expr.details.type.type_category == STRUCT_NOT_UNION ||
-			    expr.details.type.type_category == UNION) {
+			if (is_struct_or_union(&expr.details.type)) {
 				new_expr.category = STRUCT_OR_UNION_ASSIGNMENT_EXPR;
 				new_expr.size_info_for_struct_or_union_assign =
 				    size_of(ptr_ps, &expr.details.type);
@@ -1111,8 +1111,7 @@ struct Expr typecheck_binary_expression(const struct AnalyzerState *ptr_ps,
 		}
 
 		/* op != OP_EQ */
-		if (expr.details.type.type_category == STRUCT_NOT_UNION ||
-		    expr.details.type.type_category == UNION) {
+		if (is_struct_or_union(&expr.details.type)) {
 			fprintf(stderr, "invalid compound assignment operator "
 			                "used on a struct/union\n");
 			exit(EXIT_FAILURE);

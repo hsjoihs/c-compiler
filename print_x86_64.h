@@ -58,10 +58,10 @@ void gen_pop_to_reg_8byte(const char *str);
 void gen_write_register_to_local_1byte(const char *str, int offset);
 void gen_write_register_to_local_4byte(const char *str, int offset);
 void gen_write_register_to_local_8byte(const char *str, int offset);
-void gen_call_and_assign_integerclass_struct_or_union_to_local(const char *fname, int offset,
-                                               int size);
-void gen_call_reg_and_assign_integerclass_struct_or_union_or_union_to_local(const char *regname,
-                                                   int offset, int size);
+void gen_call_and_assign_integerclass_struct_or_union_to_local(
+    const char *fname, int offset, int size);
+void gen_call_reg_and_assign_integerclass_struct_or_union_or_union_to_local(
+    const char *regname, int offset, int size);
 
 /* memcpy: pops two pointers and does memcpy */
 void gen_copy_2nd_struct_or_union_to_1st_and_discard(int size);

@@ -15,6 +15,11 @@ CHAR_TYPE() {
 	return t;
 }
 
+int is_struct_or_union(const struct Type *t)
+{
+	return t->type_category == STRUCT_NOT_UNION || t->type_category == UNION;
+}
+
 int size_of_basic(const struct Type *ref_type, const char *msg)
 {
 	switch (ref_type->type_category) {

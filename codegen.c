@@ -424,8 +424,7 @@ static void print_toplevel_definition(struct PrinterState *ptr_prs,
 	if (ptr_prs->return_label_name == -1) {
 		simple_error("the return type is not void, but `return` is not found");
 	}
-	if (ret_type.type_category == STRUCT_NOT_UNION ||
-	    ret_type.type_category == UNION) {
+	if (is_struct_or_union(&ret_type)) {
 		enum SystemVAbiClass abi_class = ref_def->func.abi_class;
 		int ret_struct_or_union_size = ref_def->func.ret_struct_or_union_size;
 
@@ -435,12 +434,13 @@ static void print_toplevel_definition(struct PrinterState *ptr_prs,
 		}
 
 		if (abi_class == INTEGER_CLASS) {
-			gen_epilogue_returning_integerclass_struct_or_union(ret_struct_or_union_size,
-			                                    ptr_prs->return_label_name);
+			gen_epilogue_returning_integerclass_struct_or_union(
+			    ret_struct_or_union_size, ptr_prs->return_label_name);
 		} else {
 			gen_label(ptr_prs->return_label_name);
 			gen_push_from_local_nbyte(8, ref_def->func.hidden_var_offset);
-			gen_copy_2nd_struct_or_union_to_1st_and_discard(ret_struct_or_union_size);
+			gen_copy_2nd_struct_or_union_to_1st_and_discard(
+			    ret_struct_or_union_size);
 			gen_return_garbage();
 		}
 	} else {

@@ -1679,3 +1679,5 @@ int (*func(int a[3][5]))[5]
 ## 2020年12月2日 (Day 95)
 
 - structなんちゃらとなっている関数をだいたいstruct_or_unionという名前に改名。
+
+- `type_category` が `STRUCT_NOT_UNION` であるかそれとも `UNION` であるか、を毎回書くのはめんどいので、 `is_struct_or_union` という関数を定義することでボイラープレート削減。

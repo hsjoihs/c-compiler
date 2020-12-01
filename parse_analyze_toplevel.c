@@ -145,8 +145,7 @@ static void record_global_struct_or_union_declaration(
     struct AnalyzerState *ptr_ps, const struct Type *ref_struct_or_union_type)
 {
 	const struct Type struct_or_union_type = *ref_struct_or_union_type;
-	assert(struct_or_union_type.type_category == STRUCT_NOT_UNION ||
-	       struct_or_union_type.type_category == UNION);
+	assert(is_struct_or_union(&struct_or_union_type));
 	struct StructInternalInfo info =
 	    struct_or_union_type.s.struct_or_union_info;
 	if (!info.ptr_types_and_idents) { /* null; incomplete type */
@@ -166,12 +165,14 @@ static void record_global_struct_or_union_declaration(
 	}
 
 	int *offset_vec;
-	struct SizeAndAlignment outer_s_and_a =
-	    (struct_or_union_type.type_category == STRUCT_NOT_UNION
-	         ? get_size_alignment_offsets_for_struct_not_union(inner_type_vec,
-	                                                           &offset_vec, i)
-	         : get_size_alignment_offsets_for_union(inner_type_vec, &offset_vec,
-	                                                i));
+
+	struct SizeAndAlignment (*f)(const struct SizeAndAlignment *inner_type_vec,
+	                             int **ptr_offset_vec, int length) =
+	    struct_or_union_type.type_category == STRUCT_NOT_UNION
+	        ? get_size_alignment_offsets_for_struct_not_union
+	        : get_size_alignment_offsets_for_union;
+
+	struct SizeAndAlignment outer_s_and_a = f(inner_type_vec, &offset_vec, i);
 
 	struct StructOrUnionInternalCompleteInfo *ptr_complete =
 	    calloc(1, sizeof(struct StructOrUnionInternalCompleteInfo));
@@ -351,8 +352,7 @@ parse_toplevel_definition(struct AnalyzerState *ptr_ps,
 	def.declarator_name = declarator_name;
 	def.func.is_static_function = is_static_function;
 	def.func.ret_type = ret_type;
-	if (ret_type.type_category == STRUCT_NOT_UNION ||
-	    ret_type.type_category == UNION) {
+	if (is_struct_or_union(&ret_type)) {
 		enum SystemVAbiClass abi_class =
 		    system_v_abi_class_of(ptr_ps, &ret_type);
 		def.func.abi_class = abi_class;
