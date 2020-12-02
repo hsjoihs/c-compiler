@@ -5,8 +5,8 @@
 
 ## Features not used within the code
 
-- defining `struct`s and `enum`s locally
-- `union`, `short`
+- defining `struct`s, `enum`s and `union`s locally
+- `short`
 - `enum Foo {Bar = 1, Baz};`
 - `unsigned`, (`long long` or `uint64_t`) (required to correctly support `size_t`)
 - `int array[] = {0, 1, 2, 3};`

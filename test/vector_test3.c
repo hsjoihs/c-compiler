@@ -1,6 +1,6 @@
 struct Vector {
 	int length;
-	int _allocated_length;
+	int capacity;
 	const void **vector;
 };
 struct Vector *init_vector_();
@@ -15,18 +15,18 @@ struct Vector *init_vector_(void)
 {
 	struct Vector *ptr_res; ptr_res = calloc(1, sizeof(struct Vector));
 	ptr_res->length = 0;
-	ptr_res->_allocated_length = 256;
-	ptr_res->vector = calloc(ptr_res->_allocated_length, sizeof(void *));
+	ptr_res->capacity = 256;
+	ptr_res->vector = calloc(ptr_res->capacity, sizeof(void *));
 	return ptr_res;
 }
 
 void extend_vector(struct Vector *ptr)
 {
-	if (ptr->_allocated_length < ptr->length + 1) {
+	if (ptr->capacity < ptr->length + 1) {
 		ptr->vector =
-		    realloc(ptr->vector, ptr->_allocated_length * 2 * sizeof(void *));
+		    realloc(ptr->vector, ptr->capacity * 2 * sizeof(void *));
 
-		ptr->_allocated_length *= 2;
+		ptr->capacity *= 2;
 	}
 }
 

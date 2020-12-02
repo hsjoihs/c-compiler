@@ -1,6 +1,6 @@
 struct Vector {
 	int length;
-	int _allocated_length;
+	int capacity;
 	const void **vector;
 };
 struct Vector *init_vector_(void);
