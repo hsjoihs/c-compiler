@@ -104,6 +104,25 @@ static void print_simple_binary_op(enum SimpleBinOp kind,
 	}
 }
 
+void print_address_of_lvalue(struct PrinterState *ptr_prs,
+                             const struct Expr *ref_expr, const char *msg)
+{
+	const struct Expr expr = *ref_expr;
+	switch (expr.category) {
+
+	case LOCAL_VAR_:
+	case GLOBAL_VAR_:
+	case UNARY_OP_EXPR:
+	case COMMA_EXPR: {
+		print_address_of_lvalue_or_struct_or_union(ptr_prs, ref_expr, msg);
+		return;
+	}
+	default:
+		fprintf(stderr, "context: %s\n", msg);
+		simple_error("doesn't seem like an lvalue\n");
+	}
+}
+
 void print_address_of_lvalue_or_struct_or_union(struct PrinterState *ptr_prs,
                                                 const struct Expr *ref_expr,
                                                 const char *msg)
@@ -135,13 +154,13 @@ void print_address_of_lvalue_or_struct_or_union(struct PrinterState *ptr_prs,
 		return;
 	}
 	case STRUCT_OR_UNION_ASSIGNMENT_EXPR: {
-		print_address_of_lvalue_or_struct_or_union(
+		print_address_of_lvalue(
 		    ptr_prs, expr.ptr1, "left hand of struct assignment");
 		print_address_of_lvalue_or_struct_or_union(
 		    ptr_prs, expr.ptr2, "right hand of struct assignment");
 		int size = expr.size_info_for_struct_or_union_assign;
 		gen_copy_1st_struct_or_union_to_2nd_and_discard(size);
-		print_address_of_lvalue_or_struct_or_union(
+		print_address_of_lvalue(
 		    ptr_prs, expr.ptr1, "left hand of struct assignment");
 		return;
 	}
@@ -312,7 +331,7 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 		unsupported("struct/union returned by function used as a pure rvalue");
 	}
 	case STRUCT_OR_UNION_ASSIGNMENT_EXPR: {
-		print_address_of_lvalue_or_struct_or_union(
+		print_address_of_lvalue(
 		    ptr_prs, expr.ptr1, "left hand of struct/union assignment");
 		print_address_of_lvalue_or_struct_or_union(
 		    ptr_prs, expr.ptr2, "right hand of struct/union assignment");
@@ -558,7 +577,7 @@ void print_expression(struct PrinterState *ptr_prs, const struct Expr *ref_expr)
 			    true_type.type_category == ARRAY) {
 				print_expression(ptr_prs, expr.ptr1);
 			} else {
-				print_address_of_lvalue_or_struct_or_union(
+				print_address_of_lvalue(
 				    ptr_prs, expr.ptr1, "address requested by & operator");
 			}
 			return;
