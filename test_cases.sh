@@ -26,6 +26,9 @@ run_test_with_supplement1() {
 	if [ $res -ne $3 ]; then { echo "got:" $res; echo "expected:" $3; echo -e "\033[31mFAIL\033[m, at test case" $1: $2; exit 1; }; else echo -e "\033[32mPASS\033[m"; fi
 }
 
+run_test 369 'enum Foo { ZERO } foo() { return ZERO; } int main() { int a = foo(); return a; }' 0
+# run_test 370 'enum { ZERO } foo() { return ZERO; } int main() { int a = foo(); return a; }' 0
+
 run_test 365 'int foo(void) { return 3; } int bar(void) { return 5;} int main(void) { int (*foo1)(void) = foo; int (*bar1)(void) = bar; return (1? foo1 : bar1)(); }' 3
 run_test 366 'int foo(void) { return 3; } int main(void) { return (1? foo : 0)(); }' 3
 run_test 367 'int foo(void) { return 3; } int bar(void) { return 5;} int main(void) { return (1? foo : bar)(); }' 3
