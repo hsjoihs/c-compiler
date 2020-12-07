@@ -35,6 +35,11 @@ run_test_with_supplement1() {
 
 run_test 369 'enum Foo { ZERO } foo() { return ZERO; } int main() { int a = foo(); return a; }' 0
 # run_test 370 'enum { ZERO } foo() { return ZERO; } int main() { int a = foo(); return a; }' 0
+run_test 371 'int main() { int a; if (1) { a = 3; } else { a = 7; } return a; }' 3
+run_test 372 'void foo(int*p) {*p=3;} int main() { int a; if (0) { foo(&a); } else { a = 7; } return a; }' 7
+run_test 373 'void foo(int*p) {*p=7;} int main() { int a; if (0) { a = 3; } else { foo(&a); } return a; }' 7
+run_test 374 'int main() { int a; goto a; if (0) { a: a = 3; } else { a = 7; } return a; }' 3
+run_test 375 'int main() { int a; goto a; if (1) { a = 3; } else { a: a = 7; } return a; }' 7
 
 run_test 365 'int foo(void) { return 3; } int bar(void) { return 5;} int main(void) { int (*foo1)(void) = foo; int (*bar1)(void) = bar; return (1? foo1 : bar1)(); }' 3
 run_test 366 'int foo(void) { return 3; } int main(void) { return (1? foo : 0)(); }' 3
