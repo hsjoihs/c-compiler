@@ -175,12 +175,3 @@ struct Type arr_of_type(const struct Type *ref_type, int length)
 	type.array_length = length;
 	return type;
 }
-
-struct Type ptr_of_type_to_arr_of_type(struct Type *ptr_type, int length)
-{
-	struct Type type;
-	type.type_category = ARRAY;
-	type.derived_from = ptr_type;
-	type.array_length = length;
-	return type;
-}

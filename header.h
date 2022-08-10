@@ -304,8 +304,6 @@ struct Expr {
 	int struct_offset;
 };
 
-struct Type ptr_of_type_to_arr_of_type(struct Type *ptr_type, int length);
-
 struct Type CHAR_TYPE(void);
 
 enum StatementCategory {

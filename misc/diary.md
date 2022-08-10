@@ -1735,3 +1735,17 @@ int (*func(int a[3][5]))[5]
 
 - まあ、x86-64 においては、（少なくとも 64 ビットまでの）整数型はアラインされてないところへの読み書きができるはずが、浮動小数点数はスタックがアラインされていないと読み書きできないはずので、浮動小数点数を足したらここはいじらないといけないのだろうな。
 
+### 「関数の配列を不許可」
+
+- 受講生の [karintou8710 さん](https://github.com/karintou8710/kcc)に「`int(*a)[2](void);` は通してはいけないものです。gcc だとエラーがでて、関数の配列はダメと言われます。hsjoihs さんのやつで試すとコンパイル自体は通っちゃいますね」というご指摘を頂いた。ちなみに chibicc もこれを通してしまうらしい。
+
+- ちなみに、規格上は "An array type describes a contiguously allocated nonempty set of objects with a particular member object type, called the element type." という書き方になっていて、function type は object type ではないので関数の配列は書けない、という定め方にしているっぽい。
+
+- とりあえず「関数の配列」という型を構築しようとした時点で落とそうとするも、なんか落ちてくれないな。`int a[2](void);` は `function type does not have a size` で落ちてくれるので、「関数の配列を作ろうとすると、関数型のサイズを要求するので落ちるが、関数の配列へのポインタだとそこに引っかかってくれないので落ちる」というのはわかる。しかし「関数の配列」という型を構築しようとした時点で落とす処理を足したはずでは？
+
+- てか、いま手を入れた `ptr_of_type_to_arr_of_type` って関数、使ってないな。削除。
+
+- ……ああ、`parse_dcl_postfixes()` にも手を入れなきゃいけないのね。てか `arr_of_type` 関数って文字列リテラルに型を付けるときにしか使ってないのか。もうこれ手動でインライン展開しとくか。
+
+- なるほど、`parse_dcl_postfixes()` で作った `TypeFragment` 配列を、`from_type3_to_type()` という関数で正当な型へと変換してるのね。じゃあ検閲はここでやる必要がある。とりあえず関数名を `from_typenodes_to_type()` にするか。というかこの `TypeFragment` は `TypeFragment` とかにすべきだろ。まあリファクタリングとデバッグは別コミットにすべきなので、リファクタリングは後回しとしよう。
+

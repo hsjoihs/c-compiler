@@ -46,6 +46,11 @@ static struct Type from_type3_to_type(const void **type3)
 		*ptr_to_current_type = from_type3_to_type(type3 + 1);
 
 		type.derived_from = ptr_to_current_type;
+
+		if (type.type_category == ARRAY && type.derived_from->type_category == FN) {
+			fprintf(stderr, "It is illegal to declare an array of functions\n");
+			exit(EXIT_FAILURE);
+		}
 		return type;
 	}
 	}
