@@ -50,6 +50,12 @@ static struct Type from_type3_to_type(const void **type3)
 		if (type.type_category == ARRAY && type.derived_from->type_category == FN) {
 			fprintf(stderr, "It is illegal to declare an array of functions\n");
 			exit(EXIT_FAILURE);
+		} else if (type.type_category == FN && type.derived_from->type_category == FN) {
+			fprintf(stderr, "It is illegal for a function to return a function type\n");
+			exit(EXIT_FAILURE);
+		} else if (type.type_category == FN && type.derived_from->type_category == ARRAY) {
+			fprintf(stderr, "It is illegal for a function to return an array type\n");
+			exit(EXIT_FAILURE);
 		}
 		return type;
 	}

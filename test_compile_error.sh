@@ -85,3 +85,5 @@ test 'struct A{int a;}; int main() { struct A x; struct A y; y.a = 100; &(x = y)
 test 'struct A{int a;}; int main() { struct A x; x.a = 20; struct A y; y.a = 100; &(1?x : y); return 0; }'
 test 'int a[2](void); int main() { return 0; }'
 test 'int(*a)[2](void); int main() { a; return 0; }'
+test 'int(test())(void); int main() { return 0; }'
+test 'int test()[3]; int main() { return 0; }'

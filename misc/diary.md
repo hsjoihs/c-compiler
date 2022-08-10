@@ -1749,3 +1749,4 @@ int (*func(int a[3][5]))[5]
 
 - なるほど、`parse_dcl_postfixes()` で作った `TypeFragment` 配列を、`from_type3_to_type()` という関数で正当な型へと変換してるのね。じゃあ検閲はここでやる必要がある。とりあえず関数名を `from_typenodes_to_type()` にするか。というかこの `TypeFragment` は `TypeFragment` とかにすべきだろ。まあリファクタリングとデバッグは別コミットにすべきなので、リファクタリングは後回しとしよう。
 
+- 同様に、「関数型を返す関数」「配列型を返す関数」を落とそうとしたら……「配列型を返す関数」は落ちはするけどエラーメッセージを吐かない。おやぁ？ hsjoihs-c-compiler は基本的に `exit(EXIT_FAILURE)` する前は必ず `fprintf` しているはずなのだが（TODO：この主張を、「`make check_error > fooo.txt 2>&1` の結果に PASS が二行連続で現れてはならない」という形のチェックとして追加せよ）
