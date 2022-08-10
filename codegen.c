@@ -264,7 +264,7 @@ void print_statement(struct PrinterState *ptr_prs,
 		return;
 	}
 	}
-
+	fprintf(stderr, "****************************\n* SHOULD NOT REACH HERE @ %s\n****************************\n", __func__);
 	assert0("nljsdgfs" && 0);
 }
 

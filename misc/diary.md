@@ -1750,3 +1750,21 @@ int (*func(int a[3][5]))[5]
 - なるほど、`parse_dcl_postfixes()` で作った `TypeFragment` 配列を、`from_type3_to_type()` という関数で正当な型へと変換してるのね。じゃあ検閲はここでやる必要がある。とりあえず関数名を `from_typenodes_to_type()` にするか。というかこの `TypeFragment` は `TypeFragment` とかにすべきだろ。まあリファクタリングとデバッグは別コミットにすべきなので、リファクタリングは後回しとしよう。
 
 - 同様に、「関数型を返す関数」「配列型を返す関数」を落とそうとしたら……「配列型を返す関数」は落ちはするけどエラーメッセージを吐かない。おやぁ？ hsjoihs-c-compiler は基本的に `exit(EXIT_FAILURE)` する前は必ず `fprintf` しているはずなのだが（TODO：この主張を、「`make check_error > fooo.txt 2>&1` の結果に PASS が二行連続で現れてはならない」という形のチェックとして追加せよ）
+
+### デバッガ
+
+- gdb で `rbreak ファイル名.c:.` とやると、ファイル内の関数全てにブレークポイントが付くらしい。これで調べてみると、`parse_toplevel_definition` の中で `ptr_ps->scope_chain.var_table = init_map();` を実行しようとして `Inferior 1 (process 5978) exited with code 01` を吐いている。
+
+- `int test()[3]; int main() { return 0; }` を食わせると、落ちるのは `parse_analyze_toplevel.c` の中。えーと、`delete` して `break record_if_global_struct_or_enum_declaration` をして、`run < func_returning_arr.c`　して、 `finish → finish → s → s` して `record_if_global_struct_or_enum_declaration` から 2 回返ってきた後に `break init_vector_` して `c → c → s → s → s → s` で落ちる。
+
+- `stepi` しまくったら分かった。491 行目の `assert0("SHOULD NOT REACH HERE" && 0);` で落ちてる。
+
+- とりあえず、`assert0` の前には必ず `fprintf(stderr, "****************************\n* SHOULD NOT REACH HERE @ %s\n****************************\n", __func__);` を書くことにした。そしてどんな変な値が入ってるかを確認すると……
+
+
+```
+parse_compound_statement is called, but `tokvec[0].kind` != `LEFT_BRACE` (which is 30), and is instead 54
+```
+
+- えーっと、なるほど！ 54 って `LEFT_BRACKET` だから、「`int test()` と来たからには波括弧が欲しいのに、角括弧が来た」という原因で落ちているのか！！！
+
