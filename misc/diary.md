@@ -1768,3 +1768,4 @@ parse_compound_statement is called, but `tokvec[0].kind` != `LEFT_BRACE` (which 
 
 - えーっと、なるほど！ 54 って `LEFT_BRACKET` だから、「`int test()` と来たからには波括弧が欲しいのに、角括弧が来た」という原因で落ちているのか！！！
 
+- `parse_type_specifier_and_declarator` が `int test()` までしか食わずに `int test()[3]` を食ってくれていないのが問題なわけだ。食った上で「ダメ」と落とす必要がある。実装した。
