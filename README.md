@@ -3,7 +3,7 @@ seccamp2018 c compiler
 
 [日記](https://github.com/hsjoihs/c-compiler/blob/master/misc/diary.md)
 
-In case you are also making a toy c compiler, feel free to use [my test cases](./test_cases.sh) to test yours.
+In case you are also making a toy C compiler, feel free to use [my test cases](./test_cases.sh) to test yours. I also have [negative test cases](./test_compile_error.sh), a list of inputs to which a C compiler should report an error.
 
 ## Environment
 
