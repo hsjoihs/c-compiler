@@ -1784,3 +1784,11 @@ fprintf(stderr,
 ```
 
 - ぐらい目立たせておいた。
+
+### トップレベルの単独セミコロン
+
+- トップレベルに単独セミコロンを書いたらエラーが出た。あれ、gcc これ許すよね。
+
+- おや、K&R を見てもそんなの載ってないけど……
+
+- `-pedantic` を付与したら `warning: ISO C does not allow extra ';' outside of a function` と言ってきた。じゃあ明示的に禁じておくか。

@@ -221,6 +221,10 @@ struct Type *parse_type_specifier(const struct Token **ptr_tokvec)
 			}
 		} while (1);
 
+	} else if (tok == SEMICOLON) {
+		// gcc 12.1 with `-pedantic` flag gives out `warning: ISO C does not allow extra ';' outside of a function`.
+		fprintf(stderr, "ISO C forbids an extra ';' outside of a function\n");
+		exit(EXIT_FAILURE);
 	} else {
 		error_unexpected_token(
 		    tokvec, "type name `int`, `char`, `void`, `struct` or `enum`");
