@@ -46,9 +46,11 @@ int size_of_basic(const struct Type *ref_type, const char *msg)
 	}
 
 	fprintf(stderr,
-	        "INTERNAL COMPILER ERROR: unexpected value in type_category, in "
-	        "function %s\n",
-	        __func__);
+	        "****************************\n"
+	        "* INTERNAL COMPILER ERROR @ %s\n"
+	        "* Unexpected value of TypeCategory: `ref_type->type_category` is `%d`\n"
+	        "****************************\n",
+	        __func__, ref_type->type_category);
 	exit(EXIT_FAILURE);
 }
 

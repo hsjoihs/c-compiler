@@ -489,13 +489,12 @@ struct Statement parse_compound_statement(struct AnalyzerState *ptr_ps,
 		}
 	} else {
 		fprintf(stderr,
-		        "parse_compound_statement is called, but `tokvec[0].kind` != "
-		        "`LEFT_BRACE` (which is %d), and is instead %d\n",
-		        LEFT_BRACE, tokvec[0].kind);
-		fprintf(stderr,
-		        "****************************\n* SHOULD NOT REACH HERE @ "
-		        "%s\n****************************\n",
-		        __func__);
-		assert0("SHOULD NOT REACH HERE" && 0);
+		        "****************************\n"
+		        "* INTERNAL COMPILER ERROR @ %s\n"
+		        "* Unexpected value: `tokvec[0].kind` != `LEFT_BRACE` (which "
+		        "is %d), and is instead %d\n\n"
+		        "****************************\n",
+		        __func__, LEFT_BRACE, tokvec[0].kind);
+		exit(EXIT_FAILURE);
 	}
 }

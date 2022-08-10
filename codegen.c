@@ -37,8 +37,13 @@ void print_statement(struct PrinterState *ptr_prs,
 				    lookup(ptr_prs->source_label_to_assembly_label,
 				           ptr_label->ident_str);
 				if (!p) {
-					fprintf(stderr, "oh my\n\n");
-					assert0("cannot happen" && 0);
+					fprintf(stderr,
+					        "****************************\n"
+					        "* INTERNAL COMPILER ERROR @ %s\n"
+					        "* Lookup failed; cannot find an identifier `%s`\n"
+					        "****************************\n",
+					        __func__, ptr_label->ident_str);
+					exit(EXIT_FAILURE);
 				}
 				gen_label(p->assembly_label);
 				continue;
@@ -264,8 +269,14 @@ void print_statement(struct PrinterState *ptr_prs,
 		return;
 	}
 	}
-	fprintf(stderr, "****************************\n* SHOULD NOT REACH HERE @ %s\n****************************\n", __func__);
-	assert0("nljsdgfs" && 0);
+	fprintf(
+	    stderr,
+	    "****************************\n"
+	    "* INTERNAL COMPILER ERROR @ %s\n"
+	    "* Unexpected value of StatementCategory: `ref_sta->category` is %d\n"
+	    "****************************\n",
+	    __func__, ref_sta->category);
+	exit(EXIT_FAILURE);
 }
 
 static struct Vector /*<SourceLabel>*/

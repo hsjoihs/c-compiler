@@ -66,9 +66,11 @@ static struct Type from_type3_to_type(const void **type3)
 	}
 	}
 	fprintf(stderr,
-	        "INTERNAL COMPILER ERROR: unexpected value in type_category, in "
-	        "function %s\n",
-	        __func__);
+	        "****************************\n"
+	        "* INTERNAL COMPILER ERROR @ %s\n"
+	        "* Unexpected value of TypeCategory: `elem.type_category` is `%d`\n"
+	        "****************************\n",
+	        __func__, elem.type_category);
 	exit(EXIT_FAILURE);
 }
 

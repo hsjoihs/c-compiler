@@ -40,9 +40,11 @@ int size_of(const struct AnalyzerState *ptr_ps, const struct Type *ref_type)
 	}
 
 	fprintf(stderr,
-	        "INTERNAL COMPILER ERROR: unexpected value in type_category, in "
-	        "function %s\n",
-	        __func__);
+	        "****************************\n"
+	        "* INTERNAL COMPILER ERROR @ %s\n"
+	        "* Unexpected value of TypeCategory: `type.type_category` is `%d`\n"
+	        "****************************\n",
+	        __func__, type.type_category);
 	exit(EXIT_FAILURE);
 }
 
@@ -86,9 +88,11 @@ int align_of(const struct AnalyzerState *ptr_ps, const struct Type *ref_type)
 	}
 
 	fprintf(stderr,
-	        "INTERNAL COMPILER ERROR: unexpected value in type_category, in "
-	        "function %s\n",
-	        __func__);
+	        "****************************\n"
+	        "* INTERNAL COMPILER ERROR @ %s\n"
+	        "* Unexpected value of TypeCategory: `type.type_category` is `%d`\n"
+	        "****************************\n",
+	        __func__, type.type_category);
 	exit(EXIT_FAILURE);
 }
 
@@ -133,9 +137,11 @@ enum SystemVAbiClass system_v_abi_class_of(const struct AnalyzerState *ptr_ps,
 	}
 
 	fprintf(stderr,
-	        "INTERNAL COMPILER ERROR: unexpected value in type_category, in "
-	        "function %s\n",
-	        __func__);
+	        "****************************\n"
+	        "* INTERNAL COMPILER ERROR @ %s\n"
+	        "* Unexpected value of TypeCategory: `type.type_category` is `%d`\n"
+	        "****************************\n",
+	        __func__, type.type_category);
 	exit(EXIT_FAILURE);
 }
 
@@ -234,9 +240,11 @@ record_if_global_struct_or_enum_declaration(struct AnalyzerState *ptr_ps,
 	}
 
 	fprintf(stderr,
-	        "INTERNAL COMPILER ERROR: unexpected value in type_category, in "
-	        "function %s\n",
-	        __func__);
+	        "****************************\n"
+	        "* INTERNAL COMPILER ERROR @ %s\n"
+	        "* Unexpected value of TypeCategory: `ref_type->type_category` is `%d`\n"
+	        "****************************\n",
+	        __func__, ref_type->type_category);
 	exit(EXIT_FAILURE);
 }
 

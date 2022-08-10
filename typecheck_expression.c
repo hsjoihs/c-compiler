@@ -264,9 +264,9 @@ static int is_compatible(const struct AnalyzerState *ptr_ps,
 	return 0;
 }
 
-static enum SimpleBinOp to_simplebinop(enum TokenKind t)
+static enum SimpleBinOp to_simplebinop(enum TokenKind token_kind)
 {
-	switch (t) {
+	switch (token_kind) {
 	case OP_PLUS:
 		return SIMPLE_BIN_OP_PLUS;
 	case OP_MINUS:
@@ -300,8 +300,14 @@ static enum SimpleBinOp to_simplebinop(enum TokenKind t)
 	case OP_HAT:
 		return SIMPLE_BIN_OP_HAT;
 	default:
-		fprintf(stderr, "****************************\n* SHOULD NOT REACH HERE @ %s\n****************************\n", __func__);
-		assert0("cannot happen" && 0);
+		fprintf(stderr,
+		        "****************************\n"
+		        "* INTERNAL COMPILER ERROR @ %s\n"
+		        "* Unexpected value of TokenKind: a binary operator is needed, "
+		        "but `token_kind` is `%d`\n"
+		        "****************************\n",
+		        __func__, token_kind);
+		exit(EXIT_FAILURE);
 	}
 }
 
@@ -438,9 +444,9 @@ get_global_enumerator(const struct Vector /*<EnumeratorAndValue>*/ *ref_list,
 	return 0;
 }
 
-static enum UnaryOp to_unaryop(enum TokenKind t)
+static enum UnaryOp to_unaryop(enum TokenKind token_kind)
 {
-	switch (t) {
+	switch (token_kind) {
 	case OP_NOT:
 		return UNARY_OP_NOT;
 	case OP_TILDA:
@@ -462,8 +468,14 @@ static enum UnaryOp to_unaryop(enum TokenKind t)
 		return UNARY_OP_ASTERISK;
 
 	default:
-		fprintf(stderr, "****************************\n* SHOULD NOT REACH HERE @ %s\n****************************\n", __func__);
-		assert0("cannot happen" && 0);
+		fprintf(stderr,
+		        "****************************\n"
+		        "* INTERNAL COMPILER ERROR @ %s\n"
+		        "* Unexpected value of TokenKind: a unary operator is needed, "
+		        "but `token_kind` is `%d`\n"
+		        "****************************\n",
+		        __func__, token_kind);
+		exit(EXIT_FAILURE);
 	}
 }
 
@@ -484,9 +496,9 @@ static struct Expr unary_op_(const struct Expr *ref_expr, enum TokenKind kind,
 	return new_expr;
 }
 
-static enum SimpleBinOp op_before_assign(enum TokenKind kind)
+static enum SimpleBinOp op_before_assign(enum TokenKind token_kind)
 {
-	switch (kind) {
+	switch (token_kind) {
 	case OP_PLUS_EQ:
 		return SIMPLE_BIN_OP_PLUS;
 	case OP_MINUS_EQ:
@@ -508,9 +520,14 @@ static enum SimpleBinOp op_before_assign(enum TokenKind kind)
 	case OP_OR_EQ:
 		return SIMPLE_BIN_OP_OR;
 	default:
-		fprintf(stderr, "****************************\n* SHOULD NOT REACH HERE @ %s\n****************************\n", __func__);
-		assert0("op_before_assign called before a non-assignment operator" &&
-		        0);
+		fprintf(stderr,
+		        "****************************\n"
+		        "* INTERNAL COMPILER ERROR @ %s\n"
+		        "* Unexpected value of TokenKind: a compound assignment "
+		        "operator is needed, but `token_kind` is `%d`\n"
+		        "****************************\n",
+		        __func__, token_kind);
+		exit(EXIT_FAILURE);
 	}
 }
 
@@ -1056,11 +1073,12 @@ struct Expr typecheck_expression(struct AnalyzerState *ptr_ps,
 		                                   uexpr.operator_);
 	}
 	}
-	fprintf(
-	    stderr,
-	    "INTERNAL COMPILER ERROR: unexpected value in UntypedExpr category, in "
-	    "function %s\n",
-	    __func__);
+	fprintf(stderr,
+	        "****************************\n"
+	        "* INTERNAL COMPILER ERROR @ %s\n"
+	        "* Unexpected value in UntypedExprCategory: `uexpr.category` is `%d`\n"
+	        "****************************\n",
+	        __func__, uexpr.category);
 	exit(EXIT_FAILURE);
 }
 

@@ -1757,9 +1757,9 @@ int (*func(int a[3][5]))[5]
 
 - `int test()[3]; int main() { return 0; }` を食わせると、落ちるのは `parse_analyze_toplevel.c` の中。えーと、`delete` して `break record_if_global_struct_or_enum_declaration` をして、`run < func_returning_arr.c`　して、 `finish → finish → s → s` して `record_if_global_struct_or_enum_declaration` から 2 回返ってきた後に `break init_vector_` して `c → c → s → s → s → s` で落ちる。
 
-- `stepi` しまくったら分かった。491 行目の `assert0("SHOULD NOT REACH HERE" && 0);` で落ちてる。
+- `stepi` しまくったら分かった。491 行目の `assert0("INTERNAL COMPILER ERROR" && 0);` で落ちてる。
 
-- とりあえず、`assert0` の前には必ず `fprintf(stderr, "****************************\n* SHOULD NOT REACH HERE @ %s\n****************************\n", __func__);` を書くことにした。そしてどんな変な値が入ってるかを確認すると……
+- とりあえず、`assert0` の前には必ず `fprintf(stderr, "****************************\n* INTERNAL COMPILER ERROR @ %s\n****************************\n", __func__);` を書くことにした。そしてどんな変な値が入ってるかを確認すると……
 
 
 ```
@@ -1769,3 +1769,18 @@ parse_compound_statement is called, but `tokvec[0].kind` != `LEFT_BRACE` (which 
 - えーっと、なるほど！ 54 って `LEFT_BRACKET` だから、「`int test()` と来たからには波括弧が欲しいのに、角括弧が来た」という原因で落ちているのか！！！
 
 - `parse_type_specifier_and_declarator` が `int test()` までしか食わずに `int test()[3]` を食ってくれていないのが問題なわけだ。食った上で「ダメ」と落とす必要がある。実装した。
+
+### Internal Compiler Error
+
+- Internal Compiler Error は目立ったほうがいいので、
+
+```c
+fprintf(stderr,
+	        "****************************\n"
+	        "* INTERNAL COMPILER ERROR @ %s\n"
+	        "* Unexpected value in UntypedExprCategory: `uexpr.category` is `%d`\n"
+	        "****************************\n",
+	        __func__, uexpr.category);
+```
+
+- ぐらい目立たせておいた。
