@@ -47,8 +47,19 @@ static struct Type from_type3_to_type(const void **type3)
 
 		type.derived_from = ptr_to_current_type;
 
-		if (type.type_category == ARRAY && type.derived_from->type_category == FN) {
+		if (type.type_category == ARRAY &&
+		    type.derived_from->type_category == FN) {
 			fprintf(stderr, "It is illegal to declare an array of functions\n");
+			exit(EXIT_FAILURE);
+		} else if (type.type_category == FN &&
+		           type.derived_from->type_category == FN) {
+			fprintf(stderr,
+			        "It is illegal for a function to return a function type\n");
+			exit(EXIT_FAILURE);
+		} else if (type.type_category == FN &&
+		           type.derived_from->type_category == ARRAY) {
+			fprintf(stderr,
+			        "It is illegal for a function to return an array type\n");
 			exit(EXIT_FAILURE);
 		}
 		return type;
@@ -288,6 +299,10 @@ static void parse_dcl_postfixes(const struct Token **ptr_tokvec,
 	const struct Token *tokvec = *ptr_tokvec;
 
 	struct Vector vec = *ptr_vec;
+
+	// The parser must handle cases like `int test()[3];` (which tries to define an array of functions) 
+	// or `int test()()` (which tries to define a function returning a function). 
+	// While these declarations are semantically forbidden, they are syntactically legal.
 	while (1) {
 		if (tokvec[0].kind == LEFT_BRACKET) {
 			++tokvec;
@@ -304,15 +319,16 @@ static void parse_dcl_postfixes(const struct Token **ptr_tokvec,
 			*ptr = a;
 			push_vector(&vec, ptr);
 			continue;
-		}
-		if (tokvec[0].kind == LEFT_PAREN &&
+		} else if (tokvec[0].kind == LEFT_PAREN &&
 		    (can_start_a_type(&tokvec[1]) || tokvec[1].kind == RIGHT_PAREN)) {
 			++tokvec;
 			parse_parameter_type_list(&tokvec, &vec);
 			expect_and_consume(&tokvec, RIGHT_PAREN,
 			                   "closing ) while parsing functional type");
+			continue;
+		} else {
+			break;
 		}
-		break;
 	}
 
 	*ptr_tokvec = tokvec;

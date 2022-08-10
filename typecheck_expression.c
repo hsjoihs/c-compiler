@@ -300,6 +300,7 @@ static enum SimpleBinOp to_simplebinop(enum TokenKind t)
 	case OP_HAT:
 		return SIMPLE_BIN_OP_HAT;
 	default:
+		fprintf(stderr, "****************************\n* SHOULD NOT REACH HERE @ %s\n****************************\n", __func__);
 		assert0("cannot happen" && 0);
 	}
 }
@@ -461,6 +462,7 @@ static enum UnaryOp to_unaryop(enum TokenKind t)
 		return UNARY_OP_ASTERISK;
 
 	default:
+		fprintf(stderr, "****************************\n* SHOULD NOT REACH HERE @ %s\n****************************\n", __func__);
 		assert0("cannot happen" && 0);
 	}
 }
@@ -506,6 +508,7 @@ static enum SimpleBinOp op_before_assign(enum TokenKind kind)
 	case OP_OR_EQ:
 		return SIMPLE_BIN_OP_OR;
 	default:
+		fprintf(stderr, "****************************\n* SHOULD NOT REACH HERE @ %s\n****************************\n", __func__);
 		assert0("op_before_assign called before a non-assignment operator" &&
 		        0);
 	}

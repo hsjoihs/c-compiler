@@ -487,6 +487,15 @@ struct Statement parse_compound_statement(struct AnalyzerState *ptr_ps,
 				push_vector(&statement.statement_vector, ptr_s);
 			}
 		}
+	} else {
+		fprintf(stderr,
+		        "parse_compound_statement is called, but `tokvec[0].kind` != "
+		        "`LEFT_BRACE` (which is %d), and is instead %d\n",
+		        LEFT_BRACE, tokvec[0].kind);
+		fprintf(stderr,
+		        "****************************\n* SHOULD NOT REACH HERE @ "
+		        "%s\n****************************\n",
+		        __func__);
+		assert0("SHOULD NOT REACH HERE" && 0);
 	}
-	assert0("should not reach here" && 0);
 }
