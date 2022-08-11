@@ -1805,7 +1805,7 @@ fprintf(stderr,
 
 - せっかくなら、「pedantic モード」vs.「どうせみんなサポートしてるけど規格にないやつ」を両方できるようにしようかな。要は、前回の「トップレベルの単独セミコロン」は pedantic でだけ落とす。
 
-- 2018年10月26日 (Day 73) に「標準ライブラリに`strndup`という関数があることを知った」と書いてあるが、実は C20 の時点では C 側の規格には入っていない（C23 で足された）。じゃあまあこれも pedantic で落とそうかねぇ。でも gcc は pedantic 付けてもこれを落とさないな。POSIX には載っているから、だろうか。まあ関数の存在・不存在というのはあんま `-pedantic` の責務っぽくないな。無視。
+- 2018年10月26日 (Day 73) に「標準ライブラリに`strndup`という関数があることを知った」と書いてあるが、実は C20 の時点では C 側の規格には入っていない（C23 で足された）。じゃあまあこれも pedantic で落とそうかねぇ。でも gcc は pedantic 付けてもこれを落とさないな。POSIX には載っているから、だろうか。（答え：[Function names that begin with str, mem, or wcs and a lowercase letter may be added to the declarations in the <string.h> header. ](https://port70.net/~nsz/c/c11/n1570.html#7.31.13)）まあ関数の存在・不存在というのはあんま `-pedantic` の責務っぽくないな。無視。
 
 - ということで `-pedantic` フラグを作り、`-pedantic` でだけ落とすケース（いま 1 つしかないけど）を処理するためのシェルスクリプトも。
 
