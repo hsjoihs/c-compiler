@@ -1813,4 +1813,15 @@ fprintf(stderr,
 
 ### 値についての sizeof
 
-受講生が実装しようとしていて、いざ compilerbook を見たらめちゃめちゃ簡単だったので、実装した。
+- 受講生が実装しようとしていて、いざ compilerbook を見たらめちゃめちゃ簡単だったので、実装した。
+
+```
+run_test 380 "int main() { char a; return sizeof a; }" 1
+run_test 381 "int main() { char a; return sizeof +a; }" 4
+```
+
+- ちゃんと汎整数拡張もできる。
+
+- あっ、`run_test 378 'int main() { int a[2][3]; return sizeof (a+0); }' 8` が落ちる！
+
+- 直した。

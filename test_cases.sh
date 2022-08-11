@@ -41,6 +41,13 @@ run_test 373 'void foo(int*p) {*p=7;} int main() { int a; if (0) { a = 3; } else
 run_test 374 'int main() { int a; goto a; if (0) { a: a = 3; } else { a = 7; } return a; }' 3
 run_test 375 'int main() { int a; goto a; if (1) { a = 3; } else { a: a = 7; } return a; }' 7
 run_test 376 'int main() { int a; return sizeof a; }' 4
+run_test 377 "int main() { return sizeof 'C'; }" 4
+run_test 378 "int main() { char a; return sizeof a; }" 1
+run_test 379 "int main() { char a; return sizeof +a; }" 4
+run_test 380 'int main() { int *a; return sizeof a; }' 8
+run_test 381 'int main() { int *a; return sizeof (a+0); }' 8
+run_test 382 'int main() { int a[2][3]; return sizeof a; }' 24
+run_test 383 'int main() { int a[2][3]; return sizeof (a+0); }' 8
 
 run_test 365 'int foo(void) { return 3; } int bar(void) { return 5;} int main(void) { int (*foo1)(void) = foo; int (*bar1)(void) = bar; return (1? foo1 : bar1)(); }' 3
 run_test 366 'int foo(void) { return 3; } int main(void) { return (1? foo : 0)(); }' 3

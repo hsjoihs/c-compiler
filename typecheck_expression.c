@@ -385,6 +385,11 @@ static struct Expr pointer_plusorminus_int(const struct AnalyzerState *ptr_ps,
 
 	struct Expr new_expr;
 	new_expr.details = ref_expr->details;
+
+	// array must decay into a pointer once pointer arithmetic happens
+	if (new_expr.details.true_type.type_category == ARRAY) {
+		new_expr.details.true_type.type_category = PTR_;
+	}
 	new_expr.category = kind == OP_PLUS ? POINTER_PLUS_INT : POINTER_MINUS_INT;
 	new_expr.ptr1 = ptr_expr1;
 	new_expr.ptr2 = ptr_expr2;
