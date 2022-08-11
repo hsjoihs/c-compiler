@@ -65,7 +65,11 @@ Conway's game of life (Based on https://gist.github.com/maekawatoshiki/8ea2f392e
 $ make game_of_life
 ```
 
-Calculating digits of pi (Based on https://xn--w6q13e505b.jp/program/spigot.html):
+Calculating digits of pi / e (Based on https://xn--w6q13e505b.jp/program/spigot.html):
 ```
 $ make pi
+```
+
+```
+$ make digits_of_e
 ```

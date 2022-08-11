@@ -251,3 +251,9 @@ pi:
 	./out/compiler.out misc/pi.c > s/pi.s
 	gcc s/pi.s -o out/pi.out -no-pie -Wno-unused-command-line-argument
 	./out/pi.out
+
+digits_of_e:
+	make 1stgen
+	./out/compiler.out misc/digits_of_e.c > s/digits_of_e.s
+	gcc s/digits_of_e.s -o out/digits_of_e.out -no-pie -Wno-unused-command-line-argument
+	./out/digits_of_e.out
