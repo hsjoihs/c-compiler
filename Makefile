@@ -257,3 +257,9 @@ digits_of_e:
 	./out/compiler.out misc/digits_of_e.c > s/digits_of_e.s
 	gcc s/digits_of_e.s -o out/digits_of_e.out -no-pie -Wno-unused-command-line-argument
 	./out/digits_of_e.out
+
+donut:
+	make 1stgen
+	./out/compiler.out misc/donut_minified.c > s/donut_minified.s
+	gcc s/donut_minified.s -o out/donut_minified.out -no-pie -Wno-unused-command-line-argument
+	./out/donut_minified.out
