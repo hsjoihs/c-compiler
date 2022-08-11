@@ -3,7 +3,7 @@ seccamp2018 c compiler
 
 [日記](https://github.com/hsjoihs/c-compiler/blob/master/misc/diary.md)
 
-In case you are also making a toy C compiler, feel free to use [my test cases](./test_cases.sh) to test yours. I also have [negative test cases](./test_compile_error.sh), a list of inputs to which a C compiler should report an error.
+In case you are also making a toy C compiler, feel free to use [my test cases](./test_cases.sh) to test yours. I also have [negative test cases](./test_compile_error.sh), a list of inputs to which a C compiler should report an error. [test_cases_that_are_compile_error_only_if_pedantic.sh](./test_cases_that_are_compile_error_only_if_pedantic.sh) contains non-ISO extensions commonly implemented in many C compilers. hsjoihs-c-compiler reports an error with respect to those cases only when `-pedantic` is passed.
 
 ## Environment
 
