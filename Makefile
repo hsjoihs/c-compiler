@@ -260,6 +260,6 @@ digits_of_e:
 
 donut:
 	make 1stgen
-	./out/compiler.out misc/donut_minified.c > s/donut_minified.s
-	gcc s/donut_minified.s -o out/donut_minified.out -no-pie -Wno-unused-command-line-argument
-	./out/donut_minified.out
+	./out/compiler.out misc/donut_donut.c > s/donut_donut.s
+	gcc s/donut_donut.s -o out/donut_donut.out -no-pie -Wno-unused-command-line-argument
+	./out/donut_donut.out
