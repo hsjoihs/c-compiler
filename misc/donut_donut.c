@@ -13,11 +13,11 @@
  2,200)){int f=p+2                     *s;int g=s*s/(m(m
 (w,f),r)+m(l,q)+5*                     s);int t=m(m(w,q),
 f)-m(l,r);int x=40                     +30*m(g,m(m(e,u),f
- )-m(t,v))/s;int y                     =12+15*m(g,m(m(e,
- v),f)+m(t,u))/s;int                   o=x+80*y;int N=8*
-  (m(m(l,r)-m(m(w,q                 ),p),u)-m(m(w,r),p)
-  -m(l,q)-m(m(e,v),p))           /s;if(y>0&&g>z[o]&&22
-   >y&&x>0&&80>x){z[o]=g;b[o]=".,-~:;=!*#$@"[N>=1?N:0]
+ )-m(t,v))/s;int y                     =12+15*m(g,m(m(e, 
+ v),f)+m(t,u))/s;int                   o=x+80*y;int N=8* 
+  (m(m(l,r)-m(m(w,q)                ,p),u)-m(m(w,r),p)-  
+  m(l,q)-m(m(e,v),p))/s           ;if(y>0&&g>z[o]&&y<22  
+   &&x>0&&80>x){z[o]=g;b[o]=".,-~:;=!*#$@"[N>=1?N:0]+0
     ;}}}printf("\e[H");for(int k=0;k<1761;k++)putchar
      (k%80?b[k]:10);printf("Author: @a1k0n. Rewritt"
       "en by @hsjoihs so that it works without flo"
@@ -26,4 +26,3 @@ f)-m(l,r);int x=40                     +30*m(g,m(m(e,u),f
             "ding errors gradually reduce th"
                "e donut's size.\n");usleep
                    (5*s);}return 0;}
-                   
