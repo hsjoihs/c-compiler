@@ -288,16 +288,6 @@ parse_unary_expression(const struct Token **ptr_tokvec)
 
 		*ptr_tokvec = tokvec;
 		return new_expr;
-	} else if (tokvec[0].kind == OP_PLUS_PLUS ||
-	           tokvec[0].kind == OP_MINUS_MINUS) {
-		enum TokenKind opkind = tokvec[0].kind;
-		++tokvec;
-
-		const struct UntypedExpr expr = parse_unary_expression(&tokvec);
-
-		const struct UntypedExpr new_expr = unary_op_untyped(&expr, opkind);
-		*ptr_tokvec = tokvec;
-		return new_expr;
 	} else if (tokvec[0].kind == RES_SIZEOF && tokvec[1].kind == LEFT_PAREN &&
 	           can_start_a_type(tokvec + 2)) {
 		tokvec += 2;
@@ -310,6 +300,17 @@ parse_unary_expression(const struct Token **ptr_tokvec)
 		expr.operand_of_sizeof_or_alignof = type;
 		*ptr_tokvec = tokvec;
 		return expr;
+	} else if (tokvec[0].kind == OP_PLUS_PLUS ||
+	           tokvec[0].kind == OP_MINUS_MINUS ||
+	           tokvec[0].kind == RES_SIZEOF) {
+		enum TokenKind opkind = tokvec[0].kind;
+		++tokvec;
+
+		const struct UntypedExpr expr = parse_unary_expression(&tokvec);
+
+		const struct UntypedExpr new_expr = unary_op_untyped(&expr, opkind);
+		*ptr_tokvec = tokvec;
+		return new_expr;
 	} else if (tokvec[0].kind == RES_ALIGNOF && tokvec[1].kind == LEFT_PAREN) {
 		tokvec += 2;
 		if (!can_start_a_type(tokvec)) {
@@ -318,7 +319,7 @@ parse_unary_expression(const struct Token **ptr_tokvec)
 		}
 		struct Type type = parse_type_name(&tokvec);
 		expect_and_consume(&tokvec, RIGHT_PAREN,
-		                   "closing parenthesis of sizeof(typename)");
+		                   "closing parenthesis of _Alignof(typename)");
 
 		struct UntypedExpr expr;
 		expr.category = ALIGNOF_TYPE;

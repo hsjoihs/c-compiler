@@ -623,6 +623,13 @@ struct Expr typecheck_unary_expression(const struct AnalyzerState *ptr_ps,
 
 		return new_expr;
 	}
+	case RES_SIZEOF: {
+		struct Expr new_expr;
+		new_expr.details.type = INT_TYPE();
+		new_expr.int_value = size_of(ptr_ps, &expr.details.true_type);
+		new_expr.category = INT_VALUE;
+		return new_expr;
+	}
 	default: {
 		fprintf(stderr, "FAILURE::::::: INVALID TOKEN %d in unary\n", kind);
 		exit(EXIT_FAILURE);
