@@ -151,7 +151,7 @@ char *escape(const char *str)
 	return ans;
 }
 
-static int from_hex(char c);
+static int hex_digit(char c);
 
 void print_token(const struct Token *ptr_tok, const char *next_token_begins)
 {
@@ -524,18 +524,28 @@ static struct Token get_token_raw(const char **ptr_to_str)
 		t.int_value = 0;
 		if (str[1] == 'x' || str[1] == 'X') {
 			str += 2;
-			/* hexadecimal */
-			for (; from_hex(*str) != -1; ++str) {
+			for (; hex_digit(*str) != -1; ++str) {
 				t.int_value *= 16;
-				t.int_value += from_hex(*str);
+				t.int_value += hex_digit(*str);
 			}
 			*ptr_to_str = str;
 			return t;
+		} else if (str[1] == 'b' || str[1] == 'B') {
+			if (global_flag_pedantic) {
+				fprintf(stderr, "binary constants are in ISO C23, but not in ISO C17");
+				exit(EXIT_FAILURE);
+			} else {
+				str += 2;
+				for (; *str >= '0' && *str <= '1'; ++str) {
+					t.int_value *= 2;
+					t.int_value += *str - '0';
+				}
+				*ptr_to_str = str;
+				return t;
+			}
 		} else {
 			++str;
-			/* portable, since it is guaranteed
-			                          that '0' - '9' are consecutive */
-
+			/* octal */
 			for (; *str >= '0' && *str <= '7'; ++str) {
 				t.int_value *= 8;
 				t.int_value += *str - '0'; /* portable */
@@ -645,7 +655,7 @@ static struct Token get_token(const char **ptr_to_str)
 	return t;
 }
 
-static int from_hex(char c)
+static int hex_digit(char c)
 {
 	switch (c) {
 	case '0':

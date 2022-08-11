@@ -56,3 +56,11 @@ to test the self-compiled compiler. To test some more, run
 ```
 $ make test_all_
 ```
+
+## Fun samples
+
+Conway's game of life:
+
+```
+$ make game_of_life
+```

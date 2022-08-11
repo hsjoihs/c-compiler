@@ -22,3 +22,4 @@ test() {
 
 test 5555 test/error_if_pedantic/toplevel_semicolon.c 0
 test 5556 test/error_if_pedantic/backslash_e.c 27
+test 5557 test/error_if_pedantic/binary_literal.c 3

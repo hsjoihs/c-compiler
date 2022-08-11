@@ -239,3 +239,9 @@ test_sanitized_1stgen:
 	./compile2.sh lexer $(OSFLAG)
 	./compile2.sh file_io $(OSFLAG)
 	./compile2.sh cpp $(OSFLAG)
+
+game_of_life:
+	make 1stgen
+	./out/compiler.out misc/game_of_life.c > s/game_of_life.s
+	gcc s/game_of_life.s -o out/game_of_life.out -no-pie -Wno-unused-command-line-argument
+	./out/game_of_life.out
