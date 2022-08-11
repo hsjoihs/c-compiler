@@ -245,3 +245,9 @@ game_of_life:
 	./out/compiler.out misc/game_of_life.c > s/game_of_life.s
 	gcc s/game_of_life.s -o out/game_of_life.out -no-pie -Wno-unused-command-line-argument
 	./out/game_of_life.out
+
+pi:
+	make 1stgen
+	./out/compiler.out misc/pi.c > s/pi.s
+	gcc s/pi.s -o out/pi.out -no-pie -Wno-unused-command-line-argument
+	./out/pi.out

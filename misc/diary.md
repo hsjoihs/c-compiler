@@ -1851,3 +1851,7 @@ run_test 381 "int main() { char a; return sizeof +a; }" 4
 - [uint256_t 実装のライフゲーム](https://gist.github.com/maekawatoshiki/8ea2f392e22698593d7ee8522aabbbd0)を改造し、初期盤面の指定を 2 進リテラルでやることで、初期化子がまだない人でもライフゲームを動かせるようにする、という案を発案し、受講生の C コンパイラでライフゲームが動いた。
 
 - ということで、私の C コンパイラでも動かそう。と思ったら 2 進リテラルを入れていないんだった。せっかく `-pedantic` を作ったので、非 `-pedantic` のときのみ対応。
+
+### 円周率 w/o 浮動小数点数
+
+- [円周率 w/o 浮動小数点数](https://xn--w6q13e505b.jp/program/spigot.html) を uint256_t に教えてもらったので、やってみたら動いた。やったぁ。

@@ -59,8 +59,13 @@ $ make test_all_
 
 ## Fun samples
 
-Conway's game of life:
+Conway's game of life (Based on https://gist.github.com/maekawatoshiki/8ea2f392e22698593d7ee8522aabbbd0):
 
 ```
 $ make game_of_life
+```
+
+Calculating digits of pi (Based on https://xn--w6q13e505b.jp/program/spigot.html):
+```
+$ make pi
 ```
