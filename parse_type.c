@@ -221,10 +221,8 @@ struct Type *parse_type_specifier(const struct Token **ptr_tokvec)
 			}
 		} while (1);
 
-	} else if (tok == SEMICOLON) {
-		// gcc 12.1 with `-pedantic` flag gives out `warning: ISO C does not allow extra ';' outside of a function`.
-		fprintf(stderr, "ISO C forbids an extra ';' outside of a function\n");
-		exit(EXIT_FAILURE);
+	
+
 	} else {
 		error_unexpected_token(
 		    tokvec, "type name `int`, `char`, `void`, `struct` or `enum`");
@@ -306,9 +304,10 @@ static void parse_dcl_postfixes(const struct Token **ptr_tokvec,
 
 	struct Vector vec = *ptr_vec;
 
-	// The parser must handle cases like `int test()[3];` (which tries to define an array of functions) 
-	// or `int test()()` (which tries to define a function returning a function). 
-	// While these declarations are semantically forbidden, they are syntactically legal.
+	// The parser must handle cases like `int test()[3];` (which tries to define
+	// an array of functions) or `int test()()` (which tries to define a
+	// function returning a function). While these declarations are semantically
+	// forbidden, they are syntactically legal.
 	while (1) {
 		if (tokvec[0].kind == LEFT_BRACKET) {
 			++tokvec;
@@ -326,7 +325,8 @@ static void parse_dcl_postfixes(const struct Token **ptr_tokvec,
 			push_vector(&vec, ptr);
 			continue;
 		} else if (tokvec[0].kind == LEFT_PAREN &&
-		    (can_start_a_type(&tokvec[1]) || tokvec[1].kind == RIGHT_PAREN)) {
+		           (can_start_a_type(&tokvec[1]) ||
+		            tokvec[1].kind == RIGHT_PAREN)) {
 			++tokvec;
 			parse_parameter_type_list(&tokvec, &vec);
 			expect_and_consume(&tokvec, RIGHT_PAREN,

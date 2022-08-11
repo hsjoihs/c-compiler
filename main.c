@@ -3,6 +3,9 @@
 #include "std.h"
 #include "std_io.h"
 #include "toplevel.h"
+#include "global_flags.h"
+
+int global_flag_pedantic;
 
 int main(int argc, char const **argv)
 {
@@ -19,6 +22,8 @@ int main(int argc, char const **argv)
 				fprintf(stderr, "failed to write to file `%s`.\n", ir_filename);
 				exit(EXIT_FAILURE);
 			}
+		} else if (strcmp(argv[i], "-pedantic") == 0) {
+			global_flag_pedantic = 1;
 		} else {
 			const char *filename = argv[i];
 			fp = fopen(filename, "r");

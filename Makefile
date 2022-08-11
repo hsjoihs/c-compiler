@@ -191,6 +191,7 @@ test_valid:
 check_error:
 	make 1stgen
 	./test_compile_error.sh
+	./test_cases_that_are_compile_error_only_if_pedantic.sh
 
 # clang-format or clang
 notest:

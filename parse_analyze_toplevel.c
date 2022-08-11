@@ -1,3 +1,4 @@
+#include "global_flags.h"
 #include "std.h"
 #include "std_io.h"
 #include "toplevel.h"
@@ -242,7 +243,8 @@ record_if_global_struct_or_enum_declaration(struct AnalyzerState *ptr_ps,
 	fprintf(stderr,
 	        "****************************\n"
 	        "* INTERNAL COMPILER ERROR @ %s\n"
-	        "* Unexpected value of TypeCategory: `ref_type->type_category` is `%d`\n"
+	        "* Unexpected value of TypeCategory: `ref_type->type_category` is "
+	        "`%d`\n"
 	        "****************************\n",
 	        __func__, ref_type->type_category);
 	exit(EXIT_FAILURE);
@@ -444,6 +446,16 @@ struct Vector /*<Toplevel>*/ parse(const struct Token *tokvec)
 		if (tokvec[0].kind == END) {
 			expect_and_consume(&tokvec, END, "the end of file");
 			break;
+		} else if (tokvec[0].kind == SEMICOLON) {
+			if (global_flag_pedantic) {
+				// gcc 12.1 with `-pedantic` flag gives out `warning: ISO C does
+				// not allow extra ';' outside of a function`.
+				fprintf(stderr,
+				        "ISO C forbids an extra ';' outside of a function\n");
+				exit(EXIT_FAILURE);
+			} else {
+				expect_and_consume(&tokvec, SEMICOLON, "extra ';' outside of a function\n");
+			}
 		} else {
 			struct Toplevel *ptr = calloc(1, sizeof(struct Toplevel));
 			*ptr = parse_toplevel_definition(&ps, &tokvec);
