@@ -2,6 +2,7 @@
 #include "header.h"
 #include "std.h"
 #include "std_io.h"
+#include "global_flags.h"
 
 static struct Token *concat_str_literals(const struct Tokvec *ref_v);
 static struct Token get_token(const char **ptr_to_str);
@@ -62,6 +63,15 @@ char *unescape(const char *str)
 			case '"':
 				ans[j] = '"';
 				break;
+			case 'e': {
+				if (global_flag_pedantic) {
+					fprintf(stderr, "escape sequence `\\e` is not in ISO C\n");
+					exit(EXIT_FAILURE);
+				} else {
+					ans[j] = 0x1b;
+					break;
+				}
+			}
 			case 39:
 				ans[j] = 39;
 				break;
@@ -122,7 +132,13 @@ char *escape(const char *str)
 			ans[j + 1] = '"';
 			j += 2;
 			break;
-
+		case 0x1b:
+			ans[j] = 92;
+			ans[j + 1] = '0';
+			ans[j + 2] = '3';
+			ans[j + 3] = '3';
+			j += 4;
+			break;
 		/* single quote need not be re-escaped */
 		default:
 			ans[j] = str[i];
